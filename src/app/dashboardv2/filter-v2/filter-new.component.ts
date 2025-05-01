@@ -1425,12 +1425,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.selectedTab?.toLowerCase() === 'iteration'
           ? 'sprintEndDate'
           : 'releaseEndDate';
-    const startDateFormatted = this.formatDate(
-      event[0][startDatePropName],
-    );
-    const endDateFormatted = this.formatDate(
-      event[0][endDatePropName],
-    );
+    const startDateFormatted = this.formatDate(event[0][startDatePropName]);
+    const endDateFormatted = this.formatDate(event[0][endDatePropName]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
