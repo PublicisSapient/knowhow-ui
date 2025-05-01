@@ -41,6 +41,7 @@ export class KpiHelperService {
     '': 'Check.svg',
     'First Time Pass Stories': 'Warning.svg',
     'Total Stories': 'Warning.svg',
+    'Un-Refined Stories': 'Warning.svg',
   };
 
   stackedBarChartData(inputData: any, color: any, key: string) {
