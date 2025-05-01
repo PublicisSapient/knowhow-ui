@@ -158,9 +158,8 @@ import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
     TableComponent,
-    UtcToUserLocalPipe
+    UtcToLocalUserPipe,
   ],
-  
   declarations: [
     ProjectFilterComponent,
     NamePipePipe,

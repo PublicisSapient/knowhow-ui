@@ -1,10 +1,10 @@
-import { UtcToUserLocalPipe } from './utc-to-user-local.pipe';
+import { UtcToLocalUserPipe } from './utc-to-local-user.pipe';
 
 describe('UtcToUserLocalPipe', () => {
-  let pipe: UtcToUserLocalPipe;
+  let pipe: UtcToLocalUserPipe;
 
   beforeEach(() => {
-    pipe = new UtcToUserLocalPipe();
+    pipe = new UtcToLocalUserPipe();
   });
 
   it('should create an instance', () => {
@@ -34,7 +34,11 @@ describe('UtcToUserLocalPipe', () => {
 
   it('should apply custom formatOptions if provided', () => {
     const utcString = '2025-04-28T12:00:00Z';
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
     const result = pipe.transform(utcString, options);
 
     expect(result).toContain('2025'); // At least basic check
@@ -51,7 +55,9 @@ describe('UtcToUserLocalPipe', () => {
 
     // Intentionally cause an error
     const badInput = {
-      toLocaleString: () => { throw new Error('Forced error'); }
+      toLocaleString: () => {
+        throw new Error('Forced error');
+      },
     } as any;
 
     const result = pipe.transform(badInput);
