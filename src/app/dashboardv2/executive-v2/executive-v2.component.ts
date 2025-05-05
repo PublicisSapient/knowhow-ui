@@ -40,7 +40,6 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { clear } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
@@ -1321,7 +1320,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             ) {
               //Extracting sprint goal data
               const kpi187Data = getData.find(
-                (data) => data.kpiId === 'kpi187',
+                (data) => data.kpiId === 'kpi189',
               );
               if (
                 kpi187Data &&
@@ -2754,7 +2753,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     let anyProjectNodeArr = [];
     let uniqueProjectNames;
     Object.keys(data).forEach((kpiId) => {
-      if (kpiId !== 'kpi187') {
+      if (kpiId !== 'kpi189') {
         // && kpiId !== 'kpi168') {
         // && kpiId !== 'kpi38') {
         if (data[kpiId].trendValueList?.length) {
@@ -2895,7 +2894,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         anyProjectNodeArr?.length &&
         uniqueProjectNames?.length !== this.service.getSelectedTrends()?.length
       ) {
-        if (kpiId !== 'kpi187' && kpiId !== 'kpi168') {
+        if (kpiId !== 'kpi189' && kpiId !== 'kpi168') {
           data[kpiId].trendValueList = this.appendParentNameInActualData(
             data[kpiId].trendValueList,
             anyProjectNodeArr,
@@ -4789,13 +4788,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData,
       this.filterApplyData,
       this.filterData,
-      ['kpi187'],
+      ['kpi189'],
       25,
       '',
     );
     kpiJiraTest.kpiList = [
       {
-        kpiId: 'kpi187',
+        kpiId: 'kpi189',
         kpiName: 'Sprint Goals',
         isDeleted: 'False',
         defaultOrder: 31,
@@ -4817,7 +4816,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               type: 'link',
               kpiLinkDetail: {
                 text: 'Detailed Information at',
-                link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi187-Sprint+Goals',
+                link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi189-Sprint+Goals',
               },
             },
           ],
