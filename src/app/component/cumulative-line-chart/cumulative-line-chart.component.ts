@@ -211,6 +211,15 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       tooltipContainer.selectAll('.tooltip').remove();
     };
 
+    // Define the div for circle tooltip only
+    const circleToolTipContainer = d3
+      .select(this.elem)
+      .select('#container')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('display', 'none')
+      .style('opacity', 0);
+
     for (const kpiGroup of categories) {
       const lineData = this.graphData
         .filter((d) => d['lineDataCategorywise'].hasOwnProperty(kpiGroup))
@@ -255,22 +264,60 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
-        .on('mouseover', function (event) {
-          d3.select(this)
-            .transition()
-            .duration(500)
-            .style('cursor', 'pointer')
-            .attr('r', 3)
-            .style('stroke-width', 10);
-          showTooltip(lineData);
+        .on('mouseover', function (event, d) {
+          // This hover will triger for the circle only i.e. if data have hovervalue then it will appear for same otherwise on circle hover it will show the all joint line data.
+          if (d && d?.hoverValue) {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .style('cursor', 'pointer')
+              .attr('r', 3)
+              .style('stroke-width', 10);
+            circleToolTipContainer
+              .transition()
+              .duration(200)
+              .style('display', 'block')
+              .style('position', 'fixed')
+              .style('opacity', 0.9);
+
+            const circle = event.target;
+            const { top: yPosition, left: xPosition } =
+              circle.getBoundingClientRect();
+
+            let htmlString = '';
+            Object.keys(d?.hoverValue).forEach((key) => {
+              htmlString += `<div class="tooltip-content"><span>${key}:</span> <span>${d?.hoverValue?.[key]}</span></div>`;
+            });
+
+            circleToolTipContainer
+              .html(htmlString)
+              .style('left', xPosition + 'px')
+              .style('top', yPosition + 20 + 'px');
+          } else {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .style('cursor', 'pointer')
+              .attr('r', 3)
+              .style('stroke-width', 10);
+            showTooltip(lineData);
+          }
         })
         .on('mouseout', function (event, d) {
-          d3.select(this)
-            .transition()
-            .duration(500)
-            .attr('r', 3)
-            .style('stroke-width', 5);
-          hideTooltip();
+          if (d && d?.hoverValue) {
+            circleToolTipContainer
+              .transition()
+              .duration(500)
+              .style('display', 'none')
+              .style('opacity', 0);
+          } else {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .attr('r', 3)
+              .style('stroke-width', 5);
+            hideTooltip();
+          }
         });
     }
     //Add xCaption

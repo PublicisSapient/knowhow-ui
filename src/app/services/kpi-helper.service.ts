@@ -41,6 +41,7 @@ export class KpiHelperService {
     '': 'Check.svg',
     'First Time Pass Stories': 'Warning.svg',
     'Total Stories': 'Warning.svg',
+    'Un-Refined Stories': 'Warning.svg',
   };
 
   stackedBarChartData(inputData: any, color: any, key: string) {
@@ -451,5 +452,23 @@ export class KpiHelperService {
         break;
     }
     return returnDataSet;
+  }
+
+  getSelectedItem(items, currentSelected, direction) {
+    const currentIndex = items.indexOf(currentSelected);
+
+    if (currentIndex === -1) {
+      return items.length > 0 ? items[0] : null;
+    }
+
+    let nextIndex;
+    if (direction === 'right') {
+      nextIndex = (currentIndex + 1) % items.length;
+    } else if (direction === 'left') {
+      nextIndex = (currentIndex - 1 + items.length) % items.length;
+    } else {
+      return currentSelected;
+    }
+    return items[nextIndex];
   }
 }
