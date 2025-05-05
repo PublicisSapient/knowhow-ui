@@ -40,7 +40,6 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { clear } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
