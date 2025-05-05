@@ -148,7 +148,7 @@ export class ReportKpiCardComponent {
 
   generateTableKPIColumnHeader() {
     // For kpi3 and kpi53 generating table column headers and table data
-    if (this.kpiData.kpiId === 'kpi3' || this.kpiData.kpiId === 'kpi53') {
+    if (this.kpiData?.kpiId === 'kpi3' || this.kpiData?.kpiId === 'kpi53') {
       //generating column headers
       // Mapping for readable label names (you can expand this list as needed)
       const labelNameMap: Record<string, string> = {
