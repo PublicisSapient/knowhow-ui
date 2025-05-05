@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 @Component({
   selector: 'app-report-container',
@@ -20,6 +21,7 @@ export class ReportContainerComponent implements OnInit {
   constructor(
     private http: HttpService,
     private messageService: MessageService,
+    private kpiHelperService: KpiHelperService,
   ) {}
 
   /**
@@ -68,6 +70,13 @@ export class ReportContainerComponent implements OnInit {
       left: -200,
       behavior: 'smooth',
     });
+    this.setSelectedReport(
+      this.kpiHelperService.getSelectedItem(
+        this.reportsData,
+        this.selectedReport,
+        'left',
+      ),
+    );
   }
 
   scrollRight(): void {
@@ -75,6 +84,13 @@ export class ReportContainerComponent implements OnInit {
       left: 200,
       behavior: 'smooth',
     });
+    this.setSelectedReport(
+      this.kpiHelperService.getSelectedItem(
+        this.reportsData,
+        this.selectedReport,
+        'right',
+      ),
+    );
   }
 
   setSelectedReport(report) {
@@ -127,8 +143,7 @@ export class ReportContainerComponent implements OnInit {
         selectedReport.kpis = data['data']['kpis'];
         this.messageService.add({
           severity: 'success',
-          summary:
-            'Metrics added successfully. View the report in the report section.',
+          summary: 'KPI deleted successfully.',
         });
       } else {
         this.messageService.add({

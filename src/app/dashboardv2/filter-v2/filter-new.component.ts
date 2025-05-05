@@ -358,7 +358,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       this.masterDataCopy['kpiList'] = JSON.parse(
         JSON.stringify(
-          this.masterData['kpiList'].filter((x) => x.kpiId != 'kpi187'),
+          this.masterData['kpiList'].filter((x) => x.kpiId != 'kpi189'),
         ),
       );
 
@@ -895,14 +895,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         (x) => x.level === parentLevel,
       );
       let parentLevelName = parentLevelNode[0].hierarchyLevelName;
-      if (this.filterDataArr && this.filterDataArr[this.selectedType]?.length) {
+      if (
+        this.filterDataArr &&
+        Object.keys(this.filterDataArr[this.selectedType])?.length
+      ) {
         let childNode = this.filterDataArr[this.selectedType][
           selectedLevelNode[0].hierarchyLevelName
         ].find((x) => x.nodeId === child.nodeId);
         if (childNode) {
           let immediateParent = this.filterDataArr[this.selectedType][
             parentLevelName
-          ].find((x) => x.nodeId === childNode.parentId);
+          ]?.find((x) => x.nodeId === childNode.parentId);
           return immediateParent?.nodeDisplayName + '-' + child?.nodeId;
         } else {
           return '';
@@ -1293,6 +1296,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               true,
               this.dashConfigData,
               this.selectedType,
+              this.filterDataArr[this.selectedType],
             );
           } else {
             this.service.select(
@@ -1308,6 +1312,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               true,
               this.dashConfigData,
               this.selectedType,
+              this.filterDataArr[this.selectedType],
             );
           }
         } else {
@@ -1322,6 +1327,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             true,
             this.dashConfigData,
             this.selectedType,
+            this.filterDataArr[this.selectedType],
           );
         }
       } else {
@@ -1419,12 +1425,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.selectedTab?.toLowerCase() === 'iteration'
           ? 'sprintEndDate'
           : 'releaseEndDate';
-    const startDateFormatted = this.formatDate(
-      event[0][startDatePropName]?.split('T')[0],
-    );
-    const endDateFormatted = this.formatDate(
-      event[0][endDatePropName]?.split('T')[0]?.split('T')[0],
-    );
+    const startDateFormatted = this.formatDate(event[0][startDatePropName]);
+    const endDateFormatted = this.formatDate(event[0][endDatePropName]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
@@ -1557,6 +1559,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           true,
           this.dashConfigData,
           this.selectedType,
+          this.filterDataArr[this.selectedType],
         );
         return;
       }
@@ -1572,6 +1575,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           true,
           this.dashConfigData,
           this.selectedType,
+          this.filterDataArr[this.selectedType],
         );
         return;
       }
@@ -1586,6 +1590,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         true,
         this.dashConfigData,
         this.selectedType,
+        this.filterDataArr[this.selectedType],
       );
       // });
     }
@@ -1623,6 +1628,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             true,
             this.dashConfigData,
             this.selectedType,
+            this.filterDataArr[this.selectedType],
           );
         } else {
           this.service.select(
@@ -1638,6 +1644,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             true,
             this.dashConfigData,
             this.selectedType,
+            this.filterDataArr[this.selectedType],
           );
         }
       } else if (
@@ -1655,6 +1662,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           true,
           this.dashConfigData,
           this.selectedType,
+          this.filterDataArr[this.selectedType],
         );
       }
     }
