@@ -75,11 +75,13 @@ export class KpiHelperService {
 
       chartData.push({
         category: category.categoryName,
-        value: key
-          ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
-          : category.categoryValue === 'NA'
-          ? filteredIssues.length
-          : filteredIssues.length * (category.categoryValue === '+' ? 1 : -1),
+        value:
+          (key
+            ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
+            : filteredIssues.length) *
+          (category.categoryValue === '+' || category.categoryValue === 'NA'
+            ? 1
+            : -1),
         color: color[index % color.length],
       });
     });
