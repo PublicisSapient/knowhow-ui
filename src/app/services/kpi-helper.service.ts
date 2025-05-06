@@ -89,7 +89,7 @@ export class KpiHelperService {
     let totalCount = chartData.reduce((sum: any, issue: any) => {
       return (
         sum +
-        (!excludeCatForTotal.includes(issue.category) ? issue.value : 0 || 0)
+        ((!excludeCatForTotal.includes(issue.category) ? issue.value : 0) || 0)
       ); // Sum up the values for the key and excluding the same incase not applicable
     }, 0);
 
