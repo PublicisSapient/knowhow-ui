@@ -31,6 +31,7 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
+
   constructor(private kpiHelperService: KpiHelperService) {}
 
   /**

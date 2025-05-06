@@ -49,6 +49,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   sprintList: Array<any> = [];
   height: number = 0;
   @Input() viewType: string = 'chart';
+
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
   });
