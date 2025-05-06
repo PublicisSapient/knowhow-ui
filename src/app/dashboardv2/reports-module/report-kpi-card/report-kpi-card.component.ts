@@ -16,6 +16,7 @@ export class ReportKpiCardComponent {
   @Input() trendColors: any;
   colors: any;
   fromReport: string = 'fromReport';
+
   @Input() kpiFilters: any;
   @Input() selectedButtonValue: any;
   @Input() cardData: any;
@@ -31,6 +32,7 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
+
   constructor(private kpiHelperService: KpiHelperService) {}
 
   /**
@@ -153,13 +155,13 @@ export class ReportKpiCardComponent {
       //generating column headers
       // Mapping for readable label names (you can expand this list as needed)
       const labelNameMap: Record<string, string> = {
-        project: "Project Name",
-        account: "Account Name",
-        bu: "Business Unit",
-        ver: "Vertical",
-        port: "Portfolio",
-        release: "Release",
-        sqd: "Squad"
+        project: 'Project Name',
+        account: 'Account Name',
+        bu: 'Business Unit',
+        ver: 'Vertical',
+        port: 'Portfolio',
+        release: 'Release',
+        sqd: 'Squad',
       };
 
       // Extract label name (e.g., 'project') from trendColors object
@@ -170,13 +172,13 @@ export class ReportKpiCardComponent {
       const projectHeader = labelNameMap[labelName] || labelName;
 
       // Extract KPI name from `radioOption`
-      const leadTimeHeader = this.kpiData.radioOption || "Value";
+      const leadTimeHeader = this.kpiData.radioOption || 'Value';
 
       // Construct the columnHeaders array
       const columnHeaders = [
-        { field: "hierarchyName", header: projectHeader },
-        { field: "value", header: leadTimeHeader },
-        { field: "maturity", header: "Maturity" }
+        { field: 'hierarchyName', header: projectHeader },
+        { field: 'value', header: leadTimeHeader },
+        { field: 'maturity', header: 'Maturity' },
       ];
 
       this.currentChartData.columnHeaders = columnHeaders;
