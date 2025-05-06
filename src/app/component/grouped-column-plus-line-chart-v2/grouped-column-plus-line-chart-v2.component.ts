@@ -65,6 +65,7 @@ export class GroupedColumnPlusLineChartV2Component
     const data = this.transform2(this.data);
     this.draw2(data);
   });
+
   counter: number = 0;
 
   constructor(
