@@ -37,8 +37,7 @@
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
                                     <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
-                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
-                                        [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
+                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -162,7 +161,7 @@
                                                                             [viewType]="showChart"
                                                                             [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
                                                                             [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
-                                                                            [board]="selectedTab">
+                                                                            [board]="selectedTab" [kpiId]="kpi?.kpiId">
                                                                         </app-grouped-column-plus-line-chart-v2>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!checkIfZeroData(kpi)">
@@ -188,7 +187,7 @@
                                                                             [viewType]="showChart"
                                                                             [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
                                                                             [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
-                                                                            [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
+                                                                            [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder" [kpiId]="kpi?.kpiId">
                                                                         </app-bar-with-y-axis-group>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!checkIfZeroData(kpi)">
