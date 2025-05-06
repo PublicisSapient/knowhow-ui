@@ -39,6 +39,8 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() xCaption: string;
   @Input() unit: string;
   @Input() selectedtype: string;
+  @Input() kpiId: string; // id of the kpi
+  @Input() source: string;
   elem: any;
   dataPoints: any;
   sprintList: Array<any> = [];
@@ -51,6 +53,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     const data = this.formatData(this.data);
     this.draw(data);
   });
+  counter: number = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -152,6 +155,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       unit: 'unit',
     };
     let sprintList = [];
+    const kpiId = this.kpiId;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
     const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
@@ -423,6 +427,20 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
           (y(this.yAxisOrder[d.value]) + y.bandwidth() / 2),
       )
       .attr('class', 'bar');
+
+      if (
+        kpiId !== 'kpi166' &&
+        kpiId !== 'kpi156' &&
+        kpiId !== 'kpi116' &&
+        kpiId !== 'kpi118' &&
+        kpiId !== 'kpi13' &&
+        kpiId !== 'kpi170' &&
+        kpiId !== 'KPI127' &&
+        kpiId !== 'kpi997' &&
+        kpiId !== 'kpi184'
+      ) {
+        this.renderSprintsLegend(this.flattenData(this.data), this.xCaption);
+      }
   }
 
   wrap(text, width) {
@@ -457,6 +475,176 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
         }
       }
     });
+  }
+
+  flattenData(data) {
+    let sprintMap = new Map();
+    let sprintCounter = 1;
+
+    data.forEach(project => {
+        const projectName = project.data.trim();
+        project.value.forEach((entry, index) => {
+            const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
+            const sprintKey = index; // assuming index-based alignment
+
+            if (!sprintMap.has(sprintKey)) {
+                sprintMap.set(sprintKey, {
+                    sprintNumber: sprintCounter++,
+                    projects: {},
+                    sprints: [],
+                });
+            }
+
+            const sprintEntry = sprintMap.get(sprintKey);
+            const sprintData = sprintEntry.projects;
+
+            // Add date range to x-axis labels if not already present
+            if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
+                sprintEntry.sprints.push(dateRange);
+            }
+
+            // Assign hoverValue data (use empty object if missing)
+            sprintData[projectName] = Object.keys(entry.hoverValue || {}).reduce((acc, key) => {
+                acc[key] = entry.hoverValue[key] || 0;
+                return acc;
+            }, {});
+        });
+    });
+
+    return Array.from(sprintMap.values());
+}
+
+
+  renderSprintsLegend(data, xAxisCaption) {
+    this.counter++;
+    if (this.counter === 1) {
+      const legendData = data.map(item => {
+        return {
+          sprintNumber: item.sprintNumber,
+          sprintLabel: item.sprints.join(", ")
+        };
+      });
+
+      // Select the body and insert the legend container at the top
+      const body = d3.select(this.elem);
+
+      const container = body.insert("div") // Insert at top of body
+        .attr("class", "sprint-legend-container")
+        .style("margin", "20px 0 0 0")
+        .style("font-family", "Arial, sans-serif")
+        .style("font-size", "14px")
+        .style("max-width", "100%");
+
+      // Toggle Button
+      const toggleButton = container.append("button")
+        .style("margin", "0 0 10px 0")
+        .style("padding", "0")
+        .style("cursor", "pointer")
+        .style("font-size", "14px")
+        .style("background", "none")
+        .style("border", "none")
+        .style("color", "#0b4bc8")
+        .style("text-decoration", "underline")
+        .style("text-underline-offset", "5px")
+        .attr("class", "p-element p-component")
+      .on("click", function () {
+          const isVisible = legend.style("display") !== "none";
+          legend.style("display", isVisible ? "none" : "block");
+          legend.style("aria-hidden", isVisible ? "true" : "false");
+          legend.style("tabindex", isVisible ? "-1" : "0");
+          toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
+      });
+
+      // Legend Box
+      const legend = container.append("div")
+        .attr("class", "sprint-legend")
+        .style("padding", "0")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "6px")
+        .style("margin-top", "10px")
+        .attr("role", "region")
+        .attr("aria-labelledby", "legend-title");
+
+      if (this.source === 'fromReport') {
+        legend.style("display", "block"); // Hide the legend by default
+        toggleButton.text("Hide X-Axis Legend");
+        legend.attr("aria-hidden", "false")
+      } else {
+        legend.style("display", "none"); // Show the legend by default
+        legend.attr("aria-hidden", "true")
+        toggleButton.text("Show X-Axis Legend");
+      }
+
+      // Wrap the table in a scrollable container
+      const scrollContainer = legend.append("div")
+        .style("overflow-x", "auto")  // Make horizontally scrollable on small screens
+        .style("max-width", "100%");
+
+      // Create the table inside scroll container
+      const table = scrollContainer.append("table")
+        .attr("role", "table")
+        .style("width", "100%")
+        .style("border-collapse", "collapse")
+        .style("min-width", "400px"); // Minimum width to enable scrolling if needed
+
+      // Table Header
+      const thead = table.append("thead")
+        .attr("role", "rowgroup");
+
+      const headerRow = thead.append("tr")
+        .attr("role", "row");
+
+      headerRow.append("th")
+        .attr("role", "columnheader")
+        .attr("scope", "col")
+        .text("X-Axis")
+        .style("text-align", "left")
+        .style("padding", "12px 10px")
+        .style("border-bottom", "2px solid #ccc")
+        .style("background-color", "#f0f0f0")
+        .style("color", "#222")
+        .style("width", "10%")
+        .style("font-weight", "600");
+
+      headerRow.append("th")
+        .attr("role", "columnheader")
+        .attr("scope", "col")
+        .text("Legend")
+        .style("text-align", "left")
+        .style("padding", "12px 10px")
+        .style("border-bottom", "2px solid #ccc")
+        .style("background-color", "#f0f0f0")
+        .style("color", "#222")
+        .style("font-weight", "600");
+
+      // Table Body
+      const tbody = table.append("tbody")
+        .attr("role", "rowgroup");
+
+      const rows = tbody.selectAll("tr")
+        .data(legendData)
+        .enter()
+        .append("tr")
+        .attr("role", "row")
+        .style("background", (d, i) => i % 2 === 0 ? "#fff" : "#fafafa") // Zebra striping
+
+      // Table Cells
+      rows.append("td")
+        .attr("role", "cell")
+        .text(d => `${xAxisCaption} ${d.sprintNumber}:`)
+        .style("padding", "10px 10px")
+        .style("border-bottom", "1px solid #eee")
+        .style("width", "10%")
+        .style("color", "#333");
+
+      rows.append("td")
+        .attr("role", "cell")
+        .text(d => d.sprintLabel)
+        .style("padding", "10px 10px")
+        .style("border-bottom", "1px solid #eee")
+        .style("word-break", "break-word")
+        .style("color", "#666");
+    }
   }
 
   ngAfterViewInit() {
