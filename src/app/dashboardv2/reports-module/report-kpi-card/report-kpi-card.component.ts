@@ -16,6 +16,7 @@ export class ReportKpiCardComponent {
   @Input() trendColors: any;
   colors: any;
   fromReport: string = 'fromReport';
+
   @Input() kpiFilters: any;
   @Input() selectedButtonValue: any;
   @Input() cardData: any;
@@ -31,6 +32,7 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
+
   constructor(private kpiHelperService: KpiHelperService) {}
 
   /**

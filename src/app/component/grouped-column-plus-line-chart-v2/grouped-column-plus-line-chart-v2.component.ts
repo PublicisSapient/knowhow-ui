@@ -60,10 +60,12 @@ export class GroupedColumnPlusLineChartV2Component
   @Input() viewType: string = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
+
   resizeObserver = new ResizeObserver((entries) => {
     const data = this.transform2(this.data);
     this.draw2(data);
   });
+
   counter: number = 0;
 
   constructor(
