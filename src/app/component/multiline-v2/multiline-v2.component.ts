@@ -59,13 +59,15 @@ export class MultilineV2Component implements OnChanges {
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
+
   elemObserver = new ResizeObserver(() => {
     this.draw();
   });
+
   height: number = 0;
   width: number = 400;
   counter: number = 0;
-  
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,

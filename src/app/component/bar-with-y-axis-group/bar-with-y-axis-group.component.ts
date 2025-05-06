@@ -49,10 +49,12 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() upperThresholdBG: string;
   @Input() yAxisOrder: Array<any>;
   @Input() thresholdValue: number;
+
   resizeObserver = new ResizeObserver((entries) => {
     const data = this.formatData(this.data);
     this.draw(data);
   });
+
   counter: number = 0;
 
   constructor(
