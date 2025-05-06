@@ -63,6 +63,7 @@ export class MultilineV2Component implements OnChanges {
   elemObserver = new ResizeObserver(() => {
     this.draw();
   });
+
   height: number = 0;
   width: number = 400;
   counter: number = 0;

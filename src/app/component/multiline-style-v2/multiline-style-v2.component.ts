@@ -53,6 +53,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
   });
+
   counter: number = 0;
 
   constructor(

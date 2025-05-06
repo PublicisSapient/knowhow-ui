@@ -54,6 +54,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     const data = this.formatData(this.data);
     this.draw(data);
   });
+
   counter: number = 0;
 
   constructor(
