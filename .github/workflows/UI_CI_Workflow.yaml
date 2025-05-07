@@ -56,6 +56,13 @@ jobs:
         with:
           node-version: 18
 
+      - name: Check Code Format with Prettier
+        run: |
+          sudo chown -R $(whoami) /usr/local/lib/node_modules
+          sudo npm cache clean --force
+          sudo npm install
+          npx prettier "**/*.{ts,css}" --check
+
       - name: Install Dependencies & Build UI
         run: |
           sudo chown -R $(whoami) /usr/local/lib/node_modules
@@ -63,10 +70,6 @@ jobs:
           sudo npm install
           sudo npm install -g @angular/cli@14.2.6
           sudo npm run build:dev
-
-      - name: Check Code Format with Prettier
-        run: |
-          npx prettier "**/*.{ts,css}" --check
 
       - name: Run UI Unit Tests
         run: |
