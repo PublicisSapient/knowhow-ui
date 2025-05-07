@@ -105,7 +105,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   copyCardData: any;
   currentChartData;
   KpiCategory;
-  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
+  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5', '#EBAC8A'];
   selectedButtonValue;
   cardData;
   reportObj: any = {};
