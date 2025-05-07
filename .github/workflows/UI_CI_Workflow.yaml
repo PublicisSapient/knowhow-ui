@@ -64,6 +64,10 @@ jobs:
           sudo npm install -g @angular/cli@14.2.6
           sudo npm run build:dev
 
+      - name: Check Code Format with Prettier
+        run: |
+          npx prettier "**/*.{ts,css}" --check
+
       - name: Run UI Unit Tests
         run: |
           sudo npm install --save-dev @angular-devkit/build-angular@14.2.10
