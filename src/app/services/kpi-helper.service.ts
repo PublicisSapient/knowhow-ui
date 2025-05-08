@@ -48,6 +48,9 @@ export class KpiHelperService {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
+    let excludeCatForTotal = categoryGroup
+      .filter((cat) => cat.categoryValue === 'NA')
+      .map((cat) => cat.categoryName);
     let selectedDataGroup;
     let unit;
     if (key) {
@@ -76,13 +79,18 @@ export class KpiHelperService {
           (key
             ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
             : filteredIssues.length) *
-          (category.categoryValue === '+' ? 1 : -1),
+          (category.categoryValue === '+' || category.categoryValue === 'NA'
+            ? 1
+            : -1),
         color: color[index % color.length],
       });
     });
 
     let totalCount = chartData.reduce((sum: any, issue: any) => {
-      return sum + (issue.value || 0); // Sum up the values for the key
+      return (
+        sum +
+        ((!excludeCatForTotal.includes(issue.category) ? issue.value : 0) || 0)
+      ); // Sum up the values for the key and excluding the same incase not applicable
     }, 0);
 
     if (!unit || !unit.length) {

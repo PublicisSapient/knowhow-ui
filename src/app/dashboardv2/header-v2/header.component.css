@@ -149,8 +149,8 @@ header {
 }
 
 .tab-button button.active {
-  color: #007bff;
-  border-bottom: 3px solid #007bff;
+  color: #0b4bc8;
+  border-bottom: 3px solid #0b4bc8;
 }
 
 .tab-button button:hover {
