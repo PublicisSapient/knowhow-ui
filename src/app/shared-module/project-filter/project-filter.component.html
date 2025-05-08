@@ -83,24 +83,6 @@
         </ng-template>
       </p-multiSelect>
     </div>
-  </div> -->
-
-  <div class="p-sm-6" *ngFor="let field of formData">
-    <div class="ui-float-label">
-      <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName
-        }}</label>
-      <p-multiSelect inputId="{{ field.hierarchyLevelId }}"
-        [options]="filteredSuggestions[field.hierarchyLevelId] || field.list"
-        [(ngModel)]="selectedItems[field.hierarchyLevelId]" filter="true" defaultLabel="Select {{ field.hierarchyLevelName }}" optionLabel="nodeDisplayName"
-        class="multiselect-custom" [showToggleAll]="false" (onChange)="onSelectionOfOptions($event, field)" [selectionLimit]="6" [selectedItemsLabel]="'{0} selected'">
-        <ng-template let-hierarchy pTemplate="item">
-          <div class="option">
-            {{hierarchy.nodeDisplayName}}
-            <span class="parent_item" style="color:green;"> {{ getNodeDisplayNameById(hierarchy.parentId, hierarchy) }} </span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
-    </div>
   </div>
   <div class="p-sm-12" *ngIf="filtersApplied || selectedValProjects.length">
     <button pButton type="button" label="Remove Filters" icon="pi pi-filter-slash" class="p-button-text p-button-danger"

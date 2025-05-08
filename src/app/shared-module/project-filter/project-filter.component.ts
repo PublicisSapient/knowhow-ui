@@ -79,11 +79,11 @@ export class ProjectFilterComponent implements OnInit {
         let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
         this.formData = JSON.parse(JSON.stringify(formFieldData));
 
-        console.log(this.formData, 'this.formData');
         for(const level of this.formData) {
           this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
         }
 
+        console.log(this.data, 'this.data');
         this.service.sendProjectData(this.data);
         // this.populateDataLists(projectsData.data, 'all');
       } else {
