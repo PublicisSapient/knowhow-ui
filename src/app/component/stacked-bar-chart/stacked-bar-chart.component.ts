@@ -103,33 +103,27 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
 
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
-    let minWidth = 35;
-    let nonZeroBars = this.data.filter((d) => parseInt(d.value) > 0);
+    const minWidth = 35;
+    const data = this.data.filter((d) => parseInt(d.value) !== 0);
+    const totalBars = data.length;
+
     const g = svg
       .selectAll('.slice')
-      .data(this.data.filter((x) => x.value !== 0))
+      .data(data)
       .enter()
       .append('g')
       .attr('transform', (d, index) => {
-        const offset = cumulativeOffset;
-        cumulativeOffset +=
+        const width =
           Math.abs(xScale(d.value) - xScale(0)) >= minWidth
             ? Math.abs(xScale(d.value) - xScale(0))
             : minWidth;
-        const isNegative = d.value < 0;
-        if (isNegative) {
-          return `translate(${Math.abs(offset) + margin.left}, ${margin.top})`;
-        } else {
-          if (index === 1 || index === 0) {
-            return `translate(${Math.abs(offset) + margin.left}, ${
-              margin.top
-            })`;
-          } else {
-            return `translate(${Math.abs(offset) + margin.left - radius}, ${
-              margin.top
-            })`;
-          }
-        }
+
+        const offset = cumulativeOffset;
+
+        // For curved joins, subtract radius except first bar
+        cumulativeOffset += width - (index < totalBars - 1 ? radius : 0);
+
+        return `translate(${offset + margin.left}, ${margin.top})`;
       })
       .attr('class', 'slice')
       .append('path')
@@ -138,51 +132,68 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
           Math.abs(xScale(d.value) - xScale(0)) >= minWidth
             ? Math.abs(xScale(d.value) - xScale(0))
             : minWidth;
-        const isNegative = Math.abs(d.value) && d.value < 0;
-        if (isNegative) {
-          // Rounded corners on the left side
-          return `M${radius},0
-            H${width} 
-            V${chartHeight} 
-            H${radius}
-            A${radius},${radius} 0 0 1 0,${chartHeight - radius}
-            V${radius}
-            A${radius},${radius} 0 0 1 ${radius},0
-            Z`;
-        } else if (Math.abs(d.value)) {
-          if (nonZeroBars?.length === 1) {
-            return `M${0},0
-                H${width - radius} 
-                A${radius},${radius} 0 0 1 ${width},${radius} 
-                V${chartHeight - radius} 
-                A${radius},${radius} 0 0 1 ${width - radius},${chartHeight} 
-                H0 
-                V0
-                Z`;
-          }
-          if (index === 1 || index === 0) {
-            return `M${-radius},0
-                H${width - radius} 
-                A${radius},${radius} 0 0 1 ${width},${radius} 
-                V${chartHeight - radius} 
-                A${radius},${radius} 0 0 1 ${width - radius},${chartHeight} 
-                H0 
-                V0
-                Z`;
-          } else {
-            return `M${0},0
-            C${radius},${chartHeight / 4} ${radius},${
-              (3 * chartHeight) / 4
-            } 0,${chartHeight}
-            L${width - radius},${chartHeight} 
-            C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${
-              width - radius
-            },0
-            Z`;
-          }
-        } else if (d.value === 0) {
-          return ``;
+
+        const isFirst = index === 0;
+        const isLast = index === totalBars - 1;
+        const isOnly = totalBars === 1;
+
+        if (isOnly) {
+          // Rounded on both sides
+          return `
+        M${radius},0
+        H${width - radius}
+        A${radius},${radius} 0 0 1 ${width},${radius}
+        V${chartHeight - radius}
+        A${radius},${radius} 0 0 1 ${width - radius},${chartHeight}
+        H${radius}
+        A${radius},${radius} 0 0 1 0,${chartHeight - radius}
+        V${radius}
+        A${radius},${radius} 0 0 1 ${radius},0
+        Z`;
         }
+
+        if (isFirst) {
+          // Rounded on left, curved join on right
+          return `
+        M${radius},0
+        H${width - radius}
+        C${width},${chartHeight / 4} ${width},${(3 * chartHeight) / 4} ${
+            width - radius
+          },${chartHeight}
+        H${radius}
+        A${radius},${radius} 0 0 1 0,${chartHeight - radius}
+        V${radius}
+        A${radius},${radius} 0 0 1 ${radius},0
+        Z`;
+        }
+
+        if (isLast) {
+          // Curved join on left, rounded on right
+          return `
+            M0,0
+            C${radius},${chartHeight / 4} ${radius},${
+            (3 * chartHeight) / 4
+          } 0,${chartHeight}
+            H${width - radius}
+            A${radius},${radius} 0 0 0 ${width},${chartHeight - radius}
+            V${radius}
+            A${radius},${radius} 0 0 0 ${width - radius},0
+            H0
+            Z`;
+        }
+
+        // Middle bars: curved join on both sides
+        return `
+      M0,0
+      C${radius},${chartHeight / 4} ${radius},${
+          (3 * chartHeight) / 4
+        } 0,${chartHeight}
+      H${width - radius}
+      C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${
+          width - radius
+        },0
+      H0
+      Z`;
       })
       .attr('fill', (d) => d.color);
 
