@@ -113,17 +113,18 @@ export class KpiHelperService {
     categoryInfo?.scopeDuration?.forEach((duration) => {
       let value = 0;
       const IssueFilterByDuration = filterdata.filter((issue) =>
-        issue['fallingDuration'].includes(duration),
+        issue['scopeDuration'].includes(duration),
       );
       if (key) {
         value = IssueFilterByDuration.reduce(
           (sum, issue) => sum + issue[key],
           0,
         );
+        list.push(`Last ${duration} days: ${value} SP`);
       } else {
         value = IssueFilterByDuration.length;
+        list.push(`Last ${duration} days: ${value} `);
       }
-      list.push(`${duration}: ${value} `);
     });
 
     return list;
