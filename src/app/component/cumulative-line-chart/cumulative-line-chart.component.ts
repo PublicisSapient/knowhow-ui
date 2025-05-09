@@ -37,7 +37,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   draw() {
     const elem = this.elem;
     d3.select(elem).select('#chart').select('svg').remove();
-    d3.select('.yaxis-container').select('svg').remove();
+    d3.select(elem).select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
     let width = this.onPopup
       ? 650
