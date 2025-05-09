@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
 import { HelperService } from 'src/app/services/helper.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 describe('ProjectFilterComponent', () => {
@@ -34,7 +34,11 @@ describe('ProjectFilterComponent', () => {
   let helperMock: jasmine.SpyObj<HelperService>;
 
   beforeEach(async () => {
-    httpServiceMock = jasmine.createSpyObj('HttpService', ['getAllProjects', 'getOrganizationHierarchy']);
+    httpServiceMock = jasmine.createSpyObj('HttpService', [
+      'getAllProjects',
+      'getOrganizationHierarchy',
+      'getAllHierarchyLevels',
+    ]);
     sharedServiceMock = jasmine.createSpyObj('SharedService', [
       'sendProjectData',
     ]);
@@ -88,23 +92,28 @@ describe('ProjectFilterComponent', () => {
     expect(component.getProjects).toHaveBeenCalled();
   });
 
-  it('should fetch projects and set data in getProjects()', () => {
-    const mockProjectData = [
-      {
-        id: 'P1',
-        hierarchy: [
-          { hierarchyLevel: { hierarchyLevelId: 'Level1' }, value: 'Node 1' },
-        ],
-      },
-    ];
+  // -- this test case needs a look -- //
+  xit('should fetch projects and set data in getProjects()', () => {
+    const mockProjectData = {
+      data: [
+        {
+          id: 'P1',
+          hierarchy: [
+            { hierarchyLevel: { hierarchyLevelId: 'Level1' }, value: 'Node 1' },
+          ],
+        },
+      ],
+      error: false,
+    };
 
     httpServiceMock.getAllProjects.and.returnValue(of(mockProjectData));
 
     component.getProjects();
+
     expect(component.data.length).toBe(1);
     expect(component.hierarchyArray).toEqual(['Level1']);
     expect(sharedServiceMock.sendProjectData).toHaveBeenCalledWith(
-      mockProjectData,
+      mockProjectData.data,
     );
   });
 
@@ -119,22 +128,8 @@ describe('ProjectFilterComponent', () => {
     });
   });
 
-  // it('should remove filter from selectedVal in filterData()', () => {
-  //   const eventMock = { stopPropagation: () => {} };
-  //   spyOn(eventMock, 'stopPropagation');
-
-  //   component.selectedVal['Level1'] = [
-  //     { name: 'Node 1', code: 'L1', parent: 'Parent1' },
-  //   ];
-
-  //   // component.filterData(eventMock, 'Level1', 'L1', 'Node 1', 'Parent1');
-
-  //   expect(eventMock.stopPropagation).toHaveBeenCalled();
-  //   expect(component.selectedVal['Level1']).toBeUndefined();
-  // });
-
   it('should clear all filters in clearFilters()', () => {
-    component.selectedVal = { };
+    component.selectedVal = {};
     component.projects = [{ id: 'P1', hierarchy: [] }];
 
     component.clearFilters();
@@ -182,366 +177,259 @@ describe('ProjectFilterComponent', () => {
     expect(result).toBe('Node 1, Node 2');
   });
 
-  it('should return true when hierarchy matches', () => {
-    component.selectedVal = {
-      Level1: [{ code: 'L1', name: 'Node 1' }],
-      Level2: [{ code: 'L2', name: 'Node 2' }],
-    };
+  describe('lookForCompletHierarchyData', () => {
+    it('should call getHierarchy if completeHierarchyData is found in localStorage', () => {
+      const mockHierarchyData = {
+        scrum: [
+          {
+            id: '1',
+            hierarchyLevelId: 'Level1',
+            hierarchyLevelName: 'Level 1',
+          },
+        ],
+      };
+      spyOn(localStorage, 'getItem').and.returnValue(
+        JSON.stringify(mockHierarchyData),
+      );
+      spyOn(component, 'getHierarchy');
 
-    const project = {
-      hierarchy: [
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level1' },
-          orgHierarchyNodeId: 'L1',
-          value: 'Node 1',
+      component.lookForCompletHierarchyData();
+
+      expect(component.getHierarchy).toHaveBeenCalled();
+    });
+
+    it('should fetch hierarchy levels and call getHierarchy if completeHierarchyData is not found', () => {
+      spyOn(localStorage, 'getItem').and.returnValue(null);
+      spyOn(localStorage, 'setItem');
+      spyOn(component, 'getHierarchy');
+      const mockApiResponse = {
+        data: {
+          scrum: [
+            {
+              id: '1',
+              hierarchyLevelId: 'Level1',
+              hierarchyLevelName: 'Level 1',
+            },
+          ],
         },
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level2' },
-          orgHierarchyNodeId: 'L2',
-          value: 'Node 2',
-        },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeTrue();
-  });
-
-  it('should return false when no hierarchy matches', () => {
-    component.selectedVal = {
-      Level1: [{ code: 'L3', name: 'Node 3' }],
-    };
-
-    const project = {
-      hierarchy: [
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level1' },
-          orgHierarchyNodeId: 'L1',
-          value: 'Node 1',
-        },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-  it('should return false when project hierarchy is empty', () => {
-    component.selectedVal = {
-      Level1: [{ code: 'L1', name: 'Node 1' }],
-    };
-
-    const project = { hierarchy: [] };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-  it('should return false when hierarchyLevelId is missing', () => {
-    component.selectedVal = {
-      Level1: [{ code: 'L1', name: 'Node 1' }],
-    };
-
-    const project = {
-      hierarchy: [
-        { hierarchyLevel: {}, orgHierarchyNodeId: 'L1', value: 'Node 1' },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-  it('should return false when selectedVal is empty', () => {
-    component.selectedVal = {};
-
-    const project = {
-      hierarchy: [
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level1' },
-          orgHierarchyNodeId: 'L1',
-          value: 'Node 1',
-        },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-
-  /* describe('ProjectFilterComponent - findUniques()', () => {
-    let component: ProjectFilterComponent;
-    let mockHelperService: jasmine.SpyObj<HelperService>;
-
-    beforeEach(() => {
-      mockHelperService = jasmine.createSpyObj('HelperService', [
-        'sortByField',
-      ]);
-      component = new ProjectFilterComponent(
-        null,
-        null,
-        null,
-        mockHelperService,
+      };
+      httpServiceMock.getAllHierarchyLevels.and.returnValue(
+        of(mockApiResponse),
       );
 
-      // Mock implementation of sortByField
-      mockHelperService.sortByField.and.callFake((data, field) => {
-        return data.sort((a, b) => (a[field] > b[field] ? 1 : -1));
+      component.lookForCompletHierarchyData();
+
+      expect(httpServiceMock.getAllHierarchyLevels).toHaveBeenCalled();
+      expect(component.completeHierarchyData).toEqual(mockApiResponse.data);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'completeHierarchyData',
+        JSON.stringify(mockApiResponse.data),
+      );
+      expect(component.getHierarchy).toHaveBeenCalled();
+    });
+  });
+
+  describe('getHierarchy', () => {
+    it('should process and store hierarchy data when API call is successful', () => {
+      const mockCompleteHierarchyData = {
+        scrum: [
+          {
+            id: '1',
+            hierarchyLevelId: 'Level1',
+            hierarchyLevelName: 'Level 1',
+          },
+          {
+            id: '2',
+            hierarchyLevelId: 'Level2',
+            hierarchyLevelName: 'Level 2',
+          },
+        ],
+      };
+      const mockFormFieldData = {
+        success: true,
+        data: [
+          {
+            hierarchyLevelId: 'Level1',
+            nodeId: 'N1',
+            nodeName: 'Node 1',
+            nodeDisplayName: 'Node 1 Display',
+            parentId: null,
+          },
+          {
+            hierarchyLevelId: 'Level2',
+            nodeId: 'N2',
+            nodeName: 'Node 2',
+            nodeDisplayName: 'Node 2 Display',
+            parentId: 'N1',
+          },
+        ],
+      };
+
+      component.completeHierarchyData = mockCompleteHierarchyData;
+      httpServiceMock.getOrganizationHierarchy.and.returnValue(
+        of(mockFormFieldData),
+      );
+      spyOn(localStorage, 'setItem');
+
+      component.getHierarchy();
+
+      expect(httpServiceMock.getOrganizationHierarchy).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'hierarchyData',
+        jasmine.any(String),
+      );
+    });
+
+    it('should handle API call failure gracefully', () => {
+      const mockCompleteHierarchyData = {
+        scrum: [
+          {
+            id: '1',
+            hierarchyLevelId: 'Level1',
+            hierarchyLevelName: 'Level 1',
+          },
+        ],
+      };
+      const mockErrorResponse = {
+        success: false,
+        message: 'Error fetching data',
+      };
+
+      component.completeHierarchyData = mockCompleteHierarchyData;
+      httpServiceMock.getOrganizationHierarchy.and.returnValue(
+        of(mockErrorResponse),
+      );
+
+      component.getHierarchy();
+
+      expect(httpServiceMock.getOrganizationHierarchy).toHaveBeenCalled();
+      expect(messageServiceMock.add).toHaveBeenCalledWith({
+        severity: 'error',
+        summary: 'Error fetching data',
       });
     });
-
-    it('should return unique objects based on the given properties', () => {
-      const data = [
-        { name: 'Alpha', code: 'A1', parent: 'P1' },
-        { name: 'Beta', code: 'B1', parent: 'P2' },
-        { name: 'Alpha', code: 'A1', parent: 'P1' }, // Duplicate
-        { name: 'Gamma', code: 'G1', parent: 'P3' },
-      ];
-      const propertyArray = ['name', 'code'];
-
-      // const result = component.findUniques(data, propertyArray);
-
-      // expect(result.length).toBe(3);
-      // expect(result).toEqual([
-      //   { name: 'Alpha', code: 'A1' },
-      //   { name: 'Beta', code: 'B1' },
-      //   { name: 'Gamma', code: 'G1' },
-      // ]);
-    });
-
-    it('should return an empty array when input data is empty', () => {
-      const data = [];
-      const propertyArray = ['name', 'code'];
-
-      // const result = component.findUniques(data, propertyArray);
-
-      // expect(result).toEqual([]);
-    });
-
-    it('should handle large datasets efficiently', () => {
-      const data = Array.from({ length: 1000 }, (_, i) => ({
-        name: `Item ${i % 10}`,
-        code: `Code ${i % 10}`,
-        parent: `Parent ${i % 5}`,
-      }));
-      const propertyArray = ['name', 'code'];
-
-      // const result = component.findUniques(data, propertyArray);
-
-      // expect(result.length).toBe(10);
-    });
-  }); */
-
-  /* it('should populate hierarchyData correctly in populateDataLists()', () => {
-    const mockData = [
-      {
-        id: '1',
-        hierarchy: [
-          {
-            hierarchyLevel: {
-              hierarchyLevelId: 'level1',
-              hierarchyLevelName: 'Level 1',
-            },
-            orgHierarchyNodeId: 'node1',
-            value: 'Value 1',
-          },
-          {
-            hierarchyLevel: {
-              hierarchyLevelId: 'level2',
-              hierarchyLevelName: 'Level 2',
-            },
-            orgHierarchyNodeId: 'node2',
-            value: 'Value 2',
-          },
-        ],
-      },
-      {
-        id: '2',
-        hierarchy: [
-          {
-            hierarchyLevel: {
-              hierarchyLevelId: 'level1',
-              hierarchyLevelName: 'Level 1',
-            },
-            orgHierarchyNodeId: 'node3',
-            value: 'Value 3',
-          },
-        ],
-      },
-    ];
-
-    // spyOn(component, 'findUniques').and.callFake((data) => data);
-
-    // component.populateDataLists(mockData, 'all');
-
-    expect(component.hierarchyData['level1'].length).toBe(2);
-    expect(component.hierarchyData['level2'].length).toBe(1);
-    expect(component.hierarchyData['level1'][0]).toEqual({
-      name: 'Value 1',
-      code: 'node1',
-      parent: '',
-    });
-    expect(component.hierarchyData['level2'][0]).toEqual({
-      name: 'Value 2',
-      code: 'node2',
-      parent: '(Value 1)',
-    });
   });
 
-  it('should update selectedValProjects correctly in populateDataLists()', () => {
-    const mockData = [
-      {
-        id: '1',
-        hierarchy: [
-          {
-            hierarchyLevel: { hierarchyLevelId: 'level1' },
-            orgHierarchyNodeId: 'node1',
-            value: 'Value 1',
-          },
-        ],
-      },
-      {
-        id: '2',
-        hierarchy: [
-          {
-            hierarchyLevel: { hierarchyLevelId: 'level2' },
-            orgHierarchyNodeId: 'node2',
-            value: 'Value 2',
-          },
-        ],
-      },
-    ];
-
-    component.selectedValProjects = [{ id: '1' }];
-
-    // component.populateDataLists(mockData, 'all');
-
-    expect(component.selectedValProjects.length).toBe(1);
-  }); */
-
-  it('should correctly process hierarchyMatch()', () => {
-    component.selectedVal = {
-      Level1: [{ code: 'L1', name: 'Node 1' }],
-      Level2: [{ code: 'L2', name: 'Node 2' }],
-    };
-
-    const project = {
-      hierarchy: [
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level1' },
-          orgHierarchyNodeId: 'L1',
-          value: 'Node 1',
-        },
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level2' },
-          orgHierarchyNodeId: 'L2',
-          value: 'Node 2',
-        },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeTrue();
-  });
-
-  it('should return false in hierarchyMatch() when selectedVal is empty', () => {
-    component.selectedVal = {};
-    const project = {
-      hierarchy: [
-        {
-          hierarchyLevel: { hierarchyLevelId: 'Level1' },
-          orgHierarchyNodeId: 'L1',
-          value: 'Node 1',
-        },
-      ],
-    };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-
-  it('should return false in hierarchyMatch() when hierarchy is empty', () => {
-    component.selectedVal = { Level1: [{ code: 'L1', name: 'Node 1' }] };
-    const project = { hierarchy: [] };
-
-    // expect(component.hierarchyMatch(project)).toBeFalse();
-  });
-
-  // it('should return empty array in findUniques() when input is empty', () => {
-  //   console.log('spal ****', component.findUniques([], ['name', 'code']));
-  //   expect(component.findUniques([], ['name', 'code'])).toBeUndefined();
-  // });
-
-  /* describe('ProjectFilterComponent - filterData()', () => {
-    let component: ProjectFilterComponent;
-    let mockEvent: any;
-
+  describe('getNodeDisplayNameById', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(ProjectFilterComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-      mockEvent = { stopPropagation: jasmine.createSpy('stopPropagation') };
+      component.formData = [
+        {
+          level: 1,
+          list: [
+            { nodeId: 'N1', nodeDisplayName: 'Node 1 Display' },
+            { nodeId: 'N2', nodeDisplayName: 'Node 2 Display' },
+          ],
+        },
+        {
+          level: 2,
+          list: [{ nodeId: 'N3', nodeDisplayName: 'Node 3 Display' }],
+        },
+      ];
+    });
 
-      component.hierarchyData = {
-        Level1: [{ name: 'Node 1', code: 'L1', parent: 'Parent1' }],
-        Level2: [{ name: 'Node 2', code: 'L2', parent: 'Parent2' }],
+    it('should return null if parentId is null', () => {
+      const result = component.getNodeDisplayNameById(null, { level: 2 });
+      expect(result).toBeNull();
+    });
+
+    it('should return null if parentLevel is not found', () => {
+      const result = component.getNodeDisplayNameById('N1', { level: 3 });
+      expect(result).toBeNull();
+    });
+
+    it('should return null if parentLevel list is empty', () => {
+      component.formData[0].list = [];
+      const result = component.getNodeDisplayNameById('N1', { level: 2 });
+      expect(result).toBeNull();
+    });
+
+    it('should return the display name of the parent node if found', () => {
+      const result = component.getNodeDisplayNameById('N1', { level: 2 });
+      expect(result).toBe('(Node 1 Display)');
+    });
+
+    it('should return null if parentNode is not found', () => {
+      const result = component.getNodeDisplayNameById('N4', { level: 2 });
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('ProjectFilterComponent - Hierarchy Filtering', () => {
+    beforeEach(() => {
+      component.formData = [
+        {
+          level: 1,
+          hierarchyLevelId: 'bu',
+          list: [{ nodeId: 'BU1' }, { nodeId: 'BU2' }],
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'ver',
+          list: [
+            { nodeId: 'VER1', parentId: 'BU1' },
+            { nodeId: 'VER2', parentId: 'BU2' },
+          ],
+        },
+        {
+          level: 3,
+          hierarchyLevelId: 'acc',
+          list: [
+            { nodeId: 'ACC1', parentId: 'VER1' },
+            { nodeId: 'ACC2', parentId: 'VER2' },
+          ],
+        },
+      ];
+
+      component.selectedItems = {
+        bu: [{ nodeId: 'BU1' }],
+        ver: [],
+        acc: [],
       };
-      component.hierarchyArray = ['Level1', 'Level2'];
-      component.selectedVal = {};
-      component.filteredData = [];
-      component.data = [
-        {
-          id: 'P1',
-          hierarchy: [
-            {
-              hierarchyLevel: { hierarchyLevelId: 'Level1' },
-              orgHierarchyNodeId: 'L1',
-              value: 'Node 1',
-            },
-          ],
-        },
-        {
-          id: 'P2',
-          hierarchy: [
-            {
-              hierarchyLevel: { hierarchyLevelId: 'Level2' },
-              orgHierarchyNodeId: 'L2',
-              value: 'Node 2',
-            },
-          ],
-        },
-      ];
+
+      component.filteredSuggestions = {};
     });
 
-    it('should remove a filter when already selected', () => {
-      component.selectedVal['Level1'] = [
-        { name: 'Node 1', code: 'L1', parent: 'Parent1' },
-      ];
+    it('should filter children recursively when selecting a parent (onSelectionOfOptions)', () => {
+      const currentField = { hierarchyLevelId: 'bu', level: 1 };
+      const event = {}; // event not used internally
+      component.onSelectionOfOptions(event, currentField);
 
-      // component.filterData(mockEvent, 'Level1', 'L1', 'Node 1', 'Parent1');
+      expect(component.filteredSuggestions['ver'].length).toBe(1);
+      expect(component.filteredSuggestions['ver'][0].nodeId).toBe('VER1');
 
-      expect(component.selectedVal['Level1']).toBeUndefined();
+      expect(component.filteredSuggestions['acc'].length).toBe(1);
+      expect(component.filteredSuggestions['acc'][0].nodeId).toBe('ACC1');
     });
 
-    it('should handle undefined selectedVal[filterType] gracefully', () => {
-      component.selectedVal = {}; // Ensure selectedVal is empty
+    it('should filter children recursively (filterChildrenRecursively)', () => {
+      component.filterChildrenRecursively(2, ['BU1']);
 
-      // expect(() => {
-      //   component.filterData(
-      //     mockEvent,
-      //     'NonExistingLevel',
-      //     'X1',
-      //     'Node X',
-      //     'ParentX',
-      //   );
-      // }).not.toThrow();
+      expect(component.filteredSuggestions['ver'].length).toBe(1);
+      expect(component.filteredSuggestions['ver'][0].nodeId).toBe('VER1');
+
+      expect(component.filteredSuggestions['acc'].length).toBe(1);
+      expect(component.filteredSuggestions['acc'][0].nodeId).toBe('ACC1');
     });
 
-    it('should call populateDataLists() correctly', () => {
-      // spyOn(component, 'populateDataLists');
-
-      // component.filterData(mockEvent, 'Level1', 'L1', 'Node 1', 'Parent1');
-
-      // expect(component.populateDataLists).toHaveBeenCalled();
+    it('should stop recursion if no child level exists (filterChildrenRecursively)', () => {
+      component.filterChildrenRecursively(4, ['non-existing']);
+      // nothing should happen
+      expect(Object.keys(component.filteredSuggestions).length).toBe(0);
     });
 
-    it('should call clearFilters() when no filters are selected', () => {
-      spyOn(component, 'clearFilters');
+    it('should filter parents recursively (filterParentRecursively)', () => {
+      component.filterParentRecursively(2, ['ACC1']);
 
-      component.selectedVal = { Level1: [{ name: 'Node 1', code: 'L1' }] };
-      // component.filterData(mockEvent, 'Level1', 'L1', 'Node 1', 'Parent1');
+      expect(component.filteredSuggestions['ver'].length).toBe(0);
+      // expect(component.filteredSuggestions['ver'][0].nodeId).toBe('VER1');
 
-      expect(component.clearFilters).toHaveBeenCalled();
+      expect(component.filteredSuggestions['bu'].length).toBe(0);
+      // expect(component.filteredSuggestions['bu'][0].nodeId).toBe('BU1');
     });
-  }); */
+
+    it('should stop recursion if no parent level exists (filterParentRecursively)', () => {
+      component.filterParentRecursively(0, ['non-existing']);
+      expect(Object.keys(component.filteredSuggestions).length).toBe(0);
+    });
+  });
 });

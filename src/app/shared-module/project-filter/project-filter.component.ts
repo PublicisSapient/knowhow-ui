@@ -55,7 +55,7 @@ export class ProjectFilterComponent implements OnInit {
     private service: SharedService,
     private messageService: MessageService,
     private helper: HelperService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getProjects();
@@ -66,6 +66,7 @@ export class ProjectFilterComponent implements OnInit {
     this.lookForCompletHierarchyData();
     this.resetDropdowns = true;
     this.httpService.getAllProjects().subscribe((projectsData) => {
+      // console.log(projectsData, 'projectsData');
       if (
         projectsData[0] !== 'error' &&
         !projectsData.error &&
@@ -79,13 +80,11 @@ export class ProjectFilterComponent implements OnInit {
         let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
         this.formData = JSON.parse(JSON.stringify(formFieldData));
 
-        for(const level of this.formData) {
+        for (const level of this.formData) {
           this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
         }
 
-        console.log(this.data, 'this.data');
         this.service.sendProjectData(this.data);
-        // this.populateDataLists(projectsData.data, 'all');
       } else {
         // show error message
         this.messageService.add({
@@ -96,293 +95,6 @@ export class ProjectFilterComponent implements OnInit {
       }
     });
   }
-
-  // populateDataLists(data, filterType, projectFilter = null) {
-  //   if (data.length) {
-  //     if (data[0].hierarchy && data[0].hierarchy.length) {
-  //       let selectedFilterValues = [];
-  //       if (filterType !== 'all') {
-  //         selectedFilterValues = this.hierarchyData[filterType];
-  //       }
-
-  //       this.hierarchyArray.forEach((h) => {
-  //         if (h !== filterType) {
-  //           this.hierarchyData[h] = [];
-  //         }
-  //       });
-
-  //       data.forEach((dataElem) => {
-  //         dataElem.hierarchy.forEach((hierarchyElem, index) => {
-  //           if (filterType === 'all') {
-  //             if (
-  //               !this.hierarchyData[
-  //                 hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //               ] ||
-  //               !this.hierarchyData[
-  //                 hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //               ].length
-  //             ) {
-  //               this.hierarchyData[
-  //                 hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //               ] = [];
-  //             }
-
-  //             this.hierarchyData[
-  //               hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //             ].push({
-  //               name: hierarchyElem.value,
-  //               code: hierarchyElem.orgHierarchyNodeId,
-  //               parent:
-  //                 index >= 1 ? `(${dataElem.hierarchy[index - 1].value})` : '',
-  //             });
-  //           } else {
-  //             if (
-  //               hierarchyElem.hierarchyLevel.hierarchyLevelId === filterType
-  //             ) {
-  //               // do nothing
-  //             } else {
-  //               if (
-  //                 !this.hierarchyData[
-  //                   hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //                 ] ||
-  //                 !this.hierarchyData[
-  //                   hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //                 ].length
-  //               ) {
-  //                 this.hierarchyData[
-  //                   hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //                 ] = [];
-  //               }
-
-  //               this.hierarchyData[
-  //                 hierarchyElem.hierarchyLevel.hierarchyLevelId
-  //               ].push({
-  //                 name: hierarchyElem.value,
-  //                 code: hierarchyElem.orgHierarchyNodeId,
-  //                 parent:
-  //                   index >= 1
-  //                     ? `(${dataElem.hierarchy[index - 1].value})`
-  //                     : '',
-  //               });
-  //             }
-  //           }
-  //         });
-  //       });
-  //     }
-  //     Object.keys(this.hierarchyData).forEach((key) => {
-  //       this.hierarchyData[key] = this.findUniques(this.hierarchyData[key], [
-  //         'name',
-  //         'code',
-  //         'parent',
-  //       ]);
-  //     });
-  //     if (!projectFilter) {
-  //       this.projects = Object.assign([], data);
-  //     }
-
-  //     const dataIdMap = data.map((d) => d.id);
-  //     const selectedValProjectsIdMap = this.selectedValProjects.map(
-  //       (d) => d.id,
-  //     );
-  //     this.selectedValProjects = [];
-  //     dataIdMap.forEach((element) => {
-  //       if (selectedValProjectsIdMap.includes(element)) {
-  //         this.selectedValProjects.push(data.filter((d) => d.id === element));
-  //       }
-  //     });
-  //   }
-  // }
-
-  // fillLevelBefore(filterType) {
-  //   this.hierarchyData[filterType] = [];
-  //   this.filteredData.forEach(element => {
-  //     let hier = element.hierarchy.map((h) => {
-  //       return {
-  //         level: h.hierarchyLevel.hierarchyLevelId,
-  //         value: h.value
-  //       }
-  //     });
-  //     let requiredHier = hier.filter(h => h.level === filterType);
-  //     this.hierarchyData[filterType].push({
-  //       name: requiredHier[0].value,
-  //       code: requiredHier[0].value
-  //     })
-  //   });
-  // }
-
-  // fillLevel(filterType) {
-  //   let data = JSON.parse(JSON.stringify(this.data));
-  //   let self = this;
-  //   Object.keys(this.selectedVal).forEach((key, index) => {
-  //     if (index < Object.keys(self.selectedVal).length - 1) {
-  //       this.fillLevelBefore(key);
-  //       data = data.filter(d => {
-  //         if (d.hierarchy.filter(h => h.hierarchyLevel.hierarchyLevelId === key).length) {
-  //           if (self.selectedVal[key].map(v => v.code).includes(d.hierarchy.filter(h => h.hierarchyLevel.hierarchyLevelId === key)[0].value)) {
-  //             return d;
-  //           }
-  //         }
-  //       });
-  //     }
-  //   });
-  //   this.hierarchyData[filterType] = [];
-  //   data.forEach(element => {
-  //     let hier = element.hierarchy.map((h) => {
-  //       return {
-  //         level: h.hierarchyLevel.hierarchyLevelId,
-  //         value: h.value
-  //       }
-  //     });
-  //     let requiredHier = hier.filter(h => h.level === filterType);
-  //     this.hierarchyData[filterType].push({
-  //       name: requiredHier[0].value,
-  //       code: requiredHier[0].value
-  //     })
-  //   });
-  // }
-
-  // findUniques(data, propertyArray) {
-  //   data = this.helper.sortByField(data, ['name']);
-  //   const seen = Object.create(null);
-  //   return data
-  //     ?.filter((o) => {
-  //       const key = propertyArray.map((k) => o[k]).join('|');
-  //       if (!seen[key]) {
-  //         seen[key] = true;
-  //         return true;
-  //       }
-  //     })
-  //     .map((proj) => {
-  //       const obj = {};
-  //       propertyArray.forEach((element) => {
-  //         obj[element] = proj[element];
-  //       });
-  //       return obj;
-  //     });
-  // }
-
-  // filterData(
-  //   event,
-  //   filterType,
-  //   filterValueCode,
-  //   filterValueName,
-  //   filterValueParent,
-  // ) {
-  //   this.valueRemoved = {};
-  //   event.stopPropagation();
-  //   this.filteredData = JSON.parse(JSON.stringify(this.data));
-  //   if (!this.selectedVal[filterType]) {
-  //     this.selectedVal[filterType] = [];
-  //   }
-  //   if (
-  //     !this.selectedVal[filterType] ||
-  //     !this.selectedVal[filterType].filter((f) => f.code === filterValueCode)
-  //       .length
-  //   ) {
-  //     const obj = {
-  //       name: filterValueName,
-  //       code: filterValueCode,
-  //       parent: filterValueParent,
-  //     };
-  //     this.selectedVal[filterType].push(obj);
-  //   } else {
-  //     this.valueRemoved['val'] = this.selectedVal[filterType].splice(
-  //       this.selectedVal[filterType].indexOf(
-  //         this.selectedVal[filterType].filter(
-  //           (f) => f.code === filterValueCode,
-  //         )[0],
-  //       ),
-  //       1,
-  //     );
-  //     if (!this.selectedVal[filterType].length) {
-  //       delete this.selectedVal[filterType];
-  //     }
-  //   }
-
-  //   this.sortFilters();
-  //   let newFilteredData = [];
-  //   if (Object.keys(this.selectedVal).length) {
-  //     Object.keys(this.selectedVal).forEach((filterType) => {
-  //       if (
-  //         this.selectedVal[filterType] &&
-  //         this.selectedVal[filterType].length
-  //       ) {
-  //         this.selectedValTemplateValue[filterType] = this.selectedVal[
-  //           filterType
-  //         ]
-  //           ?.map((s) => s.name)
-  //           .join(', ');
-  //         this.filteredData.forEach((proj) => {
-  //           if (proj.hierarchy.length) {
-  //             if (this.hierarchyMatch(proj)) {
-  //               newFilteredData.push(proj);
-  //             }
-  //           }
-  //         });
-  //       }
-  //     });
-
-  //     newFilteredData = this.findUniques(newFilteredData, [
-  //       'id',
-  //       'projectDisplayName',
-  //       'hierarchy',
-  //       'projectNodeId',
-  //     ]);
-  //     this.filteredData = newFilteredData;
-  //     if (Object.keys(this.selectedVal).length) {
-  //       this.filtersApplied = true;
-  //     } else {
-  //       this.filtersApplied = false;
-  //     }
-  //     this.populateDataLists(this.filteredData, filterType);
-
-  //     // refine selectedVal as per the filtered data
-  //     this.hierarchyArray.forEach((level) => {
-  //       const levelData = this.hierarchyData[level].map((m) => m.code);
-  //       if (this.selectedVal[level] && this.selectedVal[level].length) {
-  //         const selectedLevelData = this.selectedVal[level].map((m) => m.code);
-  //         selectedLevelData.forEach((element) => {
-  //           if (levelData.indexOf(element) === -1) {
-  //             this.selectedVal[level] = this.selectedVal[level].filter(
-  //               (f) => f.code !== element,
-  //             );
-  //           }
-  //         });
-  //       }
-  //     });
-
-  //     this.projectSelected();
-  //   } else {
-  //     this.clearFilters();
-  //   }
-  // }
-
-  // hierarchyMatch(project) {
-  //   let result = false;
-
-  //   let projHieararchy = project.hierarchy.reduce((acc, item) => {
-  //     const key = item.hierarchyLevel.hierarchyLevelId; // Extract hierarchyLevelId as key
-  //     acc[key] = {
-  //       code: item.orgHierarchyNodeId,
-  //       value: item.value,
-  //     };
-  //     return acc;
-  //   }, {});
-
-  //   Object.keys(this.selectedVal).forEach((key) => {
-  //     if (projHieararchy[key]) {
-  //       if (
-  //         this.selectedVal[key]
-  //           .map((x) => x.code)
-  //           .includes(projHieararchy[key].code)
-  //       ) {
-  //         result = true;
-  //       }
-  //     }
-  //   });
-
-  //   return result;
-  // }
 
   sortFilters() {
     const sortedFilter = {};
@@ -402,7 +114,6 @@ export class ProjectFilterComponent implements OnInit {
     });
     this.selectedValProjects = [];
     this.projects = JSON.parse(JSON.stringify(this.data));
-    // this.populateDataLists(this.data, 'all');
     this.projectSelected();
   }
 
@@ -456,11 +167,10 @@ export class ProjectFilterComponent implements OnInit {
     } else {
       this.getHierarchy();
     }
-    // console.log(this.completeHierarchyData, 'completeHierarchyData');
   }
 
   getHierarchy() {
-    const filteredHierarchyData = this.completeHierarchyData?.scrum.filter(
+    const filteredHierarchyData = this.completeHierarchyData?.scrum?.filter(
       (item) => item.id,
     );
     const hierarchyMap = filteredHierarchyData?.reduce((acc, item) => {
@@ -476,55 +186,53 @@ export class ProjectFilterComponent implements OnInit {
           severity: 'error',
           summary: formFieldData.message,
         });
-
       } else {
         const flatData = formFieldData?.data;
 
         const transformedData =
           typeof hierarchyMap === 'object'
             ? Object.entries(hierarchyMap)?.map(
-              ([hierarchyLevelId, hierarchyLevelIdName], index) => {
-                return {
-                  hierarchyLevelId,
-                  hierarchyLevelIdName,
-                  level: index + 1,
-                  list: flatData
-                    ?.filter(
-                      (item) => item.hierarchyLevelId === hierarchyLevelId,
-                    )
-                    .map(
-                      ({
-                        id,
-                        nodeId,
-                        nodeName,
-                        nodeDisplayName,
-                        hierarchyLevelId,
-                        parentId,
-                        createdDate,
-                        modifiedDate,
-                      }) => ({
-                        level: index + 1,
-                        hierarchyLevelName: hierarchyLevelIdName,
-                        id,
-                        nodeId,
-                        nodeName,
-                        nodeDisplayName,
-                        hierarchyLevelId,
-                        parentId,
-                        createdDate,
-                        ...(modifiedDate && { modifiedDate }),
-                      }),
-                    ),
-                };
-              },
-            )
+                ([hierarchyLevelId, hierarchyLevelIdName], index) => {
+                  return {
+                    hierarchyLevelId,
+                    hierarchyLevelIdName,
+                    level: index + 1,
+                    list: flatData
+                      ?.filter(
+                        (item) => item.hierarchyLevelId === hierarchyLevelId,
+                      )
+                      .map(
+                        ({
+                          id,
+                          nodeId,
+                          nodeName,
+                          nodeDisplayName,
+                          hierarchyLevelId,
+                          parentId,
+                          createdDate,
+                          modifiedDate,
+                        }) => ({
+                          level: index + 1,
+                          hierarchyLevelName: hierarchyLevelIdName,
+                          id,
+                          nodeId,
+                          nodeName,
+                          nodeDisplayName,
+                          hierarchyLevelId,
+                          parentId,
+                          createdDate,
+                          ...(modifiedDate && { modifiedDate }),
+                        }),
+                      ),
+                  };
+                },
+              )
             : [];
 
         localStorage.setItem(
           'hierarchyData',
           JSON.stringify(transformedData, null, 2),
         );
-        // console.log(transformedData, 'transformedData');
       }
     });
   }
@@ -534,14 +242,14 @@ export class ProjectFilterComponent implements OnInit {
 
     // Find the level just above the current one
     const parentLevel = this.formData.find(
-      (level) => level.level === currentField.level - 1
+      (level) => level.level === currentField.level - 1,
     );
 
     if (!parentLevel || !parentLevel.list) return null;
 
     // Find the parent node
     const parentNode = parentLevel.list.find(
-      (item) => item.nodeId === parentId
+      (item) => item.nodeId === parentId,
     );
 
     return parentNode ? `(${parentNode.nodeDisplayName})` : null;
@@ -554,38 +262,16 @@ export class ProjectFilterComponent implements OnInit {
     const selected = this.selectedItems[currentLevelId] || [];
 
     // -- Filter Child level -- //
-    this.filterChildrenRecursively(currentLevel + 1, selected.map((item) => item.nodeId));
-    /* const childField = this.formData.find(
-      (level) => level.level === currentLevel + 1
+    this.filterChildrenRecursively(
+      currentLevel + 1,
+      selected.map((item) => item.nodeId),
     );
-    if (childField) {
-      const childList = childField.list || [];
-      const parentNodeIds = selected.map((item) => item.nodeId);
-
-      const filteredChildList = childList.filter((child: any) =>
-        parentNodeIds.includes(child.parentId)
-      );
-
-      this.filteredSuggestions[childField.hierarchyLevelId] = filteredChildList;  */
 
     // -- Filter parent level -- //
-    this.filterParentRecursively(currentLevel - 1, selected.map((item) => item.parentId));
-      /* const parentField = this.formData.find(
-        (level) => level.level === currentLevel - 1
-      );
-      if (parentField) {
-        const parentList = parentField.list || [];
-        const childParentIds = selected.map((item) => item.parentId);
-
-        const filteredParentList = parentList.filter((parent: any) =>
-          childParentIds.includes(parent.nodeId)
-        );
-
-        this.filteredSuggestions[parentField.hierarchyLevelId] =
-          filteredParentList;
-      }
-
-    } */
+    this.filterParentRecursively(
+      currentLevel - 1,
+      selected.map((item) => item.parentId),
+    );
   }
 
   filterChildrenRecursively(level: number, parentNodeIds: string[]): void {
@@ -597,14 +283,17 @@ export class ProjectFilterComponent implements OnInit {
 
     // Filter the child list based on the parent node IDs
     const filteredChildList = childList.filter((child: any) =>
-      parentNodeIds.includes(child.parentId)
+      parentNodeIds.includes(child.parentId),
     );
 
+    // console.log('childField.hierarchyLevelId', childField.hierarchyLevelId);
     this.filteredSuggestions[childField.hierarchyLevelId] = filteredChildList;
 
     // Recursively filter the next level's children
     const nextLevel = level + 1;
-    const nextParentNodeIds = filteredChildList.map((child: any) => child.nodeId);
+    const nextParentNodeIds = filteredChildList.map(
+      (child: any) => child.nodeId,
+    );
     this.filterChildrenRecursively(nextLevel, nextParentNodeIds);
   }
 
@@ -617,14 +306,17 @@ export class ProjectFilterComponent implements OnInit {
 
     // Filter the parent list based on the child node IDs
     const filteredParentList = parentList.filter((parent: any) =>
-      childNodeIds.includes(parent.nodeId)
+      childNodeIds.includes(parent.nodeId),
     );
 
+    // console.log('parentField.hierarchyLevelId', parentField.hierarchyLevelId);
     this.filteredSuggestions[parentField.hierarchyLevelId] = filteredParentList;
 
     // Recursively filter the next level's parents
     const nextLevel = level - 1;
-    const nextChildNodeIds = filteredParentList.map((parent: any) => parent.parentId);
+    const nextChildNodeIds = filteredParentList.map(
+      (parent: any) => parent.parentId,
+    );
     this.filterParentRecursively(nextLevel, nextChildNodeIds);
   }
 }
