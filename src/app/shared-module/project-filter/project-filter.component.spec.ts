@@ -432,4 +432,144 @@ describe('ProjectFilterComponent', () => {
       expect(Object.keys(component.filteredSuggestions).length).toBe(0);
     });
   });
+
+  describe('resetLevelsFrom', () => {
+    beforeEach(() => {
+      component.formData = [
+        {
+          level: 1,
+          hierarchyLevelId: 'Level1',
+          list: [{ nodeId: '1' }, { nodeId: '2' }],
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'Level2',
+          list: [
+            { nodeId: '3', parentId: '1' },
+            { nodeId: '4', parentId: '2' },
+          ],
+        },
+      ];
+
+      component.selectedItems = {
+        Level1: [{ nodeId: '1' }],
+        Level2: [{ nodeId: '3' }],
+      };
+
+      component.filteredSuggestions = {
+        Level1: [],
+        Level2: [],
+      };
+    });
+
+    it('should reset filteredSuggestions and selectedItems from specified level', () => {
+      component.resetLevelsFrom(1);
+
+      expect(component.filteredSuggestions['Level1']).toEqual(
+        component.formData[0].list,
+      );
+      expect(component.filteredSuggestions['Level2']).toEqual(
+        component.formData[1].list,
+      );
+
+      expect(component.selectedItems['Level1']).toEqual([]);
+      expect(component.selectedItems['Level2']).toEqual([]);
+    });
+
+    it('should not reset levels above the specified level', () => {
+      component.resetLevelsFrom(2);
+
+      expect(component.filteredSuggestions['Level1']).toEqual([]); // unchanged
+      expect(component.filteredSuggestions['Level2']).toEqual(
+        component.formData[1].list,
+      );
+
+      expect(component.selectedItems['Level1']).toEqual([{ nodeId: '1' }]); // unchanged
+      expect(component.selectedItems['Level2']).toEqual([]);
+    });
+  });
+
+  describe('clearSelectionsFrom', () => {
+    beforeEach(() => {
+      component.formData = [
+        { level: 1, hierarchyLevelId: 'Level1' },
+        { level: 2, hierarchyLevelId: 'Level2' },
+        { level: 3, hierarchyLevelId: 'Level3' },
+      ];
+
+      component.selectedItems = {
+        Level1: [{ nodeId: '1' }],
+        Level2: [{ nodeId: '2' }],
+        Level3: [{ nodeId: '3' }],
+      };
+    });
+
+    it('should clear selections from specified level downward', () => {
+      component.clearSelectionsFrom(2);
+
+      expect(component.selectedItems['Level1']).toEqual([{ nodeId: '1' }]); // unchanged
+      expect(component.selectedItems['Level2']).toEqual([]);
+      expect(component.selectedItems['Level3']).toEqual([]);
+    });
+
+    it('should clear all selections when starting from level 1', () => {
+      component.clearSelectionsFrom(1);
+
+      expect(component.selectedItems['Level1']).toEqual([]);
+      expect(component.selectedItems['Level2']).toEqual([]);
+      expect(component.selectedItems['Level3']).toEqual([]);
+    });
+  });
+
+  describe('onSelectionOfOptions', () => {
+    beforeEach(() => {
+      component.formData = [
+        { level: 1, hierarchyLevelId: 'bu', list: [{ nodeId: 'BU1' }] },
+        {
+          level: 2,
+          hierarchyLevelId: 'ver',
+          list: [{ nodeId: 'VER1', parentId: 'BU1' }],
+        },
+        {
+          level: 3,
+          hierarchyLevelId: 'acc',
+          list: [{ nodeId: 'ACC1', parentId: 'VER1' }],
+        },
+      ];
+
+      component.filteredSuggestions = {
+        bu: [...component.formData[0].list],
+        ver: [...component.formData[1].list],
+        acc: [...component.formData[2].list],
+      };
+    });
+
+    it('should call resetLevelsFrom and clearSelectionsFrom if nothing is selected', () => {
+      const currentField = { level: 1, hierarchyLevelId: 'bu' };
+      component.selectedItems = { bu: [] }; // nothing selected
+
+      spyOn(component, 'resetLevelsFrom');
+      spyOn(component, 'clearSelectionsFrom');
+
+      component.onSelectionOfOptions({}, currentField);
+
+      expect(component.resetLevelsFrom).toHaveBeenCalledWith(1);
+      expect(component.clearSelectionsFrom).toHaveBeenCalledWith(2);
+    });
+
+    it('should filter children and parents if there is a selection', () => {
+      const currentField = { level: 1, hierarchyLevelId: 'bu' };
+      component.selectedItems = { bu: [{ nodeId: 'BU1', parentId: null }] };
+
+      spyOn(component, 'filterChildrenRecursively');
+      spyOn(component, 'filterParentRecursively');
+
+      component.onSelectionOfOptions({}, currentField);
+
+      expect(component.filterChildrenRecursively).toHaveBeenCalledWith(2, [
+        'BU1',
+      ]);
+      expect(component.filterParentRecursively).toHaveBeenCalledWith(0, [null]);
+    });
+  });
 });

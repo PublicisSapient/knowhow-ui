@@ -74,7 +74,7 @@
       <p-multiSelect inputId="{{ field.hierarchyLevelId }}"
         [options]="filteredSuggestions[field.hierarchyLevelId] || field.list"
         [(ngModel)]="selectedItems[field.hierarchyLevelId]" filter="true" defaultLabel="Select {{ field.hierarchyLevelName }}" optionLabel="nodeDisplayName"
-        class="multiselect-custom" [showToggleAll]="false" (onChange)="onSelectionOfOptions($event, field)" [selectionLimit]="6" [selectedItemsLabel]="'{0} selected'">
+        class="multiselect-custom" [showToggleAll]="false" (onChange)="onSelectionOfOptions($event, field)">
         <ng-template let-hierarchy pTemplate="item">
           <div class="option">
             {{hierarchy.nodeDisplayName}}
