@@ -96,6 +96,12 @@ export class ProjectFilterComponent implements OnInit {
     });
   }
 
+  resetFiltersSuggestionsToAll() {
+    for (const level of this.formData) {
+      this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
+    }
+  }
+
   sortFilters() {
     const sortedFilter = {};
     this.hierarchyArray.forEach((filterType) => {
@@ -255,23 +261,55 @@ export class ProjectFilterComponent implements OnInit {
     return parentNode ? `(${parentNode.nodeDisplayName})` : null;
   }
 
+  // -- Resets dropdown options from a given level downwards: -- //
+  resetLevelsFrom(level: number): void {
+    for (const levelObj of this.formData) {
+      if (levelObj.level >= level) {
+        const levelId = levelObj.hierarchyLevelId;
+
+        // Reset the filtered suggestions to the full list
+        this.filteredSuggestions[levelId] = [...(levelObj.list || [])];
+
+        // Also reset selection (optional, but often needed)
+        if (this.selectedItems[levelId]) {
+          this.selectedItems[levelId] = [];
+        }
+      }
+    }
+  }
+
+  // -- Clears selected items from a given level downwards: -- //
+  clearSelectionsFrom(level: number): void {
+    for (const levelObj of this.formData) {
+      if (levelObj.level >= level) {
+        this.selectedItems[levelObj.hierarchyLevelId] = [];
+      }
+    }
+  }
+
   onSelectionOfOptions(event: any, currentField: any): void {
-    // console.log(event, currentField);
     const currentLevel = currentField.level;
     const currentLevelId = currentField.hierarchyLevelId;
     const selected = this.selectedItems[currentLevelId] || [];
 
-    // -- Filter Child level -- //
-    this.filterChildrenRecursively(
-      currentLevel + 1,
-      selected.map((item) => item.nodeId),
-    );
+    console.log('selected length', selected.length);
 
-    // -- Filter parent level -- //
-    this.filterParentRecursively(
-      currentLevel - 1,
-      selected.map((item) => item.parentId),
-    );
+    // --- IF NOTHING is selected in this field --- //
+    if (selected.length === 0) {
+      // Case 1: If a parent level is deselected (levels 1, 2, 3, or 4)
+      this.resetLevelsFrom(currentLevel); // Resets this level and all below
+      this.clearSelectionsFrom(currentLevel + 1); // Clears selections below
+    } else {
+      // Case 2: Normal bi-directional filtering
+      this.filterChildrenRecursively(
+        currentLevel + 1,
+        selected.map((item) => item.nodeId),
+      );
+      this.filterParentRecursively(
+        currentLevel - 1,
+        selected.map((item) => item.parentId),
+      );
+    }
   }
 
   filterChildrenRecursively(level: number, parentNodeIds: string[]): void {
