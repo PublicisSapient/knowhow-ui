@@ -106,7 +106,7 @@
                     {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}
                   </ng-container>
                   <ng-container *ngSwitchCase="'date'">
-                    {{rowData[column] | isoDateFormat}}
+                    {{rowData[column] | isoDateFormat | UtcToLocalUserTimeZone}}
                   </ng-container>
                 </ng-container>
               </td>
