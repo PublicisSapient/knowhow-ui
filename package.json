@@ -1,6 +1,6 @@
 {
     "name": "dashboard",
-    "version": "13.1.1",
+    "version": "13.1.0",
     "scripts":     {
         "ng": "ng",
         "start": "concurrently \"node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange 'src/**/*.{ts,css}' -- prettier --write --ignore-unknown {{changed}}\"",
