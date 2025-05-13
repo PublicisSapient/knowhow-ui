@@ -84,7 +84,7 @@
       </p-multiSelect>
     </div>
   </div>
-  <div class="p-sm-12" *ngIf="filtersApplied || selectedValProjects.length">
+  <div class="p-sm-12" *ngIf="filtersApplied">
     <button pButton type="button" label="Remove Filters" icon="pi pi-filter-slash" class="p-button-text p-button-danger"
       (click)="clearFilters()" (keydown.enter)="clearFilters()" aria-label="Clear all applied filters"></button>
   </div>
