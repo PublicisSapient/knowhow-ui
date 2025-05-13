@@ -83,6 +83,7 @@ export class KpiHelperService {
             ? 1
             : -1),
         color: color[index % color.length],
+        otherTootipInfo: this.getOtherInfo(filteredIssues, category, key),
       });
     });
 
@@ -104,6 +105,29 @@ export class KpiHelperService {
     }
 
     return { chartData, totalCount };
+  }
+
+  getOtherInfo(filterdata, categoryInfo, key) {
+    const list = [];
+
+    categoryInfo?.scopeDuration?.forEach((duration) => {
+      let value = 0;
+      const IssueFilterByDuration = filterdata.filter((issue) =>
+        issue['scopeDuration'].includes(duration),
+      );
+      if (key) {
+        value = IssueFilterByDuration.reduce(
+          (sum, issue) => sum + issue[key],
+          0,
+        );
+        list.push(`Last ${duration} days: ${value} SP`);
+      } else {
+        value = IssueFilterByDuration.length;
+        list.push(`Last ${duration} days: ${value} `);
+      }
+    });
+
+    return list;
   }
 
   stackedChartData(inputData: any, color: any, key: string) {
