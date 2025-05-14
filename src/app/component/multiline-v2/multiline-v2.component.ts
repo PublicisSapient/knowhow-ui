@@ -60,6 +60,8 @@ export class MultilineV2Component implements OnChanges {
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
   hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   elemObserver = new ResizeObserver(() => {
     this.draw();
@@ -631,15 +633,12 @@ export class MultilineV2Component implements OnChanges {
         .attr('transform', 'rotate(0)')
         .attr('font-size', '12px');
 
-      if (this.xCaption) {
-        XCaption.text(this.xCaption);
-      } else {
-        XCaption.text('Sprints');
-      }
+      this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+      XCaption.text(this.xCaption);
 
-      if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
+      /* if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
         XCaption.text('Months');
-      }
+      } */
 
       // this is used for adding horizontal lines in graph
       const YCaption = svgY
@@ -655,12 +654,8 @@ export class MultilineV2Component implements OnChanges {
         .style('margin-left', '-25px');
 
       // adding yaxis caption
-
-      if (this.yCaption) {
-        YCaption.text(this.yCaption);
-      } else {
-        YCaption.text('Values');
-      }
+      this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+      YCaption.text(this.yCaption);
 
       // threshold line
       if (thresholdValue && thresholdValue !== '') {
