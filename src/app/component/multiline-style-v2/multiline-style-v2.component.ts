@@ -50,6 +50,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   height: number = 0;
   @Input() viewType: string = 'chart';
   hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
@@ -359,11 +361,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('fill', '#437495')
       .attr('font-size', '12px');
 
-    if (this.xCaption) {
-      XCaption.text(this.xCaption);
-    } else {
-      XCaption.text('Sprints');
-    }
+    this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    XCaption.text(this.xCaption);
 
     if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
       XCaption.text('Months');
@@ -382,12 +381,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('font-size', '12px');
 
     // adding yaxis caption
-
-    if (this.yCaption) {
-      YCaption.text(this.yCaption);
-    } else {
-      YCaption.text('Values');
-    }
+    this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+    YCaption.text(this.yCaption);
 
     // threshold line
     if (thresholdValue && thresholdValue !== '') {
