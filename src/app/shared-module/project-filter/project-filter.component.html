@@ -16,8 +16,8 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<div class="p-grid filter-grid" role="form" aria-label="Project and Hierarchy Filters">
-  <div class="p-sm-6" *ngFor="let field of data[0]?.hierarchy">
+<div class="p-grid filter-grid">
+  <!-- <div class="p-sm-6" *ngFor="let field of data[0]?.hierarchy">
     <div class="ui-float-label">
       <label for="{{ field.hierarchyLevel.hierarchyLevelId }}" tabindex="0" id="{{ field.hierarchyLevel.hierarchyLevelId }}">Select {{ field.hierarchyLevel.hierarchyLevelName
         }}</label>
@@ -45,9 +45,9 @@
         </ng-template>
       </p-multiSelect>
     </div>
-  </div>
+  </div> -->
 
-  <div class="p-sm-12">
+  <!-- <div class="p-sm-12">
     <div class="ui-float-label">
       <label for="project" tabindex="0" id="project-label">Select Projects</label>
       <p-multiSelect *ngIf="resetDropdowns" class="multiselect-custom" appendTo="body" inputId="project"
@@ -56,17 +56,35 @@
         aria-labelledby="project-label" role="listbox">
         <ng-template let-item pTemplate="item">
           <div class="option"
-          role="option" 
+          role="option"
             tabindex="0"
             aria-label="{{ item.projectDisplayName }} in {{ item.hierarchy[item.hierarchy.length - 1].value }}">
             {{item.projectDisplayName}}
-            <span class="parent_item" style="color:green;" aria-label="Hierarchy: {{ item.hierarchy[item.hierarchy.length - 1].value }}"> ({{ item.hierarchy[item.hierarchy.length - 1].value }}) </span>
+            <span class="parent_item" style="color:green;"> ({{ item.hierarchy[item.hierarchy.length - 1].value }}) </span>
+          </div>
+        </ng-template>
+      </p-multiSelect>
+    </div>
+  </div> -->
+
+  <div class="p-sm-6" *ngFor="let field of formData">
+    <div class="ui-float-label">
+      <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName
+        }}</label>
+      <p-multiSelect inputId="{{ field.hierarchyLevelId }}"
+        [options]="filteredSuggestions[field.hierarchyLevelId] || field.list"
+        [(ngModel)]="selectedItems[field.hierarchyLevelId]" filter="true" defaultLabel="Select {{ field.hierarchyLevelName }}" optionLabel="nodeDisplayName"
+        class="multiselect-custom" [showToggleAll]="false" (onChange)="onSelectionOfOptions($event, field)">
+        <ng-template let-hierarchy pTemplate="item">
+          <div class="option">
+            {{hierarchy.nodeDisplayName}}
+            <span class="parent_item" style="color:green;"> {{ getNodeDisplayNameById(hierarchy.parentId, hierarchy) }} </span>
           </div>
         </ng-template>
       </p-multiSelect>
     </div>
   </div>
-  <div class="p-sm-12" *ngIf="filtersApplied || selectedValProjects.length">
+  <div class="p-sm-12" *ngIf="filtersApplied">
     <button pButton type="button" label="Remove Filters" icon="pi pi-filter-slash" class="p-button-text p-button-danger"
       (click)="clearFilters()" (keydown.enter)="clearFilters()" aria-label="Clear all applied filters"></button>
   </div>
