@@ -59,6 +59,7 @@ export class MultilineV2Component implements OnChanges {
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
+  hierarchyLevel: string = '';
 
   elemObserver = new ResizeObserver(() => {
     this.draw();
@@ -80,6 +81,9 @@ export class MultilineV2Component implements OnChanges {
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   ngAfterViewInit(): void {
@@ -1001,6 +1005,7 @@ export class MultilineV2Component implements OnChanges {
       content.scrollLeft += width;
 
       if (
+        this.hierarchyLevel === 'project' &&
         kpiId !== 'kpi166' &&
         kpiId !== 'kpi156' &&
         kpiId !== 'kpi116' &&

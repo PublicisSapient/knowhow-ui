@@ -49,6 +49,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   sprintList: Array<any> = [];
   height: number = 0;
   @Input() viewType: string = 'chart';
+  hierarchyLevel: string = '';
 
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
@@ -68,6 +69,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   // Runs when property "data" changed
@@ -744,6 +748,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     content.scrollLeft += width;
 
     if (
+      this.hierarchyLevel === 'project' &&
       kpiId !== 'kpi166' &&
       kpiId !== 'kpi156' &&
       kpiId !== 'kpi116' &&
