@@ -42,7 +42,6 @@
                   <div class="info-block-container">
                     <div class="info-block" *ngFor="let item of request.accessNode.accessItems"
                       title="{{ item.itemName }}">
-                      {{request.accessNode.accessLevel | uppercase }} : {{ item.nodeDisplayName }}
                       {{ (item.itemName.length>25)? (item.itemName.substring(0,24) + "...")
                       :(item.itemName) }}
                     </div>
