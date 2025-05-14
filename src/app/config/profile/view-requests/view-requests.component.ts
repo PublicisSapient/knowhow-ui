@@ -108,7 +108,7 @@ export class ViewRequestsComponent implements OnInit {
           'You cannot modify the role for SUPERADMIN requests as there is no project. You can only accept or reject this request.',
       });
     } else {
-      console.log('superadmin');
+      console.log('superadmin', obj, requestData);
       this.accessRequestsRequest = this.httpService
         .updateAccessRequest(obj, requestData['id'])
         .subscribe((requests) => {
