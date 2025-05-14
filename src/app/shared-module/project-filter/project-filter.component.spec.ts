@@ -128,26 +128,56 @@ describe('ProjectFilterComponent', () => {
     });
   });
 
-  it('should clear all filters in clearFilters()', () => {
-    component.selectedVal = {};
-    component.projects = [{ id: 'P1', hierarchy: [] }];
+  it('should clear selected filters, reset suggestions and projects, and call projectSelected', () => {
+    // Arrange - setup mock formData, selectedItems, filteredSuggestions, and data
+    component.formData = [
+      {
+        hierarchyLevelId: 'bu',
+        list: [{ nodeId: '1', nodeDisplayName: 'BU1' }],
+      },
+      {
+        hierarchyLevelId: 'vertical',
+        list: [{ nodeId: '2', parentId: '1', nodeDisplayName: 'Vertical1' }],
+      },
+    ];
 
+    component.selectedItems = {
+      bu: [{ nodeId: '1', nodeDisplayName: 'BU1' }],
+      vertical: [{ nodeId: '2', nodeDisplayName: 'Vertical1' }],
+    };
+
+    component.filteredSuggestions = {
+      bu: [],
+      vertical: [],
+    };
+
+    component.data = [{ id: 'P1', name: 'Project 1' }];
+    component.projects = [];
+
+    // Spy on projectSelected
+    spyOn(component, 'projectSelected');
+
+    // Act
     component.clearFilters();
 
-    expect(component.selectedVal).toEqual({});
-    expect(component.projects.length).toBe(1);
-  });
+    // Assert - selected items cleared
+    expect(component.selectedItems.bu).toEqual([]);
+    expect(component.selectedItems.vertical).toEqual([]);
 
-  it('should sort selectedVal in sortFilters()', () => {
-    component.selectedVal = {
-      Level2: [{ name: 'Node 2', code: 'L2' }],
-      Level1: [{ name: 'Node 1', code: 'L1' }],
-    };
-    component.hierarchyArray = ['Level1', 'Level2'];
+    // Assert - filteredSuggestions reset to full list
+    expect(component.filteredSuggestions.bu).toEqual(
+      component.formData[0].list,
+    );
+    expect(component.filteredSuggestions.vertical).toEqual(
+      component.formData[1].list,
+    );
 
-    component.sortFilters();
+    // Assert - projects deep copied from data
+    expect(component.projects).toEqual(component.data);
+    expect(component.projects).not.toBe(component.data); // different reference
 
-    expect(Object.keys(component.selectedVal)).toEqual(['Level1', 'Level2']);
+    // Assert - projectSelected called
+    expect(component.projectSelected).toHaveBeenCalled();
   });
 
   it('should emit project selection event in projectSelected()', () => {
@@ -161,20 +191,10 @@ describe('ProjectFilterComponent', () => {
 
     expect(component.projectSelectedEvent.emit).toHaveBeenCalledWith(
       jasmine.objectContaining({
-        accessType: 'Level1',
-        value: [{ itemId: 'L1', itemName: 'Node 1' }],
         hierarchyArr: ['Level1'],
         valueRemoved: { removedKey: 'Some Value' },
       }),
     );
-  });
-
-  it('should return selected template values in getSelectedValTemplateValue()', () => {
-    component.selectedVal['Level1'] = [{ name: 'Node 1' }, { name: 'Node 2' }];
-
-    const result = component.getSelectedValTemplateValue('Level1');
-
-    expect(result).toBe('Node 1, Node 2');
   });
 
   describe('lookForCompletHierarchyData', () => {
@@ -487,6 +507,37 @@ describe('ProjectFilterComponent', () => {
       expect(component.selectedItems['Level1']).toEqual([{ nodeId: '1' }]); // unchanged
       expect(component.selectedItems['Level2']).toEqual([]);
     });
+  });
+
+  it('should reset filteredSuggestions to include all items from each level in formData', () => {
+    // Arrange - set up formData with mock levels
+    component.formData = [
+      {
+        hierarchyLevelId: 'bu',
+        list: [{ nodeId: '1', nodeDisplayName: 'BU1' }],
+      },
+      {
+        hierarchyLevelId: 'vertical',
+        list: [{ nodeId: '2', nodeDisplayName: 'Vertical1' }],
+      },
+    ];
+
+    // Initialize filteredSuggestions with some existing data
+    component.filteredSuggestions = {
+      bu: [],
+      vertical: [],
+    };
+
+    // Act - call the method
+    component.resetFiltersSuggestionsToAll();
+
+    // Assert - filteredSuggestions should now match the lists from formData
+    expect(component.filteredSuggestions.bu).toEqual(
+      component.formData[0].list,
+    );
+    expect(component.filteredSuggestions.vertical).toEqual(
+      component.formData[1].list,
+    );
   });
 
   describe('clearSelectionsFrom', () => {

@@ -102,48 +102,48 @@ export class ProjectFilterComponent implements OnInit {
     }
   }
 
-  sortFilters() {
-    const sortedFilter = {};
-    this.hierarchyArray.forEach((filterType) => {
-      if (this.selectedVal[filterType]) {
-        sortedFilter[filterType] = this.selectedVal[filterType];
-      }
-    });
-    this.selectedVal = sortedFilter;
-  }
-
   clearFilters() {
-    this.valueRemoved['val'] = JSON.parse(JSON.stringify(this.selectedVal));
-    this.filtersApplied = false;
-    Object.keys(this.hierarchyData).forEach((key) => {
-      delete this.selectedVal[key];
-    });
-    this.selectedValProjects = [];
+    for (const key in this.selectedItems) {
+      if (Array.isArray(this.selectedItems[key])) {
+        this.selectedItems[key] = [];
+      }
+    }
+    this.resetFiltersSuggestionsToAll();
     this.projects = JSON.parse(JSON.stringify(this.data));
     this.projectSelected();
   }
 
   projectSelected() {
     const obj: any = {};
+    this.selectedValProjects = this.selectedItems['project'];
     if (!this.selectedValProjects || !this.selectedValProjects.length) {
+      console.log('No project selected');
       this.hierarchyArray.forEach((hierarchy) => {
-        if (this.selectedVal[hierarchy] && this.selectedVal[hierarchy].length) {
+        console.log('hierarchy', hierarchy);
+        if (
+          this.selectedItems[hierarchy] &&
+          this.selectedItems[hierarchy].length
+        ) {
           obj['accessType'] = hierarchy;
           obj['value'] = [];
-          const selectedHierarchyArr = this.selectedVal[hierarchy].map(
-            (item) => ({
-              itemId: item.code,
-              itemName: item.name,
-            }),
+          const selectedHierarchyArr = this.selectedItems[hierarchy].map(
+            (item) => {
+              console.log('item', item);
+              return {
+                itemId: item.id,
+                itemName: item.nodeDisplayName,
+              };
+            },
           );
           obj['value'] = [...selectedHierarchyArr];
         }
       });
     } else {
+      console.log('Project selected');
       obj['accessType'] = 'project';
       obj['value'] = this.selectedValProjects.map((item) => ({
-        itemId: item.projectNodeId,
-        itemName: item.projectDisplayName,
+        itemId: item.id,
+        itemName: item.nodeDisplayName,
       }));
     }
     obj['hierarchyArr'] = this.hierarchyArray;
@@ -151,9 +151,9 @@ export class ProjectFilterComponent implements OnInit {
     this.projectSelectedEvent.emit(obj);
   }
 
-  getSelectedValTemplateValue(hierarchyLevelId) {
-    return this.selectedVal[hierarchyLevelId]?.map((s) => s.name).join(', ');
-  }
+  // getSelectedValTemplateValue(hierarchyLevelId) {
+  //   return this.selectedVal[hierarchyLevelId]?.map((s) => s.name).join(', ');
+  // }
 
   lookForCompletHierarchyData() {
     this.completeHierarchyData = JSON.parse(
@@ -288,18 +288,19 @@ export class ProjectFilterComponent implements OnInit {
   }
 
   onSelectionOfOptions(event: any, currentField: any): void {
+    this.projectSelected();
     const currentLevel = currentField.level;
     const currentLevelId = currentField.hierarchyLevelId;
     const selected = this.selectedItems[currentLevelId] || [];
 
-    console.log('selected length', selected.length);
-
     // --- IF NOTHING is selected in this field --- //
     if (selected.length === 0) {
+      this.filtersApplied = false;
       // Case 1: If a parent level is deselected (levels 1, 2, 3, or 4)
       this.resetLevelsFrom(currentLevel); // Resets this level and all below
       this.clearSelectionsFrom(currentLevel + 1); // Clears selections below
     } else {
+      this.filtersApplied = true;
       // Case 2: Normal bi-directional filtering
       this.filterChildrenRecursively(
         currentLevel + 1,
