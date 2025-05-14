@@ -136,12 +136,10 @@ export class ProjectFilterComponent implements OnInit {
       });
     } else {
       obj['accessType'] = 'project';
-      obj['value'] = this.selectedValProjects.map((item) => {
-        return {
-          itemId: item.nodeId,
-          itemName: item.nodeDisplayName,
-        };
-      });
+      obj['value'] = this.selectedValProjects.map((item) => ({
+        itemId: item.nodeId,
+        itemName: item.nodeDisplayName,
+      }));
     }
     obj['hierarchyArr'] = this.hierarchyArray;
     obj['valueRemoved'] = this.valueRemoved;
