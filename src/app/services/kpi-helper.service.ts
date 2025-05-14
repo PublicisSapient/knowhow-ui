@@ -113,7 +113,7 @@ export class KpiHelperService {
     categoryInfo?.scopeDuration?.forEach((duration) => {
       let value = 0;
       const IssueFilterByDuration = filterdata.filter((issue) =>
-        issue['scopeDuration'].includes(duration),
+        issue?.['scopeDuration']?.includes(duration),
       );
       if (key) {
         value = IssueFilterByDuration.reduce(
