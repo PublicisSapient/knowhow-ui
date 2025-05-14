@@ -345,6 +345,19 @@ export class ToolMenuComponent implements OnInit {
                   (tool) => tool.toolName === 'ArgoCD',
                 )[0]?.updatedAt,
               },
+              {
+                toolName: 'Rally',
+                category: 'Project Management',
+                description: '-',
+                icon: 'fab fa-atlassian',
+                routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
+                queryParams1: 'Rally',
+                routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
+                index: 14,
+                connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.connectionName,
+                updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.updatedAt
+              }
+
             ];
           }
 

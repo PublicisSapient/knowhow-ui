@@ -31,6 +31,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 interface JiraConnectionField {
   type: string;
@@ -61,6 +62,7 @@ interface JiraConnectionField {
 })
 export class ConnectionListComponent implements OnInit {
   basicConnectionForm: UntypedFormGroup;
+  rallyEnabled: boolean = false;
   addEditConnectionFieldsNlabels = [
     {
       connectionType: 'Jira',
@@ -424,7 +426,7 @@ export class ConnectionListComponent implements OnInit {
         'accessToken',
         'sharedConnection',
       ],
-    },
+    }
   ];
 
   enableDisableOnToggle = {
@@ -839,8 +841,8 @@ export class ConnectionListComponent implements OnInit {
     private sharedService: SharedService,
     private helper: HelperService,
     private route: ActivatedRoute,
-    public router: Router,
-  ) {}
+    public router: Router,private featureFlagService: FeatureFlagsService) {
+  }
 
   ngOnInit(): void {
     this.roleAccessAssign();
@@ -863,13 +865,9 @@ export class ConnectionListComponent implements OnInit {
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
     }) */
-    this.selectedToolName =
-      this.selectedToolName !== undefined
-        ? this.selectedToolName
-        : this.addEditConnectionFieldsNlabels[0].connectionType;
-    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(
-      (el) => el.connectionLabel === this.selectedToolName,
-    )[0]?.connectionType;
+    this.selectedToolName = this.selectedToolName !== undefined ? this.selectedToolName : this.addEditConnectionFieldsNlabels[0].connectionType;
+    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(el => el.connectionLabel === this.selectedToolName)[0]?.connectionType;
+    this.enableRally();
   }
 
   initializeForms(connection, isEdit?) {
@@ -1925,30 +1923,20 @@ export class ConnectionListComponent implements OnInit {
             },
           );
         break;
-      case 'ArgoCD':
-        this.testConnectionService
-          .testArgoCD(
-            reqData['baseUrl'],
-            reqData['username'],
-            reqData['accessToken'],
-          )
-          .subscribe(
-            (next) => {
-              if (next.success && next.data === 200) {
-                this.testConnectionMsg = 'Valid Connection';
-                this.testConnectionValid = true;
-              } else {
-                this.testConnectionMsg = 'Connection Invalid';
-                this.testConnectionValid = false;
-              }
-              this.testingConnection = false;
-            },
-            (error) => {
-              this.testConnectionMsg = 'Connection Invalid';
-              this.testConnectionValid = false;
-              this.testingConnection = false;
-            },
-          );
+      case 'Rally': this.testConnectionService.testRally(reqData['baseUrl'], reqData['accessToken']).subscribe(next => {
+        if (next.success && next.data === 200) {
+          this.testConnectionMsg = 'Valid Connection';
+          this.testConnectionValid = true;
+        } else {
+          this.testConnectionMsg = 'Connection Invalid';
+          this.testConnectionValid = false;
+        }
+        this.testingConnection = false;
+      }, error => {
+        this.testConnectionMsg = 'Connection Invalid';
+        this.testConnectionValid = false;
+        this.testingConnection = false;
+      });
         break;
     }
   }
@@ -2186,4 +2174,27 @@ export class ConnectionListComponent implements OnInit {
     }, []);
     return formatedData;
   }
+  async enableRally(){
+    this.rallyEnabled = await this.featureFlagService.isFeatureEnabled('Rally');
+    if(this.rallyEnabled) {
+      this.addEditConnectionFieldsNlabels.push({
+        connectionType: 'Rally',
+        connectionLabel: 'Rally',
+        categoryValue: 'projectManagement',
+        categoryLabel: 'Project Management',
+        labels: ['Connection Type', 'Connection Name', 'Base Url', 'Access Token', 'Share connection with everyone'],
+        inputFields: ['type', 'connectionName', 'baseUrl', 'accessToken', 'sharedConnection']
+      });
+      this.connectionTypeCompleteList.push({
+        label: 'Rally',
+          value: 'Rally',
+        connectionTableCols: [
+        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' }
+      ]
+      });
+      this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
+    }
+  }
+
 }
