@@ -481,7 +481,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getToolCategory(ProcessorName) {
     const categoryWiseTool = {
-      'Project Management': ['jira', 'azure'],
+      'Project Management': ['jira', 'azure','rally'],
       'Test Management': ['zephyr', 'jiratest'],
       'Source Code Management': [
         'github',

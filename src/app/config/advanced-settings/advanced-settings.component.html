@@ -96,12 +96,12 @@
 
               <td class="custom-table-cell" tabindex="0">
                 <p-progressBar mode="indeterminate"
-                  *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
+                  *ngIf="(processor.toolName === 'Jira' || processor.toolName === 'Rally') && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
                   [style]="{ height: '6px' }" aria-label="Loading Jira data"></p-progressBar>
               </td>
               <td class='custom-table-cell' tabindex="0">
                 <div class="p-d-flex p-align-center">
-                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">
+                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && (processor.toolName === 'Jira' || processor.toolName === 'Rally')) || (processor.toolName !== 'Jira' || processor.toolName === 'Rally')">
                     <div *ngIf="showProcessorLastState(processor.toolName) !== 'NA'" class="status-container"
                     [ngClass]="{
                       'active': showProcessorLastState(processor.toolName) === 'Success',
@@ -121,6 +121,15 @@
                       role="button"
                       tabindex="0"></i>
                   </div>
+                  <div class="p-ml-2" *ngIf="processor.toolName === 'Rally'">
+                    <i class="pi pi-info-circle"
+                       [ngClass]="{'disabled': !(findTraceLogForTool('Rally')?.progressStatusList?.length || findTraceLogForTool('Rally')?.errorMessage)}"
+                       (click)="(findTraceLogForTool('Rally')?.errorMessage || findTraceLogForTool('Rally')?.progressStatusList?.length) ? op.toggle($event) : ''"
+                       style="font-size: 1.2rem"
+                       aria-label="Show Rally progress details"
+                       role="button"
+                       tabindex="0"></i>
+                  </div>
                   <div class="p-ml-2" *ngIf="isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning'">
                     <i class="pi pi-info-circle"
                     (click)="rOp.toggle($event)" style="font-size: 1.2rem" (keydown.enter)="rOp.toggle($event)"></i>
@@ -128,7 +137,7 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
-                  
+
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
@@ -148,7 +157,7 @@
                   <div style="display: flex;">
                     <button pButton pRipple label="Run Now"
                       icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' && processor.toolName !== 'Rally' ||
                                   (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                       class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)" aria-label="Run processor for {{processor.toolName}}" (keydown.enter)="runProcessor(processor.toolName)"></button>
                     <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
@@ -186,9 +195,9 @@
 
 <p-overlayPanel #op [showCloseIcon]="false" aria-label="Jira Trace Log Panel" role="dialog">
   <div class="progress-dialog-body" aria-live="polite">
-    <section *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage); else logError" aria-labelledby="progress-stats-heading">
+    <section *ngIf="(findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) || (findTraceLogForTool('Rally')?.progressStatusList?.length && !(findTraceLogForTool('Rally')?.errorMessage))); else logError" aria-labelledby="progress-stats-heading">
       <h3 id="progress-stats-heading">Progress Stats:</h3>
-      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }" [scrollable]="true" scrollHeight="200px" aria-label="Progress Status Table">
+      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList || findTraceLogForTool('Rally')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }" [scrollable]="true" scrollHeight="200px" aria-label="Progress Status Table">
         <ng-template pTemplate="header">
           <tr>
             <th scope="col">Step Name</th>
@@ -213,9 +222,9 @@
       </h3>
     </ng-template>
 
-    <section *ngIf="findTraceLogForTool('Jira')?.errorDetailList?.length > 0" aria-labelledby="error-details-heading">
+    <section *ngIf="(findTraceLogForTool('Jira')?.errorDetailList?.length > 0 || (findTraceLogForTool('Rally')?.errorDetailList?.length > 0))" aria-labelledby="error-details-heading">
       <h3 id="error-details-heading">Errors:</h3>
-      <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }" [scrollable]="true" scrollHeight="200px" aria-label="Error Details Table">
+      <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList || findTraceLogForTool('Rally')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }" [scrollable]="true" scrollHeight="200px" aria-label="Error Details Table">
         <ng-template pTemplate="header">
           <tr>
             <th scope="col">URL</th>
@@ -235,7 +244,7 @@
       </p-table>
     </section>
 
-    <section *ngIf="findTraceLogForTool('Jira')?.additionalInfo?.length > 0" aria-labelledby="incorrect-tagging-heading">
+    <section *ngIf="(findTraceLogForTool('Jira')?.additionalInfo?.length > 0) || (findTraceLogForTool('Rally')?.additionalInfo?.length > 0)" aria-labelledby="incorrect-tagging-heading">
       <h3 id="incorrect-tagging-heading">
         <img height="25" style="display: inline; vertical-align: middle;" alt="Warning Icon" src="../../../assets/img/Warning.svg" />
         Incorrect Sprint Tagging (Please correct the sprint tagging for the issues listed below.)
@@ -256,7 +265,7 @@
       </p-table>
     </section>
 
-    <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']" aria-labelledby="data-mismatch-heading">
+    <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira'] || dataMismatchObj['Rally']" aria-labelledby="data-mismatch-heading">
       <li id="data-mismatch-heading" class="sr-only">Data mismatch messages</li>
       <li class="tooltip-item p-d-flex p-pt-2" role="listitem">
         <div class="icon-container">
