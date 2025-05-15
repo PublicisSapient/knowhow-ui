@@ -50,6 +50,8 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() yAxisOrder: Array<any>;
   @Input() thresholdValue: number;
   hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   resizeObserver = new ResizeObserver((entries) => {
     const data = this.formatData(this.data);
@@ -343,11 +345,11 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .select('#xCaptionContainer')
       .append('text');
 
-    if (this.xCaption) {
-      XCaption.text(this.xCaption);
-    } else {
-      XCaption.text('Sprints');
-    }
+    // adding yaxis caption
+    this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+    XCaption.text(this.xCaption);
 
     svgY
       .append('g')
