@@ -205,13 +205,17 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .selectAll('.slice')
       .append('text')
       .attr('x', (d) => {
-        const width = Math.abs(xScale(d.value) - xScale(0));
+        const width =
+          Math.abs(xScale(d.value) - xScale(0)) >= minWidth
+            ? Math.abs(xScale(d.value) - xScale(0))
+            : minWidth;
         return width / 2;
       })
       .attr('y', chartHeight / 2)
       .style('fill', 'white')
       .style('font-size', '12px')
       .style('font-weight', 'bold')
+      .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .text((d) => d.value);
 
