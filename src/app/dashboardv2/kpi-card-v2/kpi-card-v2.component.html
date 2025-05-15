@@ -385,7 +385,7 @@
       </div>
       <div class="p-col-4 p-ml-2 p-pt-3 p-align-center">
         <p-button label="Create & Add KPI" styleClass="add-to-reports-btn" aria-label="Create New Report"
-          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()" role="button" tabindex="0" [attr.aria-disabled]="!reportName || !reportName.length"></p-button>
+          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()" [attr.aria-disabled]="!reportName || !reportName.length"></p-button>
       </div>
     </div>
 
@@ -399,9 +399,9 @@
   <ng-template pTemplate="footer">
     <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0" role="group" aria-label="Add to Report Section">
       <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
-        (onClick)="closeAddToReportsModal()"  role="button" tabindex="0"></p-button>
+        (onClick)="closeAddToReportsModal()"></p-button>
       <p-button label="Include in Report" styleClass="add-to-reports-btn" aria-label="Include in Report"
-        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success" role="button" tabindex="0"></p-button>
+        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
     </div>
   </ng-template>
 </p-dialog>
