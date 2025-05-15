@@ -66,7 +66,6 @@ export class ProjectFilterComponent implements OnInit {
     this.lookForCompletHierarchyData();
     this.resetDropdowns = true;
     this.httpService.getAllProjects().subscribe((projectsData) => {
-      // console.log(projectsData, 'projectsData');
       if (
         projectsData[0] !== 'error' &&
         !projectsData.error &&
@@ -117,9 +116,7 @@ export class ProjectFilterComponent implements OnInit {
     const obj: any = {};
     this.selectedValProjects = this.selectedItems['project'];
     if (!this.selectedValProjects || !this.selectedValProjects.length) {
-      console.log('No project selected');
       this.hierarchyArray.forEach((hierarchy) => {
-        console.log('hierarchy', hierarchy);
         if (
           this.selectedItems[hierarchy] &&
           this.selectedItems[hierarchy].length
@@ -128,9 +125,8 @@ export class ProjectFilterComponent implements OnInit {
           obj['value'] = [];
           const selectedHierarchyArr = this.selectedItems[hierarchy].map(
             (item) => {
-              console.log('item', item);
               return {
-                itemId: item.id,
+                itemId: item.nodeId,
                 itemName: item.nodeDisplayName,
               };
             },
@@ -139,10 +135,9 @@ export class ProjectFilterComponent implements OnInit {
         }
       });
     } else {
-      console.log('Project selected');
       obj['accessType'] = 'project';
       obj['value'] = this.selectedValProjects.map((item) => ({
-        itemId: item.id,
+        itemId: item.nodeId,
         itemName: item.nodeDisplayName,
       }));
     }
@@ -325,7 +320,6 @@ export class ProjectFilterComponent implements OnInit {
       parentNodeIds.includes(child.parentId),
     );
 
-    // console.log('childField.hierarchyLevelId', childField.hierarchyLevelId);
     this.filteredSuggestions[childField.hierarchyLevelId] = filteredChildList;
 
     // Recursively filter the next level's children
@@ -348,7 +342,6 @@ export class ProjectFilterComponent implements OnInit {
       childNodeIds.includes(parent.nodeId),
     );
 
-    // console.log('parentField.hierarchyLevelId', parentField.hierarchyLevelId);
     this.filteredSuggestions[parentField.hierarchyLevelId] = filteredParentList;
 
     // Recursively filter the next level's parents
