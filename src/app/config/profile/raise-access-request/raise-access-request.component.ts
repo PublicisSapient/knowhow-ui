@@ -137,7 +137,6 @@ export class RaiseAccessRequestComponent implements OnInit {
   }
 
   projectSelectedEvent(accessItem): void {
-    console.log('Access Item: ', accessItem);
     if (accessItem && accessItem.value && accessItem.value.length) {
       this.roleList.forEach((element) => {
         element.active = false;
@@ -150,8 +149,8 @@ export class RaiseAccessRequestComponent implements OnInit {
 
       this.requestData['accessNode']['accessItems'] = accessItem.value.map(
         (item) => ({
-          itemId: item.id,
-          itemName: item.nodeDisplayName,
+          itemId: item.itemId,
+          itemName: item.itemName,
         }),
       );
     } else {
