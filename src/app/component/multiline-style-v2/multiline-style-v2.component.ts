@@ -362,11 +362,13 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('font-size', '12px');
 
     this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
     XCaption.text(this.xCaption);
 
-    if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
+    /* if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
       XCaption.text('Months');
-    }
+    } */
 
     // this is used for adding horizontal lines in graph
     const YCaption = svgY
@@ -382,6 +384,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
 
     // adding yaxis caption
     this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+    // -- Fallback, incase this.yAxisLabel is also empty/undefined
+    this.yCaption = this.yCaption ? this.yCaption : 'Values';
     YCaption.text(this.yCaption);
 
     // threshold line
