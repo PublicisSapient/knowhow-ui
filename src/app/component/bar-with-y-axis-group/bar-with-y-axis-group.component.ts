@@ -347,6 +347,8 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
     // adding yaxis caption
     this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
     XCaption.text(this.xCaption);
 
     svgY

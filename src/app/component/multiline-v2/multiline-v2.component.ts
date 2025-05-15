@@ -634,6 +634,8 @@ export class MultilineV2Component implements OnChanges {
         .attr('font-size', '12px');
 
       this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+      // -- Fallback, incase this.xAxisLabel is also empty/undefined
+      this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
       XCaption.text(this.xCaption);
 
       /* if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
@@ -655,6 +657,8 @@ export class MultilineV2Component implements OnChanges {
 
       // adding yaxis caption
       this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+      // -- Fallback, incase this.yAxisLabel is also empty/undefined
+      this.yCaption = this.yCaption ? this.yCaption : 'Values';
       YCaption.text(this.yCaption);
 
       // threshold line

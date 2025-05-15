@@ -382,6 +382,8 @@ export class GroupedColumnPlusLineChartV2Component
         .append('text');
 
       this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+      // -- Fallback, incase this.xAxisLabel is also empty/undefined
+      this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
       XCaption.text(this.xCaption);
 
       XCaption.style('fill', '#49535E').style('font-size', '12px');
