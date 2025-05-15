@@ -21,19 +21,20 @@
 <app-header></app-header>
 <div class="main-container">
 
-        <app-nav-new
-            *ngIf="(selectedTab && !router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
-        <app-filter-new
-            *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Report') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-filter-new>
-     <app-sticky-header class="header nav-filter-container" *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-sticky-header>
+  <app-nav-new
+    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
+  <app-filter-new
+    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Report') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-filter-new>
+  <app-sticky-header class="header nav-filter-container"
+    *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-sticky-header>
 
-    <div id="wrapper" [ngClass]="sideNavStyle">
-        <div id="page-content-wrapper">
-            <div>
-                <router-outlet></router-outlet>
-            </div>
-        </div>
+  <div id="wrapper" [ngClass]="sideNavStyle">
+    <div id="page-content-wrapper">
+      <div>
+        <router-outlet></router-outlet>
+      </div>
     </div>
+  </div>
 </div>
-    <p-scrollTop ></p-scrollTop>
+<p-scrollTop></p-scrollTop>
 <app-footer></app-footer>
