@@ -390,9 +390,10 @@
     </div>
 
     <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;" role="region" aria-label="Add to Report Section">
-      <app-add-to-report-pop-up [reportObj]="reportObj" 
-      [createNewReportTemplate]="createNewReportTemplate" 
-      [existingReportData]="existingReportData" [reportName]="reportName"></app-add-to-report-pop-up>
+      <app-add-to-report-pop-up [reportObj]="reportObj"
+      [createNewReportTemplate]="createNewReportTemplate"
+      [existingReportData]="existingReportData" [reportName]="reportName"
+      [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel"></app-add-to-report-pop-up>
     </div>
   </ng-template>
   <ng-template pTemplate="footer">

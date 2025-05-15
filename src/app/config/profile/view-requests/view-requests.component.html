@@ -44,7 +44,7 @@
                   <div class="info-block-container">
                     <div class="info-block" *ngFor="let item of request.accessNode.accessItems"
                       title="{{ item.itemName }}">
-                      {{request.accessNode.accessLevel | namePipe }} - {{ item.itemName }}
+                      {{request.accessNode.accessLevel | uppercase }} : {{ item.itemName }}
                     </div>
                   </div>
                 </td>

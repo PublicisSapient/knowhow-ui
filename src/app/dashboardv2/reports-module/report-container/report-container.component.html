@@ -7,8 +7,8 @@
         <div class="slider-wrapper" role="group" aria-labelledby="report-selection-label">
             <!-- Left Navigation Button -->
             <button class="nav-button left" (click)="scrollLeft()"
-            (keydown.enter)="scrollLeft()" 
-                    aria-label="Scroll reports left" 
+            (keydown.enter)="scrollLeft()"
+                    aria-label="Scroll reports left"
                     tabindex="0">
                 <i class="pi pi-chevron-left" aria-hidden="true"></i>
             </button>
@@ -22,7 +22,7 @@
                     [attr.aria-label]="'Select report: ' + report.name"
                     [attr.aria-selected]="selectedReport.name === report.name"
                     tabindex="0">
-                
+
                 <ng-template pTemplate="content">
                     <div class="button-content">
                         {{ report.name }}
@@ -133,7 +133,8 @@ role="region" aria-label="KPI Container">
                     [chartColorList]="kpi.metadata.chartColorList" [yAxis]="kpi.metadata.yAxis"
                     [capturedAt]="kpi.metadata.capturedAt" [kpiHeight]="kpi.metadata.kpiHeight"
                     [releaseEndDate]="kpi.metadata.releaseEndDate" [hieararchy]="kpi.metadata.hieararchy"
-                    [additional_filters]="kpi.metadata.additional_filters" [copyCardData]="kpi.metadata.copyCardData">
+                    [additional_filters]="kpi.metadata.additional_filters" [copyCardData]="kpi.metadata.copyCardData"
+                    [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                 </app-report-kpi-card>
             </div>
         </div>
