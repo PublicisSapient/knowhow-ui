@@ -36,7 +36,7 @@
     <div *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
       class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
       <ul class="legend">
-        <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData">
+        <li class="p-px-2 p-py-0" *ngFor="let footer of currentChartData?.chartData">
           <div>
             <p><span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}</p>
             <ng-container *ngFor="let item of footer?.otherTootipInfo">
