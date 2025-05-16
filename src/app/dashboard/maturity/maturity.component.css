@@ -240,7 +240,7 @@
 
 .tab {
   background-color: #fff;
-  border-radius: 0;
+  border: 1px solid #d5dbe1;
   display: inline-block;
   font-size: 12px;
   padding: 0 8px 0 8px;
@@ -257,6 +257,11 @@
 .tab:last-child {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.tab.is-selected {
+  border-bottom: 2px solid #0b4bc8;
+  font-weight: bold;
 }
 
 .chart-container {
