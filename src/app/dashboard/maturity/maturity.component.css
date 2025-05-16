@@ -265,8 +265,8 @@
 }
 
 .chart-container {
-  background: #fff;
-  border: 1px solid #d5dbe1;
+  /* background: #fff;
+  border: 1px solid #d5dbe1; */
   border-radius: 10px;
   opacity: 1;
   position: relative;
