@@ -20,6 +20,8 @@ export class AddToReportPopUpComponent implements AfterViewInit {
   // Reference to the scrollable container element
   @ViewChild('sliderContainer', { static: false })
   sliderContainer!: ElementRef<HTMLDivElement>;
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   constructor(private service: SharedService) {}
 

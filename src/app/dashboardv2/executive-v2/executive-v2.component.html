@@ -62,7 +62,9 @@
                                             [partialData]="checkIfPartialDataPresent(kpi)" [filterApplyData]="filterApplyData"
                                             [chartColorList]="chartColorList[kpi?.kpiId]" [kpiSelectedFilterObj]="kpiSelectedFilterObj[kpi?.kpiId]"
                                             [yAxis]="checkYAxis(kpi)" [kpiThresholdObj]="kpiThresholdObj[kpi?.kpiId]"
-                                            [releaseEndDate]="releaseEndDate" [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' || selectedTab === 'backlog' || selectedTab === 'developer' ? hieararchy : null">
+                                            [releaseEndDate]="releaseEndDate" [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' || selectedTab === 'backlog' || selectedTab === 'developer' ? hieararchy : null"
+                                            [xAxisLabel]="kpi?.kpiDetail?.xaxisLabel"
+                                            [yAxisLabel]="kpi?.kpiDetail?.yaxisLabel">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 
@@ -303,7 +305,7 @@
                                                     <ng-template #showTable>
                                                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
                                                             *ngIf="checkIfZeroData(kpi);else noDataAccess"
-                                                            role="region" 
+                                                            role="region"
                                                             aria-label="KPI Details"
                                                             tabindex="0">
                                                             <ng-container
@@ -441,7 +443,7 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' && 
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' &&
 !(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')" >
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
 </ng-container>
