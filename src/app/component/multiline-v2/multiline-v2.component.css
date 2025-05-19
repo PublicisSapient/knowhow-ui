@@ -74,8 +74,7 @@
 ::ng-deep .legend {
   overflow-x: auto;
 }
-
-::ng-deep .legend,
+:host::ng-deep .legend,
 ::ng-deep .legendsPriority {
   width: 430px;
   overflow-x: auto;
