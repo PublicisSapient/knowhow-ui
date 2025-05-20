@@ -41,9 +41,20 @@ getTestBed().initTestEnvironment(
 const moduleArray = ['dashboard', 'config', 'authentication'];
 
 const allSpecFiles = Object.keys((window as any).__karma__.files)
-  .filter(file => file.endsWith('.spec.ts'))
-  .filter(file => moduleArray.some(module => file.includes(`/${module}/`)));
+  .filter((file) => file.endsWith('.spec.ts'))
+  .filter((file) => moduleArray.some((module) => file.includes(`/${module}/`)));
 
-for (const file of allSpecFiles) {
-  await import(file);
-}
+const importAllSpecFiles = async (): Promise<void> => {
+  try {
+    for (const file of allSpecFiles) {
+      await import(file);
+    }
+    console.log('All spec files have been successfully imported.');
+  } catch (error) {
+    console.error('Error importing spec files:', error);
+  }
+};
+
+(async () => {
+  await importAllSpecFiles();
+})();
