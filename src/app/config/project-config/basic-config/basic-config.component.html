@@ -145,21 +145,32 @@
                       <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
                     </span>
                     <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer"
-                      *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
-                      [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}"
+                      *ngIf="!clone && ifSuperUser === true"
+                      [ngClass]="{'disabled': checkIfHaveValueForAssociatedParentHierarchy(field)}"
                       role="button" tabindex="0" aria-label="Add {{ field.hierarchyLevelIdName }}">
-                      <i class="fas fa-plus-circle" style="font-size: x-large;" (click)="updateHierarchy(field,'add')"></i>
+                      <i class="fas fa-plus-circle" style="font-size: x-large;" (click)="openModifyHierarchyPopup(field,'add')"></i>
+                    </div>
+                    <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
+                      *ngIf="!clone && ifSuperUser === true"
+                      [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}">
+                      <i class="fas fa-edit" style="font-size: x-large;" (click)="openModifyHierarchyPopup(field,'rename')"></i>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="p-text-right p-col-12">
-                <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
-                  icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"
-                  aria-label="Back to Project List"></button>
-                <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                  icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"
-                  aria-label="Save Project Details"></button>
+              <div class="p-col-12 p-d-flex p-jc-between">
+                <div>
+                  <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
+                  icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"></button>
+                </div>
+                <div>
+                  <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
+                  icon="pi pi-refresh" iconPos="left" label="Reset" (click)="resetHierarchyDropdowns()"></button>
+                  <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
+                  icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
+                </div>
+                
+                
               </div>
             </form>
           </div>
@@ -202,10 +213,10 @@
     </div>
   </div>
   
-  <p-dialog [(visible)]="addRenameHierarchyPopup" [modal]="true" (onHide)="addRenameHierarchyPopup = false;" [style]="{width:'600px'}"
+  <p-dialog [(visible)]="addRenameHierarchyPopup" [modal]="true" (onHide)="addRenameHierarchyPopup = false; newProjectNameForm.reset();" [style]="{width:'600px'}"
     role="dialog" aria-labelledby="create-hierarchy-heading">
     <ng-template pTemplate="header">
-      <h1 class="p-my-0" id="create-hierarchy-heading">Create Hierarchy</h1>
+      <h1 class="p-my-0" id="create-hierarchy-heading">{{isHierarchyAddtion ? 'Create Hierarchy' : 'Rename Hierarchy'}}</h1>
     </ng-template>
     <form #newProjectNameForm="ngForm" (ngSubmit)="onSubmitModifyHierarchyForm(newProjectNameForm)">
       <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
@@ -213,18 +224,24 @@
           <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">
             <input required id="hierarchyItem" name="hierarchyItem" #hierarchyItemText="ngModel"
               [style]="{'width':'500px'}" type="text" pInputText [(ngModel)]="hierarchyItem"
-              onblur="checkForDuplicacy()" aria-labelledby="hierarchyItem-label">
+              onblur="checkForDuplicacy()" aria-labelledby="hierarchyItem-label" [pattern]="'^(?!\\s)(?!.*\\s$).+'">
             <label for="hierarchyItem" id="hierarchyItem-label">Enter {{selectedHierarchyItemToUpdate?.hierarchyLevelIdName}}</label>
           </span>
-          <span class="p-invalid p-mt-2" *ngIf="checkForDuplicacy()">Hierarchy level name already exists.</span>
+          <span class="p-invalid p-mt-2" *ngIf="hierarchyItemText.errors?.pattern && (hierarchyItemText.touched || hierarchyItemText.dirty)">
+            Space at the beginning or end is not allowed.
+          </span>
+          <span class="p-invalid p-mt-2" *ngIf="hierarchyItem == hierarchyItemFullDetails?.nodeDisplayName && (hierarchyItemText.touched || hierarchyItemText.dirty) ">
+            New hierarchy name is same as old name.</span>
+          <span class="p-invalid p-mt-2" *ngIf="(hierarchyItemText.touched || hierarchyItemText.dirty) && checkForDuplicacy()">
+            Hierarchy level name already exists. 
+          </span>
         </div>
       </div>
       <div class="p-text-right p-col-12">
         <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-          iconPos="left" [label]="'Save'" [disabled]="hierarchyItemText.errors || checkForDuplicacy()" aria-label="Save Hierarchy Name"></button>
-  
+          iconPos="left" [label]="'Save'" [disabled]="hierarchyItemText.errors || checkForDuplicacy() && !hierarchyItemText.dirty " aria-label="Save Hierarchy Name"></button>
         <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-ml-3" icon="pi pi-angle-double-left"
-          (click)="addRenameHierarchyPopup = false;" iconPos="left" [label]="'Cancel'" aria-label="Cancel"></button>
+          (click)="addRenameHierarchyPopup = false; newProjectNameForm.reset();" iconPos="left" [label]="'Cancel'" aria-label="Cancel"></button>
       </div>
     </form>
   </p-dialog>
