@@ -38,13 +38,12 @@ getTestBed().initTestEnvironment(
 // // And load the modules.
 // context.keys().map(context);
 
-const moduleArray = ['dashboard', 'config', 'authentication', ''];
-const context = (require as any).context('./', true, /\.spec\.ts/);
+const moduleArray = ['dashboard', 'config', 'authentication'];
 
-moduleArray.forEach((module) => {
-  context.keys().forEach((element) => {
-    if (element.indexOf(module) !== -1) {
-      [element].map(context);
-    }
-  });
-});
+const allSpecFiles = Object.keys((window as any).__karma__.files)
+  .filter(file => file.endsWith('.spec.ts'))
+  .filter(file => moduleArray.some(module => file.includes(`/${module}/`)));
+
+for (const file of allSpecFiles) {
+  await import(file);
+}
