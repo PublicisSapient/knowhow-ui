@@ -669,8 +669,8 @@ export class BasicConfigComponent implements OnInit {
   checkForDuplicacy() {
     const selectedItem = this.selectedHierarchyItemToUpdate?.list?.find(
       (hDetails) =>
-        hDetails.nodeDisplayName.toLowerCase() ===
-        this.hierarchyItem.toLowerCase(),
+        hDetails?.nodeDisplayName?.toLowerCase() ===
+        this.hierarchyItem?.toLowerCase(),
     );
     if (selectedItem && Object.keys(selectedItem).length) {
       return true;
@@ -729,5 +729,13 @@ export class BasicConfigComponent implements OnInit {
 
   backToProjectList() {
     this.closeProjectSetupPopup.emit();
+  }
+
+  isDisabledUpdateHierarchySaveBtn(errObj, isDirty) {
+    const isDupicate = this.checkForDuplicacy();
+    if (errObj == null && !isDupicate && isDirty) {
+      return false;
+    }
+    return true;
   }
 }
