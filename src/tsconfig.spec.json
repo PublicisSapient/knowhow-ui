@@ -12,6 +12,7 @@
       ]
     }
   },
+  "allowSyntheticDefaultImports": true,
   "files": [
     "test.ts",
     "polyfills.ts"

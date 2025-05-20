@@ -39,7 +39,7 @@ getTestBed().initTestEnvironment(
 // context.keys().map(context);
 
 const moduleArray = ['dashboard', 'config', 'authentication', ''];
-const context = require.context('./', true, /\.spec\.ts/);
+const context = (require as any).context('./', true, /\.spec\.ts/);
 
 moduleArray.forEach((module) => {
   context.keys().forEach((element) => {
