@@ -69,24 +69,24 @@
           </h3>
           <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
             (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
-            aria-label="Show KPI Information" (keydown.enter)="showTooltip(true)">
+            aria-label="Show KPI Information" (focus)="showTooltip(true); showWarning(false)">
             <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
             <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
-              (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
+              (mouseleave)="showTooltip(false)" (blur)="showTooltip(false)" [showChartView]="showChartView"
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
           </span>
         </div>
         <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
           (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}"
-          role="alert" tabindex="0" aria-label="Show KPI Warning Information" (keydown.enter)="showWarning(true)">
+          role="alert" tabindex="0" aria-label="Show KPI Warning Information" (focus)="showWarning(true); showTooltip(false)">
           <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
             aria-hidden="true" src="../../../assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
-            [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
+            [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true" (blur)="showWarning(false)"></app-tooltip-v2>
         </span>
       </div>
       <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
-        (keydown.enter)="toggleMenu($event)">
+        (keydown.enter)="toggleMenu($event)" (focus)="showWarning(false); showTooltip(false)">
         <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
       </div>
       <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">

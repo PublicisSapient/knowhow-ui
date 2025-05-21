@@ -172,3 +172,15 @@
 .move-top:hover {
   background-color: white !important;
 }
+
+.p-button:focus {
+  outline: 3px solid #000;
+}
+
+:host ::ng-deep .dialog-body .p-multiselect .p-multiselect-label {
+  padding: 0;
+}
+
+:host ::ng-deep .dialog-body .p-multiselect .p-multiselect-label .p-button {
+  padding-right: 0;
+}

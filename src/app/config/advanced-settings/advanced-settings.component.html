@@ -119,6 +119,7 @@
                       style="font-size: 1.2rem"
                       aria-label="Show Jira progress details"
                       role="button"
+                      (keydown.enter)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
                       tabindex="0"></i>
                   </div>
                   <div class="p-ml-2" *ngIf="isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning'">
@@ -128,7 +129,7 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
-                  
+
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
@@ -148,7 +149,7 @@
                   <div style="display: flex;">
                     <button pButton pRipple label="Run Now"
                       icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' ||
                                   (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                       class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)" aria-label="Run processor for {{processor.toolName}}" (keydown.enter)="runProcessor(processor.toolName)"></button>
                     <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "

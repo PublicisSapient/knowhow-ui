@@ -153,3 +153,7 @@ textarea:focus-visible {
   max-height: 200px;
   overflow-y: auto;
 }
+
+.p-button:enabled:focus {
+  outline: 3px solid #000;
+}
