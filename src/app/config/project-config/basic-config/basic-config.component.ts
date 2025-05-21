@@ -468,6 +468,11 @@ export class BasicConfigComponent implements OnInit {
             JSON.stringify(res.data),
           );
           this.getHierarchy();
+        } else {
+          this.messenger.add({
+            severity: 'error',
+            summary: 'Hierarchy Levels are not available.',
+          });
         }
       });
     } else {
@@ -487,61 +492,53 @@ export class BasicConfigComponent implements OnInit {
       hierarchyMap['project'] = 'Project';
     }
     this.http.getOrganizationHierarchy()?.subscribe((formFieldData) => {
-      if (formFieldData?.success === false && this.isOpenSource === false) {
-        this.messenger.add({
-          severity: 'error',
-          summary: formFieldData.message,
-        });
-        this.blocked = false;
-      } else {
-        const flatData = formFieldData?.data;
+      const flatData = formFieldData?.data;
 
-        const transformedData =
-          typeof hierarchyMap === 'object'
-            ? Object.entries(hierarchyMap)?.map(
-                ([hierarchyLevelId, hierarchyLevelIdName], index) => {
-                  return {
-                    hierarchyLevelId,
-                    hierarchyLevelIdName,
-                    level: index + 1,
-                    list: flatData
-                      ?.filter(
-                        (item) => item.hierarchyLevelId === hierarchyLevelId,
-                      )
-                      .map(
-                        ({
-                          id,
-                          nodeId,
-                          nodeName,
-                          nodeDisplayName,
-                          hierarchyLevelId,
-                          parentId,
-                          createdDate,
-                          modifiedDate,
-                        }) => ({
-                          level: index + 1,
-                          hierarchyLevelName: hierarchyLevelIdName,
-                          id,
-                          nodeId,
-                          nodeName,
-                          nodeDisplayName,
-                          hierarchyLevelId,
-                          parentId,
-                          createdDate,
-                          ...(modifiedDate && { modifiedDate }),
-                        }),
-                      ),
-                  };
-                },
-              )
-            : [];
+      const transformedData =
+        typeof hierarchyMap === 'object'
+          ? Object.entries(hierarchyMap)?.map(
+              ([hierarchyLevelId, hierarchyLevelIdName], index) => {
+                return {
+                  hierarchyLevelId,
+                  hierarchyLevelIdName,
+                  level: index + 1,
+                  list: flatData
+                    ?.filter(
+                      (item) => item.hierarchyLevelId === hierarchyLevelId,
+                    )
+                    .map(
+                      ({
+                        id,
+                        nodeId,
+                        nodeName,
+                        nodeDisplayName,
+                        hierarchyLevelId,
+                        parentId,
+                        createdDate,
+                        modifiedDate,
+                      }) => ({
+                        level: index + 1,
+                        hierarchyLevelName: hierarchyLevelIdName,
+                        id,
+                        nodeId,
+                        nodeName,
+                        nodeDisplayName,
+                        hierarchyLevelId,
+                        parentId,
+                        createdDate,
+                        ...(modifiedDate && { modifiedDate }),
+                      }),
+                    ),
+                };
+              },
+            )
+          : [];
 
-        localStorage.setItem(
-          'hierarchyData',
-          JSON.stringify(transformedData, null, 2),
-        );
-        this.getFields();
-      }
+      localStorage.setItem(
+        'hierarchyData',
+        JSON.stringify(transformedData, null, 2),
+      );
+      this.getFields();
     });
   }
 
@@ -672,8 +669,8 @@ export class BasicConfigComponent implements OnInit {
   checkForDuplicacy() {
     const selectedItem = this.selectedHierarchyItemToUpdate?.list?.find(
       (hDetails) =>
-        hDetails.nodeDisplayName.toLowerCase() ===
-        this.hierarchyItem.toLowerCase(),
+        hDetails?.nodeDisplayName?.toLowerCase() ===
+        this.hierarchyItem?.toLowerCase(),
     );
     if (selectedItem && Object.keys(selectedItem).length) {
       return true;
@@ -732,5 +729,13 @@ export class BasicConfigComponent implements OnInit {
 
   backToProjectList() {
     this.closeProjectSetupPopup.emit();
+  }
+
+  isDisabledUpdateHierarchySaveBtn(errObj, isDirty) {
+    const isDupicate = this.checkForDuplicacy();
+    if (errObj == null && !isDupicate && isDirty) {
+      return false;
+    }
+    return true;
   }
 }
