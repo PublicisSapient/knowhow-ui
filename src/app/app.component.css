@@ -84,3 +84,7 @@
   width: 100%;
   justify-content: space-evenly;
 }
+
+.p-button:focus {
+  outline: 3px solid #000 !important;
+}

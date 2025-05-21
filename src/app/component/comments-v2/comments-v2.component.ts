@@ -1,7 +1,18 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { viewport } from '@popperjs/core';
 
 @Component({
   selector: 'app-comments-v2',
@@ -9,6 +20,10 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
   styleUrls: ['./comments-v2.component.css'],
 })
 export class CommentsV2Component implements OnInit {
+  @ViewChildren('confirmDeleteBtn') confirmDeleteButtons: QueryList<ElementRef>;
+  @ViewChildren('tabTextArea') textareas: QueryList<ElementRef>;
+  @ViewChildren('tabPanel', { read: ElementRef })
+  tabPanels: QueryList<ElementRef>;
   kpiId;
   kpiName;
   selectedTab;
@@ -155,10 +170,30 @@ export class CommentsV2Component implements OnInit {
     });
   }
 
-  commentTabChange(data) {
-    this.selectedTabIndex = data.index;
+  commentTabChange(event) {
+    this.selectedTabIndex = event.index;
     this.commentsList = [];
     this.getComments();
+    // --- Focus on the textarea of the selected tab
+    setTimeout(() => {
+      const textareaToFocus = this.textareas.toArray()[event.index];
+      if (textareaToFocus) {
+        textareaToFocus.nativeElement.focus();
+      }
+    });
+  }
+
+  onTextareaKeydown(event) {
+    if (event.key === 'Tab' && event.shiftKey) {
+      event.preventDefault();
+      if (this.tabPanels) {
+        const tabViewEl = this.tabPanels.toArray()[0];
+        const nativeEl = tabViewEl.nativeElement as HTMLElement;
+        nativeEl.setAttribute('tabindex', '0');
+        nativeEl.focus();
+        setTimeout(() => nativeEl.removeAttribute('tabindex'), 1000);
+      }
+    }
   }
 
   commentChanged() {
@@ -176,6 +211,22 @@ export class CommentsV2Component implements OnInit {
       }
     }
     this.showConfirmBtn[commentId] = true;
+    // Wait for Angular to update the DOM with the confirm button
+    setTimeout(() => {
+      this.focusConfirmDeleteButton(commentId);
+    });
+  }
+
+  focusConfirmDeleteButton(commentId) {
+    // Find the confirm button element corresponding to commentId
+    const buttonsArray = this.confirmDeleteButtons.toArray();
+    const buttonToFocus = buttonsArray.find((button) => {
+      return button.nativeElement.getAttribute('data-comment-id') === commentId;
+    });
+
+    if (buttonToFocus) {
+      buttonToFocus.nativeElement.focus();
+    }
   }
 
   deleteComment(commentId) {
