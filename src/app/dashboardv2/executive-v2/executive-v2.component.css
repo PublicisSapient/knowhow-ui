@@ -71,7 +71,6 @@
 
 .tab:first-child {
   border-top-left-radius: 5px;
-  border-right: none;
 }
 
 .tab:last-child {
