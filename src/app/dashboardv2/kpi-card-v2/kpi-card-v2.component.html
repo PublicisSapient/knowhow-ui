@@ -300,9 +300,9 @@
 </p-dialog>
 
 <p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping"
-  role="dialog" aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true">
+  aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true">
   <ng-template pTemplate="header">
-    <div class="inline-flex align-items-center justify-content-center gap-2" role="heading" aria-level="2">
+    <div class="inline-flex align-items-center justify-content-center gap-2" role="heading">
       <p id="config-dialog-title" class="font-bold white-space-nowrap" tabindex="0">{{kpiData?.kpiName}}</p>
       <span class="font-bold white-space-nowrap"
         [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}"
