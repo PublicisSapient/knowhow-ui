@@ -22,6 +22,7 @@ import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.c
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -128,6 +129,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   success: boolean = false;
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
+  @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
 
   constructor(
     public service: SharedService,
@@ -300,6 +302,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     } else if (event.report) {
       this.addToReportAction();
     }
+  }
+
+  focusOnModalElement(elementId) {
+    setTimeout(() => {
+      // Focus the dialog container
+      const dialogEl = document.querySelector(elementId);
+      if (dialogEl) {
+        (dialogEl as HTMLElement).focus();
+      }
+    }, 10);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -536,6 +548,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
+      this.focusOnModalElement('#config-dialog-title');
       this.lastSyncTime = this.showExecutionDate(
         this.kpiData.kpiDetail.combinedKpiSource ||
           this.kpiData.kpiDetail.kpiSource,
@@ -602,6 +615,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
             this.metaDataTemplateCode = mappings['data']?.metaTemplateCode;
             this.displayConfigModel = true;
+            this.focusOnModalElement('#config-dialog-title');
             this.loadingKPIConfig = false;
           } else {
             this.loadingKPIConfig = false;
@@ -840,6 +854,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     });
     this.displaySprintDetailsModal = true;
+    this.focusOnModalElement('#sprint-details-title');
   }
 
   //#region new card
@@ -1174,6 +1189,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     };
 
     this.displayAddToReportsModal = true;
+    this.focusOnModalElement('#dialogTitle');
   }
 
   setAdditionalFilterLevels(obj) {

@@ -23,7 +23,7 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       [globalFilterFields]="globalSearchFilter" styleClass="p-datatable-striped" [alwaysShowPaginator]="false"
       role="table" aria-label="List of Projects" tabindex="0">
-  
+
       <ng-template pTemplate="caption">
         <div class="table-header">
           List of Projects
@@ -38,7 +38,7 @@
           </div>
         </div>
       </ng-template>
-  
+
       <ng-template pTemplate="header" let-columns>
         <tr *ngIf="columns.length>0">
           <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize" scope="col">
@@ -59,38 +59,38 @@
           <th id="empty-header"></th>
         </tr>
       </ng-template>
-  
+
       <ng-template pTemplate="body" let-project let-columns="columns">
-        <tr role="row" tabindex="0">
-          <td *ngFor="let col of columns" role="cell" tabindex="0">
+        <tr>
+          <td *ngFor="let col of columns" tabindex="0">
             {{project[col.id]}}
           </td>
-          <td class="p-0 p-text-right" role="cell">
-            <div class="p-d-flex p-jc-end">
+          <td class="p-0 p-text-right">
+            <div class="">
               <div *ngIf="isAdminOrSuperAdmin">
-                <p-menu #kpimenu [model]="getAuthorizationService.checkIfViewer(project)?roleBasedItems:items" [popup]="true"></p-menu>
-                <p-button (click)="toggleMenu($event,project)" icon="pi pi-cog" styleClass="p-button-text" aria-label="Open Project Actions Menu" tabindex="0"></p-button>
+                <button type="button" pButton (click)="toggleMenu($event,project)" icon="pi pi-cog" class="p-button-text" aria-label="Open Project Actions Menu"></button>
+                <p-menu [popup]="true" #kpimenu [model]="getAuthorizationService.checkIfViewer(project)?roleBasedItems:items"></p-menu>
               </div>
             </div>
           </td>
         </tr>
       </ng-template>
-  
+
       <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-          <td [attr.colspan]="7" role="cell" tabindex="0">
+          <td [attr.colspan]="7" tabindex="0">
             No Project found
           </td>
         </tr>
       </ng-template>
     </p-table>
   </div>
-  
+
   <p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping" (onHide)="isNewProject = false;getData()"
     aria-label="New Project Dialog" role="dialog" tabindex="0">
     <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false;"></app-basic-config>
   </p-dialog>
-  
+
   <p-confirmDialog #cd aria-label="Project Confirmation Dialog" role="alertdialog" tabindex="0">
     <p-footer>
       <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes" aria-label="Yes, I want to delete this project."></button>
@@ -98,7 +98,7 @@
       <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK" aria-label="No, I do not want to delete this project."></button>
     </p-footer>
   </p-confirmDialog>
-  
+
   <p-dialog [(visible)]="isRenameProject" [modal]="true" (onHide)="isRenameProject = false;" [style]="{width:'600px'}"
     aria-label="Rename Project Dialog" role="dialog" tabindex="0">
     <ng-template pTemplate="header">
@@ -121,9 +121,9 @@
       </div>
       <div class="p-text-right p-col-12">
         <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-          icon="pi pi-save" iconPos="left" [label]="'Save'" [disabled]="projectName.errors" 
+          icon="pi pi-save" iconPos="left" [label]="'Save'" [disabled]="projectName.errors"
           aria-label="Save Project Name" tabindex="0"></button>
       </div>
     </form>
   </p-dialog>
-  
+
