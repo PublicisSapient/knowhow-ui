@@ -154,8 +154,8 @@
                       class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)" aria-label="Run processor for {{processor.toolName}}" (keydown.enter)="runProcessor(processor.toolName)"></button>
                     <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
                       [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
-                      *ngIf="!shouldDisableRunProcessor(processor?.toolName)" role="button" tabindex="0" aria-label="Delete processor data">
-                      <i class="far fa-trash-alt" (click)="deleteProcessorData(processor)" (keydown.enter)="deleteProcessorData(processor)"></i>
+                      *ngIf="!shouldDisableRunProcessor(processor?.toolName)" (click)="deleteProcessorData(processor)" (keydown.enter)="deleteProcessorData(processor)" role="button" tabindex="0" aria-label="Delete processor data">
+                      <i class="far fa-trash-alt" aria-hidden="true"></i>
                     </div>
                   </div>
                 </div>

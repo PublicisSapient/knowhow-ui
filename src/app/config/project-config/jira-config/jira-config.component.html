@@ -38,7 +38,7 @@
             <p-table #dt [value]="configuredTools" [columns]="configuredToolTableCols" dataKey="id"
                 [loading]="loading" styleClass="p-datatable-striped p-mt-5 p-mb-5"
                 loadingIcon="loading-img" aria-label="Configured Tools Table">
-                
+
                 <ng-template pTemplate="caption">
                     <div class="table-header" tabindex="0" aria-label="Configured Tools section">
                         Configured Tools
@@ -47,7 +47,7 @@
                             aria-label="Add New Tool"></button>
                     </div>
                 </ng-template>
-        
+
                 <ng-container *ngIf="configuredToolTableCols?.length; else noConfiguredTool">
                     <ng-template pTemplate="header" let-columns>
                         <tr role="row">
@@ -60,7 +60,7 @@
                                       formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
                         </tr>
                     </ng-template>
-        
+
                     <ng-template pTemplate="body" let-tool let-columns="columns">
                         <tr role="row" tabindex="0" [attr.aria-label]="'Tool Configuration: ' + tool.name">
                             <td *ngFor="let col of columns" [ngClass]="col.class" role="cell" tabindex="0"
@@ -70,20 +70,20 @@
                             <td role="cell" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
                                 formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
                                 <div class="action-btns p-d-flex p-justify-center" tabindex="0" role="button"
-                                     (click)="editTool(tool)" aria-label="Edit tool {{tool.name}}">
-                                    <i class="far fa-edit"></i>
+                                     (click)="editTool(tool)" (keydown.enter)="editTool(tool)" aria-label="Edit tool {{tool.name}}">
+                                    <i class="far fa-edit" aria-hidden="true"></i>
                                 </div>
                             </td>
                             <td role="cell" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
                                 formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
                                 <div class="action-btns p-d-flex p-justify-center" tabindex="0" role="button"
-                                     (click)="confirmDeteleTool(tool)" aria-label="Delete tool {{tool.name}}">
-                                    <i class="far fa-trash-alt"></i>
+                                     (click)="confirmDeteleTool(tool)" (keydown.enter)="confirmDeteleTool(tool)" aria-label="Delete tool {{tool.name}}">
+                                    <i class="far fa-trash-alt" aria-hidden="true"></i>
                                 </div>
                             </td>
                         </tr>
                     </ng-template>
-        
+
                     <ng-template pTemplate="emptymessage" let-columns>
                         <tr>
                             <td [attr.colspan]="columns.length + 1" tabindex="0" aria-label="No Tool configured">
@@ -93,14 +93,14 @@
                     </ng-template>
                 </ng-container>
             </p-table>
-        
+
             <p-confirmDialog header="Delete Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
-        
+
             <ng-template #noConfiguredTool>
                 <p tabindex="0" aria-label="No tool configured">No tool configured</p>
             </ng-template>
         </div>
-        
+
           <p-accordion [activeIndex]="0" *ngIf="isConfigureTool" id="tool-configuration">
               <p-accordionTab>
                   <ng-template pTemplate="header">
@@ -112,7 +112,7 @@
                               <em class="fas fa-plug" aria-hidden="true"></em>Connections
                           </span>")</small>
                           </div>
-  
+
                       </span>
                   </ng-template>
                   <div class="p-d-flex p-justify-end">
@@ -331,7 +331,7 @@
                                     <th class="p-text-left w-25" id="identification-value" scope="col">Identification Value</th>
                                     <th class="p-text-left w-50" id="depend-on" scope="col">Depend On</th>
                                   </tr>
-  
+
                               </ng-template>
                               <ng-template pTemplate="body" let-subProject>
                                 <tr tabindex="0" aria-label="SubProject row">
@@ -350,23 +350,23 @@
                                       <th class="p-text-left" id="depend-on-values" scope="col">Depend On Values</th>
                                       <th class="p-text-left" id="depend-on-custom-field" scope="col">Depend On CustomField</th>
                                   </tr>
-  
+
                               </ng-template>
                               <ng-template pTemplate="body" let-dependOn>
                                   <tr tabindex="0" aria-label="Depend On row">
                                       <td>{{dependOn.subProjectUserProvidedDependOn}}</td>
                                       <td>{{dependOn.subProjectUserProvidedDependOnList.join(',')}}</td>
                                       <td>{{dependOn.subProjectUserProvidedDependCustomField}}</td>
-  
+
                                   </tr>
                               </ng-template>
                           </p-table>
                           </td>
-  
+
                           </tr>
                           </ng-template>
                           </p-table>
-  
+
                       </div>
                   </form>
                   <div class="save-container p-mt-5">
@@ -378,7 +378,7 @@
                           *ngIf="urlParam !== 'Jira' && urlParam !== 'Azure' && urlParam !== 'NewRelic'" tabindex="0" aria-label="Reset Configuration"></button>
                   </div>
               </p-accordionTab>
-  
+
           </p-accordion>
       </div>
   </div>
