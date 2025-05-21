@@ -3864,7 +3864,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             );
           } else {
             selectedNode = this.filterData.filter(
-              (x) => x.nodeName === arr[i].value[0].sprojectName,
+              (x) => x.nodeDisplayName === arr[i].value[0].sprojectName,
             );
           }
           let selectedId;
@@ -3875,7 +3875,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             selectedId = selectedNode[0]?.nodeId;
             if (!selectedId) {
               selectedNode = this.filterData.filter(
-                (x) => x.nodeName === arr[i].value[0].sprojectName,
+                (x) => x.nodeDisplayName === arr[i].value[0].sprojectName,
               );
             }
             if (selectedNode?.length > 1) {
