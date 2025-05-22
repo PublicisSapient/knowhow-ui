@@ -49,6 +49,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   sprintList: Array<any> = [];
   height: number = 0;
   @Input() viewType: string = 'chart';
+  hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
@@ -68,6 +71,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   // Runs when property "data" changed
@@ -355,15 +361,14 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('fill', '#437495')
       .attr('font-size', '12px');
 
-    if (this.xCaption) {
-      XCaption.text(this.xCaption);
-    } else {
-      XCaption.text('Sprints');
-    }
+    this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+    XCaption.text(this.xCaption);
 
-    if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
+    /* if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
       XCaption.text('Months');
-    }
+    } */
 
     // this is used for adding horizontal lines in graph
     const YCaption = svgY
@@ -378,12 +383,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('font-size', '12px');
 
     // adding yaxis caption
-
-    if (this.yCaption) {
-      YCaption.text(this.yCaption);
-    } else {
-      YCaption.text('Values');
-    }
+    this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+    // -- Fallback, incase this.yAxisLabel is also empty/undefined
+    this.yCaption = this.yCaption ? this.yCaption : 'Values';
+    YCaption.text(this.yCaption);
 
     // threshold line
     if (thresholdValue && thresholdValue !== '') {
@@ -744,6 +747,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     content.scrollLeft += width;
 
     if (
+      this.hierarchyLevel === 'project' &&
       kpiId !== 'kpi166' &&
       kpiId !== 'kpi156' &&
       kpiId !== 'kpi116' &&

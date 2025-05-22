@@ -59,6 +59,9 @@ export class MultilineV2Component implements OnChanges {
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
+  hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   elemObserver = new ResizeObserver(() => {
     this.draw();
@@ -80,6 +83,9 @@ export class MultilineV2Component implements OnChanges {
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   ngAfterViewInit(): void {
@@ -627,15 +633,14 @@ export class MultilineV2Component implements OnChanges {
         .attr('transform', 'rotate(0)')
         .attr('font-size', '12px');
 
-      if (this.xCaption) {
-        XCaption.text(this.xCaption);
-      } else {
-        XCaption.text('Sprints');
-      }
+      this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+      // -- Fallback, incase this.xAxisLabel is also empty/undefined
+      this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+      XCaption.text(this.xCaption);
 
-      if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
+      /* if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
         XCaption.text('Months');
-      }
+      } */
 
       // this is used for adding horizontal lines in graph
       const YCaption = svgY
@@ -651,12 +656,10 @@ export class MultilineV2Component implements OnChanges {
         .style('margin-left', '-25px');
 
       // adding yaxis caption
-
-      if (this.yCaption) {
-        YCaption.text(this.yCaption);
-      } else {
-        YCaption.text('Values');
-      }
+      this.yCaption = this.yCaption ? this.yCaption : this.yAxisLabel;
+      // -- Fallback, incase this.yAxisLabel is also empty/undefined
+      this.yCaption = this.yCaption ? this.yCaption : 'Values';
+      YCaption.text(this.yCaption);
 
       // threshold line
       if (thresholdValue && thresholdValue !== '') {
@@ -1001,6 +1004,7 @@ export class MultilineV2Component implements OnChanges {
       content.scrollLeft += width;
 
       if (
+        this.hierarchyLevel === 'project' &&
         kpiId !== 'kpi166' &&
         kpiId !== 'kpi156' &&
         kpiId !== 'kpi116' &&

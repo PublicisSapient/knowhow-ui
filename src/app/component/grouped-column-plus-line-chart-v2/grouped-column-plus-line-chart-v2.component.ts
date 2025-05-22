@@ -60,6 +60,9 @@ export class GroupedColumnPlusLineChartV2Component
   @Input() viewType: string = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
+  hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   resizeObserver = new ResizeObserver((entries) => {
     const data = this.transform2(this.data);
@@ -77,6 +80,9 @@ export class GroupedColumnPlusLineChartV2Component
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -375,11 +381,10 @@ export class GroupedColumnPlusLineChartV2Component
         .select('#xCaptionContainer')
         .append('text');
 
-      if (this.xCaption) {
-        XCaption.text(this.xCaption);
-      } else {
-        XCaption.text('Sprints');
-      }
+      this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+      // -- Fallback, incase this.xAxisLabel is also empty/undefined
+      this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+      XCaption.text(this.xCaption);
 
       XCaption.style('fill', '#49535E').style('font-size', '12px');
 
@@ -977,6 +982,7 @@ export class GroupedColumnPlusLineChartV2Component
     }
 
     if (
+      this.hierarchyLevel === 'project' &&
       kpiId !== 'kpi166' &&
       kpiId !== 'kpi156' &&
       kpiId !== 'kpi116' &&
