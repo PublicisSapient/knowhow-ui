@@ -426,7 +426,7 @@ export class ConnectionListComponent implements OnInit {
         'accessToken',
         'sharedConnection',
       ],
-    }
+    },
   ];
 
   enableDisableOnToggle = {
@@ -841,8 +841,9 @@ export class ConnectionListComponent implements OnInit {
     private sharedService: SharedService,
     private helper: HelperService,
     private route: ActivatedRoute,
-    public router: Router,private featureFlagService: FeatureFlagsService) {
-  }
+    public router: Router,
+    private featureFlagService: FeatureFlagsService,
+  ) {}
 
   ngOnInit(): void {
     this.roleAccessAssign();
@@ -865,8 +866,13 @@ export class ConnectionListComponent implements OnInit {
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
     }) */
-    this.selectedToolName = this.selectedToolName !== undefined ? this.selectedToolName : this.addEditConnectionFieldsNlabels[0].connectionType;
-    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(el => el.connectionLabel === this.selectedToolName)[0]?.connectionType;
+    this.selectedToolName =
+      this.selectedToolName !== undefined
+        ? this.selectedToolName
+        : this.addEditConnectionFieldsNlabels[0].connectionType;
+    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(
+      (el) => el.connectionLabel === this.selectedToolName,
+    )[0]?.connectionType;
     this.enableRally();
   }
 
@@ -1923,20 +1929,26 @@ export class ConnectionListComponent implements OnInit {
             },
           );
         break;
-      case 'Rally': this.testConnectionService.testRally(reqData['baseUrl'], reqData['accessToken']).subscribe(next => {
-        if (next.success && next.data === 200) {
-          this.testConnectionMsg = 'Valid Connection';
-          this.testConnectionValid = true;
-        } else {
-          this.testConnectionMsg = 'Connection Invalid';
-          this.testConnectionValid = false;
-        }
-        this.testingConnection = false;
-      }, error => {
-        this.testConnectionMsg = 'Connection Invalid';
-        this.testConnectionValid = false;
-        this.testingConnection = false;
-      });
+      case 'Rally':
+        this.testConnectionService
+          .testRally(reqData['baseUrl'], reqData['accessToken'])
+          .subscribe(
+            (next) => {
+              if (next.success && next.data === 200) {
+                this.testConnectionMsg = 'Valid Connection';
+                this.testConnectionValid = true;
+              } else {
+                this.testConnectionMsg = 'Connection Invalid';
+                this.testConnectionValid = false;
+              }
+              this.testingConnection = false;
+            },
+            (error) => {
+              this.testConnectionMsg = 'Connection Invalid';
+              this.testConnectionValid = false;
+              this.testingConnection = false;
+            },
+          );
         break;
     }
   }
@@ -2174,27 +2186,44 @@ export class ConnectionListComponent implements OnInit {
     }, []);
     return formatedData;
   }
-  async enableRally(){
+  async enableRally() {
     this.rallyEnabled = await this.featureFlagService.isFeatureEnabled('Rally');
-    if(this.rallyEnabled) {
+    if (this.rallyEnabled) {
       this.addEditConnectionFieldsNlabels.push({
         connectionType: 'Rally',
         connectionLabel: 'Rally',
         categoryValue: 'projectManagement',
         categoryLabel: 'Project Management',
-        labels: ['Connection Type', 'Connection Name', 'Base Url', 'Access Token', 'Share connection with everyone'],
-        inputFields: ['type', 'connectionName', 'baseUrl', 'accessToken', 'sharedConnection']
+        labels: [
+          'Connection Type',
+          'Connection Name',
+          'Base Url',
+          'Access Token',
+          'Share connection with everyone',
+        ],
+        inputFields: [
+          'type',
+          'connectionName',
+          'baseUrl',
+          'accessToken',
+          'sharedConnection',
+        ],
       });
       this.connectionTypeCompleteList.push({
         label: 'Rally',
-          value: 'Rally',
+        value: 'Rally',
         connectionTableCols: [
-        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
-        { field: 'baseUrl', header: 'Base URL', class: 'long-text' }
-      ]
+          {
+            field: 'connectionName',
+            header: 'Connection Name',
+            class: 'long-text',
+          },
+          { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+        ],
       });
-      this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
+      this.groupedToolsGroup = this.createFormatCategoryWise(
+        this.addEditConnectionFieldsNlabels,
+      );
     }
   }
-
 }

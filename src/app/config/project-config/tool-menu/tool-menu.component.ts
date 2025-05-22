@@ -354,10 +354,13 @@ export class ToolMenuComponent implements OnInit {
                 queryParams1: 'Rally',
                 routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
                 index: 14,
-                connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.connectionName,
-                updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.updatedAt
-              }
-
+                connectionName: this.uniqueTools.filter(
+                  (tool) => tool.toolName === 'Rally',
+                )[0]?.connectionName,
+                updatedAt: this.uniqueTools.filter(
+                  (tool) => tool.toolName === 'Rally',
+                )[0]?.updatedAt,
+              },
             ];
           }
 
