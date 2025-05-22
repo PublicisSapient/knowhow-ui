@@ -24,10 +24,9 @@ import {
 } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { environment } from '../../../environments/environment';
 import { GetAuthService } from '../../services/getauth.service';
-import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';

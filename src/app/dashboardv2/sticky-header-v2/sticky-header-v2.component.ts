@@ -1,6 +1,5 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
   Component,
   OnDestroy,
   ChangeDetectorRef,

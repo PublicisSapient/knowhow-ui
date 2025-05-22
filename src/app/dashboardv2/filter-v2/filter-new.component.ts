@@ -1952,7 +1952,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                 });
                 this.subject.next(false);
                 this.lastSyncData = {};
-                return;
               },
             );
         });

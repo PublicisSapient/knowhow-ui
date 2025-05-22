@@ -32,14 +32,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   catchError,
   distinctUntilChanged,
-  first,
   mergeMap,
 } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
-import { throwError } from 'rxjs';
+import { throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-executive-v2',
@@ -242,8 +240,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // const selectedTab = window.location.hash.substring(1);
-    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch.subscribe((data) => {
@@ -1377,7 +1373,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.handleKPIError(postData);
           },
         );
-      return;
     } else if (this.selectedTab === 'release') {
       this.postJiraKPIForRelease(postData, source);
     } else if (this.selectedTab === 'backlog') {
@@ -2293,7 +2288,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiTrendObject[kpiId]?.push(trendObj);
         }
       }
-  
+
     } */
 
   getChartDataforRelease(

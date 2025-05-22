@@ -21,7 +21,6 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { MessageService } from 'primeng/api';
-import { MultiSelect } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-project-filter',
