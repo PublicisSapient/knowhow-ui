@@ -212,17 +212,9 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
     // --- Set loading/visibility only for this project --- //
     this.isSummaryAvailableMap[projectName] = false;
-    // setTimeout(() => {
-    //   this.isSummaryAvailableMap[projectName] = true;
-    //   this.summarisedSprintGoalsMap[projectName] = {
-    //     summary:
-    //       '- Deliver a user-friendly interface to efficiently load organizational hierarchies, improving operational workflows.  \n- Advance accessibility compliance to align with regulatory standards and enhance user inclusivity.  \n- Implement high-priority client-requested enhancements to strengthen customer satisfaction and drive strategic alignment.',
-    //   };
-    // }, 500);
 
     // --- post call with the above request body --- //
     this.httpService.summariseSprintGoalsCall(requestBody).subscribe((res) => {
-      console.log('res ', res);
       this.isSummaryAvailableMap[projectName] = true;
       this.summarisedSprintGoalsMap[projectName] = res;
     });
