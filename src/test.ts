@@ -33,11 +33,6 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting(),
 );
 
-// // This will run only this files tests
-// const context = require.context('./', true, /jira-config.component\.spec\.ts$/);
-// // And load the modules.
-// context.keys().map(context);
-
 const moduleArray = ['dashboard', 'config', 'authentication'];
 
 const allSpecFiles = Object.keys((window as any).__karma__.files)
