@@ -13,7 +13,7 @@ import { HttpService } from 'src/app/services/http.service';
 })
 export class FeedbackComponent {
   @Input() visibleSidebar: boolean;
-  feedback: boolean = true;
+  feedback = true;
   voiceForm = new UntypedFormGroup({
     feedback: new UntypedFormControl('', {
       validators: [Validators.required, Validators.maxLength(600)],

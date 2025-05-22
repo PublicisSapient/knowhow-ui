@@ -84,15 +84,15 @@ describe('ReportKpiCardComponent', () => {
       it('should sort colors correctly when kpiTrendsObj and trendColors are properly defined', () => {
         component.kpiTrendsObj = [{ hierarchyId: '1' }, { hierarchyId: '2' }];
         component.trendColors = {
-          '1': { color: 'red' },
-          '2': { color: 'blue' },
+          1: { color: 'red' },
+          2: { color: 'blue' },
         };
 
         component.sortColors();
 
         expect(component.trendColors).toEqual({
-          '1': { color: 'red' },
-          '2': { color: 'blue' },
+          1: { color: 'red' },
+          2: { color: 'blue' },
         });
         expect(component.colors).toEqual(['red', 'blue']);
       });

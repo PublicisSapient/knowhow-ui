@@ -9,7 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./recommendations.component.css'],
 })
 export class RecommendationsComponent implements OnInit {
-  displayModal: boolean = false;
+  displayModal = false;
   modalDetails = {
     tableHeadings: [],
     tableValues: [],
@@ -22,9 +22,9 @@ export class RecommendationsComponent implements OnInit {
   filteredMaturity;
   @Input() filterData = {};
   @Input() kpiList = [];
-  noRecommendations: boolean = false;
+  noRecommendations = false;
   selectedSprint: object = {};
-  loading: boolean = false;
+  loading = false;
 
   constructor(
     private httpService: HttpService,
@@ -37,7 +37,7 @@ export class RecommendationsComponent implements OnInit {
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
     this.displayModal = true;
-    let kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
+    const kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
     kpiFilterData['kpiIdList'] = [...this.kpiList];
     kpiFilterData['selectedMap']['project'] = [
       Array.isArray(this.selectedSprint?.['parentId'])
@@ -57,7 +57,7 @@ export class RecommendationsComponent implements OnInit {
               if (recommendation?.['recommendations']?.length > 0) {
                 this.recommendationsData = recommendation['recommendations'];
                 this.recommendationsData.forEach((item) => {
-                  let idx = this.maturities?.findIndex(
+                  const idx = this.maturities?.findIndex(
                     (x) => x['value'] == item['maturity'],
                   );
                   if (idx == -1 && item['maturity']) {

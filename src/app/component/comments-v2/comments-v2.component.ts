@@ -15,7 +15,7 @@ export class CommentsV2Component implements OnInit {
   // @Input() commentCount: string;
   showCommentIcon = false;
   displayCommentsList: boolean;
-  showAddComment: boolean = false;
+  showAddComment = false;
   commentText = '';
   selectedFilters = [];
   selectedTabIndex = 0;
@@ -28,7 +28,7 @@ export class CommentsV2Component implements OnInit {
   showLoader: object = {};
   showConfirmBtn: object = {};
   @Output() getCommentsCountByKpiId = new EventEmitter();
-  showSpinner: boolean = false;
+  showSpinner = false;
   constructor(
     private service: SharedService,
     private http_service: HttpService,
@@ -56,11 +56,10 @@ export class CommentsV2Component implements OnInit {
         i++
       ) {
         this.selectedFilters.push(
-          sharedObj.filterData.filter((data) => {
-            return (
-              data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
-            );
-          })[0],
+          sharedObj.filterData.filter(
+            (data) =>
+              data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i],
+          )[0],
         );
       }
     } else if (this.selectedTab === 'release') {
@@ -70,11 +69,10 @@ export class CommentsV2Component implements OnInit {
         i++
       ) {
         this.selectedFilters.push(
-          sharedObj.filterData.filter((data) => {
-            return (
-              data.nodeId === sharedObj.filterApplyData.selectedMap?.release[i]
-            );
-          })[0],
+          sharedObj.filterData.filter(
+            (data) =>
+              data.nodeId === sharedObj.filterApplyData.selectedMap?.release[i],
+          )[0],
         );
       }
     } else {
@@ -84,11 +82,10 @@ export class CommentsV2Component implements OnInit {
         i++
       ) {
         this.selectedFilters.push(
-          sharedObj.filterData.filter((data) => {
-            return (
-              data.nodeId === sharedObj.filterApplyData.selectedMap?.project[i]
-            );
-          })[0],
+          sharedObj.filterData.filter(
+            (data) =>
+              data.nodeId === sharedObj.filterApplyData.selectedMap?.project[i],
+          )[0],
         );
       }
     }
@@ -170,7 +167,7 @@ export class CommentsV2Component implements OnInit {
   }
 
   handleConfirmDelete(commentId) {
-    for (let key in this.showConfirmBtn) {
+    for (const key in this.showConfirmBtn) {
       if (this.showConfirmBtn[key]) {
         this.showConfirmBtn[key] = false;
       }

@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
   isSuperAdmin = false;
   isProjectAdmin = false;
   changePswdDisabled = false;
-  loginType: string = '';
+  loginType = '';
   constructor(
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,

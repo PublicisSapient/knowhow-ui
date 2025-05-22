@@ -18,8 +18,8 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedLevel: any = '';
-  @Input() selectedType: string = '';
-  @Input() selectedTab: string = '';
+  @Input() selectedType = '';
+  @Input() selectedTab = '';
   @Input() additionalFilterConfig = [];
   @Input() additionalFilterLevelArr = [];
   subscriptions: any[] = [];
@@ -131,7 +131,7 @@ export class AdditionalFilterComponent implements OnChanges {
    * If the selected tab is not 'developer', filterData is cleared; otherwise,
    * it checks if the selected trends have changed and resets filterData accordingly.
    *
-   * @returns {void} - No return value.
+   * @returns - No return value.
    */
   resetFilterData() {
     if (this.selectedTab !== 'developer') {
@@ -155,10 +155,10 @@ export class AdditionalFilterComponent implements OnChanges {
    * excluding 'release' and 'sprint' levels, and restores the filter selection state
    * after a brief delay.
    *
-   * @returns {void} - This function does not return a value.
+   * @returns - This function does not return a value.
    */
   setCorrectLevel() {
-    let correctLevelMapping = this.additionalFilterLevelArr.filter(
+    const correctLevelMapping = this.additionalFilterLevelArr.filter(
       (f) => f.hierarchyLevelId.toLowerCase() !== 'release',
     );
     this.squadLevel = correctLevelMapping.filter(
@@ -172,7 +172,7 @@ export class AdditionalFilterComponent implements OnChanges {
         Object.keys(this.stateFilters).forEach((key) => {
           let correctIndex = 0;
           for (let i = 0; i < this.additionalFilterConfig.length; i++) {
-            let level = correctLevelMapping.filter(
+            const level = correctLevelMapping.filter(
               (f) =>
                 f.hierarchyLevelName.toLowerCase() ===
                 this.additionalFilterConfig[
@@ -213,7 +213,7 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   applyDefaultFilter() {
-    let fakeEvent = {};
+    const fakeEvent = {};
 
     this.filterData.forEach((filter, index) => {
       if (filter.map((f) => f.nodeName).includes('Overall')) {
@@ -230,8 +230,8 @@ export class AdditionalFilterComponent implements OnChanges {
           }, 100);
         }
       }
-      let filterKey = 'filter' + (index + 1);
-      let e = fakeEvent;
+      const filterKey = 'filter' + (index + 1);
+      const e = fakeEvent;
       this.appliedFilters[filterKey] = e && e['value'] ? [e['value']] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
@@ -273,7 +273,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
     if (!isDeveloper) {
       if (!fromBackup) {
-        let obj = {};
+        const obj = {};
         for (let i = 0; i <= Object.keys(e)?.length; i++) {
           if (e[i]) {
             this.selectedAdditionalFilterLevel[i] =
@@ -336,7 +336,9 @@ export class AdditionalFilterComponent implements OnChanges {
       );
 
       // Combine selected and unselected, with selected on top
-      if (!selected) return;
+      if (!selected) {
+        return;
+      }
       this.filterData[index] = [...selected, ...unselected];
     }
   }
@@ -351,9 +353,9 @@ export class AdditionalFilterComponent implements OnChanges {
    * Handles the change event of a dropdown element.
    * If the selected element is valid, it applies an additional filter based on the event and index provided.
    *
-   * @param {any} $event - The event object from the dropdown change.
-   * @param {number} index - The index of the dropdown element being changed.
-   * @returns {void}
+   * @param $event - The event object from the dropdown change.
+   * @param index - The index of the dropdown element being changed.
+   * @returns
    */
   onDropDownChange($event: any, index) {
     if (this.helperService.isDropdownElementSelected($event)) {

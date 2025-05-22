@@ -51,7 +51,7 @@ export class MyprofileComponent implements OnInit {
   roleBasedProjectList = [];
   dynamicCols: Array<any> = [];
   ssoLogin = environment.SSO_LOGIN;
-  loginType: string = '';
+  loginType = '';
   constructor(
     private formBuilder: UntypedFormBuilder,
     private getAuthorizationService: GetAuthorizationService,
@@ -65,7 +65,7 @@ export class MyprofileComponent implements OnInit {
    * Initializes the component by checking user roles, setting access permissions,
    * and configuring forms for user email and notification preferences.
    *
-   * @returns {void} - No return value.
+   * @returns - No return value.
    */
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
@@ -146,7 +146,7 @@ export class MyprofileComponent implements OnInit {
       const tempCols = JSON.parse(
         localStorage.getItem('completeHierarchyData'),
       )?.['scrum'];
-      let projectLevel = tempCols?.filter(
+      const projectLevel = tempCols?.filter(
         (item) => item.hierarchyLevelId?.toLowerCase() === 'project',
       )?.[0]?.level;
       cols = tempCols.filter((item) => item.level < projectLevel);
@@ -199,8 +199,8 @@ export class MyprofileComponent implements OnInit {
   toggleNotificationEmail(event: any, toggleField: string) {
     const updatedFlag = event.checked;
     this.notificationEmailForm[toggleField] = updatedFlag;
-    let obj = {};
-    for (let key in this.notificationEmailForm.value) {
+    const obj = {};
+    for (const key in this.notificationEmailForm.value) {
       obj[key] = this.notificationEmailForm.value[key];
     }
     //call http service

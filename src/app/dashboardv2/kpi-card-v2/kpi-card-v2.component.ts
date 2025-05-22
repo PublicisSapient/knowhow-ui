@@ -40,18 +40,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() selectedTab: any;
   @Input() dropdownArr: any;
   @Input() trendBoxColorObj: any;
-  @Input() loader: boolean = true;
+  @Input() loader = true;
   @Input() trendValueList: any;
   @Input() sprintsOverlayVisible: boolean;
   @Input() showCommentIcon: boolean;
-  showComments: boolean = false;
+  showComments = false;
   @Input() kpiSize;
-  @Input() kpiDataStatusCode: string = '';
+  @Input() kpiDataStatusCode = '';
   @Input() filterApplyData: any;
   // showComments: boolean = false;
-  loading: boolean = false;
-  noData: boolean = false;
-  displayConfigModel: boolean = false;
+  loading = false;
+  noData = false;
+  displayConfigModel = false;
   fieldMappingConfig = [];
   selectedToolConfig: any = [];
   selectedConfig: any = {};
@@ -64,7 +64,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   radioOption: string;
   filterMultiSelectOptionsData: object = {};
   kpiSelectedFilterObj: any = {};
-  selectedTabIndex: number = 0;
+  selectedTabIndex = 0;
   projectList: Array<string>;
   @Output() optionSelected = new EventEmitter<any>();
   @Output() reloadKPITab = new EventEmitter<any>();
@@ -74,10 +74,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('kpimenu') kpimenu: Menu;
   @Output() downloadExcel = new EventEmitter<boolean>();
   metaDataTemplateCode: any;
-  @Input() nodeId: string = '';
-  loadingKPIConfig: boolean = false;
-  noDataKPIConfig: boolean = false;
-  displaySprintDetailsModal: boolean = false;
+  @Input() nodeId = '';
+  loadingKPIConfig = false;
+  noDataKPIConfig = false;
+  displaySprintDetailsModal = false;
   columnList = [
     { field: 'duration', header: 'Duration' },
     { field: 'value', header: 'KPI Value', unit: 'unit' },
@@ -94,9 +94,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     'sprint-hover-project6',
   ];
   commentDialogRef: DynamicDialogRef | undefined;
-  disableSettings: boolean = false;
-  @Input() immediateLoader: boolean = true;
-  @Input() partialData: boolean = false;
+  disableSettings = false;
+  @Input() immediateLoader = true;
+  @Input() partialData = false;
   warning = '';
   //spal
   kpiHeaderData: {};
@@ -108,23 +108,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   selectedButtonValue;
   cardData;
   reportObj: any = {};
-  displayAddToReportsModal: boolean = false;
-  createNewReportTemplate: boolean = false;
-  reportName: string = '';
+  displayAddToReportsModal = false;
+  createNewReportTemplate = false;
+  reportName = '';
   existingReportData: any[] = [];
   iterationKPIFilterValues: any[] = [];
   @Input() chartColorList: any[];
-  @Input() yAxis: string = '';
+  @Input() yAxis = '';
   @Input() kpiThresholdObj: any;
-  @Input() releaseEndDate: string = '';
+  @Input() releaseEndDate = '';
   @Input() hieararchy: any;
-  @Input() kpiHeight: number = 0;
+  @Input() kpiHeight = 0;
 
   // reports: chartWithFiltersComponent
   selectedMainCategory: any;
   selectedMainFilter: any;
   selectedFilter2: any;
-  success: boolean = false;
+  success = false;
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
 
@@ -279,8 +279,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * Handles various actions based on the event type.
    * Prepares data, opens dialogs, exports data, or shows comments as needed.
    *
-   * @param {any} event - The event object containing action indicators.
-   * @returns {void}
+   * @param event - The event object containing action indicators.
+   * @returns
    */
   handleAction(event: any) {
     if (event.listView) {
@@ -325,7 +325,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.dropdownArr?.length &&
       this.dropdownArr[0]?.options.length
     ) {
-      let backUpValue = this.service.getKpiSubFilterObj()[this.kpiData.kpiId];
+      const backUpValue = this.service.getKpiSubFilterObj()[this.kpiData.kpiId];
       if (!backUpValue || !Object.keys(backUpValue)?.length) {
         this.radioOption = this.dropdownArr[0]?.options[0];
       } else {
@@ -384,7 +384,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         filterGroup,
         categoryData,
       } = this.cardData;
-      let responseCode = this.kpiDataStatusCode;
+      const responseCode = this.kpiDataStatusCode;
       this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId, responseCode };
       this.kpiFilterData = {
         dataGroup,
@@ -441,10 +441,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * Handles changes in dropdown selections, moving selected options to the top,
    * emitting the selected option, and triggering a Google Analytics event.
    *
-   * @param {string} type - The type of selection (e.g., 'radio', 'single').
-   * @param {object|null} value - The selected value(s), can be an object or null.
-   * @param {number} filterIndex - The index of the dropdown in the array.
-   * @returns {void}
+   * @param type - The type of selection (e.g., 'radio', 'single').
+   * @param value - The selected value(s), can be an object or null.
+   * @param filterIndex - The index of the dropdown in the array.
+   * @returns
    */
   handleChange(type, value = null, filterIndex = 0) {
     // moving selected option to top
@@ -582,7 +582,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   getFieldMapping() {
-    let obj = {
+    const obj = {
       releaseNodeId: this.nodeId || null,
     };
     this.http
@@ -625,7 +625,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             this.service.setFieldMappingMetaData({
               projectID:
                 this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-              kpiSource: kpiSource,
+              kpiSource,
               metaData: Response.data,
             });
           } else {
@@ -694,8 +694,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * Checks if data is present based on the provided status code and KPI ID.
    * Evaluates the trend value list and specific conditions to determine presence.
    *
-   * @param {string} data - The status code to check (e.g., '200', '201').
-   * @returns {boolean} - Returns true if data is present, otherwise false.
+   * @param data - The status code to check (e.g., '200', '201').
+   * @returns - Returns true if data is present, otherwise false.
    */
   checkIfDataPresent(data) {
     if (
@@ -781,7 +781,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         (obj) => obj['nodeName'] === project,
       )['color'];
       if (selectedProjectTrend?.value) {
-        let hoverObjectListTemp = [];
+        const hoverObjectListTemp = [];
 
         // if (selectedProjectTrend.value[0]?.dataValue?.length > 0) {
         //   this.columnList = [{ field: 'duration', header: 'Duration' }];
@@ -807,7 +807,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         // } else
         {
           selectedProjectTrend.value.forEach((element) => {
-            let tempObj = {};
+            const tempObj = {};
             tempObj['duration'] = element['sSprintName'] || element['date'];
             tempObj['value'] =
               element['lineValue'] !== undefined
@@ -858,7 +858,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     // extract the filter values for report
     this.iterationKPIFilterValues = [];
     this.kpiFilterData['filterGroup']?.filterGroup1.forEach((element) => {
-      let obj = element;
+      const obj = element;
       obj['value'] = updatedEvent[element.filterKey];
       this.iterationKPIFilterValues.push(obj);
     });
@@ -901,8 +901,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   /**
    * Resets the filter by restoring the original issue data and preparing the chart data.
    *
-   * @param {void} No parameters are accepted.
-   * @returns {void} This function does not return a value.
+   * @param No parameters are accepted.
+   * @returns This function does not return a value.
    * @throws {Error} Throws an error if chart data preparation fails.
    */
   onFilterClear() {
@@ -921,12 +921,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
     if (filterArr.length) {
       filterArr.forEach((element) => {
-        let filterObj = Object.keys(element).map((x) => {
-          return {
-            key: x,
-            value: element[x],
-          };
-        });
+        const filterObj = Object.keys(element).map((x) => ({
+          key: x,
+          value: element[x],
+        }));
         if (Array.isArray(filterObj[0].value)) {
           filteredData = filteredData.filter((issue) =>
             filterObj[0]?.value.includes(issue[filterObj[0].key]),
@@ -963,7 +961,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       } else if (typeof item === 'object' && item !== null) {
         const sanitizedObject = {};
         for (const [key, value] of Object.entries(item)) {
-          if (value) sanitizedObject[key] = value; // Add key-value pairs with truthy values
+          if (value) {
+            sanitizedObject[key] = value;
+          } // Add key-value pairs with truthy values
         }
         return Object.keys(sanitizedObject).length > 0 ? sanitizedObject : null; // Remove empty objects
       }
@@ -1013,7 +1013,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
    * Returns the total count or a calculated value based on the selected button value otherwise.
    *
-   * @returns {number} The cumulative value or total count.
+   * @returns The cumulative value or total count.
    * @throws {Error} Throws an error if the data structure is not as expected.
    */
   showCummalative() {
@@ -1075,8 +1075,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * including various configurations based on the current state
    * and selected options, then displays the report modal.
    *
-   * @param {void}
-   * @returns {void}
+   * @param
+   * @returns
    */
   addToReportAction() {
     this.success = false;
@@ -1093,7 +1093,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     additional_filters = this.setAdditionalFilterLevels(additional_filters);
 
     this.getExistingReports();
-    let metaDataObj = {
+    const metaDataObj = {
       kpiName: this.kpiData.kpiName,
       kpiId: this.kpiData.kpiId,
       kpiSource: this.kpiData.kpiDetail.kpiSource,
@@ -1120,7 +1120,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       capturedAt: formattedDate,
       kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy,
-      additional_filters: additional_filters,
+      additional_filters,
     };
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -1181,9 +1181,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     );
     completeHierarchyData =
       completeHierarchyData[this.service.getSelectedType()?.toLowerCase()];
-    let result = {};
+    const result = {};
     Object.keys(obj).forEach((key) => {
-      let newKey = completeHierarchyData.filter(
+      const newKey = completeHierarchyData.filter(
         (level) => level.hierarchyLevelId === key,
       )[0].hierarchyLevelName;
       result[newKey] = obj[key];
@@ -1194,7 +1194,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   getSelectButtonValue() {
     let result = '';
-    let options = this.getSelectButtonOptions();
+    const options = this.getSelectButtonOptions();
 
     if (options?.length) {
       this.selectedButtonValue = this.selectedButtonValue || {
@@ -1248,7 +1248,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   generateReportSlider(response, newReport = false) {
-    let storedReportData = response;
+    const storedReportData = response;
     if (storedReportData?.length) {
       this.existingReportData = storedReportData;
       if (!newReport) {
@@ -1275,9 +1275,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (this.reportName.trim() === '') {
       return;
     }
-    let data = { ...this.reportObj };
+    const data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
-    let submitData = {
+    const submitData = {
       name: this.reportName,
       kpis: [data],
     };
@@ -1304,14 +1304,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPut() {
-    let reportId = this.existingReportData.find(
+    const reportId = this.existingReportData.find(
       (x) => x.name === this.reportName,
     ).id;
-    let existingKPIs = this.existingReportData.find(
+    const existingKPIs = this.existingReportData.find(
       (x) => x.name === this.reportName,
     ).kpis;
 
-    let data = { ...this.reportObj };
+    const data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
 
     // if (!existingKPIs.find((x) => x.id === data.id)) {
@@ -1320,7 +1320,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     //   existingKPIs = this.replaceObjectById(existingKPIs, data);
     // }
 
-    let submitData = {
+    const submitData = {
       name: this.reportName,
       kpis: [...existingKPIs],
     };

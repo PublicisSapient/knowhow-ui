@@ -29,7 +29,7 @@ export class PsKpiCardHeaderComponent implements OnInit {
   menuItems: MenuItem[] | undefined;
   warning = '';
   MenuValues = KPI_HEADER_ACTION;
-  disableSettings: boolean = false;
+  disableSettings = false;
   userRole: string;
   checkIfViewer: boolean;
   constructor(

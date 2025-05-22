@@ -43,7 +43,7 @@ export class DashboardV2Component implements AfterContentInit {
   isApply = false;
   sideNavStyle;
   selectedTab;
-  refreshCounter: number = 0;
+  refreshCounter = 0;
 
   constructor(
     public cdRef: ChangeDetectorRef,

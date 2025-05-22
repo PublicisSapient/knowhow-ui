@@ -36,7 +36,8 @@ export class ViewerGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const authorities = this.sharedService.getCurrentUserDetails('authorities') ?? [];
+    const authorities =
+      this.sharedService.getCurrentUserDetails('authorities') ?? [];
 
     if (
       !authorities.includes('ROLE_VIEWER') &&

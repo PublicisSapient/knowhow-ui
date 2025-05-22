@@ -16,15 +16,30 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<link href="https://fonts.googleapis.com/css?family=Montserrat:200,400,700" rel="stylesheet">
-  <div class="notfound1">
-    <div class="notfound">
-      <div class="notfound-404">
-        <h1>Oops!</h1>
-        <h2 *ngIf="errorMsg.length">{{errorMsg}}.<br/>
-        <span class="redirect-timer">Redirecting in {{timeLeft}} seconds.</span></h2>
-        <h2 *ngIf="!errorMsg.length"><span class="redirect-timer">Redirecting in {{timeLeft}} seconds.</span></h2>
-      </div>
-      <a routerLink="{{ redirectButtonRoute }}" routerLinkActive="active" *ngIf="redirectButtonText.length">{{ redirectButtonText }}</a>
+<link
+  href="https://fonts.googleapis.com/css?family=Montserrat:200,400,700"
+  rel="stylesheet" />
+<div class="notfound1">
+  <div class="notfound">
+    <div class="notfound-404">
+      <h1>Oops!</h1>
+      <h2 *ngIf="errorMsg.length">
+        {{ errorMsg }}.<br />
+        <span class="redirect-timer"
+          >Redirecting in {{ timeLeft }} seconds.</span
+        >
+      </h2>
+      <h2 *ngIf="!errorMsg.length">
+        <span class="redirect-timer"
+          >Redirecting in {{ timeLeft }} seconds.</span
+        >
+      </h2>
     </div>
+    <a
+      routerLink="{{ redirectButtonRoute }}"
+      routerLinkActive="active"
+      *ngIf="redirectButtonText.length"
+      >{{ redirectButtonText }}</a
+    >
   </div>
+</div>

@@ -62,7 +62,7 @@ export class AuthGuard implements CanActivate {
         } else {
           const queryParams = route.queryParams;
           this.router.navigate(['./authentication/login'], {
-            queryParams: queryParams,
+            queryParams,
           });
         }
         return false;
@@ -83,7 +83,7 @@ export class AuthGuard implements CanActivate {
             } else {
               const queryParams = route.queryParams;
               this.router.navigate(['./authentication/login'], {
-                queryParams: queryParams,
+                queryParams,
               });
             }
             return false;

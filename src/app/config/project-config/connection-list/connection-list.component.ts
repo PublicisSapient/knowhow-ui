@@ -62,7 +62,7 @@ interface JiraConnectionField {
 })
 export class ConnectionListComponent implements OnInit {
   basicConnectionForm: UntypedFormGroup;
-  rallyEnabled: boolean = false;
+  rallyEnabled = false;
   addEditConnectionFieldsNlabels = [
     {
       connectionType: 'Jira',
@@ -828,7 +828,7 @@ export class ConnectionListComponent implements OnInit {
     sharedConnection: false,
     jiraAuthType: '',
   };
-  jiraConnectionDialog: boolean = false;
+  jiraConnectionDialog = false;
   @Input() selectedToolName: string;
   groupedToolsGroup: any;
 
@@ -877,7 +877,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   initializeForms(connection, isEdit?) {
-    for (let key in this.jiraConnectionFields) {
+    for (const key in this.jiraConnectionFields) {
       this.jiraForm.controls[key] = new FormControl(
         { value: connection[key], disabled: false },
         [Validators.required],
@@ -1144,7 +1144,9 @@ export class ConnectionListComponent implements OnInit {
       this.connectionListAllType[eachConnection.value.toString()] = [];
     });
 
-    if (!response.data.length) return;
+    if (!response.data.length) {
+      return;
+    }
 
     response.data.forEach((eachConnection) => {
       const connectionType = eachConnection.type;
@@ -1177,7 +1179,7 @@ export class ConnectionListComponent implements OnInit {
       return;
     }
     if (this.connection?.type?.toLowerCase() == 'jira') {
-      for (let key in this.jiraForm.controls) {
+      for (const key in this.jiraForm.controls) {
         if (this.jiraForm.controls[key]?.value) {
           reqData[key] = this.jiraForm.controls[key]?.value;
         }
@@ -1529,7 +1531,7 @@ export class ConnectionListComponent implements OnInit {
     this.testingConnection = true;
     const reqData = {};
     if (this.connection?.type?.toLowerCase() == 'jira') {
-      for (let key in this.jiraForm.controls) {
+      for (const key in this.jiraForm.controls) {
         reqData[key] = this.jiraForm.controls[key]?.value;
       }
     } else {

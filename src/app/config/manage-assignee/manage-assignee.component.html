@@ -15,36 +15,49 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  
+
 <div class="p-mb-3">
-    <input type="text" pInputText placeholder="Search UserName" [style]="{'width':'100%'}"
-        (input)="dt.filter($event?.target?.value, 'displayName', 'contains')" [formControl]="searchText"/>
-    <p-table #dt [value]="assigneeList" [globalFilterFields]="['displayName']" class="p-mb-3">
-        <ng-template pTemplate="header">
-            <tr>
-                <th scope="col">
-                    <div class="p-d-flex p-jc-between">
-                        <span>User Name</span>
-                    </div>
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-user>
-            <tr>
-                <td>
-                    <input type="checkbox" [name]="user?.displayName" [value]="user?.name"
-                        (input)="onUserSelectionChange($event,user)" [checked]="user?.checked" class="checkbox" />
-                    <label [for]="user?.name" class="p-mb-0 p-ml-3 label-name color-grey">{{user.displayName}}
-                        ({{user.name}})</label>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns>
-            <tr>
-                <td [attr.colspan]="3">
-                    No Users found
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+  <input
+    type="text"
+    pInputText
+    placeholder="Search UserName"
+    [style]="{ width: '100%' }"
+    (input)="dt.filter($event?.target?.value, 'displayName', 'contains')"
+    [formControl]="searchText" />
+  <p-table
+    #dt
+    [value]="assigneeList"
+    [globalFilterFields]="['displayName']"
+    class="p-mb-3">
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">
+          <div class="p-d-flex p-jc-between">
+            <span>User Name</span>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>
+          <input
+            type="checkbox"
+            [name]="user?.displayName"
+            [value]="user?.name"
+            (input)="onUserSelectionChange($event, user)"
+            [checked]="user?.checked"
+            class="checkbox" />
+          <label [for]="user?.name" class="p-mb-0 p-ml-3 label-name color-grey"
+            >{{ user.displayName }} ({{ user.name }})</label
+          >
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td [attr.colspan]="3">No Users found</td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>

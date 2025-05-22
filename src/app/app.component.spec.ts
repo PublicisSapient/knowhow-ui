@@ -72,12 +72,15 @@ describe('AppComponent', () => {
     };
 
     getItemSpy = spyOn(localStorage, 'getItem').and.callFake((key) => {
-      if (key === 'shared_link') return null;
-      if (key === 'currentUserDetails')
+      if (key === 'shared_link') {
+        return null;
+      }
+      if (key === 'currentUserDetails') {
         return JSON.stringify({
           projectsAccess: [{ projects: [{ projectId: 123 }] }],
           authorities: ['ROLE_USER'],
         });
+      }
       return null;
     });
 
@@ -177,7 +180,9 @@ describe('AppComponent', () => {
 
   it('should navigate to dashboard if stateFilters is missing', () => {
     getItemSpy.and.callFake((key) => {
-      if (key === 'shared_link') return 'https://mock.url';
+      if (key === 'shared_link') {
+        return 'https://mock.url';
+      }
       return null;
     });
   });
@@ -202,7 +207,7 @@ describe('AppComponent', () => {
 
   it('should correctly identify projectLevelSelected when parent_level exists', () => {
     getItemSpy.and.callFake((key) => {
-      if (key === 'shared_link')
+      if (key === 'shared_link') {
         return (
           'https://mock.url?stateFilters=' +
           btoa(
@@ -211,11 +216,13 @@ describe('AppComponent', () => {
             }),
           )
         );
-      if (key === 'currentUserDetails')
+      }
+      if (key === 'currentUserDetails') {
         return JSON.stringify({
           projectsAccess: [{ projects: [{ projectId: 123 }] }],
           authorities: [],
         });
+      }
       return null;
     });
 

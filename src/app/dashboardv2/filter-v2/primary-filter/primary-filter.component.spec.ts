@@ -17,7 +17,7 @@ import { HelperService } from 'src/app/services/helper.service';
 
 // Mock classes
 class MockMultiSelect {
-  overlayVisible: boolean = false;
+  overlayVisible = false;
   close = jasmine.createSpy();
 }
 
