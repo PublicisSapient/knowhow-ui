@@ -36,23 +36,17 @@ export class ViewerGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    const authorities = this.sharedService.getCurrentUserDetails('authorities') ?? [];
+
     if (
-      this.sharedService
-        .getCurrentUserDetails('authorities')
-        ?.includes('ROLE_VIEWER') == false &&
-      this.sharedService
-        .getCurrentUserDetails('authorities')
-        ?.includes('ROLE_PROJECT_VIEWER') == false
+      !authorities.includes('ROLE_VIEWER') &&
+      !authorities.includes('ROLE_PROJECT_VIEWER')
     ) {
       this.hasAccess = true;
       return this.hasAccess;
     } else if (
-      this.sharedService
-        .getCurrentUserDetails('authorities')
-        ?.includes('ROLE_PROJECT_VIEWER') == true ||
-      this.sharedService
-        .getCurrentUserDetails('authorities')
-        ?.includes('ROLE_PROJECT_ADMIN') == true
+      authorities.includes('ROLE_PROJECT_VIEWER') ||
+      authorities.includes('ROLE_PROJECT_ADMIN')
     ) {
       this.hasAccess = true;
       return this.hasAccess;

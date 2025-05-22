@@ -54,7 +54,7 @@ export class SharedService {
   public boardId = 1;
   private authToken = '';
   public sprintForRnR;
-  public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  public dateFilterSelectedDateType = new BehaviorSubject<string>('Weeks');
   primaryFilterChangeSubject = new BehaviorSubject(false);
   public kpiExcelSubject = new BehaviorSubject<{}>({});
   public switchBoard = new BehaviorSubject<boolean>(false);

@@ -24,8 +24,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { Menu } from 'primeng/menu';
 
 declare const require: any;

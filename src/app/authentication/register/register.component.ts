@@ -26,7 +26,7 @@ import {
 } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
