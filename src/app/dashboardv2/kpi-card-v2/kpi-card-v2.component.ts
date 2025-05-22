@@ -126,6 +126,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   selectedMainFilter: any;
   selectedFilter2: any;
   success: boolean = false;
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   constructor(
     public service: SharedService,
@@ -141,6 +143,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    // console.log('xAxisLabel', this.xAxisLabel, 'yAxisLabel', this.yAxisLabel);
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};

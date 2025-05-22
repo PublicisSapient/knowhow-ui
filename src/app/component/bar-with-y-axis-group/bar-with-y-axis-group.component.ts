@@ -49,6 +49,9 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() upperThresholdBG: string;
   @Input() yAxisOrder: Array<any>;
   @Input() thresholdValue: number;
+  hierarchyLevel: string = '';
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   resizeObserver = new ResizeObserver((entries) => {
     const data = this.formatData(this.data);
@@ -66,6 +69,9 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
+    this.hierarchyLevel = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].labelName;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -339,11 +345,11 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .select('#xCaptionContainer')
       .append('text');
 
-    if (this.xCaption) {
-      XCaption.text(this.xCaption);
-    } else {
-      XCaption.text('Sprints');
-    }
+    // adding yaxis caption
+    this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+    XCaption.text(this.xCaption);
 
     svgY
       .append('g')
@@ -431,6 +437,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .attr('class', 'bar');
 
     if (
+      this.hierarchyLevel === 'project' &&
       kpiId !== 'kpi166' &&
       kpiId !== 'kpi156' &&
       kpiId !== 'kpi116' &&

@@ -96,7 +96,8 @@
                                 [selectedtype]="selectedtype" [viewType]="showChart"
                                 [thresholdValue]="kpiData?.kpiThresholdObj"
                                 [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors" [source]="fromReport">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-multiline-v2>
                         </ng-container>
                     </ng-container>
@@ -105,7 +106,8 @@
                         <ng-container>
                             <app-multiline-style-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId"
-                                [thresholdValue]="kpiData?.kpiThresholdObj" [color]="colors" [source]="fromReport">
+                                [thresholdValue]="kpiData?.kpiThresholdObj" [color]="colors" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-multiline-style-v2>
                         </ng-container>
                     </ng-container>
@@ -119,7 +121,8 @@
                                 [yCaption]="kpiData?.yaxisLabel" [barLegend]="kpiData?.barLegend"
                                 [lineLegend]="kpiData?.lineLegend" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
                                 [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors" [source]="fromReport"
-                                [thresholdValue]="kpiData?.kpiThresholdObj">
+                                [thresholdValue]="kpiData?.kpiThresholdObj"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-grouped-column-plus-line-chart-v2>
                         </ng-container>
                     </ng-container>
@@ -131,7 +134,8 @@
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [color]="colors"
                                 [barLegend]="kpiData?.barLegend" [lineLegend]="kpiData?.lineLegend"
                                 [selectedtype]="selectedtype" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [yAxisOrder]="kpiData?.yaxisOrder" [source]="fromReport">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [yAxisOrder]="kpiData?.yaxisOrder" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-bar-with-y-axis-group>
                         </ng-container>
                     </ng-container>
@@ -140,8 +144,8 @@
                         <ng-container>
                             <app-group-bar-chart
                                 [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpiData?.xAxis"
-                                [yCaption]="yAxis" 
-                                [unit]="kpiData?.kpiUnit" 
+                                [yCaption]="yAxis"
+                                [unit]="kpiData?.kpiUnit"
                                 [thresholdValue]="kpiData?.kpiThresholdObj"
                                 [data]="currentChartData" [color]="chartColorList" [releaseEndDate]="releaseEndDate"
                                 [selectedtype]="kpiData?.selectedType" [kpiId]="kpiData?.kpiId" [legendType]="'normal'">
@@ -173,7 +177,7 @@
                     [cols]="currentChartData?.columnHeaders"
                     [showMarker]="'true'"
                     [showMarkerColumnNumber]="0"></app-table>
-                    
+
                     <ng-container *ngSwitchCase="'old-table'">
                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100">
                             <ng-container *ngFor="let item of currentChartData; let index=index">

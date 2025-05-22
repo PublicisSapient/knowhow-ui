@@ -74,7 +74,10 @@ export class KpiHelperService {
       );
 
       chartData.push({
-        category: category.categoryName,
+        category: category.categoryName
+          .replace('Sprint', '') // TODO category name needs to handle form BE
+          .trim()
+          .replace(/^\w/, (c) => c.toUpperCase()),
         value:
           (key
             ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
@@ -113,7 +116,7 @@ export class KpiHelperService {
     categoryInfo?.scopeDuration?.forEach((duration) => {
       let value = 0;
       const IssueFilterByDuration = filterdata.filter((issue) =>
-        issue['scopeDuration'].includes(duration),
+        issue?.['scopeDuration']?.includes(duration),
       );
       if (key) {
         value = IssueFilterByDuration.reduce(
@@ -123,7 +126,7 @@ export class KpiHelperService {
         list.push(`Last ${duration} days: ${value} SP`);
       } else {
         value = IssueFilterByDuration.length;
-        list.push(`Last ${duration} days: ${value} `);
+        list.push(`${duration}d: ${value} `);
       }
     });
 

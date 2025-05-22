@@ -32,6 +32,8 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
 
   constructor(private kpiHelperService: KpiHelperService) {}
 
@@ -44,6 +46,8 @@ export class ReportKpiCardComponent {
    * @throws None
    */
   ngOnChanges(changes: SimpleChanges) {
+    this.xAxisLabel = this.xAxisLabel || this.kpiData?.xAxis;
+    this.yAxisLabel = this.yAxisLabel || this.kpiData?.yAxis;
     this.generateTableKPIColumnHeader();
     this.sortColors();
     this.setKpiFilters();
