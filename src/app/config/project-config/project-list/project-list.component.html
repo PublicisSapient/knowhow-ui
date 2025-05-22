@@ -61,15 +61,15 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-project let-columns="columns">
-        <tr>
-          <td *ngFor="let col of columns" tabindex="0">
+        <tr role="row" tabindex="0">
+          <td *ngFor="let col of columns" role="cell" tabindex="0">
             {{project[col.id]}}
           </td>
-          <td class="p-0 p-text-right">
-            <div class="">
+          <td class="p-0 p-text-right" role="cell">
+            <div class="p-d-flex p-jc-end">
               <div *ngIf="isAdminOrSuperAdmin">
-                <button type="button" pButton (click)="toggleMenu($event,project)" icon="pi pi-cog" class="p-button-text" aria-label="Open Project Actions Menu"></button>
-                <p-menu [popup]="true" #kpimenu [model]="getAuthorizationService.checkIfViewer(project)?roleBasedItems:items"></p-menu>
+                <p-button (click)="toggleMenu($event,project)" icon="pi pi-cog" styleClass="p-button-text" aria-label="Open Project Actions Menu" tabindex="0"></p-button>
+                <p-menu #kpimenu [model]="getAuthorizationService.checkIfViewer(project)?roleBasedItems:items" [popup]="true"></p-menu>
               </div>
             </div>
           </td>
@@ -78,7 +78,7 @@
 
       <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-          <td [attr.colspan]="7" tabindex="0">
+          <td [attr.colspan]="7" role="cell" tabindex="0">
             No Project found
           </td>
         </tr>
@@ -100,9 +100,9 @@
   </p-confirmDialog>
 
   <p-dialog [(visible)]="isRenameProject" [modal]="true" (onHide)="isRenameProject = false;" [style]="{width:'600px'}"
-    aria-label="Rename Project Dialog" role="dialog" tabindex="0">
+    aria-labelledby="rename-project-heading" role="dialog" tabindex="0" #renameProjectRef>
     <ng-template pTemplate="header">
-      <h1 class="p-my-0"> Rename Project</h1>
+      <h1 class="p-my-0" id="rename-project-heading" tabindex="0"> Rename Project</h1>
     </ng-template>
     <form #newProjectNameForm="ngForm" (ngSubmit)="onSubmit(newProjectNameForm)">
       <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
