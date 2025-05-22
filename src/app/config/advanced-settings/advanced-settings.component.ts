@@ -360,7 +360,7 @@ export class AdvancedSettingsComponent implements OnInit {
           ),
         );
       });
-      forkJoin(toolDetailSubscription).subscribe(
+      forkJoin([toolDetailSubscription]).subscribe(
         (response) => {
           if (response.find((res) => !res['success'])) {
             this.messageService.add({

@@ -1271,7 +1271,7 @@ export class HelperService {
                     message: error.message || 'Invalid URL.',
                   });
                 });
-                return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
+                return throwError(() => error); // Re-throw the error so it can be caught by a global error handler if needed
               }),
             )
             .subscribe((response: any) => {

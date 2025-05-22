@@ -112,7 +112,7 @@ export class MyprofileComponent implements OnInit {
           ],
         ],
       },
-      { validator: this.checkConfirmEmail },
+      { validators: this.checkConfirmEmail },
     );
     this.loginType = this.sharedService.getCurrentUserDetails('authType');
 

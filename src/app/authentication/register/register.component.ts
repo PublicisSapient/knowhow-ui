@@ -77,7 +77,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           ],
         ],
       },
-      { validator: this.checkPasswords },
+      { validators: this.checkPasswords },
     );
   }
 
