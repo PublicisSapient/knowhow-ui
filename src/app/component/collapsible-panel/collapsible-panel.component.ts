@@ -9,6 +9,7 @@ import {
   SimpleChanges,
   OnDestroy,
 } from '@angular/core';
+import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -32,6 +33,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   selectedLevelFullDetails;
   accordionData;
   subscriptions: any[] = [];
+  isSummaryAvailableMap: { [projectName: string]: boolean } = {};
+  summarisedSprintGoalsMap: { [projectName: string]: any } = {};
 
   @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
   @HostListener('document:click', ['$event'])
@@ -46,7 +49,10 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  constructor(private sharedService: SharedService) {}
+  constructor(
+    private sharedService: SharedService,
+    private httpService: HttpService,
+  ) {}
 
   ngOnInit(): void {
     this.levelDetails = JSON.parse(
@@ -187,6 +193,39 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     return retValue;
+  }
+
+  summariseUsingAI(data) {
+    const projectName = data.name;
+    const accordianData = this.accordionData;
+    let sprintGoals = [];
+
+    accordianData.map((item) => {
+      if (item.name === projectName) {
+        const sprintGoalsArr = item.sprintGoals;
+        sprintGoalsArr.map((sprintGoal) => {
+          sprintGoals.push(sprintGoal.goal);
+        });
+      }
+    });
+    const requestBody = { sprintGoals };
+
+    // --- Set loading/visibility only for this project --- //
+    this.isSummaryAvailableMap[projectName] = false;
+    // setTimeout(() => {
+    //   this.isSummaryAvailableMap[projectName] = true;
+    //   this.summarisedSprintGoalsMap[projectName] = {
+    //     summary:
+    //       '- Deliver a user-friendly interface to efficiently load organizational hierarchies, improving operational workflows.  \n- Advance accessibility compliance to align with regulatory standards and enhance user inclusivity.  \n- Implement high-priority client-requested enhancements to strengthen customer satisfaction and drive strategic alignment.',
+    //   };
+    // }, 500);
+
+    // --- post call with the above request body --- //
+    this.httpService.summariseSprintGoalsCall(requestBody).subscribe((res) => {
+      console.log('res ', res);
+      this.isSummaryAvailableMap[projectName] = true;
+      this.summarisedSprintGoalsMap[projectName] = res;
+    });
   }
 
   ngOnDestroy() {
