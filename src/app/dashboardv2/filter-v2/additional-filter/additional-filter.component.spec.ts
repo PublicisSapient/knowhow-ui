@@ -65,7 +65,7 @@ describe('AdditionalFilterComponent', () => {
         currentValue: 'New Tab',
         previousValue: 'Old Tab',
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -722,7 +722,7 @@ describe('AdditionalFilterComponent', () => {
 
     component.service.populateAdditionalFilters = of(data);
 
-    let sortByFieldSpy = spyOn(helperService, 'sortByField');
+    const sortByFieldSpy = spyOn(helperService, 'sortByField');
     component.ngOnInit();
 
     expect(component.filterData).toEqual([data.filter1, data.filter2]);

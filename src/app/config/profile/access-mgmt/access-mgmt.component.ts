@@ -59,7 +59,7 @@ export class AccessMgmtComponent implements OnInit {
   allProjectsData = <any>[];
   enableAddBtn = false;
   accessConfirm: boolean;
-  showAddUserForm: boolean = false;
+  showAddUserForm = false;
   addData: object = {
     authType: 'SSO',
     username: '',
@@ -67,7 +67,7 @@ export class AccessMgmtComponent implements OnInit {
     projectsAccess: [],
   };
   ssoLogin = environment.SSO_LOGIN;
-  isSuperAdmin: boolean = false;
+  isSuperAdmin = false;
 
   constructor(
     private service: SharedService,

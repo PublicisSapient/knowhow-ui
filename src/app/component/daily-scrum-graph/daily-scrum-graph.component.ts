@@ -59,8 +59,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   userRole: string;
   checkIfViewer: boolean;
   selectedToolConfig: any = [];
-  loading: boolean = false;
-  noData: boolean = false;
+  loading = false;
+  noData = false;
   displayConfigModel: boolean;
   fieldMappingConfig = [];
   selectedFieldMapping = [];
@@ -84,12 +84,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     this.checkIfViewer = this.authService.checkIfViewer({
       id: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
     });
-    this.statusFilterOptions = this.standUpStatusFilter.map((d) => {
-      return {
-        name: d.filterName,
-        value: d.filterName,
-      };
-    });
+    this.statusFilterOptions = this.standUpStatusFilter.map((d) => ({
+      name: d.filterName,
+      value: d.filterName,
+    }));
     window.setTimeout(() => {
       if (
         this.selectedStatus &&
@@ -216,7 +214,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         }),
       ];
     } else {
-      let otherExpandedStories = issueList.filter(
+      const otherExpandedStories = issueList.filter(
         (f) => f['IsExpanded'] && f['Issue Id'] !== parentIssue['Issue Id'],
       );
       otherExpandedStories.forEach((element) => {
@@ -231,7 +229,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueDataList = [
         ...issueList.filter((issue) => {
-          let independentSubtasks = issueList
+          const independentSubtasks = issueList
             .filter(
               (f) =>
                 f['parentStory'] &&
@@ -358,7 +356,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     };
 
     const showMarkers = (issues) => {
-      let self = this;
+      const self = this;
       const marker = svg
         .selectAll('circle.some-class')
         .data(issues)
@@ -371,13 +369,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         });
 
       let currentIssue = {};
-      let parts = marker
+      const parts = marker
         .selectAll('g.part')
-        .data(() => {
-          return [].concat(
-            ...issues.map((d) => Object.keys(d['statusLogGroup'])),
-          );
-        })
+        .data(() =>
+          [].concat(...issues.map((d) => Object.keys(d['statusLogGroup']))),
+        )
         .enter()
         .append('g')
         .attr('class', 'statusPart');
@@ -487,7 +483,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .style('cursor', 'pointer')
         .on('mouseover', function (event, i) {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           let data = ``;
           currentIssue = JSON.parse(
             d3.select(this.parentNode.parentNode).attr('parent-data'),
@@ -515,18 +511,18 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           hideTooltip();
         });
 
-      let assigneeParts = marker
+      const assigneeParts = marker
         .selectAll('g.part')
-        .data(() => {
-          return [].concat(
+        .data(() =>
+          [].concat(
             ...issues.map((d, index) => Object.keys(d['assigneeLogGroup'])),
-          );
-        })
+          ),
+        )
         .enter()
         .append('g')
         .attr('class', 'assigneePart');
 
-      let assigneePartsArr = [];
+      const assigneePartsArr = [];
       assigneeParts
         .append('text')
         .attr('class', 'assigneeChangeText')
@@ -548,7 +544,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               toolTipData !== ''
             ) {
               // logic to avoid multiple labels with same text on the same position
-              let obj = {
+              const obj = {
                 data: toolTipData,
                 id: currentIssue['Issue Id'],
                 x: x(self.formatDate(new Date(d))) + initialCoordinate / 2,
@@ -640,7 +636,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             d3.select(this.parentNode).attr('fill', '#437495');
           }
 
-          var thisWidth = this.getComputedTextLength();
+          const thisWidth = this.getComputedTextLength();
           if (thisWidth > 80) {
             const textElement = d3.select(nodes[i]);
             self.wrap(textElement, 80);
@@ -690,7 +686,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           const data = `<p>Due Date: ${self.formatDate(d['Due Date'])}</>`;
           showTooltip(data, event.offsetX, event.offsetY);
         })
@@ -703,13 +699,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('image')
         .attr('class', 'DevDueDate')
         .attr('xlink:href', '../../../assets/img/DevDueDate.svg')
-        .style('display', (d) => {
-          return d['Dev Due Date'] &&
-            d['Dev Due Date'] !== '-' &&
-            self.compareDates(d['Due Date'], d['Dev Due Date'])
+        .style('display', (d) =>
+          d['Dev Due Date'] &&
+          d['Dev Due Date'] !== '-' &&
+          self.compareDates(d['Due Date'], d['Dev Due Date'])
             ? 'block'
-            : 'none';
-        })
+            : 'none',
+        )
         .attr('width', '40px')
         .attr('height', '40px')
         .attr('x', (d) =>
@@ -728,7 +724,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           const data = `<p>Dev Due Date: ${self.formatDate(
             d['Dev Due Date'],
           )}</>`;
@@ -763,7 +759,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           const data = `<p>Due date exceeded</p><p>Original Due Date: ${self.formatDate(
             d['Due Date'],
           )}</>`;
@@ -800,13 +796,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .attr('width', '40px')
         .attr('height', '40px')
-        .attr('x', (d) => {
-          return !d['Test-Completed'] || d['Test-Completed'] === '-'
+        .attr('x', (d) =>
+          !d['Test-Completed'] || d['Test-Completed'] === '-'
             ? 0
             : x(self.formatDate(new Date(d['Test-Completed']))) +
-                initialCoordinate / 2 -
-                20;
-        })
+              initialCoordinate / 2 -
+              20,
+        )
         .attr('y', (d, i) =>
           issues.length <= 1
             ? swimLaneHeight / 2 - 20
@@ -814,7 +810,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           const data = `<p>QA Completed</p><p>Date: ${self.formatDate(
             d['Test-Completed'],
           )}</>`;
@@ -854,17 +850,17 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .attr('width', '40px')
         .attr('height', '40px')
-        .attr('x', (d) => {
-          return isNaN(
+        .attr('x', (d) =>
+          isNaN(
             x(self.formatDate(new Date(d['Dev-Completion-Date']))) +
               initialCoordinate / 2 -
               25,
           )
             ? -500
             : x(self.formatDate(new Date(d['Dev-Completion-Date']))) +
-                initialCoordinate / 2 -
-                20;
-        })
+              initialCoordinate / 2 -
+              20,
+        )
         .attr('y', (d, i) =>
           issues.length <= 1
             ? swimLaneHeight / 2 - 20
@@ -872,7 +868,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           console.log(d);
           let data = `<p>Dev Completed</p><p>Date: ${self.formatDate(
             d['Dev-Completion-Date'],
@@ -906,7 +902,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const showSubTask = (parentTask, index) => {
       selectedIssueSubtask.forEach((task) => {
-        let idx = issueDataList.findIndex(
+        const idx = issueDataList.findIndex(
           (obj) => obj['Issue Id'] === task['Issue Id'],
         );
         if (idx !== -1) {
@@ -925,13 +921,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       if (selectedIssueSubtask.length) {
         issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
         parentTask['IsExpanded'] = true;
-        let scrollPosition = scroller.node().scrollTop;
+        const scrollPosition = scroller.node().scrollTop;
         this.draw(issueDataList, parentTask, true, scrollPosition);
       }
     };
 
     const showIssueIdandStatus = (issueListArr) => {
-      let self = this;
+      const self = this;
       //add issue boxes
       const issueSvg = issueAxis
         .selectAll('rect.some-class')
@@ -947,7 +943,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('rect')
         .attr('width', '100%')
         .attr('height', (d, i) => {
-          let heightCoefficent =
+          const heightCoefficent =
             y(i + 1) - y(i) + 8 <= swimLaneHeight
               ? y(i + 1) - y(i) + 8
               : swimLaneHeight;
@@ -1027,7 +1023,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
                 ...st,
                 isSubtask: true,
               }));
-              let index = issueListArr.findIndex(
+              const index = issueListArr.findIndex(
                 (obj) => obj['Issue Id'] === d['Issue Id'],
               );
               showSubTask(d, index);
@@ -1041,16 +1037,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               d['subTask'].length,
             );
 
-            let scrollPosition = scroller.node().scrollTop;
+            const scrollPosition = scroller.node().scrollTop;
             self.draw(issueListArr, null, false, scrollPosition);
           }
           showTaskDetail(d);
         });
 
-      let issueBoxes = d3.select('#issueAxis').selectAll('a.issue_Id');
+      const issueBoxes = d3.select('#issueAxis').selectAll('a.issue_Id');
       issueBoxes
         .on('mouseover', function (event) {
-          let d = event.target.parentNode.parentNode.parentNode.__data__;
+          const d = event.target.parentNode.parentNode.parentNode.__data__;
           if (d) {
             const data = `<p>${d['Issue Type']}: ${d['Issue Description']}</p>`;
             showTooltip(data, event.x + 50, event.y, true);
@@ -1101,8 +1097,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     };
 
     const drawLineForIssue = (issuesList) => {
-      let self = this;
-      let line = svg
+      const self = this;
+      const line = svg
         .selectAll('rect.some-class')
         .data(issuesList)
         .enter()
@@ -1116,7 +1112,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('rect')
         .attr('width', width + margin.left + margin.right + 200)
         .attr('height', (d, i) => {
-          let heightCoefficent =
+          const heightCoefficent =
             y(i + 1) - y(i) + 8 <= swimLaneHeight
               ? y(i + 1) - y(i) + 8
               : swimLaneHeight;
@@ -1194,11 +1190,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2,
         )
         .style('stroke', function (d) {
-          let onHold = onHoldIssueStatus.includes(d['Issue Status']);
-          let dueDateExceeded =
+          const onHold = onHoldIssueStatus.includes(d['Issue Status']);
+          const dueDateExceeded =
             self.compareDates(new Date(), d['Due Date']) &&
             !d['Actual-Completion-Date'];
-          let closed = d['Actual-Completion-Date'] ? true : false;
+          const closed = d['Actual-Completion-Date'] ? true : false;
 
           if (onHold) {
             return '#EB4545';
@@ -1315,21 +1311,21 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   wrap(text, width) {
     text.each(function () {
-      let textElem = d3.select(this),
-        words = textElem.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        x = textElem.attr('x'),
-        y = textElem.attr('y'),
-        dy = parseFloat(textElem.attr('dy')),
-        tspan = textElem
-          .text(null)
-          .append('tspan')
-          .attr('x', x)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const textElem = d3.select(this);
+      const words = textElem.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const x = textElem.attr('x');
+      const y = textElem.attr('y');
+      const dy = parseFloat(textElem.attr('dy'));
+      let tspan = textElem
+        .text(null)
+        .append('tspan')
+        .attr('x', x)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));
@@ -1402,7 +1398,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   }
 
   getFieldMapping() {
-    let obj = {
+    const obj = {
       releaseNodeId: null,
     };
     this.http
@@ -1439,7 +1435,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           this.service.setFieldMappingMetaData({
             projectID:
               this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-            kpiSource: kpiSource,
+            kpiSource,
             metaData: Response.data,
           });
         } else {

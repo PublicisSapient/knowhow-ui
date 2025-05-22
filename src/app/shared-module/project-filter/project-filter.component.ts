@@ -44,7 +44,7 @@ export class ProjectFilterComponent implements OnInit {
   selectedValueIsStillThere: any = {};
   valueRemoved: any = {};
   formData: any;
-  parentNodeName: string = '';
+  parentNodeName = '';
   completeHierarchyData: any;
   selectedItems: { [hierarchyLevelId: string]: any[] } = {};
   filteredSuggestions: { [hierarchyLevelId: string]: any[] } = {};
@@ -75,7 +75,7 @@ export class ProjectFilterComponent implements OnInit {
           (elem) => elem.hierarchyLevel.hierarchyLevelId,
         );
 
-        let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+        const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
         this.formData = JSON.parse(JSON.stringify(formFieldData));
 
         for (const level of this.formData) {
@@ -123,12 +123,10 @@ export class ProjectFilterComponent implements OnInit {
           obj['accessType'] = hierarchy;
           obj['value'] = [];
           const selectedHierarchyArr = this.selectedItems[hierarchy].map(
-            (item) => {
-              return {
-                itemId: item.nodeId,
-                itemName: item.nodeDisplayName,
-              };
-            },
+            (item) => ({
+              itemId: item.nodeId,
+              itemName: item.nodeDisplayName,
+            }),
           );
           obj['value'] = [...selectedHierarchyArr];
         }
@@ -192,40 +190,38 @@ export class ProjectFilterComponent implements OnInit {
         const transformedData =
           typeof hierarchyMap === 'object'
             ? Object.entries(hierarchyMap)?.map(
-                ([hierarchyLevelId, hierarchyLevelIdName], index) => {
-                  return {
-                    hierarchyLevelId,
-                    hierarchyLevelIdName,
-                    level: index + 1,
-                    list: flatData
-                      ?.filter(
-                        (item) => item.hierarchyLevelId === hierarchyLevelId,
-                      )
-                      .map(
-                        ({
-                          id,
-                          nodeId,
-                          nodeName,
-                          nodeDisplayName,
-                          hierarchyLevelId,
-                          parentId,
-                          createdDate,
-                          modifiedDate,
-                        }) => ({
-                          level: index + 1,
-                          hierarchyLevelName: hierarchyLevelIdName,
-                          id,
-                          nodeId,
-                          nodeName,
-                          nodeDisplayName,
-                          hierarchyLevelId,
-                          parentId,
-                          createdDate,
-                          ...(modifiedDate && { modifiedDate }),
-                        }),
-                      ),
-                  };
-                },
+                ([hierarchyLevelId, hierarchyLevelIdName], index) => ({
+                  hierarchyLevelId,
+                  hierarchyLevelIdName,
+                  level: index + 1,
+                  list: flatData
+                    ?.filter(
+                      (item) => item.hierarchyLevelId === hierarchyLevelId,
+                    )
+                    .map(
+                      ({
+                        id,
+                        nodeId,
+                        nodeName,
+                        nodeDisplayName,
+                        hierarchyLevelId,
+                        parentId,
+                        createdDate,
+                        modifiedDate,
+                      }) => ({
+                        level: index + 1,
+                        hierarchyLevelName: hierarchyLevelIdName,
+                        id,
+                        nodeId,
+                        nodeName,
+                        nodeDisplayName,
+                        hierarchyLevelId,
+                        parentId,
+                        createdDate,
+                        ...(modifiedDate && { modifiedDate }),
+                      }),
+                    ),
+                }),
               )
             : [];
 
@@ -238,14 +234,18 @@ export class ProjectFilterComponent implements OnInit {
   }
 
   getNodeDisplayNameById(parentId: string, currentField: any): string | null {
-    if (!parentId) return null;
+    if (!parentId) {
+      return null;
+    }
 
     // Find the level just above the current one
     const parentLevel = this.formData.find(
       (level) => level.level === currentField.level - 1,
     );
 
-    if (!parentLevel || !parentLevel.list) return null;
+    if (!parentLevel || !parentLevel.list) {
+      return null;
+    }
 
     // Find the parent node
     const parentNode = parentLevel.list.find(
@@ -310,7 +310,9 @@ export class ProjectFilterComponent implements OnInit {
   filterChildrenRecursively(level: number, parentNodeIds: string[]): void {
     const childField = this.formData.find((item) => item.level === level);
 
-    if (!childField) return;
+    if (!childField) {
+      return;
+    }
 
     const childList = childField.list || [];
 
@@ -332,7 +334,9 @@ export class ProjectFilterComponent implements OnInit {
   filterParentRecursively(level: number, childNodeIds: string[]): void {
     const parentField = this.formData.find((item) => item.level === level);
 
-    if (!parentField) return;
+    if (!parentField) {
+      return;
+    }
 
     const parentList = parentField.list || [];
 

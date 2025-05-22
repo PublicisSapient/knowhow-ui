@@ -62,17 +62,17 @@ export class BasicConfigComponent implements OnInit {
   breadcrumbs: Array<any>;
   @Output() closeProjectSetupPopup = new EventEmitter();
   steps: MenuItem[] | undefined;
-  isProjectSetupPopup: boolean = false;
-  isProjectCOmpletionPopup: boolean = false;
+  isProjectSetupPopup = false;
+  isProjectCOmpletionPopup = false;
   allProjectList: any[];
   selectedItems: { [key: string]: any } = {};
-  isOpenSource: boolean = false;
-  clone: string = '';
+  isOpenSource = false;
+  clone = '';
   completeHierarchyData: any;
-  hierarchyItem: string = '';
+  hierarchyItem = '';
   hierarchyItemFullDetails: any = {};
-  addRenameHierarchyPopup: boolean = false;
-  isHierarchyAddtion: boolean = true;
+  addRenameHierarchyPopup = false;
+  isHierarchyAddtion = true;
   selectedHierarchyItemToUpdate: any;
 
   constructor(
@@ -126,7 +126,7 @@ export class BasicConfigComponent implements OnInit {
   getFields() {
     // api call to get formData
     this.blocked = true;
-    let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
 
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
@@ -198,7 +198,7 @@ export class BasicConfigComponent implements OnInit {
 
   prefillForm(): void {
     if (this.selectedProject && Object.keys(this.selectedProject).length) {
-      let project = JSON.parse(JSON.stringify(this.selectedProject));
+      const project = JSON.parse(JSON.stringify(this.selectedProject));
       const formValues = {};
       this.formData.forEach((field) => {
         const nodeDisplayName =
@@ -330,7 +330,7 @@ export class BasicConfigComponent implements OnInit {
   }
 
   onSubmit() {
-    let newProjectParentId: string = '';
+    const newProjectParentId = '';
     const formValue = this.form.getRawValue();
     console.log(formValue);
     const submitData = {};
@@ -345,7 +345,7 @@ export class BasicConfigComponent implements OnInit {
     } else {
       submitData['clonedFrom'] = null;
     }
-    let gaObj = {
+    const gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
       saveAssigneeDetails: formValue['assigneeDetails'],
@@ -497,40 +497,36 @@ export class BasicConfigComponent implements OnInit {
       const transformedData =
         typeof hierarchyMap === 'object'
           ? Object.entries(hierarchyMap)?.map(
-              ([hierarchyLevelId, hierarchyLevelIdName], index) => {
-                return {
-                  hierarchyLevelId,
-                  hierarchyLevelIdName,
-                  level: index + 1,
-                  list: flatData
-                    ?.filter(
-                      (item) => item.hierarchyLevelId === hierarchyLevelId,
-                    )
-                    .map(
-                      ({
-                        id,
-                        nodeId,
-                        nodeName,
-                        nodeDisplayName,
-                        hierarchyLevelId,
-                        parentId,
-                        createdDate,
-                        modifiedDate,
-                      }) => ({
-                        level: index + 1,
-                        hierarchyLevelName: hierarchyLevelIdName,
-                        id,
-                        nodeId,
-                        nodeName,
-                        nodeDisplayName,
-                        hierarchyLevelId,
-                        parentId,
-                        createdDate,
-                        ...(modifiedDate && { modifiedDate }),
-                      }),
-                    ),
-                };
-              },
+              ([hierarchyLevelId, hierarchyLevelIdName], index) => ({
+                hierarchyLevelId,
+                hierarchyLevelIdName,
+                level: index + 1,
+                list: flatData
+                  ?.filter((item) => item.hierarchyLevelId === hierarchyLevelId)
+                  .map(
+                    ({
+                      id,
+                      nodeId,
+                      nodeName,
+                      nodeDisplayName,
+                      hierarchyLevelId,
+                      parentId,
+                      createdDate,
+                      modifiedDate,
+                    }) => ({
+                      level: index + 1,
+                      hierarchyLevelName: hierarchyLevelIdName,
+                      id,
+                      nodeId,
+                      nodeName,
+                      nodeDisplayName,
+                      hierarchyLevelId,
+                      parentId,
+                      createdDate,
+                      ...(modifiedDate && { modifiedDate }),
+                    }),
+                  ),
+              }),
             )
           : [];
 
@@ -545,7 +541,7 @@ export class BasicConfigComponent implements OnInit {
   getNodeDisplayNameById(nodeId: string, field) {
     const currentIndex = this.formData.findIndex((level) => level === field);
     if (this.formData[currentIndex - 1]?.list) {
-      let matchingObject = this.formData[currentIndex - 1]?.list.find(
+      const matchingObject = this.formData[currentIndex - 1]?.list.find(
         (item) => item.nodeId === nodeId,
       );
       return `(${matchingObject.nodeDisplayName})`;

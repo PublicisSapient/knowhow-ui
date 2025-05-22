@@ -44,7 +44,7 @@ export class AdvancedSettingsComponent implements OnInit {
   processorsTracelogs = [];
   toolConfigsDetails = [];
   ssoLogin = environment.SSO_LOGIN;
-  jirsStepsPopup: boolean = false;
+  jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
   subscription: Subscription;
@@ -266,7 +266,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    let runProcessorInput = {
+    const runProcessorInput = {
       processor: processorName,
       projects: [],
     };
@@ -462,7 +462,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length - 1].endTime;
       const currentTime = new Date().getTime();
-      let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      const differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if (differenceInMilliseconds > 600000) {
         return false;
       } else if (differenceInMilliseconds <= 600000) {

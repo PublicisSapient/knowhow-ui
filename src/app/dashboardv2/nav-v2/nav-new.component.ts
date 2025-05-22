@@ -13,8 +13,8 @@ import { Router } from '@angular/router';
 export class NavNewComponent implements OnInit, OnDestroy {
   items: any;
   activeItem: any;
-  selectedTab: string = '';
-  selectedType: string = '';
+  selectedTab = '';
+  selectedType = '';
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
@@ -98,7 +98,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   setBoards(response) {
     if (response.success === true) {
-      let data = response.data.userBoardConfigDTO;
+      const data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(
           localStorage.getItem('completeHierarchyData'),
@@ -197,15 +197,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 board.kpis.some((kpi) => kpi.shown === true) &&
                 board.kpis.length > 0,
             )
-            .map((obj) => {
-              return {
-                label: obj['boardName'],
-                slug: obj['boardSlug'],
-                command: () => {
-                  this.handleMenuTabFunctionality(obj);
-                },
-              };
-            });
+            .map((obj) => ({
+              label: obj['boardName'],
+              slug: obj['boardSlug'],
+              command: () => {
+                this.handleMenuTabFunctionality(obj);
+              },
+            }));
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];

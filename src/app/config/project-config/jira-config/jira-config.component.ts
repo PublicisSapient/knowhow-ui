@@ -115,8 +115,8 @@ export class JiraConfigComponent implements OnInit {
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
   isGitlabToolFieldEnabled: boolean;
-  isConfigureTool: boolean = false;
-  showAddNewBtn: boolean = true;
+  isConfigureTool = false;
+  showAddNewBtn = true;
   jiraConfigurationTypeOptions;
   jiraQueryEnabled = true;
 
@@ -138,16 +138,14 @@ export class JiraConfigComponent implements OnInit {
       this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
-    )[selectedType].map((x) => {
-      return {
-        id: x['hierarchyLevelId'],
-        name: x['hierarchyLevelName'],
-      };
-    });
+    )[selectedType].map((x) => ({
+      id: x['hierarchyLevelId'],
+      name: x['hierarchyLevelName'],
+    }));
 
     Object.keys(this.selectedProject).forEach((key) => {
       if (levelDetails.map((x) => x.id).includes(key)) {
-        let propertyName = levelDetails.filter((x) => x.id === key)[0].name;
+        const propertyName = levelDetails.filter((x) => x.id === key)[0].name;
         this.selectedProject[propertyName] = this.selectedProject[key];
         delete this.selectedProject[key];
       }
@@ -270,7 +268,9 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getDeploymentProjects(connectionId) {
-    if (!connectionId) return;
+    if (!connectionId) {
+      return;
+    }
 
     const self = this;
     this.showLoadingOnFormElement('deploymentProject');
@@ -555,9 +555,7 @@ export class JiraConfigComponent implements OnInit {
     return false;
   };
 
-  checkTeams = () => {
-    return false;
-  };
+  checkTeams = () => false;
 
   fetchBoards(self) {
     if (
@@ -613,7 +611,7 @@ export class JiraConfigComponent implements OnInit {
   fetchTeams(self) {
     if (self.selectedConnection && self.selectedConnection.id) {
       self.isLoading = true;
-      let connectionId = self.selectedConnection.id;
+      const connectionId = self.selectedConnection.id;
       self.http.getAzureTeams(connectionId).subscribe((response) => {
         if (response && response['success']) {
           self.teamData = response['data'];
@@ -3204,9 +3202,10 @@ export class JiraConfigComponent implements OnInit {
     };
     self.http.getGitActionWorkFlowName(postJson).subscribe((resp) => {
       if (resp && resp['success']) {
-        self.gitActionWorkflowNameList = resp['data'].map((option) => {
-          return { name: option['workflowName'], code: option['workflowID'] };
-        });
+        self.gitActionWorkflowNameList = resp['data'].map((option) => ({
+          name: option['workflowName'],
+          code: option['workflowID'],
+        }));
         self.hideLoadingOnFormElement('workflowID');
       } else {
         self.hideLoadingOnFormElement('workflowID');

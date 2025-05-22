@@ -93,11 +93,11 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onSelectionChange(event) {
-    let selectedNodeIds =
+    const selectedNodeIds =
       this.selectedLevel.hierarchyLevelName === 'Project'
         ? event.value.map((item) => item.basicProjectConfigId)
         : event.value.map((item) => item.nodeId);
-    let filteredResults = this.filterByHierarchyNodeId(
+    const filteredResults = this.filterByHierarchyNodeId(
       this.rawData,
       selectedNodeIds,
     );
@@ -144,9 +144,9 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   buildFilterDropdown() {
-    let retValue = new Map<string, any[]>();
+    const retValue = new Map<string, any[]>();
 
-    let currentIndex = this.filterRawData.filterLevels.findIndex(
+    const currentIndex = this.filterRawData.filterLevels.findIndex(
       (x) => x.nodeName === this.filterRawData.selectedLevel.nodeName,
     );
 
@@ -165,10 +165,10 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       index < this.filterRawData.filterLevels.length;
       index++
     ) {
-      let levelName = this.filterRawData.filterLevels[index].nodeName;
+      const levelName = this.filterRawData.filterLevels[index].nodeName;
 
       if (index === currentIndex) {
-        let selectedData = this.filterRawData.filterDataArr[levelName].filter(
+        const selectedData = this.filterRawData.filterDataArr[levelName].filter(
           (x) => parentIds.includes(x.nodeId),
         );
         retValue.set(levelName, selectedData);

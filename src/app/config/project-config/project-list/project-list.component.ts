@@ -65,7 +65,7 @@ export class ProjectListComponent implements OnInit {
   selectedProductForExecutingAction: any;
   isRenameProject = false;
   submitted = false;
-  newProjectName: string = '';
+  newProjectName = '';
   projectGroup;
   selectedProject: any;
   @ViewChild('kpimenu') kpimenu: Menu;
