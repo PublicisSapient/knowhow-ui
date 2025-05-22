@@ -1950,6 +1950,31 @@ export class ConnectionListComponent implements OnInit {
             },
           );
         break;
+      case 'ArgoCD':
+        this.testConnectionService
+          .testArgoCD(
+            reqData['baseUrl'],
+            reqData['username'],
+            reqData['accessToken'],
+          )
+          .subscribe(
+            (next) => {
+              if (next.success && next.data === 200) {
+                this.testConnectionMsg = 'Valid Connection';
+                this.testConnectionValid = true;
+              } else {
+                this.testConnectionMsg = 'Connection Invalid';
+                this.testConnectionValid = false;
+              }
+              this.testingConnection = false;
+            },
+            (error) => {
+              this.testConnectionMsg = 'Connection Invalid';
+              this.testConnectionValid = false;
+              this.testingConnection = false;
+            },
+          );
+        break;
     }
   }
 
