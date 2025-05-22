@@ -5,7 +5,7 @@
 
     <div class="kpi-card-body">
       <ng-container
-        *ngIf="!loader && (currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
+        *ngIf="!loader && (currentChartData?.chartData?.length > 0 || currentChartData?.chartData?.data?.length > 0 || currentChartData?.chartData?.chartData?.length > 0); else noDataRawDataKPIs">
         <div *ngIf="checkFilterPresence(kpiFilterData)">
           <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" [kpiId]="kpiData?.kpiId"
             *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
@@ -36,11 +36,11 @@
     <div *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
       class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
       <ul class="legend">
-        <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData">
+        <li class="p-px-2 p-py-0" *ngFor="let footer of currentChartData?.chartData">
           <div>
             <p><span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}</p>
             <ng-container *ngFor="let item of footer?.otherTootipInfo">
-              <div class="p-ml-3">{{item}}</div>
+              <div class="p-ml-4"> <i class="pi pi-calendar" style="font-size: 1rem"></i> {{item}}</div>
             </ng-container>
           </div>
         </li>
@@ -346,12 +346,25 @@
 </p-dialog>
 
 <ng-template #noDataRawDataKPIs>
-  <div class="min-ht" *ngIf="!loader">
+  <div class="min-ht" *ngIf="!loader && (currentChartData?.chartData?.length === 0 || currentChartData?.chartData?.data?.length === 0 || currentChartData?.chartData?.chartData?.length === 0); else defaultMessage">
     <div class="p-w-100  p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
     <h4 class="p-text-center" tabindex="0">No Data Available.</h4>
+  </div>
+  <div class="overlay loader" *ngIf="loader">
+    <div class="loading-img"></div>
+  </div>
+</ng-template>
+
+<ng-template #defaultMessage>
+  <div class="min-ht">
+    <div class="p-w-100  p-d-flex p-justify-center">
+      <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
+        [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
+    </div>
+    <h4 class="p-text-center" tabindex="0">Data is Loading. Please wait.</h4>
   </div>
   <div class="overlay loader" *ngIf="loader">
     <div class="loading-img"></div>
@@ -385,7 +398,7 @@
       </div>
       <div class="p-col-4 p-ml-2 p-pt-3 p-align-center">
         <p-button label="Create & Add KPI" styleClass="add-to-reports-btn" aria-label="Create New Report"
-          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()" role="button" tabindex="0" [attr.aria-disabled]="!reportName || !reportName.length"></p-button>
+          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()" [attr.aria-disabled]="!reportName || !reportName.length"></p-button>
       </div>
     </div>
 
@@ -399,9 +412,9 @@
   <ng-template pTemplate="footer">
     <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0" role="group" aria-label="Add to Report Section">
       <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
-        (onClick)="closeAddToReportsModal()"  role="button" tabindex="0"></p-button>
+        (onClick)="closeAddToReportsModal()"></p-button>
       <p-button label="Include in Report" styleClass="add-to-reports-btn" aria-label="Include in Report"
-        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success" role="button" tabindex="0"></p-button>
+        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
     </div>
   </ng-template>
 </p-dialog>
