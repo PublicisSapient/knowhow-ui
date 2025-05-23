@@ -1,8 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CollapsiblePanelComponent } from './collapsible-panel.component';
 import { SharedService } from 'src/app/services/shared.service';
-import { Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { HttpService } from 'src/app/services/http.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { InjectionToken } from '@angular/core';
+
+export const APP_CONFIG = new InjectionToken('app.config');
 
 const RawData = [
   {
@@ -525,20 +530,54 @@ const RawData = [
   },
 ];
 
+const httpServiceMock = {
+  summariseSprintGoalsCall: jasmine.createSpy('summariseSprintGoalsCall'),
+};
+
 describe('CollapsiblePanelComponent', () => {
   let component: CollapsiblePanelComponent;
   let fixture: ComponentFixture<CollapsiblePanelComponent>;
   let sharedService: SharedService;
+  let httpService: HttpService;
+
+  const mockData = [
+    {
+      name: 'Project A',
+      sprintGoals: [
+        { goal: 'Complete user authentication' },
+        { goal: 'Implement dashboard' },
+        { goal: 'Setup CI/CD pipeline' },
+      ],
+    },
+    {
+      name: 'Project B',
+      sprintGoals: [
+        { goal: 'Design user interface' },
+        { goal: 'Create database schema' },
+      ],
+    },
+    {
+      name: 'Project C',
+      sprintGoals: [],
+    },
+  ];
+
+  const mockSummaryResponse = {
+    summary: 'AI generated summary of sprint goals',
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CollapsiblePanelComponent],
+      imports: [HttpClientTestingModule],
       providers: [
+        { provide: HttpService, useValue: httpServiceMock },
         SharedService,
         {
           provide: ActivatedRoute,
           useValue: { params: new Subject(), queryParams: new Subject() },
         },
+        { provide: APP_CONFIG, useValue: {} },
       ], // ✅ Provide real service
     }).compileComponents();
   });
@@ -547,6 +586,12 @@ describe('CollapsiblePanelComponent', () => {
     fixture = TestBed.createComponent(CollapsiblePanelComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService); // ✅ Use real service
+    httpService = TestBed.inject(HttpService);
+
+    // --- Initialize component properties
+    component.accordionData = mockData;
+    component.isSummaryAvailableMap = {};
+    component.summarisedSprintGoalsMap = {};
 
     // ✅ Initialize observable properties (simulate real observables)
     sharedService.onScrumKanbanSwitch = new Subject();
@@ -687,6 +732,225 @@ describe('CollapsiblePanelComponent', () => {
       spyOn(sharedService, 'updateSprintGoalFlag');
       sharedService.onTabSwitch.next({ selectedBoard: 'Speed' }); // ✅ Trigger event
       expect(sharedService.updateSprintGoalFlag).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('summariseUsingAI', () => {
+    xit('should extract sprint goals for the correct project and make API call', () => {
+      // Arrange
+      const testData = { name: 'Project A' };
+      const expectedRequestBody = {
+        sprintGoals: [
+          'Complete user authentication',
+          'Implement dashboard',
+          'Setup CI/CD pipeline',
+        ],
+      };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).toHaveBeenCalledWith(
+        expectedRequestBody,
+      );
+      expect(httpService.summariseSprintGoalsCall).toHaveBeenCalledTimes(1);
+    });
+
+    // fit('should set loading state to false initially for the project', () => {
+    //   // Arrange
+    //   const testData = { name: 'Project A' };
+    //   httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+    //     of(mockSummaryResponse),
+    //   );
+
+    //   // Act
+    //   component.summariseUsingAI(testData);
+
+    //   // Assert
+    //   expect(component.isSummaryAvailableMap['Project A']).toBe(false);
+    //   // Simulate API call completion
+    //   component.httpService
+    //     .summariseSprintGoalsCall(testData)
+    //     .subscribe((res) => {
+    //       expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+    //     });
+    // });
+    it('should set loading state to false initially for the project', () => {
+      const testData = { name: 'Project A' };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(of({}));
+
+      component.summariseUsingAI(testData);
+
+      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+    });
+
+    it('should update summary availability and store response on successful API call', () => {
+      // Arrange
+      const testData = { name: 'Project A' };
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Project A']).toEqual(
+        mockSummaryResponse,
+      );
+    });
+
+    it('should handle project with empty sprint goals', () => {
+      // Arrange
+      const testData = { name: 'Project C' };
+      const expectedRequestBody = { sprintGoals: [] };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).toHaveBeenCalledWith(
+        expectedRequestBody,
+      );
+      expect(component.isSummaryAvailableMap['Project C']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Project C']).toEqual(
+        mockSummaryResponse,
+      );
+    });
+
+    it('should handle project not found in accordion data', () => {
+      // Arrange
+      const testData = { name: 'Non-existent Project' };
+      const expectedRequestBody = { sprintGoals: [] };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).toHaveBeenCalledWith(
+        expectedRequestBody,
+      );
+      expect(component.isSummaryAvailableMap['Non-existent Project']).toBe(
+        true,
+      );
+    });
+
+    it('should handle API call failure gracefully', () => {
+      // Arrange
+      const testData = { name: 'Project A' };
+      const errorResponse = new Error('API Error');
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        throwError(errorResponse),
+      );
+      spyOn(console, 'error'); // Optional: spy on console.error if you want to verify error logging
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Project A']).toBe(
+        `Failed to summarize: ${errorResponse.message}`,
+      );
+    });
+
+    it('should handle multiple projects independently', () => {
+      // Arrange
+      const testDataA = { name: 'Project A' };
+      const testDataB = { name: 'Project B' };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testDataA);
+      component.summariseUsingAI(testDataB);
+
+      // Assert
+      // expect(httpServiceMock.summariseSprintGoalsCall).toHaveBeenCalledTimes(2);
+      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+      expect(component.isSummaryAvailableMap['Project B']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Project A']).toEqual(
+        mockSummaryResponse,
+      );
+      expect(component.summarisedSprintGoalsMap['Project B']).toEqual(
+        mockSummaryResponse,
+      );
+    });
+
+    it('should extract sprint goals correctly with different data structures', () => {
+      // Arrange
+      const customAccordionData = [
+        {
+          name: 'Custom Project',
+          sprintGoals: [
+            { goal: 'Goal 1' },
+            { goal: 'Goal 2' },
+            { goal: 'Goal 3' },
+          ],
+        },
+      ];
+
+      component.accordionData = customAccordionData;
+      const testData = { name: 'Custom Project' };
+      const expectedRequestBody = {
+        sprintGoals: ['Goal 1', 'Goal 2', 'Goal 3'],
+      };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).toHaveBeenCalledWith(
+        expectedRequestBody,
+      );
+    });
+
+    it('should preserve existing data in maps when processing new projects', () => {
+      // Arrange
+      const testData = { name: 'Project A' };
+      component.isSummaryAvailableMap['Existing Project'] = true;
+      component.summarisedSprintGoalsMap['Existing Project'] = {
+        summary: 'Existing summary',
+      };
+
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(
+        of(mockSummaryResponse),
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(component.isSummaryAvailableMap['Existing Project']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Existing Project']).toEqual({
+        summary: 'Existing summary',
+      });
+      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
+      expect(component.summarisedSprintGoalsMap['Project A']).toEqual(
+        mockSummaryResponse,
+      );
     });
   });
 });

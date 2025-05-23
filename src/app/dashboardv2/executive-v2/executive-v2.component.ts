@@ -2293,7 +2293,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiTrendObject[kpiId]?.push(trendObj);
         }
       }
-  
+
     } */
 
   getChartDataforRelease(

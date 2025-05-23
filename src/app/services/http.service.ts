@@ -192,6 +192,8 @@ export class HttpService {
 
   private organizationHierarchy = this.baseUrl + '/api/hierarchy';
   private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
+  private summariseSprintGoalsUrl =
+    this.baseUrl + '/api/ai/sprint-goals/summary';
 
   constructor(
     private router: Router,
@@ -1270,5 +1272,9 @@ export class HttpService {
       `${this.updateHierarchyOptionsUrl}/${levelId}`,
       dispalyName,
     );
+  }
+
+  summariseSprintGoalsCall(req) {
+    return this.http.post<Object>(this.summariseSprintGoalsUrl, req);
   }
 }
