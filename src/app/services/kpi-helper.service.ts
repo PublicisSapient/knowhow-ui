@@ -123,7 +123,7 @@ export class KpiHelperService {
           (sum, issue) => sum + issue[key],
           0,
         );
-        list.push(`Last ${duration} days: ${value} SP`);
+        list.push(`${duration}d: ${value} SP`);
       } else {
         value = IssueFilterByDuration.length;
         list.push(`${duration}d: ${value} `);

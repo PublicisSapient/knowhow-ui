@@ -80,6 +80,9 @@ export class ReportKpiCardComponent {
     this.colors = Object.keys(this.trendColors).map(
       (key) => this.trendColors[key].color,
     );
+    if (this.kpiData?.kpiId === 'kpi17') {
+      this.colors = this.chartColorList;
+    }
   }
 
   setKpiFilters() {
