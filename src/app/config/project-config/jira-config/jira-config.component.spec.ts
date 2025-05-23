@@ -178,7 +178,7 @@ describe('JiraConfigComponent', () => {
       templateName: 'Standard Template',
       templateCode: '13',
       kanban: false,
-    }
+    },
   ];
 
   beforeEach(() => {
