@@ -51,7 +51,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private sharedService: SharedService,
-    private httpService: HttpService,
+    public httpService: HttpService,
   ) {}
 
   ngOnInit(): void {
@@ -197,26 +197,31 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   summariseUsingAI(data) {
     const projectName = data.name;
-    const accordianData = this.accordionData;
-    let sprintGoals = [];
+    const accordionData = this.accordionData;
 
-    accordianData.map((item) => {
-      if (item.name === projectName) {
-        const sprintGoalsArr = item.sprintGoals;
-        sprintGoalsArr.map((sprintGoal) => {
-          sprintGoals.push(sprintGoal.goal);
-        });
-      }
-    });
+    const sprintGoals =
+      accordionData
+        .find((item) => item.name === projectName)
+        ?.sprintGoals?.map((goal) => goal.goal) || [];
+
     const requestBody = { sprintGoals };
 
     // --- Set loading/visibility only for this project --- //
     this.isSummaryAvailableMap[projectName] = false;
 
     // --- post call with the above request body --- //
-    this.httpService.summariseSprintGoalsCall(requestBody).subscribe((res) => {
-      this.isSummaryAvailableMap[projectName] = true;
-      this.summarisedSprintGoalsMap[projectName] = res;
+    this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
+      next: (res) => {
+        this.isSummaryAvailableMap[projectName] = true;
+        this.summarisedSprintGoalsMap[projectName] = res;
+      },
+      error: (error) => {
+        console.error('Error summarising sprint goals:', error);
+        this.summarisedSprintGoalsMap[
+          projectName
+        ] = `Failed to summarize: ${error.message}`;
+        this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
+      },
     });
   }
 
