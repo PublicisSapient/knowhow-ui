@@ -866,7 +866,7 @@ describe('CollapsiblePanelComponent', () => {
       // Assert
       expect(component.isSummaryAvailableMap['Project A']).toBe(true);
       expect(component.summarisedSprintGoalsMap['Project A']).toBe(
-        errorResponse.message,
+        `Failed to summarize: ${errorResponse.message}`,
       );
     });
 
