@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <div [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'" tabindex="0">
+  <div [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
 
     <!-- Text Input -->
     <div class="p-inputgroup" *ngSwitchCase="'text'">
@@ -30,8 +30,6 @@
         [disabled]="fieldConfig?.readOnly"
         [attr.aria-label]="fieldConfig?.fieldLabel + ' Text Input'"
         [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
-        role="textbox"
-        tabindex="0"
       />
       <button
         type="button"
@@ -41,11 +39,9 @@
         *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
         aria-label="Search and Add Value"
-        role="button"
-        tabindex="0"
       ></button>
     </div>
-  
+
     <!-- Chips -->
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
       <p-chips
@@ -69,18 +65,15 @@
         *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
         aria-label="Search and Add Multiple Values"
-        role="button"
-        tabindex="0"
       ></button>
     </div>
-  
+
     <!-- Radio Buttons -->
     <div
       class="p-d-flex p-justify-between"
       *ngSwitchCase="'radiobutton'"
       role="radiogroup"
       [attr.aria-label]="fieldConfig?.fieldLabel + ' Options'"
-      tabindex="0"
     >
       <div class="p-inputgroup">
         <ng-container *ngFor="let opt of fieldConfig.options; let i = index">
@@ -100,9 +93,9 @@
         </ng-container>
       </div>
     </div>
-  
+
     <!-- MultiSelect -->
-    <div *ngSwitchCase="'multiselect'" tabindex="0">
+    <div *ngSwitchCase="'multiselect'">
       <p-multiSelect
         [id]="fieldConfig?.fieldName"
         [options]="fieldConfig.options"
@@ -116,9 +109,9 @@
         tabindex="0"
       ></p-multiSelect>
     </div>
-  
+
     <!-- Number Input -->
-    <div *ngSwitchCase="'number'" tabindex="0">
+    <div *ngSwitchCase="'number'">
       <input
         type="number"
         [id]="fieldConfig?.fieldName"
@@ -140,7 +133,7 @@
         ({{ thresholdUnit }})
       </span>
     </div>
-  
+
     <!-- Toggle -->
     <div *ngSwitchCase="'toggle'" tabindex="0">
       <label [for]="fieldConfig?.fieldName" class="p-ml-2">{{ fieldConfig?.toggleLabelLeft }}</label>
@@ -176,7 +169,7 @@
         ></span>
       </label>
     </div>
-  
+
     <!-- Dropdown (custom component) -->
     <div *ngSwitchCase="'dropdown'" tabindex="0">
       <app-additional-filter-field
@@ -186,7 +179,7 @@
         tabindex="0"
       ></app-additional-filter-field>
     </div>
-  
+
     <!-- Conditional Input (custom component) -->
     <div *ngSwitchCase="'conditionalinput'" tabindex="0">
       <app-conditional-input
@@ -201,6 +194,5 @@
         tabindex="0"
       ></app-conditional-input>
     </div>
-  
+
   </div>
-  
