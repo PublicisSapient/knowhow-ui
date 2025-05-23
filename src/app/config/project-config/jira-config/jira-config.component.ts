@@ -121,6 +121,7 @@ export class JiraConfigComponent implements OnInit {
   showAddNewBtn = true;
   jiraConfigurationTypeOptions;
   jiraQueryEnabled = true;
+  activeIndex: number = 0;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -2589,6 +2590,7 @@ export class JiraConfigComponent implements OnInit {
                 type: 'basicDropdown',
                 label: 'Rally Configuration Template',
                 label2: '',
+                options: 'jiraTemplate',
                 id: 'originalTemplateCode',
                 onChangeEventHandler: (event) =>
                   this.jiraMethodChange(this, event),
@@ -3155,7 +3157,8 @@ export class JiraConfigComponent implements OnInit {
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe((resp) => {
       this.jiraTemplate = resp.filter(
         (temp) =>
-          temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban,
+          temp.tool?.toLowerCase() === this.urlParam?.toLowerCase() &&
+          temp.kanban === isKanban,
       );
       if (
         this.selectedToolConfig &&
@@ -3292,5 +3295,9 @@ export class JiraConfigComponent implements OnInit {
         }
       });
     }
+  }
+
+  isPanelOpen(index: number): boolean {
+    return this.activeIndex === index;
   }
 }

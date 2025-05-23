@@ -28,6 +28,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { Menu } from 'primeng/menu';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Dialog } from 'primeng/dialog';
 
 declare const require: any;
 @Component({
@@ -71,6 +72,7 @@ export class ProjectListComponent implements OnInit {
   projectGroup;
   selectedProject: any;
   @ViewChild('kpimenu') kpimenu: Menu;
+  @ViewChild('renameProjectRef') renameProjectRef: Dialog;
 
   constructor(
     private http: HttpService,
@@ -357,6 +359,13 @@ export class ProjectListComponent implements OnInit {
     this.submitted = false;
     this.selectedProject = project;
     this.isRenameProject = true;
+    setTimeout(() => {
+      // Focus the dialog container
+      const dialogEl = document.querySelector('#rename-project-heading');
+      if (dialogEl) {
+        (dialogEl as HTMLElement).focus();
+      }
+    }, 10);
     this.newProjectName = project.name;
     this.projectGroup = new FormGroup({
       projectName: new FormControl(),

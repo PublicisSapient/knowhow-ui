@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -23,6 +24,7 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -129,6 +131,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   success = false;
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
+  @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
+  @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
 
   constructor(
     public service: SharedService,
@@ -299,8 +303,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.showComments = true;
       this.openCommentModal();
     } else if (event.report) {
-      this.addToReportAction();
+      this.addToReportAction(event);
     }
+  }
+
+  focusOnModalElement(elementId) {
+    setTimeout(() => {
+      // Focus the dialog container
+      const dialogEl = document.querySelector(elementId);
+      if (dialogEl) {
+        (dialogEl as HTMLElement).focus();
+      }
+    }, 10);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -354,7 +368,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
-            this.addToReportAction();
+            this.addToReportAction($event);
           },
           disabled: true,
         });
@@ -366,7 +380,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
-            this.addToReportAction();
+            this.addToReportAction($event);
           },
           disabled: false,
         });
@@ -537,6 +551,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
+      this.focusOnModalElement('#config-dialog-title');
       this.lastSyncTime = this.showExecutionDate(
         this.kpiData.kpiDetail.combinedKpiSource ||
           this.kpiData.kpiDetail.kpiSource,
@@ -603,6 +618,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             this.selectedFieldMapping = mappings.data.fieldMappingResponses;
             this.metaDataTemplateCode = mappings.data?.metaTemplateCode;
             this.displayConfigModel = true;
+            this.focusOnModalElement('#config-dialog-title');
             this.loadingKPIConfig = false;
           } else {
             this.loadingKPIConfig = false;
@@ -845,6 +861,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     });
     this.displaySprintDetailsModal = true;
+    this.focusOnModalElement('#sprint-details-title');
   }
 
   //#region new card
@@ -1084,7 +1101,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @param
    * @returns
    */
-  addToReportAction() {
+  addToReportAction(event?: any) {
     this.success = false;
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', {
@@ -1179,6 +1196,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     };
 
     this.displayAddToReportsModal = true;
+    this.focusOnModalElement('#dialogTitle');
   }
 
   setAdditionalFilterLevels(obj) {
@@ -1366,6 +1384,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   closeAddToReportsModal() {
     this.createNewReportTemplate = false;
     this.displayAddToReportsModal = false;
+    if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
+      const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
+      menuEl.focus();
+    }
+  }
+
+  onDialogClose() {
+    if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
+      const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
+      console.log('menuEl', menuEl);
+      menuEl.focus();
+    }
   }
 
   handleKeyboardSelect(event: KeyboardEvent) {
