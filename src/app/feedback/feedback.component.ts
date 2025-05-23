@@ -5,6 +5,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-feedback',
@@ -30,25 +32,29 @@ export class FeedbackComponent {
 
   save() {
     const postObj = this.voiceForm.value;
-    this.httpService.submitFeedbackData(postObj).subscribe(
-      (response) => {
-        if (response.message) {
-          this.isFeedbackSubmitted = true;
-          this.formMessage = response.message;
+    this.httpService
+      .submitFeedbackData(postObj)
+      .pipe(
+        tap((response) => {
+          if (response.message) {
+            this.isFeedbackSubmitted = true;
+            this.formMessage = response.message;
+            setTimeout(() => {
+              this.formMessage = '';
+            }, 3000);
+            this.voiceForm.reset();
+          }
+        }),
+        catchError((error) => {
+          console.log(error);
+          this.isFeedbackSubmitted = false;
           setTimeout(() => {
             this.formMessage = '';
           }, 3000);
-          this.voiceForm.reset();
-        }
-      },
-      (error) => {
-        console.log(error);
-        this.isFeedbackSubmitted = false;
-        setTimeout(() => {
-          this.formMessage = '';
-        }, 3000);
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   open() {

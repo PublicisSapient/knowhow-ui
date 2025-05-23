@@ -9,8 +9,8 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
-import { switchMap, takeUntil } from 'rxjs/operators';
-import { Subject, interval } from 'rxjs';
+import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Subject, interval, of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
@@ -574,11 +574,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           basicProjectConfigIds:
             projectList?.length && projectList[0] ? projectList : [],
         })
-        .subscribe(
-          (response) => {
+        .pipe(
+          tap((response) => {
             if (response.success === true) {
               let data = response.data.userBoardConfigDTO;
-              // let data = this.dummyData.data.userBoardConfigDTO;
               data = this.setLevelNames(data);
               data['configDetails'] = response.data.configDetails;
               this.dashConfigData = data;
@@ -596,15 +595,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                 this.prepareKPICalls(event);
               }
             }
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             this.blockUI = false;
             this.messageService.add({
               severity: 'error',
               summary: error.message,
             });
-          },
-        );
+            return of();
+          }),
+        )
+        .subscribe();
     } else {
       if (event) {
         this.prepareKPICalls(event);
@@ -1910,8 +1911,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               ),
               takeUntil(this.subject),
             )
-            .subscribe(
-              (response) => {
+            .pipe(
+              tap((response) => {
                 if (!response?.['success']) {
                   this.subject.next(true);
                   this.lastSyncData = {};
@@ -1946,8 +1947,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                   this.lastSyncData = {};
                   return;
                 }
-              },
-              (error) => {
+              }),
+              catchError((error) => {
                 this.blockUI = false;
                 this.messageService.add({
                   severity: 'error',
@@ -1955,8 +1956,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                 });
                 this.subject.next(false);
                 this.lastSyncData = {};
-              },
-            );
+                return of();
+              }),
+            )
+            .subscribe();
         });
     }
   }
@@ -2079,37 +2082,41 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     let copyObj = JSON.parse(JSON.stringify(obj));
     copyObj = this.showHideDataManipulationFORBEOnly(copyObj);
-    this.httpService.submitShowHideOnDashboard(copyObj).subscribe(
-      (response) => {
-        if (response.success === true) {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Successfully Saved',
-            detail: '',
-          });
-          if (enabledKPIs?.length) {
-            this.service.setDashConfigData(
-              this.dashConfigData,
-              true,
-              enabledKPIs,
-            );
+    this.httpService
+      .submitShowHideOnDashboard(copyObj)
+      .pipe(
+        tap((response) => {
+          if (response.success === true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Successfully Saved',
+              detail: '',
+            });
+            if (enabledKPIs?.length) {
+              this.service.setDashConfigData(
+                this.dashConfigData,
+                true,
+                enabledKPIs,
+              );
+            } else {
+              this.service.setDashConfigData(this.dashConfigData);
+            }
           } else {
-            this.service.setDashConfigData(this.dashConfigData);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in Saving Configuraion',
+            });
           }
-        } else {
+        }),
+        catchError((error) => {
           this.messageService.add({
             severity: 'error',
-            summary: 'Error in Saving Configuraion',
+            summary: 'Error in saving kpis. Please try after some time.',
           });
-        }
-      },
-      (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error in saving kpis. Please try after some time.',
-        });
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   findEnabledKPIs(previousDashConfig, newMasterData) {

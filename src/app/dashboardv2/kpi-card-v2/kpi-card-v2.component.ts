@@ -21,6 +21,8 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -591,25 +593,27 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.kpiData.kpiId,
         obj,
       )
-      .subscribe(
-        (mappings) => {
+      .pipe(
+        tap((mappings) => {
           if (
             mappings &&
-            mappings['success'] &&
-            Object.keys(mappings['data']).length >= 1
+            mappings.success &&
+            Object.keys(mappings.data).length >= 1
           ) {
-            this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
-            this.metaDataTemplateCode = mappings['data']?.metaTemplateCode;
+            this.selectedFieldMapping = mappings.data.fieldMappingResponses;
+            this.metaDataTemplateCode = mappings.data?.metaTemplateCode;
             this.displayConfigModel = true;
             this.loadingKPIConfig = false;
           } else {
             this.loadingKPIConfig = false;
           }
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           console.log(error);
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   getFieldMappingMetaData(kpiSource) {
@@ -618,8 +622,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.service.getSelectedTrends()[0]?.basicProjectConfigId,
         this.kpiData?.kpiId,
       )
-      .subscribe(
-        (Response) => {
+      .pipe(
+        tap((Response) => {
           if (Response.success) {
             this.fieldMappingMetaData = Response.data;
             this.service.setFieldMappingMetaData({
@@ -631,11 +635,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           } else {
             this.fieldMappingMetaData = [];
           }
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           console.log(error);
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   reloadKPI() {

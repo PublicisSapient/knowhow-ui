@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-report-container',
@@ -188,22 +190,26 @@ export class ReportContainerComponent implements OnInit {
   removeReport(report: any, event: MouseEvent) {
     event.stopPropagation(); // Prevent triggering the button's onClick
     const deletedReportId = report?.id;
-    this.http.deleteReport(deletedReportId).subscribe(
-      (res) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Report deleted successfully',
-        });
-        this.reportsData = this.reportsData.filter((r) => r !== report);
-        //this.getReportsData();
-      },
-      (error) => {
-        console.error('Error deleting report:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Failed to delete report',
-        });
-      },
-    );
+    this.http
+      .deleteReport(deletedReportId)
+      .pipe(
+        tap(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Report deleted successfully',
+          });
+          this.reportsData = this.reportsData.filter((r) => r !== report);
+          // this.getReportsData();
+        }),
+        catchError((error) => {
+          console.error('Error deleting report:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed to delete report',
+          });
+          return of();
+        }),
+      )
+      .subscribe();
   }
 }

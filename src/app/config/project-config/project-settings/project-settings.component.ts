@@ -23,6 +23,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { KeyValue } from '@angular/common';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface Control {
   name: string;
@@ -323,36 +325,42 @@ export class ProjectSettingsComponent implements OnInit {
       header: `Delete ${project.name}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.httpService.deleteProject(project).subscribe(
-          (response) => {
-            this.projectDeletionStatus(response);
-            this.router.navigate(
-              [`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`],
-              {
-                queryParams: {
-                  type: this.selectedProject?.type?.toLowerCase(),
-                  tab: 0,
+        this.httpService
+          .deleteProject(project)
+          .pipe(
+            tap((response) => {
+              this.projectDeletionStatus(response);
+              this.router.navigate(
+                [
+                  `/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`,
+                ],
+                {
+                  queryParams: {
+                    type: this.selectedProject?.type?.toLowerCase(),
+                    tab: 0,
+                  },
                 },
-              },
-            );
-            this.selectedProject = this.userProjects[0];
-            let arr =
-              this.sharedService.getCurrentUserDetails('projectsAccess');
-            if (arr?.length) {
-              arr?.map((item) => {
-                item.projects = item.projects.filter(
-                  (x) => x.projectId != project.id,
-                );
-              });
-              arr = arr?.filter((item) => item.projects?.length > 0);
+              );
+              this.selectedProject = this.userProjects[0];
+              let arr =
+                this.sharedService.getCurrentUserDetails('projectsAccess');
+              if (arr?.length) {
+                arr.forEach((item) => {
+                  item.projects = item.projects.filter(
+                    (x) => x.projectId != project.id,
+                  );
+                });
+                arr = arr.filter((item) => item.projects?.length > 0);
 
-              this.httpService.setCurrentUserDetails({ projectsAccess: arr });
-            }
-          },
-          (error) => {
-            this.projectDeletionStatus(error);
-          },
-        );
+                this.httpService.setCurrentUserDetails({ projectsAccess: arr });
+              }
+            }),
+            catchError((error) => {
+              this.projectDeletionStatus(error);
+              return of();
+            }),
+          )
+          .subscribe();
       },
       reject: () => {},
     });
