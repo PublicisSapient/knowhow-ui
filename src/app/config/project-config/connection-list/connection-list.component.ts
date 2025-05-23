@@ -1318,15 +1318,15 @@ export class ConnectionListComponent implements OnInit {
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
       if (
-        connection.type.toLowerCase() === 'bitbucket' &&
-        connection.cloudEnv
+        connection.type.toLowerCase() == 'bitbucket' &&
+        connection.cloudEnv == true
       ) {
         this.checkBitbucketValue(
           true,
           'cloudEnv',
           connection.type.toLowerCase(),
         );
-      } else if (connection.type.toLowerCase() === 'zephyr') {
+      } else if (connection.type.toLowerCase() == 'zephyr') {
         this.checkZephyr();
       }
     }
@@ -1513,7 +1513,7 @@ export class ConnectionListComponent implements OnInit {
     }
 
     this.checkBitbucketValue(event.checked, field, type);
-    if (type?.toLowerCase() === 'zephyr') {
+    if (type?.toLowerCase() == 'zephyr') {
       this.checkZephyr();
     }
     this.enableDisableFieldsOnIsCloudSwithChange();
@@ -1562,7 +1562,7 @@ export class ConnectionListComponent implements OnInit {
       reqData['baseUrl'] =
         this.basicConnectionForm.controls['baseUrl']['value'];
     }
-    if (reqData['vault']) {
+    if (reqData['vault'] == true) {
       reqData['password'] = '';
       reqData['pat'] = '';
       reqData['accessToken'] = '';
@@ -1982,11 +1982,11 @@ export class ConnectionListComponent implements OnInit {
 
   showInfo(type, field) {
     let tooltipText = '';
-    if (type === 'github' && field === 'baseUrl') {
+    if (type == 'github' && field == 'baseUrl') {
       tooltipText =
         'Url i.e : for public github this url will be https://api.github.com.';
     }
-    if (type === 'github' && field === 'username') {
+    if (type == 'github' && field == 'username') {
       tooltipText =
         'The name appended before your repository name (i.e. ownerName/repositoryName).';
     }
@@ -1995,10 +1995,10 @@ export class ConnectionListComponent implements OnInit {
 
   checkBitbucketValue(event, field, type) {
     /** to add information besides username and password labels for bitbucket when isCloudEnv = true */
-    if (type === 'bitbucket') {
+    if (type == 'bitbucket') {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter(
-        (item) => item.connectionLabel.toLowerCase() === 'bitbucket',
+        (item) => item.connectionLabel.toLowerCase() == 'bitbucket',
       )[0];
       if (!bitbucketObj) {
         // Exit if the bitbucketObj is not found
@@ -2032,7 +2032,7 @@ export class ConnectionListComponent implements OnInit {
         ];
       }
       const index = tempArr.findIndex(
-        (item) => item.connectionLabel.toLowerCase() === 'bitbucket',
+        (item) => item.connectionLabel.toLowerCase() == 'bitbucket',
       );
       if (index !== -1) {
         tempArr[index] = bitbucketObj;
@@ -2043,8 +2043,8 @@ export class ConnectionListComponent implements OnInit {
 
   checkZephyr() {
     /** to add information besides username and password labels for bitbucket when isCloudEnv = true */
-    if (this.connection['type']?.toLowerCase() === 'zephyr') {
-      if (this.connection['vault'] && this.connection['cloudEnv']) {
+    if (this.connection['type']?.toLowerCase() == 'zephyr') {
+      if (this.connection['vault'] == true && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
         this.basicConnectionForm.controls['apiEndPoint'].setValue('');
@@ -2058,7 +2058,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].setValue('');
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
-      } else if (this.connection['vault'] && !this.connection['cloudEnv']) {
+      } else if (this.connection['vault'] == true && !this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
         this.basicConnectionForm.controls['username'].enable();
@@ -2069,7 +2069,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].setValue('');
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
-      } else if (!this.connection['vault'] && this.connection['cloudEnv']) {
+      } else if (!this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
         this.basicConnectionForm.controls['apiEndPoint'].setValue('');
@@ -2082,7 +2082,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].setValue('');
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
-      } else if (this.connection['bearerToken']) {
+      } else if (this.connection['bearerToken'] == true) {
         this.basicConnectionForm.controls['patOAuthToken'].enable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
@@ -2106,21 +2106,21 @@ export class ConnectionListComponent implements OnInit {
     }
   }
   enableDisableFieldsOnIsCloudSwithChange() {
-    if (this.connection['type']?.toLowerCase() === 'sonar') {
-      if (this.connection['vault'] && this.connection['cloudEnv']) {
+    if (this.connection['type']?.toLowerCase() == 'sonar') {
+      if (this.connection['vault'] == true && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      } else if (this.connection['vault'] && !this.connection['cloudEnv']) {
+      } else if (this.connection['vault'] == true && !this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['username'].enable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      } else if (!this.connection['vault'] && this.connection['cloudEnv']) {
+      } else if (!this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
@@ -2133,7 +2133,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessToken'].disable();
       }
 
-      if (this.connection['cloudEnv'] || this.connection['vault']) {
+      if (this.connection['cloudEnv'] === true || this.connection['vault'] === true) {
         this.basicConnectionForm.controls['accessTokenEnabled'].disable();
       } else {
         this.basicConnectionForm.controls['accessTokenEnabled'].enable();
@@ -2143,7 +2143,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableFieldsOnAccessTokenORPasswordToggle() {
-    if (this.connection['accessTokenEnabled']) {
+    if (this.connection['accessTokenEnabled'] === true) {
       this.basicConnectionForm.controls['username'].setValue('');
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].setValue('');
@@ -2157,9 +2157,10 @@ export class ConnectionListComponent implements OnInit {
   }
 
   emptyUrlInZephyr() {
+    if (this.basicConnectionForm.controls['type'].value.toLowerCase() == 'zephyr') && this.basicConnectionForm.controls
     return !(
       this.basicConnectionForm.controls['type'].value.toLowerCase() ===
-        'zephyr' &&
+      'zephyr' &&
       this.basicConnectionForm.controls['cloudEnv'].value &&
       this.basicConnectionForm.controls['baseUrl'].value === ''
     );
