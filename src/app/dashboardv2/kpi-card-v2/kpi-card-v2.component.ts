@@ -1096,7 +1096,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @param {void}
    * @returns {void}
    */
-  addToReportAction(event) {
+  addToReportAction(event?: any) {
     this.success = false;
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', {
