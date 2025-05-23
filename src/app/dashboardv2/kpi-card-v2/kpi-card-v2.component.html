@@ -85,7 +85,7 @@
             [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true" (blur)="showWarning(false)"></app-tooltip-v2>
         </span>
       </div>
-      <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
+      <div #kpiMenuContainer class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
         (keydown.enter)="toggleMenu($event)" (focus)="showWarning(false); showTooltip(false)">
         <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
       </div>
@@ -238,7 +238,7 @@
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
   styleClass="sprint-details-overlay" role="dialog" aria-labelledby="sprint-details-title"
-  aria-describedby="sprint-details-description" [closeOnEscape]="true" [focusOnShow]="true">
+  aria-describedby="sprint-details-description" (onHide)="onDialogClose()" [closeOnEscape]="true" [focusOnShow]="true">
   <div class="p-mb-3 overlay-heading" id="sprint-details-title" tabindex="0" role="heading" aria-level="2">
     {{kpiData?.kpiName}}
   </div>
@@ -300,7 +300,7 @@
 </p-dialog>
 
 <p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping"
-  aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true">
+  aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true" (onHide)="onDialogClose()">
   <ng-template pTemplate="header">
     <div class="inline-flex align-items-center justify-content-center gap-2" role="heading">
       <p id="config-dialog-title" class="font-bold white-space-nowrap" tabindex="0">{{kpiData?.kpiName}}</p>
@@ -372,7 +372,7 @@
 </ng-template>
 
 <p-dialog [(visible)]="displayAddToReportsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
-  styleClass="add-to-reports-overlay" role="dialog"
+  styleClass="add-to-reports-overlay" role="dialog" (onHide)="onDialogClose()" [closeOnEscape]="true"
   aria-labelledby="dialogTitle"
   aria-describedby="dialogDescription">
   <ng-template pTemplate="header">

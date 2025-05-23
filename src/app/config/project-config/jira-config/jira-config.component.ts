@@ -119,6 +119,7 @@ export class JiraConfigComponent implements OnInit {
   showAddNewBtn: boolean = true;
   jiraConfigurationTypeOptions;
   jiraQueryEnabled = true;
+  activeIndex: number = 0;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -3184,5 +3185,9 @@ export class JiraConfigComponent implements OnInit {
         }
       });
     }
+  }
+
+  isPanelOpen(index: number): boolean {
+    return this.activeIndex === index;
   }
 }
