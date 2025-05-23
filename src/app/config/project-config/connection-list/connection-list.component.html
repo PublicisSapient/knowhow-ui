@@ -20,7 +20,7 @@
 <p-toast [style]="{marginTop: '80px'}" aria-live="polite" role="status"></p-toast>
 
 <div class="main" role="main">
-  <h1 id="page-title">Available Connections</h1>
+  <h1 tabindex="0" #pageTitle id="page-title">Available Connections</h1>
 
   <div class="toolsconfig-content">
     <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey" aria-label="Connection Toolbar">
@@ -54,110 +54,112 @@
       </ng-template>
     </p-toolbar>
 
-    <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'" aria-label="Connections Accordion">
+    <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'" aria-label="Connections Accordion" [(activeIndex)]="activeIndex">
       <p-accordionTab
         *ngFor="let eachConnection of connectionTypeCompleteList; let i = index"
         [header]="eachConnection.label"
         [disabled]="connectionListAllType[eachConnection.value] && connectionListAllType[eachConnection.value].length == 0"
         [attr.aria-labelledby]="'accordion-tab-' + i">
 
-        <div class="card" role="region" [attr.aria-labelledby]="'accordion-tab-' + i">
-          <p-table
-            #dt
-            [value]="connectionListAllType[eachConnection.value]"
-            [rows]="5"
-            [paginator]="true"
-            [globalFilterFields]="eachConnection.connectionTableCols"
-            [(selection)]="selectedConnectionList"
-            [rowHover]="true"
-            dataKey="id"
-            [showCurrentPageReport]="true"
-            [alwaysShowPaginator]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            styleClass="p-datatable-striped"
-            loadingIcon="loading-img"
-            aria-label="Connections Table"
-            tabindex="0">
+        <ng-container *ngIf="isPanelOpen(i)">
+          <div class="card" role="region" [attr.aria-labelledby]="'accordion-tab-' + i">
+            <p-table
+              #dt
+              [value]="connectionListAllType[eachConnection.value]"
+              [rows]="5"
+              [paginator]="true"
+              [globalFilterFields]="eachConnection.connectionTableCols"
+              [(selection)]="selectedConnectionList"
+              [rowHover]="true"
+              dataKey="id"
+              [showCurrentPageReport]="true"
+              [alwaysShowPaginator]="false"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              styleClass="p-datatable-striped"
+              loadingIcon="loading-img"
+              aria-label="Connections Table"
+              tabindex="0">
 
-            <ng-template pTemplate="caption">
-              <div class="p-d-flex p-ai-center p-jc-between">
-                <h2 id="table-title-{{i}}" class="p-m-0">Connections</h2>
-                <span class="p-input-icon-left">
-                  <i class="pi pi-search" aria-hidden="true"></i>
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="dt.filterGlobal($event.target.value, 'contains')"
-                    placeholder="Search..."
-                    aria-label="Search connections"
-                    tabindex="0" />
-                </span>
-              </div>
-            </ng-template>
+              <ng-template pTemplate="caption">
+                <div class="p-d-flex p-ai-center p-jc-between">
+                  <h2 id="table-title-{{i}}" class="p-m-0">Connections</h2>
+                  <span class="p-input-icon-left">
+                    <i class="pi pi-search" aria-hidden="true"></i>
+                    <input
+                      pInputText
+                      type="text"
+                      (input)="dt.filterGlobal($event.target.value, 'contains')"
+                      placeholder="Search..."
+                      aria-label="Search connections"
+                      tabindex="0" />
+                  </span>
+                </div>
+              </ng-template>
 
-            <ng-template pTemplate="header">
-              <tr>
-                <th style="display: none;" scope="col">
-                  <p-tableHeaderCheckbox aria-label="Select all rows"></p-tableHeaderCheckbox>
-                </th>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="display: none;" scope="col">
+                    <p-tableHeaderCheckbox aria-label="Select all rows"></p-tableHeaderCheckbox>
+                  </th>
 
-                <th
-                  *ngFor="let connectionHeader of eachConnection.connectionTableCols"
-                  [pSortableColumn]="connectionHeader.field"
-                  scope="col"
-                  [attr.aria-label]="connectionHeader.header"
+                  <th
+                    *ngFor="let connectionHeader of eachConnection.connectionTableCols"
+                    [pSortableColumn]="connectionHeader.field"
+                    scope="col"
+                    [attr.aria-label]="connectionHeader.header"
+                    tabindex="0">
+                    {{ connectionHeader.header }}
+                    <p-sortIcon [field]="connectionHeader.field"></p-sortIcon>
+                  </th>
+
+                  <th *ngIf="isConnectionAddEditAccess" scope="col" pSortableColumn="editConnectionColumn" tabindex="0">
+                    Actions
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-connection>
+                <tr
+                  [ngClass]="{'broken-conn-row': connection.brokenConnection}"
+                  tooltipPosition="top"
+                  [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null"
+                  role="row"
                   tabindex="0">
-                  {{ connectionHeader.header }}
-                  <p-sortIcon [field]="connectionHeader.field"></p-sortIcon>
-                </th>
 
-                <th *ngIf="isConnectionAddEditAccess" scope="col" pSortableColumn="editConnectionColumn" tabindex="0">
-                  Actions
-                </th>
-              </tr>
-            </ng-template>
+                  <td style="display: none;">
+                    <p-tableCheckbox [value]="connection" aria-label="Select row"></p-tableCheckbox>
+                  </td>
 
-            <ng-template pTemplate="body" let-connection>
-              <tr
-                [ngClass]="{'broken-conn-row': connection.brokenConnection}"
-                tooltipPosition="top"
-                [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null"
-                role="row"
-                tabindex="0">
+                  <td *ngFor="let connectionRow of eachConnection.connectionTableCols" tabindex="0">
+                    {{ connection[connectionRow.field] }}
+                  </td>
 
-                <td style="display: none;">
-                  <p-tableCheckbox [value]="connection" aria-label="Select row"></p-tableCheckbox>
-                </td>
+                  <td *ngIf="isConnectionAddEditAccess" tabindex="0">
+                    <div class="p-d-flex p-align-center">
+                      <button
+                        class="action-btns p-mr-2"
+                        (click)="editConnection(connection)"
+                        [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
+                        aria-label="Edit Connection"
+                        tabindex="0">
+                        <i class="far fa-edit"></i>
+                      </button>
+                      <button
+                        class="action-btns"
+                        (click)="deleteConnection(connection)"
+                        [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
+                        aria-label="Delete Connection"
+                        tabindex="0">
+                        <i class="far fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
 
-                <td *ngFor="let connectionRow of eachConnection.connectionTableCols" tabindex="0">
-                  {{ connection[connectionRow.field] }}
-                </td>
-
-                <td *ngIf="isConnectionAddEditAccess" tabindex="0">
-                  <div class="p-d-flex p-align-center">
-                    <button
-                      class="action-btns p-mr-2"
-                      (click)="editConnection(connection)"
-                      [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
-                      aria-label="Edit Connection"
-                      tabindex="0">
-                      <i class="far fa-edit"></i>
-                    </button>
-                    <button
-                      class="action-btns"
-                      (click)="deleteConnection(connection)"
-                      [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
-                      aria-label="Delete Connection"
-                      tabindex="0">
-                      <i class="far fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-
-          </p-table>
-        </div>
+            </p-table>
+          </div>
+        </ng-container>
       </p-accordionTab>
     </p-accordion>
   </div>
@@ -165,12 +167,12 @@
 
 <p-dialog [(visible)]="connectionDialog" [style]="{width: '450px'}"
   [header]="selectedConnectionType + ' Connection Details'" [modal]="true" styleClass="p-fluid" aria-labelledby="connectionDetailsHeader"
-  role="dialog" aria-modal="true">
+  aria-modal="true" (onHide)="onDialogClose()" [closeOnEscape]="true" [focusOnShow]="true">
 
   <ng-template pTemplate="content">
 
     <form [formGroup]="basicConnectionForm" autocomplete="off" aria-describedby="connectionFormDescription"
-    role="form">
+    id="connectionDialogForm" tabindex="0">
       <span *ngFor="let connectionFieldLabels of addEditConnectionFieldsNlabels">
         <span *ngIf="connectionFieldLabels.connectionType.toLowerCase() === selectedConnectionType.toLowerCase()">
           <ng-container *ngFor="let connectionLabelFields of connectionFieldLabels.labels; let i = index">
@@ -259,10 +261,10 @@
 </p-dialog>
 
 <p-dialog [(visible)]="jiraConnectionDialog" [style]="{width: '450px'}" header="Jira Connection Details" [modal]="true"
-  styleClass="p-fluid" aria-modal="true" role="dialog">
+  styleClass="p-fluid" aria-modal="true" (onHide)="onDialogClose()" [closeOnEscape]="true" [focusOnShow]="true">
 
   <ng-template pTemplate="content">
-    <form [formGroup]="jiraForm" autocomplete="off" role="form" aria-labelledby="jiraConnectionFormHeader">
+    <form [formGroup]="jiraForm" autocomplete="off" role="form" aria-labelledby="jiraConnectionFormHeader" id="jiraConnectionForm" tabindex="0">
       <div class="p-field">
         <label for="cloudEnv">Jira Server</label>
         <p-inputSwitch id="cloudEnv" formControlName="cloudEnv" class="p-ml-2 p-mr-2" (onChange)="updateForm()"
@@ -358,16 +360,16 @@
   </ng-template>
 </p-dialog>
 
-<p-confirmDialog key="confirmToDeleteDialog" [style]="{width: '50vw'}">
+<p-confirmDialog key="confirmToDeleteDialog" [style]="{width: '50vw'}" (onHide)="onDialogClose()" [closeOnEscape]="true">
 </p-confirmDialog>
 
-<p-confirmDialog #cd key="cannotDeleteMessageDialog" [style]="{width: '50vw'}">
+<p-confirmDialog #cd key="cannotDeleteMessageDialog" [style]="{width: '50vw'}" (onHide)="onDialogClose()" [closeOnEscape]="true">
   <p-footer>
     <button type="button" (click)="cd.accept()" pButton label="OK" aria-label="Cannot Delete Dialog"></button>
   </p-footer>
 </p-confirmDialog>
 
-<p-confirmDialog #cs key="connectionStatus" [style]="{width: '50vw'}">
+<p-confirmDialog #cs key="connectionStatus" [style]="{width: '50vw'}" (onHide)="onDialogClose()" [closeOnEscape]="true">
   <p-footer>
     <button type="button" (click)="cs.accept()" pButton label="OK" aria-label="Connection Status Dialog"></button>
   </p-footer>

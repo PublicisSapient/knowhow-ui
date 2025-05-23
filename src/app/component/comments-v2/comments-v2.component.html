@@ -4,118 +4,120 @@
       Comments
     </span>
   </div>
-  
-  <p-tabView 
-    (onChange)="commentTabChange($event)" 
-    [(activeIndex)]="selectedTabIndex" 
+
+  <p-tabView
+    (onChange)="commentTabChange($event)"
+    [(activeIndex)]="selectedTabIndex"
     class="comments-modal"
-    role="tablist" 
-    aria-label="Comment Filters">
-    
-    <p-tabPanel 
+    role="tablist"
+    aria-label="Comment Filters" #tabView>
+
+    <p-tabPanel
       *ngFor="let filter of selectedFilters; let i = index"
       [header]="filter.nodeName.length > 15 ? filter.nodeName.substring(0,15)+'..' : filter.nodeName"
       role="tabpanel"
       [attr.aria-labelledby]="'comment-tab-' + i"
-      [id]="'comment-tabpanel-' + i">
-      
+      [id]="'comment-tabpanel-' + i" #tabPanel>
+
       <div class="comment-combo">
-        <textarea 
-          class="comment" 
-          placeholder="Add Comment" 
-          [(ngModel)]="commentText" 
+        <textarea
+          class="comment"
+          placeholder="Add Comment"
+          [(ngModel)]="commentText"
           maxlength="500"
-          (input)="commentChanged()" 
+          (input)="commentChanged()"
           [ngClass]="commentError?'errorClass':''"
           aria-label="Enter comment"
-          [attr.aria-invalid]="commentError"
-          role="textbox"></textarea>
-        
-        <span 
-          *ngIf="commentError" 
-          class="text-danger" 
-          role="alert" 
+          [attr.aria-invalid]="commentError" #tabTextArea
+          (keydown)="onTextareaKeydown($event)"></textarea>
+
+        <span
+          *ngIf="commentError"
+          class="text-danger"
+          role="alert"
           aria-live="polite">
           Comment can be of max 500 characters
         </span>
-        
+
         <div class="p-d-flex p-justify-end p-align-center">
-          <button 
-            class="p-element p-ripple p-button-sm p-button-secondary p-button" 
+          <button
+            class="p-element p-ripple p-button-sm p-button-secondary p-button"
             (click)="commentText = ''; commentError = false"
             aria-label="Cancel Comment"
             role="button">
             Cancel
           </button>
-          
-          <button 
-            class="p-element p-ripple p-button-sm p-button-success p-button" 
+
+          <button
+            class="p-element p-ripple p-button-sm p-button-success p-button"
             (click)="submitComment(filter)"
             [disabled]="commentText.trim() === ''"
             aria-label="Submit Comment"
             role="button">
             Submit
-            <i 
-              *ngIf="showSpinner" 
-              class="fas fa-circle-notch p-ml-1 icon-spinner" 
+            <i
+              *ngIf="showSpinner"
+              class="fas fa-circle-notch p-ml-1 icon-spinner"
               aria-hidden="true"></i>
           </button>
         </div>
       </div>
-      
+
       <div *ngIf="dataLoaded; else loader" class="comment-list-container" role="list" aria-label="Comments List">
         <ng-container *ngIf="commentsList?.length; else noComments">
-          <div 
-            *ngFor="let comment of commentsList" 
-            class="comment-combo p-mr-1" 
-            role="listitem" 
+          <div
+            *ngFor="let comment of commentsList"
+            class="comment-combo p-mr-1"
+            role="listitem"
             [attr.aria-label]="'Comment by ' + comment?.commentBy">
-            
+
             <div class="commented-by">
               @{{comment?.commentBy}} commented - {{comment?.commentOn}}
               <span class="icon-delete" role="group" aria-label="Comment Actions">
-                <i 
-                  *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" 
+                <i
+                  *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]"
                   class="far fa-trash-alt"
                   (click)="handleConfirmDelete(comment.commentId)"
+                  (keydown.enter)="handleConfirmDelete(comment.commentId)"
                   role="button"
                   aria-label="Confirm Delete Comment"
                   tabindex="0"></i>
-                
-                <span 
+
+                <span
                   *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]"
-                  class="btn-confirm-delete" 
+                  class="btn-confirm-delete"
                   (click)="deleteComment(comment.commentId)"
+                  (keydown.enter)="deleteComment(comment.commentId)"
                   role="button"
                   aria-label="Delete Comment"
-                  tabindex="0">
+                  tabindex="0" #confirmDeleteBtn [attr.data-comment-id]="comment.commentId">
                   Confirm Delete
                 </span>
-                
-                <i 
+
+                <i
                   *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]"
-                  class="fas fa-circle-notch icon-spinner" 
+                  class="fas fa-circle-notch icon-spinner"
                   aria-hidden="true"></i>
               </span>
             </div>
-            
+
             <div class="comment-box p-mt-1">
               <p tabindex="0">{{comment?.comment}}</p>
             </div>
           </div>
         </ng-container>
-        
+
         <ng-template #noComments>
-          <div 
-            class="comment-box comment-combo" 
-            role="alert" 
-            aria-live="polite" 
+          <div
+            class="comment-box comment-combo"
+            role="alert"
+            aria-live="polite"
             tabindex="0">
             No Comments Available.
           </div>
         </ng-template>
       </div>
-      
+
       <ng-template #loader>
         <div class="overlay" role="status" aria-label="Loading comments">
           <div class="loading-img" aria-hidden="true"></div>

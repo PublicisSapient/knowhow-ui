@@ -69,24 +69,24 @@
           </h3>
           <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
             (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
-            aria-label="Show KPI Information" (keydown.enter)="showTooltip(true)">
+            aria-label="Show KPI Information" (focus)="showTooltip(true); showWarning(false)">
             <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
             <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
-              (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
+              (mouseleave)="showTooltip(false)" (blur)="showTooltip(false)" [showChartView]="showChartView"
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
           </span>
         </div>
         <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
           (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}"
-          role="alert" tabindex="0" aria-label="Show KPI Warning Information" (keydown.enter)="showWarning(true)">
+          role="alert" tabindex="0" aria-label="Show KPI Warning Information" (focus)="showWarning(true); showTooltip(false)">
           <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
             aria-hidden="true" src="../../../assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
-            [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
+            [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true" (blur)="showWarning(false)"></app-tooltip-v2>
         </span>
       </div>
-      <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
-        (keydown.enter)="toggleMenu($event)">
+      <div #kpiMenuContainer class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
+        (keydown.enter)="toggleMenu($event)" (focus)="showWarning(false); showTooltip(false)">
         <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
       </div>
       <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
@@ -238,7 +238,7 @@
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
   styleClass="sprint-details-overlay" role="dialog" aria-labelledby="sprint-details-title"
-  aria-describedby="sprint-details-description" [closeOnEscape]="true" [focusOnShow]="true">
+  aria-describedby="sprint-details-description" (onHide)="onDialogClose()" [closeOnEscape]="true" [focusOnShow]="true">
   <div class="p-mb-3 overlay-heading" id="sprint-details-title" tabindex="0" role="heading" aria-level="2">
     {{kpiData?.kpiName}}
   </div>
@@ -300,9 +300,9 @@
 </p-dialog>
 
 <p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping"
-  role="dialog" aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true">
+  aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true" (onHide)="onDialogClose()">
   <ng-template pTemplate="header">
-    <div class="inline-flex align-items-center justify-content-center gap-2" role="heading" aria-level="2">
+    <div class="inline-flex align-items-center justify-content-center gap-2" role="heading">
       <p id="config-dialog-title" class="font-bold white-space-nowrap" tabindex="0">{{kpiData?.kpiName}}</p>
       <span class="font-bold white-space-nowrap"
         [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}"
@@ -372,7 +372,7 @@
 </ng-template>
 
 <p-dialog [(visible)]="displayAddToReportsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
-  styleClass="add-to-reports-overlay" role="dialog"
+  styleClass="add-to-reports-overlay" role="dialog" (onHide)="onDialogClose()" [closeOnEscape]="true"
   aria-labelledby="dialogTitle"
   aria-describedby="dialogDescription">
   <ng-template pTemplate="header">
