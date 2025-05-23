@@ -1,10 +1,6 @@
 <div role="region" aria-label="Comments Section">
   <div class="p-d-flex p-justify-between p-align-center">
-    <span
-      class="overlay-heading p-mb-2"
-      role="heading"
-      aria-level="2"
-      tabindex="0">
+    <span class="overlay-heading p-mb-2" role="heading" aria-level="2" tabindex="0">
       Comments
     </span>
   </div>
@@ -14,17 +10,15 @@
     [(activeIndex)]="selectedTabIndex"
     class="comments-modal"
     role="tablist"
-    aria-label="Comment Filters">
+    aria-label="Comment Filters" #tabView>
+
     <p-tabPanel
       *ngFor="let filter of selectedFilters; let i = index"
-      [header]="
-        filter.nodeName.length > 15
-          ? filter.nodeName.substring(0, 15) + '..'
-          : filter.nodeName
-      "
+      [header]="filter.nodeName.length > 15 ? filter.nodeName.substring(0,15)+'..' : filter.nodeName"
       role="tabpanel"
       [attr.aria-labelledby]="'comment-tab-' + i"
-      [id]="'comment-tabpanel-' + i">
+      [id]="'comment-tabpanel-' + i" #tabPanel>
+
       <div class="comment-combo">
         <textarea
           class="comment"
@@ -32,10 +26,10 @@
           [(ngModel)]="commentText"
           maxlength="500"
           (input)="commentChanged()"
-          [ngClass]="commentError ? 'errorClass' : ''"
+          [ngClass]="commentError?'errorClass':''"
           aria-label="Enter comment"
-          [attr.aria-invalid]="commentError"
-          role="textbox"></textarea>
+          [attr.aria-invalid]="commentError" #tabTextArea
+          (keydown)="onTextareaKeydown($event)"></textarea>
 
         <span
           *ngIf="commentError"
@@ -69,59 +63,46 @@
         </div>
       </div>
 
-      <div
-        *ngIf="dataLoaded; else loader"
-        class="comment-list-container"
-        role="list"
-        aria-label="Comments List">
+      <div *ngIf="dataLoaded; else loader" class="comment-list-container" role="list" aria-label="Comments List">
         <ng-container *ngIf="commentsList?.length; else noComments">
           <div
             *ngFor="let comment of commentsList"
             class="comment-combo p-mr-1"
             role="listitem"
             [attr.aria-label]="'Comment by ' + comment?.commentBy">
+
             <div class="commented-by">
-              @{{ comment?.commentBy }} commented - {{ comment?.commentOn }}
-              <span
-                class="icon-delete"
-                role="group"
-                aria-label="Comment Actions">
+              @{{comment?.commentBy}} commented - {{comment?.commentOn}}
+              <span class="icon-delete" role="group" aria-label="Comment Actions">
                 <i
-                  *ngIf="
-                    !showConfirmBtn[comment.commentId] &&
-                    !showLoader[comment.commentId]
-                  "
+                  *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]"
                   class="far fa-trash-alt"
                   (click)="handleConfirmDelete(comment.commentId)"
+                  (keydown.enter)="handleConfirmDelete(comment.commentId)"
                   role="button"
                   aria-label="Confirm Delete Comment"
                   tabindex="0"></i>
 
                 <span
-                  *ngIf="
-                    showConfirmBtn[comment.commentId] &&
-                    !showLoader[comment.commentId]
-                  "
+                  *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]"
                   class="btn-confirm-delete"
                   (click)="deleteComment(comment.commentId)"
+                  (keydown.enter)="deleteComment(comment.commentId)"
                   role="button"
                   aria-label="Delete Comment"
-                  tabindex="0">
+                  tabindex="0" #confirmDeleteBtn [attr.data-comment-id]="comment.commentId">
                   Confirm Delete
                 </span>
 
                 <i
-                  *ngIf="
-                    showLoader[comment.commentId] &&
-                    !showConfirmBtn[comment.commentId]
-                  "
+                  *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]"
                   class="fas fa-circle-notch icon-spinner"
                   aria-hidden="true"></i>
               </span>
             </div>
 
             <div class="comment-box p-mt-1">
-              <p tabindex="0">{{ comment?.comment }}</p>
+              <p tabindex="0">{{comment?.comment}}</p>
             </div>
           </div>
         </ng-container>
