@@ -26,9 +26,9 @@
         </div>
         <div>
             <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />
-            <label for="file-upload" class="btn-import-label">Import</label>
+            <label for="file-upload" class="btn-import-label" tabindex="0" role="button" (keydown.enter)="triggerFileInput()">Import</label>
             <input style="width:0" id="file-upload" type="file" class="btn-import" name="fileUpload" accept=".json"
-                (change)="onUpload($event)" />
+                (change)="onUpload($event)" aria-hidden="true" #fileInput />
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>

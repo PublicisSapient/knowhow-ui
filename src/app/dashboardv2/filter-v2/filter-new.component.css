@@ -383,3 +383,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: relative;
   z-index: 1001;
 }
+
+:host ::ng-deep .p-button:enabled:focus {
+  outline: 3px solid var(--color-black-dark);
+}
