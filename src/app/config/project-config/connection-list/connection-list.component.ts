@@ -2157,13 +2157,15 @@ export class ConnectionListComponent implements OnInit {
   }
 
   emptyUrlInZephyr() {
-    if (this.basicConnectionForm.controls['type'].value.toLowerCase() == 'zephyr') && this.basicConnectionForm.controls
-    return !(
-      this.basicConnectionForm.controls['type'].value.toLowerCase() ===
-      'zephyr' &&
+    if (
+      this.basicConnectionForm.controls['type'].value.toLowerCase() == 'zephyr' &&
       this.basicConnectionForm.controls['cloudEnv'].value &&
-      this.basicConnectionForm.controls['baseUrl'].value === ''
-    );
+      this.basicConnectionForm.controls['baseUrl'].value == ''
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   createFormatCategoryWise(addEditConnectionFieldsNlabels) {
