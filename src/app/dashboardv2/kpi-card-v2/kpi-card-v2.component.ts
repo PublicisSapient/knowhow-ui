@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -130,6 +131,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
+  @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
 
   constructor(
     public service: SharedService,
@@ -300,7 +302,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.showComments = true;
       this.openCommentModal();
     } else if (event.report) {
-      this.addToReportAction();
+      this.addToReportAction(event);
     }
   }
 
@@ -365,7 +367,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
-            this.addToReportAction();
+            this.addToReportAction($event);
           },
           disabled: true,
         });
@@ -377,7 +379,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
-            this.addToReportAction();
+            this.addToReportAction($event);
           },
           disabled: false,
         });
@@ -1094,7 +1096,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @param {void}
    * @returns {void}
    */
-  addToReportAction() {
+  addToReportAction(event) {
     this.success = false;
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', {
@@ -1377,6 +1379,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   closeAddToReportsModal() {
     this.createNewReportTemplate = false;
     this.displayAddToReportsModal = false;
+    if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
+      const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
+      menuEl.focus();
+    }
+  }
+
+  onDialogClose() {
+    if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
+      const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
+      console.log('menuEl', menuEl);
+      menuEl.focus();
+    }
   }
 
   handleKeyboardSelect(event: KeyboardEvent) {
