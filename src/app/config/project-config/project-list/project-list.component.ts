@@ -26,6 +26,8 @@ import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Menu } from 'primeng/menu';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 declare const require: any;
 @Component({
@@ -278,25 +280,29 @@ export class ProjectListComponent implements OnInit {
       header: `Delete ${project.name}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.http.deleteProject(project).subscribe(
-          (response) => {
-            this.projectDeletionStatus(response);
-            let arr =
-              this.sharedService.getCurrentUserDetails('projectsAccess');
-            if (arr?.length) {
-              arr?.map((item) => {
-                item.projects = item.projects.filter(
-                  (x) => x.projectId != project.id,
-                );
-              });
-              arr = arr?.filter((item) => item.projects?.length > 0);
-              this.http.setCurrentUserDetails({ projectsAccess: arr });
-            }
-          },
-          (error) => {
-            this.projectDeletionStatus(error);
-          },
-        );
+        this.http
+          .deleteProject(project)
+          .pipe(
+            tap((response) => {
+              this.projectDeletionStatus(response);
+              let arr =
+                this.sharedService.getCurrentUserDetails('projectsAccess');
+              if (arr?.length) {
+                arr.forEach((item) => {
+                  item.projects = item.projects.filter(
+                    (x) => x.projectId !== project.id,
+                  );
+                });
+                arr = arr.filter((item) => item.projects?.length > 0);
+                this.http.setCurrentUserDetails({ projectsAccess: arr });
+              }
+            }),
+            catchError((error) => {
+              this.projectDeletionStatus(error);
+              return of();
+            }),
+          )
+          .subscribe();
       },
       reject: () => {},
     });

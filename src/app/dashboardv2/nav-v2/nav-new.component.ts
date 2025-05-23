@@ -4,6 +4,8 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-nav-new',
@@ -83,17 +85,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
         basicProjectConfigIds:
           projectList?.length && projectList[0] ? projectList : [],
       })
-      .subscribe(
-        (response) => {
+      .pipe(
+        tap((response) => {
           this.setBoards(response);
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.messageService.add({
             severity: 'error',
             summary: error.message,
           });
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   setBoards(response) {

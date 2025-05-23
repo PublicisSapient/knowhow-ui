@@ -21,9 +21,9 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin, interval, Subscription } from 'rxjs';
+import { forkJoin, interval, of, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { switchMap, takeWhile } from 'rxjs/operators';
+import { catchError, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -360,32 +360,34 @@ export class AdvancedSettingsComponent implements OnInit {
           ),
         );
       });
-      forkJoin(toolDetailSubscription).subscribe(
-        //NOSONAR
-        (response) => {
-          if (response.find((res) => !res['success'])) {
+      forkJoin(toolDetailSubscription)
+        .pipe(
+          tap((response) => {
+            if (response.find((res) => !res['success'])) {
+              this.messageService.add({
+                severity: 'error',
+                summary:
+                  'Error in deleting project data. Please try after some time.',
+              });
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Data deleted Successfully.',
+                detail: '',
+              });
+              this.getAllToolConfigs(selectedProject?.id);
+              this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
+            }
+          }),
+          catchError((error) => {
             this.messageService.add({
               severity: 'error',
-              summary:
-                'Error in deleting project data. Please try after some time.',
+              summary: 'Something went wrong. Please try again after sometime.',
             });
-          } else {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Data deleted Successfully.',
-              detail: '',
-            });
-            this.getAllToolConfigs(selectedProject?.id);
-            this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
-          }
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Something went wrong. Please try again after sometime.',
-          });
-        },
-      );
+            return of();
+          }),
+        )
+        .subscribe();
     } else {
       this.messageService.add({
         severity: 'error',
