@@ -172,6 +172,13 @@ describe('JiraConfigComponent', () => {
       templateCode: '7',
       kanban: true,
     },
+    {
+      id: '641cc51bd830154a05d77374',
+      tool: 'Rally',
+      templateName: 'Standard Template',
+      templateCode: '13',
+      kanban: false,
+    }
   ];
 
   beforeEach(() => {
@@ -884,6 +891,7 @@ describe('JiraConfigComponent', () => {
       id: '641cc51bd830154a05d77370',
       type: 'kanban',
     };
+    component.urlParam = 'jira';
     component.jiraTemplate = [];
     component.toolForm = new UntypedFormGroup({
       originalTemplateCode: new UntypedFormControl(),
@@ -896,7 +904,7 @@ describe('JiraConfigComponent', () => {
   it('should dropdown disabled for custom template', () => {
     const templateList = fakeTemplateList;
     component.ngOnInit();
-    component.urlParam = 'jira`';
+    component.urlParam = 'jira';
     component.initializeFields(component.urlParam);
     component.selectedProject = {
       id: '641cc51bd830154a05d77370',
@@ -904,6 +912,7 @@ describe('JiraConfigComponent', () => {
     };
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList));
     component.getJiraTemplate();
+    console.log("component.toolForm.get('originalTemplateCode')", component.toolForm.get('originalTemplateCode'));
     expect(
       component.toolForm.get('originalTemplateCode').disabled,
     ).toBeTruthy();
