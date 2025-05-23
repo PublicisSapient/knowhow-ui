@@ -32,6 +32,11 @@ describe('ReportKpiCardComponent', () => {
             currentValue: null,
             firstChange: false,
           },
+          kpiData: {
+            previousValue: { kpiId: 'kpi123' },
+            currentValue: { kpiId: 'kpi123' },
+            firstChange: false,
+          },
         };
 
         component.ngOnChanges(changes as any);
@@ -54,6 +59,7 @@ describe('ReportKpiCardComponent', () => {
       it('should handle empty kpiTrendsObj gracefully in sortColors', () => {
         component.kpiTrendsObj = [];
         component.trendColors = {};
+        component.kpiData = { kpiId: 'kpi123' };
 
         component.sortColors();
 
@@ -87,6 +93,7 @@ describe('ReportKpiCardComponent', () => {
           1: { color: 'red' },
           2: { color: 'blue' },
         };
+        component.kpiData = { kpiId: 'kpi123' };
 
         component.sortColors();
 
