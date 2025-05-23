@@ -2063,7 +2063,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (
         this.connection['vault'] == true &&
-        !this.connection['cloudEnv'] == false
+        this.connection['cloudEnv'] == false
       ) {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
@@ -2076,7 +2076,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (
-        !this.connection['vault'] == false &&
+        this.connection['vault'] == false &&
         this.connection['cloudEnv'] == true
       ) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);

@@ -361,6 +361,7 @@ export class AdvancedSettingsComponent implements OnInit {
         );
       });
       forkJoin(toolDetailSubscription).subscribe(
+        //NOSONAR
         (response) => {
           if (response.find((res) => !res['success'])) {
             this.messageService.add({

@@ -22,8 +22,9 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { catchError, first, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
@@ -81,33 +82,39 @@ export class ForgotPasswordComponent implements OnInit {
     this.httpService
       .forgotPassword(this.f.email.value)
       .pipe(first())
-      .subscribe(
-        (data) => {
+      .pipe(
+        tap((data) => {
           // stop spinner
           this.loading = false;
           // check email is not register sent else mail send exception else successful result
-          if (data['success'] === true) {
+
+          if (data?.['success']) {
             this.success =
               'Link to reset password has been sent to your registered email address';
             this.isPasswordUpdated = true;
-          } else if (!data['success'] || data['success'] === false) {
+          } else {
             this.error =
               'Link could not be sent to the entered email id. Please check if the email id is valid and registered.';
             this.isPasswordUpdated = false;
             this.router.navigate([this.router.url]);
           }
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.loading = false; // stop spinner
           this.isPasswordUpdated = false;
+
           if (error.status === 0) {
             // in case of connection timeout
             this.error = 'Could not send email, connection timed out!';
           } else {
             this.error = 'Please check your email/notification setup';
           }
+
           this.router.navigate([this.router.url]);
-        },
-      );
+
+          return of(); // return empty observable so the stream completes gracefully
+        }),
+      )
+      .subscribe();
   }
 }
