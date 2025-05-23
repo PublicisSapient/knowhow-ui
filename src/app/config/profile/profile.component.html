@@ -18,18 +18,26 @@
 
 <div class="p-grid p-m-0">
   <div class="p-col-2 p-p-2 tabs-nav">
-    <nav class="p-panelmenu  p-component">
+    <nav class="p-panelmenu p-component">
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="MyProfile" routerLinkActive="selected">
-            <i class="fas fa-user-circle p-menuitem-icon" aria-hidden="true"></i>
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="MyProfile"
+            routerLinkActive="selected">
+            <i
+              class="fas fa-user-circle p-menuitem-icon"
+              aria-hidden="true"></i>
             My Profile
           </a>
         </div>
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="GrantRequests" *ngIf="(isSuperAdmin || isProjectAdmin)"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="GrantRequests"
+            *ngIf="isSuperAdmin || isProjectAdmin"
             routerLinkActive="selected">
             <i class="fa fa-user-plus p-menuitem-icon" aria-hidden="true"></i>
             Grant Project Access
@@ -38,7 +46,10 @@
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="GrantNewUserAuthRequests" *ngIf="isSuperAdmin"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="GrantNewUserAuthRequests"
+            *ngIf="isSuperAdmin"
             routerLinkActive="selected">
             <i class="fa fa-unlock-alt p-menuitem-icon" aria-hidden="true"></i>
             Grant User Access
@@ -47,15 +58,24 @@
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="AccessMgmt" *ngIf="isSuperAdmin" routerLinkActive="selected">
-            <i class="fa fa-universal-access p-menuitem-icon" aria-hidden="true"></i>
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="AccessMgmt"
+            *ngIf="isSuperAdmin"
+            routerLinkActive="selected">
+            <i
+              class="fa fa-universal-access p-menuitem-icon"
+              aria-hidden="true"></i>
             Manage Access
           </a>
         </div>
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="RaiseRequest" *ngIf="!isSuperAdmin"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="RaiseRequest"
+            *ngIf="!isSuperAdmin"
             routerLinkActive="selected">
             <i class="fa fa-unlock-alt p-menuitem-icon" aria-hidden="true"></i>
             Raise Request
@@ -64,17 +84,27 @@
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="RequestStatus" *ngIf="!isSuperAdmin"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="RequestStatus"
+            *ngIf="!isSuperAdmin"
             routerLinkActive="selected">
-            <i class="fa fa-address-card p-menuitem-icon" aria-hidden="true"></i>
+            <i
+              class="fa fa-address-card p-menuitem-icon"
+              aria-hidden="true"></i>
             My Requests
           </a>
         </div>
       </div>
 
-      <div *ngIf="loginType?.toLowerCase() === 'standard'" class="p-panelmenu-panel">
+      <div
+        *ngIf="loginType?.toLowerCase() === 'standard'"
+        class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="UserSettings" routerLinkActive="selected"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="UserSettings"
+            routerLinkActive="selected"
             [class.disabled]="changePswdDisabled ? true : null">
             <i class="fa fa-key p-menuitem-icon" aria-hidden="true"></i>
             Change Password
@@ -83,16 +113,20 @@
       </div>
       <div class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
-          <a class="p-panelmenu-header-link p-align-center" routerLink="AutoApprove" *ngIf="isSuperAdmin"
+          <a
+            class="p-panelmenu-header-link p-align-center"
+            routerLink="AutoApprove"
+            *ngIf="isSuperAdmin"
             routerLinkActive="selected">
-            <i class="fas fa-check-circle p-menuitem-icon" aria-hidden="true"></i>
+            <i
+              class="fas fa-check-circle p-menuitem-icon"
+              aria-hidden="true"></i>
             Auto Approve
           </a>
         </div>
       </div>
     </nav>
   </div>
-
 
   <div class="p-col-10">
     <div class="main">

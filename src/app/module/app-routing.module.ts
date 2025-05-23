@@ -35,7 +35,6 @@ import { FeatureGuard } from '../services/feature.guard';
   imports: [
     RouterModule.forRoot([], {
       useHash: true,
-      relativeLinkResolution: 'legacy',
     }),
   ],
 

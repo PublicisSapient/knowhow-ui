@@ -345,8 +345,8 @@ export class CapacityPlanningComponent implements OnInit {
 
   getSquadsOfSelectedProject(projectNodeId) {
     if (projectNodeId) {
-      let sprintData = this.getGridData();
-      let sprintNodeIdList = new Set(
+      const sprintData = this.getGridData();
+      const sprintNodeIdList = new Set(
         sprintData.map((sprint) => sprint.sprintNodeId),
       );
       this.selectedSquad = [
@@ -439,12 +439,10 @@ export class CapacityPlanningComponent implements OnInit {
                   this.projectAssigneeEmails = response.data;
                   this.projectAssigneeEmailsCopy = [
                     ...this.projectAssigneeEmails,
-                  ].map((x) => {
-                    return {
-                      name: x,
-                      value: x,
-                    };
-                  });
+                  ].map((x) => ({
+                    name: x,
+                    value: x,
+                  }));
                 } else {
                   this.messageService.add({
                     severity: 'error',
@@ -638,7 +636,7 @@ export class CapacityPlanningComponent implements OnInit {
           Validators.max(assignee.plannedCapacity),
         ]);
         assigneeFormControls.leaves.enable();
-        let totalCapacity = assignee.plannedCapacity - assignee.leaves;
+        const totalCapacity = assignee.plannedCapacity - assignee.leaves;
         assignee.availableCapacity = Math.round(totalCapacity * 100) / 100;
       } else {
         assigneeFormControls.leaves.setValue(0);
@@ -838,7 +836,7 @@ export class CapacityPlanningComponent implements OnInit {
           });
         } else {
           this.selectedSquad.forEach((squad) => {
-            let control = new UntypedFormControl();
+            const control = new UntypedFormControl();
             if (this.squadForm.get(squad.nodeId)) {
               // Update existing control
               this.squadForm.get(squad.nodeId).setValue(control);
@@ -1040,17 +1038,15 @@ export class CapacityPlanningComponent implements OnInit {
 
     for (const labelName in squadCapacityMap) {
       const nodeCapacityList = Object.keys(squadCapacityMap[labelName]).map(
-        (nodeId) => {
-          return {
-            additionalFilterId: nodeId,
-            additionalFilterCapacity: squadCapacityMap[labelName][nodeId],
-          };
-        },
+        (nodeId) => ({
+          additionalFilterId: nodeId,
+          additionalFilterCapacity: squadCapacityMap[labelName][nodeId],
+        }),
       );
 
       additionalFilterCapacityList.push({
         filterId: labelName,
-        nodeCapacityList: nodeCapacityList,
+        nodeCapacityList,
       });
     }
 
@@ -1067,7 +1063,7 @@ export class CapacityPlanningComponent implements OnInit {
 
   getSortedAdditonalFilter(projectListArr) {
     //Get the levels of the projects in projectListArr
-    let projectMap = projectListArr.map((project) => project.level);
+    const projectMap = projectListArr.map((project) => project.level);
     // Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
     return this.sortAlphabetically(
       this.filterData.filter((data) => projectMap.includes(data.level - 2)),

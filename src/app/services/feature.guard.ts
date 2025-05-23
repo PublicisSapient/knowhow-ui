@@ -9,7 +9,6 @@ import {
   UrlSegment,
   UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { FeatureFlagsService } from './feature-toggle.service';
 
 @Injectable({

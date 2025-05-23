@@ -118,8 +118,7 @@
       "type": "NewRelic",
       "connectionName": "TestConnectionRishabhNewRelic",
       "cloudEnv": false,
-      "apiEndPoint":
-        "https://test.com/v1/accounts/729003/query?nrql=",
+      "apiEndPoint": "https://test.com/v1/accounts/729003/query?nrql=",
       "isOAuth": false,
       "apiKeyFieldName": "X-Query-Key",
       "offline": false,

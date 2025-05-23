@@ -412,11 +412,11 @@ describe('AdvancedSettingsComponent', () => {
     const continueCall = spyOn(
       httpService,
       'getProgressStatusOfProcessors',
-    ).and.callFake(() => {
-      return of(mockProgressStatusResponse).pipe(
+    ).and.callFake(() =>
+      of(mockProgressStatusResponse).pipe(
         takeWhile(() => jiraStatusContinuePulling),
-      );
-    });
+      ),
+    );
     component.runProcessor('Jira');
     tick(15000);
     jiraStatusContinuePulling = false;
@@ -462,11 +462,11 @@ describe('AdvancedSettingsComponent', () => {
     const continueCall = spyOn(
       httpService,
       'getProgressStatusOfProcessors',
-    ).and.callFake(() => {
-      return of(mockProgressStatusResponse).pipe(
+    ).and.callFake(() =>
+      of(mockProgressStatusResponse).pipe(
         takeWhile(() => jiraStatusContinuePulling),
-      );
-    });
+      ),
+    );
     component.runProcessor('Jira');
     tick(3000);
     jiraStatusContinuePulling = false;
@@ -599,11 +599,11 @@ describe('AdvancedSettingsComponent', () => {
     const continueCall = spyOn(
       httpService,
       'getProgressStatusOfProcessors',
-    ).and.callFake(() => {
-      return of(mockProgressStatusResponse).pipe(
+    ).and.callFake(() =>
+      of(mockProgressStatusResponse).pipe(
         takeWhile(() => jiraStatusContinuePulling),
-      );
-    });
+      ),
+    );
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
     tick(3000);
     jiraStatusContinuePulling = false;
@@ -1111,9 +1111,7 @@ describe('AdvancedSettingsComponent', () => {
   it('should return formatted date when executionResumesAt is valid', () => {
     const processorName = 'GitHub';
     const executionResumesAt = new Date('2023-10-01T10:00:00Z').getTime();
-    component.processorsTracelogs = [
-      { processorName: processorName, executionResumesAt: executionResumesAt },
-    ];
+    component.processorsTracelogs = [{ processorName, executionResumesAt }];
     const result = component.getSCMToolTimeDetails(processorName);
     expect(result).toBe(
       new DatePipe('en-US').transform(

@@ -241,7 +241,7 @@ export class GroupstackchartComponent implements OnChanges {
           d2['hoverText'] = {};
           d.forEach((dx) => {
             d2[dx.type] = dx.value;
-            for (let key in dx?.hoverText) {
+            for (const key in dx?.hoverText) {
               if (key.indexOf('drillDown') === -1) {
                 if (!this.isAggregationStacks) {
                   d2['hoverSum'] = dx?.value + ' ' + this.unit;
@@ -396,7 +396,7 @@ export class GroupstackchartComponent implements OnChanges {
             let dataString = '';
             let htmlString = '';
             if (!self.isDrilledDown) {
-              for (let key in d.data?.hoverText) {
+              for (const key in d.data?.hoverText) {
                 if (key.indexOf('drillDown') === -1) {
                   dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
                 }
@@ -482,9 +482,9 @@ export class GroupstackchartComponent implements OnChanges {
         .delay(function (d, i) {
           return 200;
         })
-        .attr('height', (d) => {
-          return !isNaN(y(d[0]) - y(d[1])) ? y(d[0]) - y(d[1]) : 0;
-        });
+        .attr('height', (d) =>
+          !isNaN(y(d[0]) - y(d[1])) ? y(d[0]) - y(d[1]) : 0,
+        );
 
       /** legend code */
       const legendDiv = d3.select(this.elem).select('#svgLegend').append('div');
@@ -521,9 +521,9 @@ export class GroupstackchartComponent implements OnChanges {
   }
 
   transformData(data) {
-    let result = JSON.parse(JSON.stringify(data));
+    const result = JSON.parse(JSON.stringify(data));
     result.forEach((element) => {
-      let obj = {};
+      const obj = {};
       element?.value?.forEach((val) => {
         obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] =
@@ -606,27 +606,27 @@ export class GroupstackchartComponent implements OnChanges {
 
   wrap(text, wrapWidth, yAxisAdjustment = 0) {
     text.each(function () {
-      let text = d3.select(this);
+      const text = d3.select(this);
       if (text.text().length > 25) {
         text.text(text.text().substring(0, 25) + '...');
       }
-      let words = text
-          .text()
-          .split(/[\s|_-]+/)
-          .reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1,
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')) - yAxisAdjustment,
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 15)
-          .attr('y', y - 2)
-          .attr('dy', `${dy}em`)
-          .attr('text-anchor', 'middle');
+      const words = text
+        .text()
+        .split(/[\s|_-]+/)
+        .reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1;
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy')) - yAxisAdjustment;
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 15)
+        .attr('y', y - 2)
+        .attr('dy', `${dy}em`)
+        .attr('text-anchor', 'middle');
 
       while ((word = words.pop())) {
         line.push(word);
@@ -650,7 +650,7 @@ export class GroupstackchartComponent implements OnChanges {
   }
 
   checkIfDrillDownNeedOrNot(data) {
-    var counter = 0;
+    let counter = 0;
     data.forEach((val) => {
       val?.value?.forEach((sprint) => {
         if (sprint?.drillDown && sprint?.drillDown?.length) {

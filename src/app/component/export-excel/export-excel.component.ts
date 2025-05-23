@@ -21,15 +21,15 @@ export class ExportExcelComponent implements OnInit {
   };
   kpiExcelData;
   sprintRatingObj = {
-    '1': '../assets/img/smiley-1.svg',
+    1: '../assets/img/smiley-1.svg',
 
-    '2': '../assets/img/smiley-2.svg',
+    2: '../assets/img/smiley-2.svg',
 
-    '3': '../assets/img/smiley-3.svg',
+    3: '../assets/img/smiley-3.svg',
 
-    '4': '../assets/img/smiley-4.svg',
+    4: '../assets/img/smiley-4.svg',
 
-    '5': '../assets/img/smiley-5.svg',
+    5: '../assets/img/smiley-5.svg',
   };
   tableColumnData = {};
   tableColumnForm = {};
@@ -38,7 +38,7 @@ export class ExportExcelComponent implements OnInit {
   //includeColumnFilter = [];
   selectedColumns = []; // store all columns which is default or shown in table
   tableColumns = []; // store all table coumns with configurations
-  isDisableSaveCOnfigurationBtn: boolean = false;
+  isDisableSaveCOnfigurationBtn = false;
   markerInfo = [];
   forzenColumns = ['issue id'];
   exportExcelRawVariable;
@@ -139,11 +139,11 @@ export class ExportExcelComponent implements OnInit {
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
     rawExcelData.forEach((colData) => {
-      let obj = {};
-      for (let key in colData) {
+      const obj = {};
+      for (const key in colData) {
         if (this.typeOf(colData[key])) {
           obj[key] = [];
-          for (let y in colData[key]) {
+          for (const y in colData[key]) {
             //added check if valid url
             if (typeof colData[key] === 'object') {
               Object.entries(colData[key]).forEach(([objkey, value]) => {
@@ -197,15 +197,15 @@ export class ExportExcelComponent implements OnInit {
   }
 
   dataTransformForStackedAreaChart(getData) {
-    let kpiObj = JSON.parse(JSON.stringify(getData));
+    const kpiObj = JSON.parse(JSON.stringify(getData));
     kpiObj['columns'] = kpiObj['columns'].map((col) => col.columnName);
     kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
-      for (let key in item['Count']) {
+      for (const key in item['Count']) {
         if (!kpiObj['columns'].includes(key)) {
           kpiObj['columns'] = [...kpiObj['columns'], key];
         }
       }
-      let obj = { ...item, ...item['Count'] };
+      const obj = { ...item, ...item['Count'] };
       delete obj['Count'];
       return obj;
     });
@@ -320,10 +320,10 @@ export class ExportExcelComponent implements OnInit {
         this.modalDetails['header'],
       );
     } else {
-      let filteredData = this.tableComponent?.filteredValue
+      const filteredData = this.tableComponent?.filteredValue
         ? this.tableComponent?.filteredValue
         : this.modalDetails['tableValues'];
-      let filteredColumns = this.tableComponent.columns;
+      const filteredColumns = this.tableComponent.columns;
 
       const headerNames = [];
       for (const column of filteredColumns) {
@@ -460,7 +460,7 @@ export class ExportExcelComponent implements OnInit {
       return;
     }
     if (Array.isArray(colData)) {
-      let tempText = [];
+      const tempText = [];
       colData.map((item) => {
         if (this.typeOf(item) && item?.hasOwnProperty('hyperlink')) {
           tempText.push(item.text);

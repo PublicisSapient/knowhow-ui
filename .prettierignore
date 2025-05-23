@@ -1,0 +1,20 @@
+
+# Output folders
+dist/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Angular CLI test folders
+e2e/
+
+# CI/CD workflows
+.github/
+
+# Cache or temp folders
+.angular/
+.nx/
+.idea/
+.vscode/
+.DS_Store

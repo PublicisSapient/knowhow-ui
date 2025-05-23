@@ -13,12 +13,12 @@ import * as d3 from 'd3';
   styleUrls: ['./semi-circle-donut-chart.component.css'],
 })
 export class SemiCircleDonutChartComponent implements OnInit {
-  @Input() value: number = 0; // Value for the chart (e.g., 86 for 86%)
-  @Input() max: number = 100; // Maximum value for the chart
-  @Input() width: number = 200; // Width of the chart
-  @Input() height: number = 100; // Height of the chart (half the width)
-  @Input() kpiId: string = '';
-  @Input() totalIssues: number = 0;
+  @Input() value = 0; // Value for the chart (e.g., 86 for 86%)
+  @Input() max = 100; // Maximum value for the chart
+  @Input() width = 200; // Width of the chart
+  @Input() height = 100; // Height of the chart (half the width)
+  @Input() kpiId = '';
+  @Input() totalIssues = 0;
   @Input() color;
 
   constructor(private elementRef: ElementRef) {}

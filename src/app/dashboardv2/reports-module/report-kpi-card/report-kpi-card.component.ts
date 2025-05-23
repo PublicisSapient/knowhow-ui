@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class ReportKpiCardComponent {
   @Input() kpiTrendsObj: any;
   @Input() trendColors: any;
   colors: any;
-  fromReport: string = 'fromReport';
+  fromReport = 'fromReport';
 
   @Input() kpiFilters: any;
   @Input() selectedButtonValue: any;
@@ -26,8 +26,8 @@ export class ReportKpiCardComponent {
   @Input() filterApplyData: any;
   @Input() kpiSelectedFilterObj: any;
   @Input() chartColorList: any;
-  @Input() yAxis: string = '';
-  @Input() capturedAt: string = '';
+  @Input() yAxis = '';
+  @Input() capturedAt = '';
   @Input() kpiHeight: number;
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
@@ -65,7 +65,7 @@ export class ReportKpiCardComponent {
    * @throws {TypeError} If kpiTrendsObj is not an array or contains invalid entries.
    */
   sortColors() {
-    let result = {};
+    const result = {};
 
     for (let i = 0; i < this.kpiTrendsObj?.length; i++) {
       result[
@@ -90,7 +90,7 @@ export class ReportKpiCardComponent {
       if (typeof this.kpiFilters === 'string') {
         this.kpiFilters = [this.kpiFilters];
       } else {
-        let result = [];
+        const result = [];
         Object.keys(this.kpiFilters).forEach((key) => {
           result.push(this.kpiFilters[key]);
         });

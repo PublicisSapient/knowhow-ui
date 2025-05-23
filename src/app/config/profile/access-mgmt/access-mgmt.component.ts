@@ -22,6 +22,8 @@ import { SharedService } from '../../../services/shared.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { environment } from '../../../../environments/environment';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-access-mgmt',
@@ -59,7 +61,7 @@ export class AccessMgmtComponent implements OnInit {
   allProjectsData = <any>[];
   enableAddBtn = false;
   accessConfirm: boolean;
-  showAddUserForm: boolean = false;
+  showAddUserForm = false;
   addData: object = {
     authType: 'SSO',
     username: '',
@@ -67,7 +69,7 @@ export class AccessMgmtComponent implements OnInit {
     projectsAccess: [],
   };
   ssoLogin = environment.SSO_LOGIN;
-  isSuperAdmin: boolean = false;
+  isSuperAdmin = false;
 
   constructor(
     private service: SharedService,
@@ -471,14 +473,16 @@ export class AccessMgmtComponent implements OnInit {
       .deleteAccess({
         username: userName,
       })
-      .subscribe(
-        (response) => {
+      .pipe(
+        tap((response) => {
           this.accessDeletionStatus(response, isSuperAdmin);
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.accessDeletionStatus(error, isSuperAdmin);
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   accessDeletionStatus(data, isSuperAdmin) {

@@ -27,7 +27,7 @@ import {
 import { GetAuthService } from './getauth.service';
 import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
-import { Observable, pipe } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -62,7 +62,7 @@ export class AuthGuard implements CanActivate {
         } else {
           const queryParams = route.queryParams;
           this.router.navigate(['./authentication/login'], {
-            queryParams: queryParams,
+            queryParams,
           });
         }
         return false;
@@ -83,7 +83,7 @@ export class AuthGuard implements CanActivate {
             } else {
               const queryParams = route.queryParams;
               this.router.navigate(['./authentication/login'], {
-                queryParams: queryParams,
+                queryParams,
               });
             }
             return false;
