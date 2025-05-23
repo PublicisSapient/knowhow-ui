@@ -912,7 +912,6 @@ describe('JiraConfigComponent', () => {
     };
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList));
     component.getJiraTemplate();
-    console.log("component.toolForm.get('originalTemplateCode')", component.toolForm.get('originalTemplateCode'));
     expect(
       component.toolForm.get('originalTemplateCode').disabled,
     ).toBeTruthy();
