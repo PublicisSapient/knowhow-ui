@@ -24,8 +24,8 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { catchError, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -117,19 +117,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.f.email.value,
       )
       .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (data: any) => {
+      .pipe(
+        tap((data: any) => {
           // stop spinner
           this.loading = false;
+
           if (data.success) {
             // After successfully registration redirect form to dashboard router(Executive page)
-
             this.success = data.message;
           } else {
             this.error = data.message;
           }
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.loading = false; // stop spinner
           // check 422 status if user already exist else mail is already registered
           if (error.status === 422) {
@@ -141,8 +141,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
           }
 
           this.router.navigate([this.router.url]);
-        },
-      );
+
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
