@@ -23,8 +23,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { KeyValue } from '@angular/common';
-import { catchError, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 interface Control {
   name: string;

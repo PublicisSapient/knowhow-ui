@@ -754,7 +754,6 @@ export class CapacityPlanningComponent implements OnInit {
           ) {
             this.isCapacitySaveDisabled = true;
             this.capacityErrorMessage = 'Please enter Capacity';
-            return;
           }
         });
       } else {
