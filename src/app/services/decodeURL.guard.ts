@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   Router,
@@ -10,7 +9,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class DecodeUrlGuard implements CanActivate {
+export class DecodeUrlGuard {
   constructor(private router: Router) {}
 
   canActivate(

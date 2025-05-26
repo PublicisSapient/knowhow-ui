@@ -19,7 +19,6 @@
 import { Injectable } from '@angular/core';
 import {
   Router,
-  CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
 } from '@angular/router';
@@ -27,7 +26,7 @@ import { GetAuthorizationService } from './get-authorization.service';
 import { SharedService } from './shared.service';
 
 @Injectable()
-export class ViewerGuard implements CanActivate {
+export class ViewerGuard {
   hasAccess = <boolean>false;
   constructor(
     private router: Router,
