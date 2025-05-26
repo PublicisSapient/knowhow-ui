@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -832,6 +832,9 @@ export class ConnectionListComponent implements OnInit {
   @Input() selectedToolName: string;
   groupedToolsGroup: any;
 
+  @ViewChild('pageTitle') pageTitle: ElementRef<HTMLHeadingElement>;
+  activeIndex: number | null = null;
+
   constructor(
     private httpService: HttpService,
     private formBuilder: UntypedFormBuilder,
@@ -1084,11 +1087,13 @@ export class ConnectionListComponent implements OnInit {
     this.isNewlyConfigAdded = true;
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
+      this.focusOnModalElement('#jiraConnectionForm');
       this.jiraForm.controls['type'].setValue(this.connection.type);
       this.initializeForms(this.jiraConnectionFields);
     } else {
       this.submitted = false;
       this.connectionDialog = true;
+      this.focusOnModalElement('#connectionDialogForm');
       this.connectionTypeFieldsAssignment();
       this.basicConnectionForm.controls['type']?.setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
@@ -1306,9 +1311,11 @@ export class ConnectionListComponent implements OnInit {
     this.selectedConnectionType = this.connection.type;
     if (connection.type?.toLowerCase() == 'jira') {
       this.jiraConnectionDialog = true;
+      this.focusOnModalElement('#jiraConnectionForm');
       this.initializeForms(this.connection, true);
     } else {
       this.connectionDialog = true;
+      this.focusOnModalElement('#connectionDialogForm');
       this.connectionTypeFieldsAssignment();
       this.basicConnectionForm.controls['type']?.setValue(
         this.selectedConnectionType,
@@ -2250,5 +2257,28 @@ export class ConnectionListComponent implements OnInit {
         this.addEditConnectionFieldsNlabels,
       );
     }
+  }
+
+  focusOnModalElement(elementId) {
+    setTimeout(() => {
+      // Focus the dialog container
+      const dialogEl = document.querySelector(elementId);
+      if (dialogEl) {
+        (dialogEl as HTMLElement).focus();
+      }
+    }, 10);
+  }
+
+  onDialogClose() {
+    console.log('onDialogClose', this.pageTitle);
+    if (this.pageTitle && this.pageTitle.nativeElement) {
+      const headingEl = this.pageTitle.nativeElement as HTMLElement;
+      console.log('headingEl', headingEl);
+      headingEl.focus();
+    }
+  }
+
+  isPanelOpen(index: number): boolean {
+    return this.activeIndex === index;
   }
 }

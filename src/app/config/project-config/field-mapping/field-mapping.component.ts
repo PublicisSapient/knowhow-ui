@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -33,6 +33,7 @@ declare const require: any;
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FieldMappingComponent implements OnInit {
+  @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
   fieldMappingForm: UntypedFormGroup;
   fieldMappingFormObj: any;
   selectedConfig: any = {};
@@ -192,5 +193,9 @@ export class FieldMappingComponent implements OnInit {
 
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
+  }
+
+  triggerFileInput() {
+    this.fileInput.nativeElement.click();
   }
 }

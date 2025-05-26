@@ -1582,6 +1582,11 @@ a:hover {
 .action-btns {
   font-size: 1.3rem;
   cursor: pointer;
+  background: none;
+  border: none;
+}
+.action-btns:focus {
+  outline: 3px solid #000;
 }
 .table-head-fixed {
   position: sticky;
@@ -1615,7 +1620,7 @@ a:hover {
 }
 .dashboard-config-tabs .p-tabview .p-tabview-nav li {
   margin-right: 15px !important;
-  position: relative;
+  /* position: relative; */
 }
 .dashboard-config-tabs .p-tabview-nav {
   border: 0 !important;
@@ -1871,9 +1876,8 @@ a:hover {
   color: #4b4b4b;
 }
 .p-dialog .p-dialog-header-icons {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #4b4b4b;
+  width: 21px;
+  height: 21px;
   padding: 3px;
   position: absolute;
   right: 21px;
