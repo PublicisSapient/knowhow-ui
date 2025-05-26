@@ -511,4 +511,16 @@ export class ExportExcelComponent implements OnInit {
     });
     return updatedRow;
   }
+
+  handleMultiSelectEnter(event: KeyboardEvent): void {
+    event.stopPropagation();
+  }
+
+  openOnEnter(event): void {
+    const target = event.target as HTMLElement;
+    const link = target.querySelector('a');
+    if (link) {
+      link.click();
+    }
+  }
 }
