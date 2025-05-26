@@ -38,8 +38,8 @@ interface Control {
 export class ProjectSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject: any;
-  projectOnHold: boolean = false;
-  developerKpiEnabled: boolean = false;
+  projectOnHold = false;
+  developerKpiEnabled = false;
   generalControls: Control[];
   oneTimeControls: Control[];
   apiControls: Control[];
@@ -49,15 +49,15 @@ export class ProjectSettingsComponent implements OnInit {
   loading: boolean;
   projectList: any;
   globalSearchFilter: any;
-  isAssigneeSwitchChecked: boolean = false;
-  tokenCopied: boolean = false;
-  generateTokenLoader: boolean = false;
+  isAssigneeSwitchChecked = false;
+  tokenCopied = false;
+  generateTokenLoader = false;
   userName: string;
-  displayGeneratedToken: boolean = false;
-  generatedToken: string = '';
-  isProjectAdmin: boolean = false;
-  isSuperAdmin: boolean = false;
-  isDeleteClicked: boolean = false;
+  displayGeneratedToken = false;
+  generatedToken = '';
+  isProjectAdmin = false;
+  isSuperAdmin = false;
+  isDeleteClicked = false;
 
   constructor(
     public sharedService: SharedService,
@@ -288,18 +288,17 @@ export class ProjectSettingsComponent implements OnInit {
       this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
-    )[selectedType]?.map((x) => {
-      return {
-        id: x['hierarchyLevelId'],
-        name: x['hierarchyLevelName'],
-      };
-    });
+    )[selectedType]?.map((x) => ({
+      id: x['hierarchyLevelId'],
+      name: x['hierarchyLevelName'],
+    }));
 
     setTimeout(() => {
       if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
         Object.keys(this.selectedProject).forEach((key) => {
           if (levelDetails?.map((x) => x.id).includes(key)) {
-            let propertyName = levelDetails.filter((x) => x.id === key)[0].name;
+            const propertyName = levelDetails.filter((x) => x.id === key)[0]
+              .name;
             this.selectedProject[propertyName] = this.selectedProject[key];
             delete this.selectedProject[key];
           }
@@ -312,8 +311,8 @@ export class ProjectSettingsComponent implements OnInit {
    * Deletes a specified project after user confirmation.
    * It updates the project access list and navigates to the configuration settings of the first user project.
    *
-   * @param {Project} project - The project object to be deleted.
-   * @returns {void}
+   * @param project - The project object to be deleted.
+   * @returns
    * @throws {HttpErrorResponse} If the deletion request fails.
    */
   deleteProject(project) {

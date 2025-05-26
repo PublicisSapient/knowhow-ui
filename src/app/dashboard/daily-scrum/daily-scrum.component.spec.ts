@@ -886,7 +886,7 @@ describe('DailyScrumComponent', () => {
         ],
         previousValue: undefined,
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -1307,7 +1307,7 @@ describe('DailyScrumComponent', () => {
           },
         ],
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -1315,7 +1315,7 @@ describe('DailyScrumComponent', () => {
         previousValue: 'Overall',
         currentValue: '712020:ef53b477-a4b6-4c00-9af9-fecbcc5e6e53',
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -1328,7 +1328,7 @@ describe('DailyScrumComponent', () => {
           'Delay',
         ],
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },

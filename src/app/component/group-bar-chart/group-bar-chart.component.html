@@ -15,23 +15,19 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <div id="groupstackchart">
-    <div *ngIf="plannedDueDate || totalAvgVelocity" id="date-container"></div>
-    <div id="graphContainer">
-      <div id="verticalSVG" style="float:left;">
-      </div>
-      <div id="horizontalSVG" style="overflow-x:auto">
-        <div class="tooltip-container"></div>
-        <div class="current-week-tooltip"></div>
-      </div>
-    </div>
-
-    <div id="legendContainer" style="overflow: hidden;">
-      <div id="xCaptionContainer">
-      </div>
-      <div id="svgLegend">
-      </div>
-      <div id="legendIndicator" style="height: 30px;">
-      </div>
+<div id="groupstackchart">
+  <div *ngIf="plannedDueDate || totalAvgVelocity" id="date-container"></div>
+  <div id="graphContainer">
+    <div id="verticalSVG" style="float: left"></div>
+    <div id="horizontalSVG" style="overflow-x: auto">
+      <div class="tooltip-container"></div>
+      <div class="current-week-tooltip"></div>
     </div>
   </div>
+
+  <div id="legendContainer" style="overflow: hidden">
+    <div id="xCaptionContainer"></div>
+    <div id="svgLegend"></div>
+    <div id="legendIndicator" style="height: 30px"></div>
+  </div>
+</div>

@@ -16,8 +16,15 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-    <div class="p-mb-5">
-        <p-dropdown placeholder="Select KPI" [style]="{'max-width':'500px','width':'500px'}"
-            [options]="kpiRelationShips" [(ngModel)]="selectedKpi" optionLabel="kpiName" [showClear]="true" (onClear)="onClear()" (onChange)="showFieldsPopup()">
-        </p-dropdown>
-    </div>
+<div class="p-mb-5">
+  <p-dropdown
+    placeholder="Select KPI"
+    [style]="{ 'max-width': '500px', width: '500px' }"
+    [options]="kpiRelationShips"
+    [(ngModel)]="selectedKpi"
+    optionLabel="kpiName"
+    [showClear]="true"
+    (onClear)="onClear()"
+    (onChange)="showFieldsPopup()">
+  </p-dropdown>
+</div>

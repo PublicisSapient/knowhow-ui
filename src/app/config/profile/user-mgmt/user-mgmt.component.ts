@@ -62,7 +62,7 @@ export class UserMgmtComponent implements OnInit {
         oldpassword: ['', Validators.required],
       },
       {
-        validator: [
+        validators: [
           this.checkPasswords,
           // ,this.checkOldPassword
         ],

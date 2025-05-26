@@ -59,7 +59,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   allAssignee = [];
   selectedUserInfo;
   currentAssigneeissueData = [];
-  activeIndex2: number = 0;
+  activeIndex2 = 0;
 
   @Input() kpiData;
   @Output() reloadKPITab = new EventEmitter<any>();

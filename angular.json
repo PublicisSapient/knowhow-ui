@@ -23,11 +23,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/favicon1.png"
-            ],
+            "assets": ["src/favicon.ico", "src/assets", "src/favicon1.png"],
             "styles": [
               "node_modules/@fortawesome/fontawesome-free/css/all.css",
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css",
@@ -173,27 +169,18 @@
               "src/app/dashboard/nav/*",
               "src/app/dashboard/trend-indicator/*"
             ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "styles": ["src/styles.css"],
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
               "node_modules/d3/dist/d3.min.js"
             ],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/favicon1.png"
-            ]
+            "assets": ["src/favicon.ico", "src/assets", "src/favicon1.png"]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -218,9 +205,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
