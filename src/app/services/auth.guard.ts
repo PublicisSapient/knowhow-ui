@@ -19,7 +19,6 @@
 import { Injectable } from '@angular/core';
 import {
   Router,
-  CanActivate,
   UrlTree,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
@@ -32,7 +31,7 @@ import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuard {
   constructor(
     private router: Router,
     private getAuth: GetAuthService,

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
-  CanActivateChild,
-  CanLoad,
   Route,
   Router,
   RouterStateSnapshot,
@@ -14,7 +12,7 @@ import { FeatureFlagsService } from './feature-toggle.service';
 @Injectable({
   providedIn: 'root',
 })
-export class FeatureGuard implements CanLoad, CanActivateChild {
+export class FeatureGuard {
   constructor(
     private featureFlagsService: FeatureFlagsService,
     private router: Router,
