@@ -35,8 +35,12 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   subscriptions: any[] = [];
   isSummaryAvailableMap: { [projectName: string]: boolean } = {};
   summarisedSprintGoalsMap: { [projectName: string]: any } = {};
+  defaultMessage: boolean = false;
 
   @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
+  summarisedData: any;
+  userRole: any;
+  isAdmin: boolean = false;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const targetElement = event.target as HTMLElement;
@@ -81,6 +85,18 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
         this.sharedService.updateSprintGoalFlag(false);
       }),
     );
+    this.userRole = (
+      localStorage.getItem('currentUserDetails')
+        ? JSON.parse(localStorage.getItem('currentUserDetails'))
+        : {}
+    )['authorities'];
+
+    if (
+      this.userRole?.includes('ROLE_SUPERADMIN') ||
+      this.userRole?.includes('ROLE_PROJECT_ADMIN')
+    ) {
+      this.isAdmin = true;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -196,6 +212,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   summariseUsingAI(data) {
+    this.defaultMessage = true;
     const projectName = data.name;
     const accordionData = this.accordionData;
 
@@ -214,6 +231,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       next: (res) => {
         this.isSummaryAvailableMap[projectName] = true;
         this.summarisedSprintGoalsMap[projectName] = res;
+        this.defaultMessage = false;
       },
       error: (error) => {
         console.error('Error summarising sprint goals:', error);
@@ -221,6 +239,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
           projectName
         ] = `Failed to summarize: ${error.message}`;
         this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
+        this.defaultMessage = false;
       },
     });
   }
