@@ -22,6 +22,20 @@
   border: 2px solid #d5dbe1;
 }
 
+.p-button.p-button-raised {
+  border-radius: 2rem;
+  background: #0b4bc8;
+}
+
+.p-button.p-button-raised:enabled:focus {
+  outline: 3px solid #000;
+}
+
+.summary-header {
+  border-bottom: 1px solid #d5dbe1;
+  background-color: #f8f9fa;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
