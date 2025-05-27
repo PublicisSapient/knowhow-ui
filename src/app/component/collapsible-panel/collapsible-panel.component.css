@@ -7,3 +7,29 @@
   border-radius: 5px;
   background: #fff;
 }
+
+:host .p-button.p-button-success,
+.p-button-rounded {
+  background: #0b4bc8;
+}
+
+:host .p-button:enabled:focus {
+  outline: 3px solid #000;
+}
+
+.summary-container {
+  border-radius: 10px;
+  border: 2px solid #d5dbe1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
