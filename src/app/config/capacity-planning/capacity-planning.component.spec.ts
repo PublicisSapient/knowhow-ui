@@ -1260,7 +1260,7 @@ describe('CapacityPlanningComponent', () => {
 
   it('should get project Assignees for selected project on capacity', () => {
     component.projectJiraAssignees = {};
-    let response = {
+    const response = {
       message: 'Successfully fetched assignee list',
       success: true,
       data: {
@@ -1615,7 +1615,7 @@ describe('CapacityPlanningComponent', () => {
     component.kanban = true;
 
     spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
-    let getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    const getCapacityDataSpy = spyOn(component, 'getCapacityData');
     component.onSprintCapacitySave(selectedSprint);
 
     fixture.detectChanges();
@@ -1672,7 +1672,7 @@ describe('CapacityPlanningComponent', () => {
     spyOn(httpService, 'saveOrUpdateSprintHappinessIndex').and.returnValue(
       of(response),
     );
-    let getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    const getCapacityDataSpy = spyOn(component, 'getCapacityData');
     component.sendSprintHappinessIndex(selectedSprint);
 
     fixture.detectChanges();

@@ -548,43 +548,23 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Sprint Name", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["sprint2", "P1", "20"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "P2",
-                          "5"
-                        ]
+                        "value": ["sprint1", "P2", "5"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "P2",
-                          "3"
-                        ]
+                        "value": ["sprint2", "P2", "3"]
                       }
                     ]
                   },
@@ -675,43 +655,23 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Root Cause",
-                          "Count"
-                        ]
+                        "value": ["Sprint Name", "Root Cause", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Code Issue",
-                          "10"
-                        ]
+                        "value": ["sprint1", "Code Issue", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Code Issue",
-                          "20"
-                        ]
+                        "value": ["sprint2", "Code Issue", "20"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Configuration Issue",
-                          "5"
-                        ]
+                        "value": ["sprint1", "Configuration Issue", "5"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Configuration Issue",
-                          "3"
-                        ]
+                        "value": ["sprint2", "Configuration Issue", "3"]
                       }
                     ]
                   },
@@ -993,24 +953,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project Name",
-                          "SQALE Rating"
-                        ]
+                        "value": ["Project Name", "SQALE Rating"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "C"
-                        ]
+                        "value": ["Project 1", "C"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "B"
-                        ]
+                        "value": ["Project 2", "B"]
                       }
                     ]
                   },
@@ -1071,19 +1022,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Critical",
-                          "10"
-                        ]
+                        "value": ["sprint1", "Critical", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Critical",
-                          "20"
-                        ]
+                        "value": ["sprint2", "Critical", "20"]
                       }
                     ]
                   },
@@ -1217,24 +1160,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Test Execution percentage"
-                        ]
+                        "value": ["Sprint Name", "Test Execution percentage"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 %"
-                        ]
+                        "value": ["sprint1", "10 %"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20 %"
-                        ]
+                        "value": ["sprint1", "20 %"]
                       }
                     ]
                   },
@@ -1502,24 +1436,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Sprint Velocity value"
-                        ]
+                        "value": ["Sprint Name", "Sprint Velocity value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20"
-                        ]
+                        "value": ["sprint2", "20"]
                       }
                     ]
                   },
@@ -1576,9 +1501,7 @@
               "isDeleted": "False",
               "kpiCategory": "Speed",
               "kpiInAggregatedFeed": "True",
-              "kpiOnDashboard": [
-                "Aggregated"
-              ],
+              "kpiOnDashboard": ["Aggregated"],
               "kpiUnit": "%",
               "chartType": "line",
               "showTrend": true,
@@ -1613,24 +1536,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Predictability value"
-                        ]
+                        "value": ["Sprint Name", "Predictability value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20"
-                        ]
+                        "value": ["sprint2", "20"]
                       }
                     ]
                   },
@@ -1725,19 +1639,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day 1",
-                          "10",
-                          "10"
-                        ]
+                        "value": ["Day 1", "10", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day 2",
-                          "20",
-                          "20"
-                        ]
+                        "value": ["Day 2", "20", "20"]
                       }
                     ]
                   },
@@ -1820,24 +1726,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Sprint Name", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20"
-                        ]
+                        "value": ["sprint1", "20"]
                       }
                     ]
                   },
@@ -1889,24 +1786,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Code Build Time"
-                        ]
+                        "value": ["Sprint Name", "Code Build Time"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Week1",
-                          "10 Sec"
-                        ]
+                        "value": ["Week1", "10 Sec"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Week2",
-                          "20 Sec"
-                        ]
+                        "value": ["Week2", "20 Sec"]
                       }
                     ]
                   },
@@ -1963,9 +1851,7 @@
               "isDeleted": "False",
               "kpiCategory": "Speed",
               "kpiInAggregatedFeed": "True",
-              "kpiOnDashboard": [
-                "Aggregated"
-              ],
+              "kpiOnDashboard": ["Aggregated"],
               "kpiBaseLine": "0",
               "kpiUnit": "Days",
               "chartType": "line",
@@ -1992,24 +1878,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Time for Intake To DOR"
-                        ]
+                        "value": ["Sprint Name", "Time for Intake To DOR"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 Day"
-                        ]
+                        "value": ["sprint1", "10 Day"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20 Day"
-                        ]
+                        "value": ["sprint2", "20 Day"]
                       }
                     ]
                   },
@@ -2684,43 +2561,23 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Sprint Name", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["sprint2", "P1", "20"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "P2",
-                          "5"
-                        ]
+                        "value": ["sprint1", "P2", "5"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "P2",
-                          "3"
-                        ]
+                        "value": ["sprint2", "P2", "3"]
                       }
                     ]
                   },
@@ -2811,43 +2668,23 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Root Cause",
-                          "Count"
-                        ]
+                        "value": ["Sprint Name", "Root Cause", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Code Issue",
-                          "10"
-                        ]
+                        "value": ["sprint1", "Code Issue", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Code Issue",
-                          "20"
-                        ]
+                        "value": ["sprint2", "Code Issue", "20"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Configuration Issue",
-                          "5"
-                        ]
+                        "value": ["sprint1", "Configuration Issue", "5"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Configuration Issue",
-                          "3"
-                        ]
+                        "value": ["sprint2", "Configuration Issue", "3"]
                       }
                     ]
                   },
@@ -3129,24 +2966,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project Name",
-                          "SQALE Rating"
-                        ]
+                        "value": ["Project Name", "SQALE Rating"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "C"
-                        ]
+                        "value": ["Project 1", "C"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "B"
-                        ]
+                        "value": ["Project 2", "B"]
                       }
                     ]
                   },
@@ -3207,19 +3035,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "Critical",
-                          "10"
-                        ]
+                        "value": ["sprint1", "Critical", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "Critical",
-                          "20"
-                        ]
+                        "value": ["sprint2", "Critical", "20"]
                       }
                     ]
                   },
@@ -3353,24 +3173,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Test Execution percentage"
-                        ]
+                        "value": ["Sprint Name", "Test Execution percentage"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 %"
-                        ]
+                        "value": ["sprint1", "10 %"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20 %"
-                        ]
+                        "value": ["sprint1", "20 %"]
                       }
                     ]
                   },
@@ -3644,24 +3455,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Sprint Velocity value"
-                        ]
+                        "value": ["Sprint Name", "Sprint Velocity value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20"
-                        ]
+                        "value": ["sprint2", "20"]
                       }
                     ]
                   },
@@ -3718,9 +3520,7 @@
               "isDeleted": "False",
               "kpiCategory": "Speed",
               "kpiInAggregatedFeed": "True",
-              "kpiOnDashboard": [
-                "Aggregated"
-              ],
+              "kpiOnDashboard": ["Aggregated"],
               "kpiUnit": "%",
               "chartType": "line",
               "showTrend": true,
@@ -3755,24 +3555,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Predictability value"
-                        ]
+                        "value": ["Sprint Name", "Predictability value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20"
-                        ]
+                        "value": ["sprint2", "20"]
                       }
                     ]
                   },
@@ -3867,19 +3658,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day 1",
-                          "10",
-                          "10"
-                        ]
+                        "value": ["Day 1", "10", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day 2",
-                          "20",
-                          "20"
-                        ]
+                        "value": ["Day 2", "20", "20"]
                       }
                     ]
                   },
@@ -3962,24 +3745,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Sprint Name", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10"
-                        ]
+                        "value": ["sprint1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20"
-                        ]
+                        "value": ["sprint1", "20"]
                       }
                     ]
                   },
@@ -4031,24 +3805,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Code Build Time"
-                        ]
+                        "value": ["Sprint Name", "Code Build Time"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Week1",
-                          "10 Sec"
-                        ]
+                        "value": ["Week1", "10 Sec"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Week2",
-                          "20 Sec"
-                        ]
+                        "value": ["Week2", "20 Sec"]
                       }
                     ]
                   },
@@ -4105,9 +3870,7 @@
               "isDeleted": "False",
               "kpiCategory": "Speed",
               "kpiInAggregatedFeed": "True",
-              "kpiOnDashboard": [
-                "Aggregated"
-              ],
+              "kpiOnDashboard": ["Aggregated"],
               "kpiBaseLine": "0",
               "kpiUnit": "Days",
               "chartType": "line",
@@ -4134,24 +3897,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Time for Intake To DOR"
-                        ]
+                        "value": ["Sprint Name", "Time for Intake To DOR"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 Day"
-                        ]
+                        "value": ["sprint1", "10 Day"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint2",
-                          "20 Day"
-                        ]
+                        "value": ["sprint2", "20 Day"]
                       }
                     ]
                   },
@@ -4646,30 +4400,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -4683,27 +4422,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Issue Type",
-                          "Count"
-                        ]
+                        "value": ["Date", "Issue Type", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "Bug",
-                          "10"
-                        ]
+                        "value": ["date1", "Bug", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "Bug",
-                          "20"
-                        ]
+                        "value": ["date2", "Bug", "20"]
                       }
                     ]
                   },
@@ -4779,30 +4506,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -4816,27 +4528,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["date1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["date2", "P1", "20"]
                       }
                     ]
                   },
@@ -4912,30 +4612,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "55"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "55"]
                       }
                     ]
                   },
@@ -4949,27 +4634,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["date1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["date2", "P1", "20"]
                       }
                     ]
                   },
@@ -5045,30 +4718,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "55"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "55"]
                       }
                     ]
                   },
@@ -5082,27 +4740,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "Code Issue",
-                          "10"
-                        ]
+                        "value": ["date1", "Code Issue", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "Code Issue",
-                          "20"
-                        ]
+                        "value": ["date2", "Code Issue", "20"]
                       }
                     ]
                   },
@@ -5178,30 +4824,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -5215,24 +4846,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -5308,30 +4930,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -5345,24 +4952,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -5438,30 +5036,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "53"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "53"]
                       }
                     ]
                   },
@@ -5475,24 +5058,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -5558,24 +5132,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Automated Test % (in sprint) value"
-                        ]
+                        "value": ["Day", "Automated Test % (in sprint) value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -5654,24 +5219,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project",
-                          "Code Coverage value"
-                        ]
+                        "value": ["Project", "Code Coverage value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "90"
-                        ]
+                        "value": ["Project 1", "90"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "80"
-                        ]
+                        "value": ["Project 2", "80"]
                       }
                     ]
                   },
@@ -5748,24 +5304,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project",
-                          "SQALE Rating"
-                        ]
+                        "value": ["Project", "SQALE Rating"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "C"
-                        ]
+                        "value": ["Project 1", "C"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "B"
-                        ]
+                        "value": ["Project 2", "B"]
                       }
                     ]
                   },
@@ -5826,19 +5373,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "Critical",
-                          "10"
-                        ]
+                        "value": ["Day1", "Critical", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "Critical",
-                          "20"
-                        ]
+                        "value": ["Day2", "Critical", "20"]
                       }
                     ]
                   },
@@ -5887,24 +5426,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Day", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -5964,24 +5494,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Test Execution percentage"
-                        ]
+                        "value": ["Sprint Name", "Test Execution percentage"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 %"
-                        ]
+                        "value": ["sprint1", "10 %"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20 %"
-                        ]
+                        "value": ["sprint1", "20 %"]
                       }
                     ]
                   },
@@ -6029,30 +5550,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -6074,24 +5580,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -6169,30 +5666,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -6206,24 +5688,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -6306,24 +5779,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Day", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -6375,24 +5839,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Code Build Time"
-                        ]
+                        "value": ["Day", "Code Build Time"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10 Sec"
-                        ]
+                        "value": ["Day1", "10 Sec"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20 Sec"
-                        ]
+                        "value": ["Day2", "20 Sec"]
                       }
                     ]
                   },
@@ -6475,24 +5930,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Check-ins count"
-                        ]
+                        "value": ["Day", "Check-ins count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -6573,24 +6019,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Ticket",
-                          "Ticket open to Triage complete"
-                        ]
+                        "value": ["Ticket", "Ticket open to Triage complete"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Ticket1",
-                          "10 Day"
-                        ]
+                        "value": ["Ticket1", "10 Day"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Ticket2",
-                          "20 Day"
-                        ]
+                        "value": ["Ticket2", "20 Day"]
                       }
                     ]
                   },
@@ -6748,30 +6185,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -6785,27 +6207,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Issue Type",
-                          "Count"
-                        ]
+                        "value": ["Date", "Issue Type", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "Bug",
-                          "10"
-                        ]
+                        "value": ["date1", "Bug", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "Bug",
-                          "20"
-                        ]
+                        "value": ["date2", "Bug", "20"]
                       }
                     ]
                   },
@@ -6881,30 +6291,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -6918,27 +6313,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["date1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["date2", "P1", "20"]
                       }
                     ]
                   },
@@ -7014,30 +6397,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "55"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "55"]
                       }
                     ]
                   },
@@ -7051,27 +6419,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "P1",
-                          "10"
-                        ]
+                        "value": ["date1", "P1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "P1",
-                          "20"
-                        ]
+                        "value": ["date2", "P1", "20"]
                       }
                     ]
                   },
@@ -7147,30 +6503,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "55"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "55"]
                       }
                     ]
                   },
@@ -7184,27 +6525,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Priority",
-                          "Count"
-                        ]
+                        "value": ["Date", "Priority", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "Code Issue",
-                          "10"
-                        ]
+                        "value": ["date1", "Code Issue", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "Code Issue",
-                          "20"
-                        ]
+                        "value": ["date2", "Code Issue", "20"]
                       }
                     ]
                   },
@@ -7280,30 +6609,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -7317,24 +6631,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -7410,30 +6715,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -7447,24 +6737,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -7540,30 +6821,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "52",
-                          "53"
-                        ]
+                        "value": ["Calculated Trend value", "-", "52", "53"]
                       }
                     ]
                   },
@@ -7577,24 +6843,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -7660,24 +6917,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Automated Test % (in sprint) value"
-                        ]
+                        "value": ["Day", "Automated Test % (in sprint) value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -7756,24 +7004,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project",
-                          "Code Coverage value"
-                        ]
+                        "value": ["Project", "Code Coverage value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "90"
-                        ]
+                        "value": ["Project 1", "90"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "80"
-                        ]
+                        "value": ["Project 2", "80"]
                       }
                     ]
                   },
@@ -7850,24 +7089,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Project",
-                          "SQALE Rating"
-                        ]
+                        "value": ["Project", "SQALE Rating"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 1",
-                          "C"
-                        ]
+                        "value": ["Project 1", "C"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Project 2",
-                          "B"
-                        ]
+                        "value": ["Project 2", "B"]
                       }
                     ]
                   },
@@ -7928,19 +7158,11 @@
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "Critical",
-                          "10"
-                        ]
+                        "value": ["Day1", "Critical", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "Critical",
-                          "20"
-                        ]
+                        "value": ["Day2", "Critical", "20"]
                       }
                     ]
                   },
@@ -7989,24 +7211,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Day", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -8066,24 +7279,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Sprint Name",
-                          "Test Execution percentage"
-                        ]
+                        "value": ["Sprint Name", "Test Execution percentage"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "10 %"
-                        ]
+                        "value": ["sprint1", "10 %"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "sprint1",
-                          "20 %"
-                        ]
+                        "value": ["sprint1", "20 %"]
                       }
                     ]
                   },
@@ -8137,30 +7341,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -8182,24 +7371,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -8277,30 +7457,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Before D1",
-                          "D1",
-                          "D2"
-                        ]
+                        "value": ["Date", "Before D1", "D1", "D2"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "# of Tickets Created",
-                          "50",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["# of Tickets Created", "50", "2", "3"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Calculated Trend value",
-                          "-",
-                          "2",
-                          "3"
-                        ]
+                        "value": ["Calculated Trend value", "-", "2", "3"]
                       }
                     ]
                   },
@@ -8314,24 +7479,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Date",
-                          "Count"
-                        ]
+                        "value": ["Date", "Count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date1",
-                          "10"
-                        ]
+                        "value": ["date1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "date2",
-                          "20"
-                        ]
+                        "value": ["date2", "20"]
                       }
                     ]
                   },
@@ -8414,24 +7570,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Tech Debt value"
-                        ]
+                        "value": ["Day", "Tech Debt value"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -8483,24 +7630,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Code Build Time"
-                        ]
+                        "value": ["Day", "Code Build Time"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10 Sec"
-                        ]
+                        "value": ["Day1", "10 Sec"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20 Sec"
-                        ]
+                        "value": ["Day2", "20 Sec"]
                       }
                     ]
                   },
@@ -8583,24 +7721,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Day",
-                          "Check-ins count"
-                        ]
+                        "value": ["Day", "Check-ins count"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day1",
-                          "10"
-                        ]
+                        "value": ["Day1", "10"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Day2",
-                          "20"
-                        ]
+                        "value": ["Day2", "20"]
                       }
                     ]
                   },
@@ -8681,24 +7810,15 @@
                     "tableRows": [
                       {
                         "type": "header",
-                        "value": [
-                          "Ticket",
-                          "Ticket open to Triage complete"
-                        ]
+                        "value": ["Ticket", "Ticket open to Triage complete"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Ticket1",
-                          "10 Day"
-                        ]
+                        "value": ["Ticket1", "10 Day"]
                       },
                       {
                         "type": "body",
-                        "value": [
-                          "Ticket2",
-                          "20 Day"
-                        ]
+                        "value": ["Ticket2", "20 Day"]
                       }
                     ]
                   },
@@ -8842,14 +7962,14 @@
             "kpiName": "Maturity",
             "isEnabled": true,
             "order": 1,
-            "shown":true
+            "shown": true
           },
           {
             "kpiId": "kpi988",
             "kpiName": "Engg Maturity",
             "isEnabled": true,
             "order": 2,
-            "shown":true
+            "shown": true
           }
         ]
       }

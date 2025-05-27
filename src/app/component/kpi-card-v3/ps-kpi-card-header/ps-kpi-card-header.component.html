@@ -4,8 +4,7 @@
     (mouseleave)="showTooltip(false)"
     #kpiHeader
     role="group"
-    aria-describedby="kpiHeaderTitle"
-  >
+    aria-describedby="kpiHeaderTitle">
     <div class="kpi-card-title-container">
       <h3 id="kpiHeaderTitle" tabindex="0">{{ cardHeaderData?.kpiName }}</h3>
       <span
@@ -19,9 +18,12 @@
         tabindex="0"
         (keydown.enter)="showTooltip(true)"
         aria-label="Show KPI Information"
-        aria-describedby="kpiInfoTooltip"
-      >
-        <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true"/>
+        aria-describedby="kpiInfoTooltip">
+        <img
+          alt="info"
+          class=""
+          src="../../../assets/img/Info.svg"
+          aria-hidden="true" />
         <app-tooltip-v2
           *ngIf="isTooltip"
           id="kpiInfoTooltip"
@@ -30,8 +32,7 @@
           (mouseleave)="showTooltip(false)"
           [kpiName]="cardHeaderData?.kpiName"
           role="tooltip"
-          aria-live="polite"
-        ></app-tooltip-v2>
+          aria-live="polite"></app-tooltip-v2>
       </span>
     </div>
     <span
@@ -44,15 +45,13 @@
       aria-live="assertive"
       tabindex="0"
       aria-label="Show KPI Warning Information"
-      (keydown.enter)="showWarning(true)"
-    >
+      (keydown.enter)="showWarning(true)">
       <img
         height="25px"
         style="display: block; margin-top: -3px; margin-left: 2px"
         alt="warning"
         src="../../../assets/img/Warning.svg"
-        aria-hidden="true"
-      />
+        aria-hidden="true" />
       <app-tooltip-v2
         *ngIf="warning"
         class="p-mt-3 p-ml-1"
@@ -63,14 +62,24 @@
         [allText]="true"
         role="tooltip"
         aria-live="polite"
-        aria-describedby="kpiWarningTooltip"
-      ></app-tooltip-v2>
+        aria-describedby="kpiWarningTooltip"></app-tooltip-v2>
     </span>
   </div>
-  <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Show KPI Menu" (keydown.enter)="toggleMenu($event)">
+  <div
+    class="kpi-menu-container"
+    (click)="toggleMenu($event)"
+    role="button"
+    tabindex="0"
+    aria-label="Show KPI Menu"
+    (keydown.enter)="toggleMenu($event)">
     <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
   </div>
-  <p-menu #kpimenu id="menu-{{cardHeaderData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
+  <p-menu
+    #kpimenu
+    id="menu-{{ cardHeaderData?.kpiId }}"
+    [popup]="true"
+    [model]="menuItems"
+    aria-label="KPI Actions Menu">
     <ng-template pTemplate="item" let-item>
       <div>
         <i [class]="item.icon"></i>
