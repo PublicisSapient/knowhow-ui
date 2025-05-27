@@ -22,6 +22,7 @@ import {
   UrlTree,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  CanActivate,
 } from '@angular/router';
 import { GetAuthService } from './getauth.service';
 import { SharedService } from './shared.service';
@@ -31,7 +32,7 @@ import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
-export class AuthGuard {
+export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
     private getAuth: GetAuthService,

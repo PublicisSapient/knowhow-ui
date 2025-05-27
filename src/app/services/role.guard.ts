@@ -21,11 +21,12 @@ import {
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  CanActivate,
 } from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
 
 @Injectable()
-export class RoleGuard {
+export class RoleGuard implements CanActivate {
   constructor(
     private router: Router,
     private getAuthorization: GetAuthorizationService,

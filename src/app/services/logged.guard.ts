@@ -21,12 +21,13 @@ import {
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  Resolve,
 } from '@angular/router';
 import { HttpService } from './http.service';
 import { SharedService } from './shared.service';
 
 @Injectable()
-export class Logged {
+export class Logged implements Resolve<any> {
   constructor(
     private router: Router,
     private sharedService: SharedService,

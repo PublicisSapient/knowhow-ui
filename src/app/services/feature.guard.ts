@@ -6,13 +6,15 @@ import {
   RouterStateSnapshot,
   UrlSegment,
   UrlTree,
+  CanLoad,
+  CanActivateChild,
 } from '@angular/router';
 import { FeatureFlagsService } from './feature-toggle.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FeatureGuard {
+export class FeatureGuard implements CanLoad, CanActivateChild {
   constructor(
     private featureFlagsService: FeatureFlagsService,
     private router: Router,
