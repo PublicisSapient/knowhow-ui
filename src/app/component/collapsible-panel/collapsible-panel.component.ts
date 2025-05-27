@@ -92,8 +92,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     )['authorities'];
 
     if (
-      this.userRole.includes('ROLE_SUPERADMIN') ||
-      this.userRole.includes('ROLE_PROJECT_ADMIN')
+      this.userRole?.includes('ROLE_SUPERADMIN') ||
+      this.userRole?.includes('ROLE_PROJECT_ADMIN')
     ) {
       this.isAdmin = true;
     }
