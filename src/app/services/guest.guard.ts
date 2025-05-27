@@ -3,10 +3,11 @@ import {
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  CanActivate,
 } from '@angular/router';
 import { SharedService } from './shared.service';
 @Injectable()
-export class GuestGuard {
+export class GuestGuard implements CanActivate {
   constructor(private sharedService: SharedService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

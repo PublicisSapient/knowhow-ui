@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
+  CanActivate,
   Router,
   RouterStateSnapshot,
   UrlTree,
@@ -14,7 +15,7 @@ import { SharedService } from './shared.service';
 @Injectable({
   providedIn: 'root',
 })
-export class SSOGuard {
+export class SSOGuard implements CanActivate {
   constructor(
     private router: Router,
     private httpService: HttpService,

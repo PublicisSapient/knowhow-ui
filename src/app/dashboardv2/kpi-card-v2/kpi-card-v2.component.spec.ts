@@ -345,7 +345,7 @@ describe('KpiCardV2Component', () => {
     expect(settingsItem.label).toBe('Settings');
     expect(settingsItem.icon).toBe('fas fa-cog');
     expect(settingsItem.disabled).toBeFalse();
-    settingsItem.command();
+    settingsItem.command({});
     expect(component.onOpenFieldMappingDialog).toHaveBeenCalled();
 
     const listViewItem = component.menuItems[1];
@@ -359,7 +359,7 @@ describe('KpiCardV2Component', () => {
     expect(exploreItem.label).toBe('Explore');
     expect(exploreItem.icon).toBe('pi pi-table');
     expect(exploreItem.disabled).toBeFalse();
-    exploreItem.command();
+    exploreItem.command({});
     expect(component.exportToExcel).toHaveBeenCalled();
 
     const commentsItem = component.menuItems[3];

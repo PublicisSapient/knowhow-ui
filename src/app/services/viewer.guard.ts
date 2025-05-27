@@ -21,12 +21,13 @@ import {
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  CanActivate,
 } from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
 import { SharedService } from './shared.service';
 
 @Injectable()
-export class ViewerGuard {
+export class ViewerGuard implements CanActivate {
   hasAccess = <boolean>false;
   constructor(
     private router: Router,
