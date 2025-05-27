@@ -37,16 +37,21 @@
             <p-accordionTab [header]="'Project: ' + data.name">
               <article class="p-d-flex p-flex-column">
                 <div class="p-d-flex p-jc-end p-mb-5">
-                  <button type="button" class="p-button-rounded" pButton pRipple label="Summarise Sprint Goals" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals using AI"></button>
+                  <button type="button" class="p-button-raised" pButton pRipple label="Summarise Sprint Goals" icon="pi pi-star" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals using AI"></button>
                 </div>
+                <div class="p-d-flex p-jc-start p-mb-5" *ngIf="defaultMessage"><em>Summarising the sprint goals ... </em></div>
                 <div *ngIf="isSummaryAvailableMap[data.name]" aria-hidden="!isSummaryAvailableMap[data.name]" class="p-p-3 p-mb-5 summary-container" tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}">
-                  {{ summarisedSprintGoalsMap[data.name]?.summary  }}
+                  <h3 tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}"><strong>AI Summarised Goal</strong></h3>
+                  <!-- <p>{{ summarisedSprintGoalsMap[data.name]?.summary  }}</p> -->
+                  <ul>
+                    <li tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}" *ngFor="let point of summarisedSprintGoalsMap[data.name]?.summary | dashToBullets">{{ point }}</li>
+                  </ul>
                 </div>
               </article>
               <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh"
               [loading]="loader" loadingIcon="loading-img" [caption]="'Sprint Goals Table'" aria-labelledby="sprintGoalsTableLabel">
                 <ng-template pTemplate="caption">
-                  <h2 id="sprintGoalsTableLabel" class="sr-only">Sprint Goals Overview</h2>
+                  <h4 [style.margin]="0" id="sprintGoalsTableLabel">Sprint Goals Overview</h4>
                 </ng-template>
                 <ng-template pTemplate="header" let-columns>
                   <tr>
