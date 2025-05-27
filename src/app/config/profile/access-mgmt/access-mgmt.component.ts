@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -70,6 +70,7 @@ export class AccessMgmtComponent implements OnInit {
   };
   ssoLogin = environment.SSO_LOGIN;
   isSuperAdmin = false;
+  @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
 
   constructor(
     private service: SharedService,
@@ -260,6 +261,10 @@ export class AccessMgmtComponent implements OnInit {
 
   hide() {
     this.projectFilter.resetDropdowns = true;
+    if (this.addProjectsBtn && this.addProjectsBtn.nativeElement) {
+      const menuEl = this.addProjectsBtn.nativeElement;
+      menuEl.focus();
+    }
   }
 
   saveDialog() {
@@ -299,6 +304,7 @@ export class AccessMgmtComponent implements OnInit {
         accessNodes: [],
       });
     }
+    this.addProjectsBtn?.nativeElement.focus();
   }
 
   removeRow(projectsAccess, index) {
@@ -527,5 +533,14 @@ export class AccessMgmtComponent implements OnInit {
       emailAddress: '',
       projectsAccess: [],
     };
+  }
+
+  focusDialogHeader() {
+    setTimeout(() => {
+      const headerEl = document.getElementById('addProjectHeader');
+      if (headerEl) {
+        headerEl.focus();
+      }
+    }, 0);
   }
 }
