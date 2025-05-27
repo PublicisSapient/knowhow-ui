@@ -35,7 +35,7 @@
     role="region" aria-label="Sprint Goals Details">
         <ng-container *ngFor="let data of accordionData; let i = index">
             <p-accordionTab [header]="'Project: ' + data.name">
-              <article class="p-d-flex p-flex-column">
+              <article class="p-d-flex p-flex-column" *ngIf="isAdmin" role="region">
                 <div class="p-d-flex p-jc-end p-mb-5">
                   <button type="button" class="p-button-raised" pButton pRipple label="Summarize" icon="pi pi-star" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals"></button>
                 </div>
