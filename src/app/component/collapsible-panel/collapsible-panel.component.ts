@@ -39,6 +39,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
   summarisedData: any;
+  userRole: any;
+  isAdmin: boolean = false;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const targetElement = event.target as HTMLElement;
@@ -83,6 +85,18 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
         this.sharedService.updateSprintGoalFlag(false);
       }),
     );
+    this.userRole = (
+      localStorage.getItem('currentUserDetails')
+        ? JSON.parse(localStorage.getItem('currentUserDetails'))
+        : {}
+    )['authorities'];
+
+    if (
+      this.userRole.includes('ROLE_SUPERADMIN') ||
+      this.userRole.includes('ROLE_PROJECT_ADMIN')
+    ) {
+      this.isAdmin = true;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -23,14 +23,11 @@
 }
 
 .p-button.p-button-raised {
-  background: #fff;
-  color: #0b4bc8;
   border-radius: 2rem;
+  background: #0b4bc8;
 }
 
 .p-button.p-button-raised:enabled:focus {
-  background: #fff;
-  color: #0b4bc8;
   outline: 3px solid #000;
 }
 
