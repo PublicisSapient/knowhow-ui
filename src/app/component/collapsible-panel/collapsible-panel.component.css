@@ -34,6 +34,11 @@
   outline: 3px solid #000;
 }
 
+.summary-header {
+  border-bottom: 1px solid #d5dbe1;
+  background-color: #f8f9fa;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

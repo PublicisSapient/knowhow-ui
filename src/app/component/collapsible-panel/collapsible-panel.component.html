@@ -37,12 +37,13 @@
             <p-accordionTab [header]="'Project: ' + data.name">
               <article class="p-d-flex p-flex-column">
                 <div class="p-d-flex p-jc-end p-mb-5">
-                  <button type="button" class="p-button-raised" pButton pRipple label="Summarise Sprint Goals" icon="pi pi-star" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals using AI"></button>
+                  <button type="button" class="p-button-raised" pButton pRipple label="Summarize" icon="pi pi-star" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals"></button>
                 </div>
-                <div class="p-d-flex p-jc-start p-mb-5" *ngIf="defaultMessage"><em>Summarising the sprint goals ... </em></div>
-                <div *ngIf="isSummaryAvailableMap[data.name]" aria-hidden="!isSummaryAvailableMap[data.name]" class="p-p-3 p-mb-5 summary-container" tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}">
-                  <h3 tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}"><strong>AI Summarised Goal</strong></h3>
-                  <!-- <p>{{ summarisedSprintGoalsMap[data.name]?.summary  }}</p> -->
+                <div class="p-d-flex p-jc-start p-mb-5" *ngIf="defaultMessage"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i> <em style="line-height: 2rem; margin-left: 1rem;">Summarising the sprint goals ...</em></div>
+                <div role="region" *ngIf="summarisedSprintGoalsMap[data.name]" aria-hidden="!isSummaryAvailableMap[data.name]" class="p-mb-5 summary-container" tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}">
+                  <div class="p-py-2 p-px-4 summary-header">
+                    <h3 tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}"><i class="pi pi-star"></i><strong style="margin-left: 1rem;">Summarized Goal</strong></h3>
+                  </div>
                   <ul>
                     <li tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}" *ngFor="let point of summarisedSprintGoalsMap[data.name]?.summary | dashToBullets">{{ point }}</li>
                   </ul>
