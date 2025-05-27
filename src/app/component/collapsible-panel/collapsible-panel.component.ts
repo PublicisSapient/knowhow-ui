@@ -9,6 +9,7 @@ import {
   SimpleChanges,
   OnDestroy,
 } from '@angular/core';
+import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -32,6 +33,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   selectedLevelFullDetails;
   accordionData;
   subscriptions: any[] = [];
+  isSummaryAvailableMap: { [projectName: string]: boolean } = {};
+  summarisedSprintGoalsMap: { [projectName: string]: any } = {};
 
   @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
   @HostListener('document:click', ['$event'])
@@ -46,7 +49,10 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  constructor(private sharedService: SharedService) {}
+  constructor(
+    private sharedService: SharedService,
+    public httpService: HttpService,
+  ) {}
 
   ngOnInit(): void {
     this.levelDetails = JSON.parse(
@@ -187,6 +193,36 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     return retValue;
+  }
+
+  summariseUsingAI(data) {
+    const projectName = data.name;
+    const accordionData = this.accordionData;
+
+    const sprintGoals =
+      accordionData
+        .find((item) => item.name === projectName)
+        ?.sprintGoals?.map((goal) => goal.goal) || [];
+
+    const requestBody = { sprintGoals };
+
+    // --- Set loading/visibility only for this project --- //
+    this.isSummaryAvailableMap[projectName] = false;
+
+    // --- post call with the above request body --- //
+    this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
+      next: (res) => {
+        this.isSummaryAvailableMap[projectName] = true;
+        this.summarisedSprintGoalsMap[projectName] = res;
+      },
+      error: (error) => {
+        console.error('Error summarising sprint goals:', error);
+        this.summarisedSprintGoalsMap[
+          projectName
+        ] = `Failed to summarize: ${error.message}`;
+        this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
+      },
+    });
   }
 
   ngOnDestroy() {

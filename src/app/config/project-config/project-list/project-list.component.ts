@@ -24,9 +24,9 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { Menu } from 'primeng/menu';
+import { Dialog } from 'primeng/dialog';
 
 declare const require: any;
 @Component({
@@ -70,6 +70,7 @@ export class ProjectListComponent implements OnInit {
   projectGroup;
   selectedProject: any;
   @ViewChild('kpimenu') kpimenu: Menu;
+  @ViewChild('renameProjectRef') renameProjectRef: Dialog;
 
   constructor(
     private http: HttpService,
@@ -352,6 +353,13 @@ export class ProjectListComponent implements OnInit {
     this.submitted = false;
     this.selectedProject = project;
     this.isRenameProject = true;
+    setTimeout(() => {
+      // Focus the dialog container
+      const dialogEl = document.querySelector('#rename-project-heading');
+      if (dialogEl) {
+        (dialogEl as HTMLElement).focus();
+      }
+    }, 10);
     this.newProjectName = project.name;
     this.projectGroup = new FormGroup({
       projectName: new FormControl(),
