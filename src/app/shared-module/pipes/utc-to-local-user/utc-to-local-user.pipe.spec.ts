@@ -6,7 +6,6 @@ describe('UtcToLocalUserPipe', () => {
   beforeEach(() => {
     pipe = new UtcToLocalUserPipe();
   });
-
   it('should create the pipe instance', () => {
     expect(pipe).toBeTruthy();
   });
