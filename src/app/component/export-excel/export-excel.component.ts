@@ -523,4 +523,8 @@ export class ExportExcelComponent implements OnInit {
       link.click();
     }
   }
+
+  utcToLocalUser(data, xAxis) {
+    return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+}
 }

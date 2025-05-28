@@ -26,6 +26,7 @@ import {
 } from '@angular/core';
 
 import * as d3 from 'd3';
+import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 /*************
@@ -74,6 +75,7 @@ export class MultilineV2Component implements OnChanges {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
+    private helper : HelperService
   ) {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -303,6 +305,7 @@ export class MultilineV2Component implements OnChanges {
   }
 
   draw() {
+    const self = this;
     if (this.data?.length > 0) {
       // this is used for removing svg already made when value is updated
       d3.select(this.elem).select('#verticalSVG').select('svg').remove();
@@ -604,7 +607,9 @@ export class MultilineV2Component implements OnChanges {
         .style('opacity', 0);
 
       /* Add Axis into SVG */
-      const xAxis = d3.axisBottom(xScale);
+      const xAxis = d3.axisBottom(xScale).tickFormat(function (tickval) {
+        return (board == 'dora')? self.getFormatedDateBasedOnType(tickval,self.xCaption) : tickval;
+      });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
       const yAxis = d3
@@ -863,7 +868,7 @@ export class MultilineV2Component implements OnChanges {
 
             div
               .html(
-                `${d.date || d.sSprintName}` +
+                `${self.getFormatedDateBasedOnType((d.date || d.sSprintName),self.xCaption)}` +
                   ' : ' +
                   "<span class='toolTipValue'> " +
                   `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
@@ -1053,6 +1058,11 @@ export class MultilineV2Component implements OnChanges {
         }
       }
     });
+  }
+
+  getFormatedDateBasedOnType(date,xCaptionType){
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date,xCaption)
   }
 
   ngOnDestroy() {

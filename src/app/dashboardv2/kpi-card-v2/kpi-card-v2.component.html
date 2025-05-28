@@ -269,9 +269,9 @@
               <tr role="row">
                 <ng-container *ngFor="let col of columns">
                   <td *ngIf="hasData(col.field)"
-                    [innerHTML]="col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]"
                     class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}" role="cell" tabindex="0"
                     [attr.aria-label]="col.header + ': ' + (col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field])">
+                    <span>{{utcToLocalUser((col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]),xCaption)}}</span>
                   </td>
                 </ng-container>
               </tr>

@@ -132,6 +132,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() yAxisLabel: string;
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
+  @Input() xCaption: string;
 
   constructor(
     public service: SharedService,
@@ -1431,4 +1432,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const newTabElement = document.getElementById(`project-tab-${event.index}`);
     newTabElement?.focus();
   }
+
+  utcToLocalUser(data, xAxis) {
+    return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+}
 }
