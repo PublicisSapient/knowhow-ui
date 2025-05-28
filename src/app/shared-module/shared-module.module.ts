@@ -86,6 +86,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
 import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
 import { TableComponent } from '../component/table/table.component';
 import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
+import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe';
 
 @NgModule({
   imports: [
@@ -203,6 +204,7 @@ import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.
     CollapsiblePanelComponent,
     TableComponent,
     UtcToLocalUserPipe,
+    DashToBulletsPipe,
   ],
   providers: [ConfirmationService, KpiHelperService],
 })
