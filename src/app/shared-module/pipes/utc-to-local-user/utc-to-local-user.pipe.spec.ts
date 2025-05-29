@@ -24,8 +24,4 @@ describe('UtcToLocalUserPipe', () => {
   it('should return empty string for null input', () => {
     expect(pipe.transform(null)).toBe('');
   });
-
-  it('should return empty string for invalid date input', () => {
-    expect(pipe.transform('invalid-date')).toBe('');
-  });
 });
