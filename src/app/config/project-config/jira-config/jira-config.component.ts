@@ -2808,7 +2808,7 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
-    if (this.urlParam !== 'Jira') {
+    if (this.urlParam !== 'Jira' && this.urlParam !== 'Rally') {
       delete submitData['originalTemplateCode'];
     } else {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
