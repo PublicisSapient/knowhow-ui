@@ -20,23 +20,23 @@
   <div class="p-col-10" *ngIf="isSuperAdmin && selectedView === 'logo_upload'">
     <div class="main">
       <!-- Upload  -->
-      <div id="file-upload-form" class="uploader">
+      <div id="file-upload-form" class="uploader" tabindex="0">
         <label class="float-none" for="file-upload" id="file-drag" aria-label="Upload logo">
-          <img class="file-image" src={{logoImage}} alt="Preview" *ngIf="logoImage">
+          <img class="file-image" src={{logoImage}} alt="Uploaded logo preview" *ngIf="logoImage">
           <div class="start">
             <span class="fa fa-download" aria-hidden="true" *ngIf="!logoImage"></span>
             <div *ngIf="!logoImage" id="upload-instruction">Select a logo image to upload</div>
             <div class="upload-ins" id="upload-guidelines">File should be *.pg/png/jpg/jpeg in format, max 100 KB in size and 250 x 100 pixels
               in dimension</div>
 
-            <label id="file-upload-btn" *ngIf="!logoImage" class="btn btn-primary" for="file-upload">Select a file
+            <label id="file-upload-btn" *ngIf="!logoImage" class="btn btn-primary" for="file-upload" tabindex="0" aria-labelledby="upload-instruction" (keydown.enter)="triggerFileInput()">Select a file
               <input *ngIf="isUploadFile" id="file-upload" type="file" name="fileUpload" accept="image/*"
                 (change)="onUpload($event)" aria-describedby="upload-instruction upload-guidelines" aria-label="Choose logo file to upload" />
             </label>
-            <span id="file-upload-btn" *ngIf="logoImage" class="btn btn-primary" (click)="onDelete()" role="button" aria-label="Delete uploaded logo">Delete</span>
+            <button id="file-upload-btn" *ngIf="logoImage" class="btn btn-primary" (click)="onDelete()" aria-label="Delete uploaded logo">Delete</button>
             <div *ngIf="error" class="invalid-text p-pt-3" role="alert" aria-live="assertive">{{ error }}</div>
-          <div *ngIf="warning" class="warning-text p-pt-3" role="alert" aria-live="polite">{{ warning }}</div>
-          <div *ngIf="message" class="success p-pt-3" role="status" aria-live="polite">{{ message }}</div>
+            <div *ngIf="warning" class="warning-text p-pt-3" role="alert" aria-live="polite">{{ warning }}</div>
+            <div *ngIf="message" class="success p-pt-3" role="status" aria-live="polite">{{ message }}</div>
           </div>
         </label>
       </div>
@@ -66,7 +66,7 @@
                 </div>
               </div>
             </form>
-          </div>          
+          </div>
           <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="selectedView === 'upload_tep' else capacityTemp">
             <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="kanban else testExecutionScrumDataTable">
               <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="testExecutionKanbanData?.length > 0 else noDataTemp">

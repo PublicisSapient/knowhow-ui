@@ -116,6 +116,7 @@
                     <i class="pi pi-info-circle"
                       [ngClass]="{'disabled': !(findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage)}"
                       (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
+                      (keydown.enter)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
                       style="font-size: 1.2rem"
                       aria-label="Show Jira progress details"
                       role="button"
