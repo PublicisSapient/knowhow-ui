@@ -29,30 +29,49 @@
             aria-label="Toggle Expand/Collapse All Projects"
             [attr.aria-expanded]="isAllExpanded"></button>
     </div>
-   
-    
+
+
     <p-accordion *ngIf="accordionData.length; else noData" [activeIndex]="activeIndices" [multiple]="true"
     role="region" aria-label="Sprint Goals Details">
         <ng-container *ngFor="let data of accordionData; let i = index">
             <p-accordionTab [header]="'Project: ' + data.name">
-            <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh" 
-            [loading]="loader" loadingIcon="loading-img"aria-label="Sprint Goals for {{data.name}}"
-            aria-describedby="sprintGoalsDescription">
+              <article class="p-d-flex p-flex-column" *ngIf="isAdmin" role="region">
+                <div class="p-d-flex p-jc-end p-mb-5">
+                  <button type="button" class="p-button-raised" pButton pRipple label="Summarize | AI" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals"></button>
+                </div>
+                <div class="p-d-flex p-jc-start p-mb-5" *ngIf="defaultMessage"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i> <em style="line-height: 2rem; margin-left: 1rem;">Summarising the sprint goals ...</em></div>
+                <div role="region" *ngIf="summarisedSprintGoalsMap[data.name]" aria-hidden="!isSummaryAvailableMap[data.name]" class="p-mb-5 summary-container" tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}">
+                  <div class="p-py-2 p-px-4 summary-header">
+                    <h3 tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}"><strong>AI Summarized Goals</strong></h3>
+                  </div>
+                  <ul>
+                    <li tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}" *ngFor="let point of summarisedSprintGoalsMap[data.name]?.summary | dashToBullets">{{ point }}</li>
+                  </ul>
+                </div>
+              </article>
+              <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh"
+              [loading]="loader" loadingIcon="loading-img" [caption]="'Sprint Goals Table'" aria-labelledby="sprintGoalsTableLabel">
+                <ng-template pTemplate="caption">
+                  <h4 [style.margin]="0" id="sprintGoalsTableLabel">Sprint Goals Overview</h4>
+                </ng-template>
                 <ng-template pTemplate="header" let-columns>
-                    <tr>
-                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" scope="col" tabindex="0">
-                            {{col.header}}
-                        </th>
-                    </tr>
+                  <tr>
+                    <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" scope="col" tabindex="0">
+                      {{col.header}}
+                    </th>
+                  </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
-                    <tr>
-                        <td *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" tabindex="0">
-                            {{ rowData[col.field] }}
-                        </td>
-                    </tr>
+                  <tr *ngIf="data?.sprintGoals?.length > 0">
+                    <td *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" tabindex="0" [attr.aria-label]="col.header + ': ' + rowData[col.field]">
+                      {{ rowData[col.field] }}
+                    </td>
+                  </tr>
+                  <tr *ngIf="!data?.sprintGoals || data?.sprintGoals?.length === 0">
+                    <td [attr.colspan]="columns.length" class="p-text-center">No sprint goals available.</td>
+                  </tr>
                 </ng-template>
-            </p-table>
+              </p-table>
             </p-accordionTab>
         </ng-container>
     </p-accordion>
