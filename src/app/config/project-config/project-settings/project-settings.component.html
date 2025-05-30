@@ -163,7 +163,7 @@
 
   <div class="p-inputgroup p-mb-2">
     <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken tabindex="0" aria-label="Generated Token">
-    <span class="p-inputgroup-addon p-p-1" (click)="copyToken()" tooltipPosition="top" tooltipEvent="focus" tabindex="0">
+    <span class="p-inputgroup-addon p-p-1" (click)="copyToken()" (keydown.enter)="copyToken()" tooltipPosition="top" tooltipEvent="focus" tabindex="0">
       <i class="pi pi-copy p-p-1" style="font-size: 1.5rem"
         [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }" aria-hidden="true"></i></span>
   </div>

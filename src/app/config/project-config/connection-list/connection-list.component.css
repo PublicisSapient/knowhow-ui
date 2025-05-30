@@ -105,3 +105,15 @@ input[type='password']:disabled {
   padding: 0.7rem;
   width: 150px;
 }
+
+:host ::ng-deep .p-button:enabled:focus {
+  outline: 3px solid #000;
+}
+
+:host
+  ::ng-deep
+  .p-accordion
+  .p-accordion-tab:not(.p-accordion-tab-active)
+  .p-accordion-header-link:focus {
+  border: 2px solid #000;
+}
