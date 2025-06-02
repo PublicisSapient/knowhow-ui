@@ -12,7 +12,7 @@
         *ngIf="cardHeaderData?.kpiInfo"
         aria-hidden="true"
         class="info-icon"
-        (mouseover)="showTooltip(true)"
+        (mouseover)="showTooltip(true);"
         (mouseleave)="showTooltip(false)"
         [style]="{ position: 'relative' }"
         role="button"
@@ -20,6 +20,7 @@
         (keydown.enter)="showTooltip(true)"
         aria-label="Show KPI Information"
         aria-describedby="kpiInfoTooltip"
+        (focus)="showTooltip(true); showWarning(false)"
       >
         <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true"/>
         <app-tooltip-v2
@@ -28,6 +29,7 @@
           class="p-mt-3"
           [data]="cardHeaderData?.kpiInfo"
           (mouseleave)="showTooltip(false)"
+          (blur)="showTooltip(false)"
           [kpiName]="cardHeaderData?.kpiName"
           role="tooltip"
           aria-live="polite"
@@ -44,7 +46,8 @@
       aria-live="assertive"
       tabindex="0"
       aria-label="Show KPI Warning Information"
-      (keydown.enter)="showWarning(true)"
+      (focus)="showTooltip(false); showWarning(true)"
+      (blur)="showWarning(false)"
     >
       <img
         height="25px"
@@ -58,6 +61,7 @@
         class="p-mt-3 p-ml-1"
         [data]="warning"
         (mouseleave)="showWarning(false)"
+        (blur)="showWarning(false)"
         [showChartView]="showChartView"
         [kpiName]="cardHeaderData?.kpiName"
         [allText]="true"
@@ -67,7 +71,7 @@
       ></app-tooltip-v2>
     </span>
   </div>
-  <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Show KPI Menu" (keydown.enter)="toggleMenu($event)">
+  <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Show KPI Menu" (keydown.enter)="toggleMenu($event)" (focus)="showWarning(false); showTooltip(false)">
     <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
   </div>
   <p-menu #kpimenu id="menu-{{cardHeaderData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
