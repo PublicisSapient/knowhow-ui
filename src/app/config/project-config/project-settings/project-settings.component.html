@@ -95,7 +95,7 @@
                     [(ngModel)]="isAssigneeSwitchChecked"
                     [disabled]="isAssigneeSwitchChecked"
                     (onChange)="onAssigneeSwitchChange($event)"
-                    aria-label="Enable People KPI" tabindex="0">
+                    aria-label="Enable People KPI" tabindex="{{isAssigneeSwitchChecked ? -1 : 0}}">
                     </p-inputSwitch>
                   </div>
                 </ng-container>
@@ -104,7 +104,7 @@
                   [(ngModel)]="developerKpiEnabled"
                   (onChange)="onProjectDevKpiStatusChange($event)"
                   [disabled]="developerKpiEnabled"
-                  aria-label="Enable Developer KPI" tabindex="0">
+                  aria-label="Enable Developer KPI" tabindex="{{developerKpiEnabled ? -1 : 0}}">
                   </p-inputSwitch>
                 </ng-container>
               </ng-container>
