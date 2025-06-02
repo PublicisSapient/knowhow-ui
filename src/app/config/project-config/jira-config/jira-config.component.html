@@ -184,7 +184,7 @@
                                 [pTooltip]="form_elem.tooltip" tooltipPosition="bottom" tooltipEvent="hover"
                                 [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                 [attr.disabled]="this[form_elem.disabled] ? true : null"
-                                tabindex="0" [attr.aria-label]="form_elem.label">
+                                tabindex="{{this[form_elem.disabled] ? '-1' : '0'}}" [attr.aria-label]="form_elem.label">
                         </div>
                                       <!-- Text -->
                         <div *ngSwitchCase="'text'" class="p-mb-3">
@@ -194,7 +194,7 @@
                                 [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                 [attr.disabled]="form_elem.disabled ? true : null"
                                 (blur)="form_elem.onFocusOut ? form_elem.onFocusOut($event, this) : ''"
-                                [attr.placeholder]="form_elem.placeholder" tabindex="0"
+                                [attr.placeholder]="form_elem.placeholder" tabindex="{{form_elem.disabled ? '-1' : '0'}}"
                                 [attr.aria-label]="form_elem.label">
                             <div *ngIf="tool[form_elem.id].errors?.pattern" tabindex="0" aria-live="polite">
                                 {{form_elem.errorMsg}}
@@ -215,7 +215,7 @@
                                                 </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                                   (onUnselect)="form_elem.unselectEventHandler($event)"
                                                   (onSelect)="form_elem.selectEventHandler($event)"
-                                                  [disabled]="form_elem.disabled() || this.isLoading" tabindex="0" [attr.aria-label]="form_elem.label">
+                                                  [disabled]="form_elem.disabled() || this.isLoading" tabindex="{{(form_elem.disabled() || this.isLoading) ? '-1' : '0'}}" [attr.aria-label]="form_elem.label">
                                               </p-autoComplete>
                                           </div>
                                           <div class="p-d-flex p-flex-column" *ngIf="!form_elem.multiple">
@@ -231,7 +231,7 @@
                                                 </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                                   (onUnselect)="form_elem.unselectEventHandler($event)"
                                                   (onSelect)="form_elem.selectEventHandler($event)"
-                                                  [disabled]="form_elem.disabled() || this.isLoading" tabindex="0" [attr.aria-label]="form_elem.label">
+                                                  [disabled]="form_elem.disabled() || this.isLoading" tabindex="{{(form_elem.disabled() || this.isLoading) ? '-1' : '0'}}" [attr.aria-label]="form_elem.label">
                                               </p-autoComplete>
                                           </div>
                                       </div>
@@ -262,14 +262,14 @@
                                               <textarea pInputTextarea id="{{form_elem.id}}"
                                                   formControlName="{{form_elem.id}}"
                                                   [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors}"
-                                                  [attr.disabled]="!this[form_elem.disabled] ? true : null" tabindex="0" [attr.aria-label]="form_elem.label"></textarea>
+                                                  [attr.disabled]="!this[form_elem.disabled] ? true : null" tabindex="{{!this[form_elem.disabled] ? '-1' : '0'}}" [attr.aria-label]="form_elem.label"></textarea>
                                           </ng-container>
                                       </div>
                                       <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
                                           <ng-container>
                                               <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                               <p-dropdown [options]="this[form_elem.options]" optionLabel="templateName" optionValue="templateCode"
-                                                  id="{{form_elem.id}}" formControlName="{{form_elem.id}}" (onChange)="form_elem.onChangeEventHandler($event,this)" tabindex="0" [attr.aria-label]="form_elem.label"></p-dropdown>
+                                                  id="{{form_elem.id}}" formControlName="{{form_elem.id}}" (onChange)="form_elem.onChangeEventHandler($event,this)" [attr.aria-label]="form_elem.label"></p-dropdown>
                                           </ng-container>
                                       </div>
                                       <div *ngSwitchCase="'button'" class="p-mb-3">
@@ -280,7 +280,7 @@
                                                   class="p-button-raised p-mt-5" [ngStyle]="{'margin-top': '10px'}"
                                                   icon="pi pi-check" [loading]="isLoading"
                                                   (click)="form_elem.clickEventHandler()"
-                                                  [disabled]="form_elem.disabled()" tabindex="0" [attr.aria-label]="form_elem.label">
+                                                  [disabled]="form_elem.disabled()" tabindex="{{form_elem.disabled() ? '-1' : '0'}}" [attr.aria-label]="form_elem.label">
                                               </p-button>
                                           </ng-container>
                                       </div>
