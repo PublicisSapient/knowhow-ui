@@ -790,13 +790,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.projectList = [];
     this.sprintDetailsList = [];
     this.selectedTabIndex = 0;
-    this.projectList = Object.values(this.colors).map((obj) => obj['nodeName']);
+    this.projectList = Object.values(this.colors).map((obj) => obj['nodeDisplayName']);
     this.projectList.forEach((project, index) => {
       const selectedProjectTrend = this.trendValueList.find(
         (obj) => obj.data === project,
       );
       const tempColorObjArray = Object.values(this.colors).find(
-        (obj) => obj['nodeName'] === project,
+        (obj) => obj['nodeDisplayName'] === project,
       )['color'];
       if (selectedProjectTrend?.value) {
         let hoverObjectListTemp = [];

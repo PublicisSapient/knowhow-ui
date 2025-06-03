@@ -1351,6 +1351,8 @@ export class HelperService {
     }else if(xCaption?.includes('week') && date && date?.includes(' to ')){
       const dates = date.split(' to ');
       return `${this.utcToLocal(dates[0],'dd/MM')} - ${this.utcToLocal(dates[1],'dd/MM')}`;
+    }else if(xCaption?.includes("time")){
+      return this.utcToLocal(date,'dd-MMM-yyyy hh:mm:ss');
     }else{
       return date;
     }
