@@ -296,7 +296,7 @@ export class MultilineV2Component implements OnChanges {
       rows
         .append('td')
         .attr('role', 'cell')
-        .text((d) => d.sprintLabel)
+        .text((d) => {return this.getFormatedDateBasedOnType(d.sprintLabel,this.xCaption)})
         .style('padding', '10px 10px')
         .style('border-bottom', '1px solid #eee')
         .style('word-break', 'break-word')
