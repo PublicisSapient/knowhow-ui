@@ -640,7 +640,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         )[0];
         if (selectedSprint) {
           const today = this.stripTime(new Date());
-          const endDate = this.stripTime(new Date(selectedSprint?.sprintEndDate))
+          const endDate = this.stripTime(
+            new Date(selectedSprint?.sprintEndDate),
+          );
           this.timeRemaining = this.calcBusinessDays(today, endDate);
           this.service.iterationConfigData.next({
             daysLeft: this.timeRemaining,
@@ -2586,11 +2588,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               i +
                 1 +
                 ' - ' +
-                this.utcToLocalUser((item?.['sprintNames']?.length > 0
-                  ? item['sprintNames'].join(',')
-                  : item?.['sSprintName']
-                  ? item['sSprintName']
-                  : item?.['date']),obj['frequency']),
+                this.utcToLocalUser(
+                  item?.['sprintNames']?.length > 0
+                    ? item['sprintNames'].join(',')
+                    : item?.['sSprintName']
+                    ? item['sSprintName']
+                    : item?.['date'],
+                  obj['frequency'],
+                ),
             );
             let val = item?.lineValue >= 0 ? item?.lineValue : item?.value;
             obj[i + 1] =
@@ -4699,8 +4704,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     iDateDiff -= iAdjust; // take into account both days on weekend
-    const total = iDateDiff + 1 // add 1 because dates are inclusive (counting today date)
-    return Math.max(0, total - 2) // need to exlcude today date and last date
+    const total = iDateDiff + 1; // add 1 because dates are inclusive (counting today date)
+    return Math.max(0, total - 2); // need to exlcude today date and last date
   }
 
   /**
@@ -4835,18 +4840,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   stripTime(date) {
     console.log('stripTime', date);
-    if(date){
+    if (date) {
       return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    }else{
+    } else {
       return date;
     }
-    
   }
 
   utcToLocalUser(data, xAxis) {
     if (data && data?.length) {
       return this.helperService.getFormatedDateBasedOnType(data, xAxis);
     }
-    return data
+    return data;
   }
 }

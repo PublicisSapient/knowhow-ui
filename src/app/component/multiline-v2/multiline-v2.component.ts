@@ -75,7 +75,7 @@ export class MultilineV2Component implements OnChanges {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
-    private helper : HelperService
+    private helper: HelperService,
   ) {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -296,7 +296,9 @@ export class MultilineV2Component implements OnChanges {
       rows
         .append('td')
         .attr('role', 'cell')
-        .text((d) => {return this.getFormatedDateBasedOnType(d.sprintLabel,this.xCaption)})
+        .text((d) => {
+          return this.getFormatedDateBasedOnType(d.sprintLabel, this.xCaption);
+        })
         .style('padding', '10px 10px')
         .style('border-bottom', '1px solid #eee')
         .style('word-break', 'break-word')
@@ -608,7 +610,9 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add Axis into SVG */
       const xAxis = d3.axisBottom(xScale).tickFormat(function (tickval) {
-        return (board == 'dora')? self.getFormatedDateBasedOnType(tickval,self.xCaption) : tickval;
+        return board == 'dora'
+          ? self.getFormatedDateBasedOnType(tickval, self.xCaption)
+          : tickval;
       });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
@@ -868,7 +872,10 @@ export class MultilineV2Component implements OnChanges {
 
             div
               .html(
-                `${self.getFormatedDateBasedOnType((d.date || d.sSprintName),self.xCaption)}` +
+                `${self.getFormatedDateBasedOnType(
+                  d.date || d.sSprintName,
+                  self.xCaption,
+                )}` +
                   ' : ' +
                   "<span class='toolTipValue'> " +
                   `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
@@ -1060,9 +1067,9 @@ export class MultilineV2Component implements OnChanges {
     });
   }
 
-  getFormatedDateBasedOnType(date,xCaptionType){
+  getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
-    return this.helper.getFormatedDateBasedOnType(date,xCaption)
+    return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 
   ngOnDestroy() {

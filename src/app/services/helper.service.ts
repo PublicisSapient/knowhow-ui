@@ -42,7 +42,7 @@ export class HelperService {
     private sharedService: SharedService,
     private router: Router,
     private route: ActivatedRoute,
-    private utcToLocalUserPipe : UtcToLocalUserPipe
+    private utcToLocalUserPipe: UtcToLocalUserPipe,
   ) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -1342,23 +1342,26 @@ export class HelperService {
     }
   }
 
-  getFormatedDateBasedOnType(date,type){
+  getFormatedDateBasedOnType(date, type) {
     const xCaption = type?.toLowerCase();
-    if(xCaption?.includes("date")){
+    if (xCaption?.includes('date')) {
       return this.utcToLocal(date);
-    }else if(xCaption?.includes("month")){
-      return this.utcToLocal(date,'MMM YYYY');
-    }else if(xCaption?.includes('week') && date && date?.includes(' to ')){
+    } else if (xCaption?.includes('month')) {
+      return this.utcToLocal(date, 'MMM YYYY');
+    } else if (xCaption?.includes('week') && date && date?.includes(' to ')) {
       const dates = date.split(' to ');
-      return `${this.utcToLocal(dates[0],'dd/MM')} - ${this.utcToLocal(dates[1],'dd/MM')}`;
-    }else if(xCaption?.includes("time")){
-      return this.utcToLocal(date,'dd-MMM-yyyy hh:mm:ss');
-    }else{
+      return `${this.utcToLocal(dates[0], 'dd/MM')} - ${this.utcToLocal(
+        dates[1],
+        'dd/MM',
+      )}`;
+    } else if (xCaption?.includes('time')) {
+      return this.utcToLocal(date, 'dd-MMM-yyyy hh:mm:ss');
+    } else {
       return date;
     }
   }
 
-utcToLocal(utcDate, format?){
-    return this.utcToLocalUserPipe.transform(utcDate,format)
+  utcToLocal(utcDate, format?) {
+    return this.utcToLocalUserPipe.transform(utcDate, format);
   }
 }
