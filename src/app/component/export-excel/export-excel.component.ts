@@ -245,9 +245,7 @@ export class ExportExcelComponent implements OnInit {
         const formattedItem = { ...item };
         for (const key in formattedItem) {
           // if (key.toLowerCase().includes('date') && formattedItem[key]) {
-            formattedItem[key] = this.utcToLocalUser(
-              formattedItem[key],key
-            );
+          formattedItem[key] = this.utcToLocalUser(formattedItem[key], key);
           // }
         }
         return formattedItem;
@@ -526,5 +524,5 @@ export class ExportExcelComponent implements OnInit {
 
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
-}
+  }
 }

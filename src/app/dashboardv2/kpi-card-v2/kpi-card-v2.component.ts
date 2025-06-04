@@ -790,7 +790,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.projectList = [];
     this.sprintDetailsList = [];
     this.selectedTabIndex = 0;
-    this.projectList = Object.values(this.colors).map((obj) => obj['nodeDisplayName']);
+    this.projectList = Object.values(this.colors).map(
+      (obj) => obj['nodeDisplayName'],
+    );
     this.projectList.forEach((project, index) => {
       const selectedProjectTrend = this.trendValueList.find(
         (obj) => obj.data === project,
@@ -1435,5 +1437,5 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
-}
+  }
 }
