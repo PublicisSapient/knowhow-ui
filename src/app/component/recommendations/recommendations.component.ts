@@ -36,14 +36,12 @@ export class RecommendationsComponent implements OnInit {
     { label: 'Other', value: 'other' },
   ];
 
-  periodOptions = [
-    { label: '1 week', value: 'one_week' },
-    { label: '2 weeks', value: 'two_week' },
-    { label: '4 weeks', value: 'four_week' },
-    { label: '6 weeks', value: 'six_week' },
-  ];
-  selectedPeriod: any = null;
-  isPeriodSelected: boolean = false;
+  sprintOptions = [];
+  selectedSprints: any[] = [];
+  selectedCurrentProjectSprintsCode: any[] = [];
+  isSprintSelected: boolean = false;
+  allSprints: any;
+  kpiFilterData: any;
 
   constructor(
     private httpService: HttpService,
@@ -55,20 +53,27 @@ export class RecommendationsComponent implements OnInit {
 
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
+    this.allSprints = this.service.getCurrentProjectSprints();
+    this.sprintOptions = this.allSprints.map((x) => ({
+      name: x['nodeDisplayName'],
+      code: x['nodeId'],
+    }));
     this.displayModal = true;
-    let kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
-    kpiFilterData['kpiIdList'] = [...this.kpiList];
-    kpiFilterData['selectedMap']['project'] = [
+    this.kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
+    this.kpiFilterData['kpiIdList'] = [...this.kpiList];
+    this.kpiFilterData['selectedMap']['project'] = [
       Array.isArray(this.selectedSprint?.['parentId'])
         ? this.selectedSprint?.['parentId']?.[0]
         : this.selectedSprint?.['parentId'],
     ];
-    kpiFilterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
+    this.kpiFilterData['selectedMap']['sprint'] = [
+      this.selectedSprint?.['nodeId'],
+    ];
     this.loading = true;
     this.maturities = [];
     this.tabs = [];
     this.tabsContent = {};
-    this.httpService.getRecommendations(kpiFilterData).subscribe(
+    this.httpService.getRecommendations(this.kpiFilterData).subscribe(
       (response: Array<object>) => {
         if (response?.length > 0) {
           response.forEach((recommendation) => {
@@ -131,22 +136,22 @@ export class RecommendationsComponent implements OnInit {
     this.isRoleSelected = !!this.selectedRole && this.selectedRole !== '';
   }
 
-  onPeriodSelection(event) {
-    this.selectedPeriod = event.value;
-    this.isPeriodSelected = !!this.selectedPeriod && this.selectedPeriod !== '';
+  onSprintsSelection(selectedItems: any[]) {
+    this.selectedCurrentProjectSprintsCode = (selectedItems || [])
+      .filter((item) => item && item.code)
+      .map((item) => item.code);
+    this.isSprintSelected = this.selectedCurrentProjectSprintsCode.length > 0;
   }
 
   generateSprintReport() {
-    this.selectedRole = null;
-    this.selectedPeriod = null;
+    this.kpiFilterData['recommendationFor'] = this.selectedRole;
+    this.kpiFilterData['selectedMap']['sprint'] =
+      this.selectedCurrentProjectSprintsCode;
 
-    const requestSprintDataBody = {
-      selectedRole: this.selectedRole,
-      selectedPeriod: this.selectedPeriod,
-    };
+    console.log(this.kpiFilterData);
 
     // --- send request body to backend to get sprint data response
-    const sprintData = this.getSprintData(requestSprintDataBody);
+    // const sprintData = this.getSprintData(this.kpiFilterData);
 
     // --- transform the sprint data into acceptable request body for ai-recommendations api
 
