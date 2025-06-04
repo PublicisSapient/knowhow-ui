@@ -175,6 +175,9 @@
   border: 1px solid rgba(0, 0, 0, 0.6);
   background: transparent;
 }
+.p-button.p-button-text.btn-toggle:focus {
+  outline: auto;
+}
 .p-input-custom {
   height: 46px;
   border-top-right-radius: 0;
@@ -187,4 +190,8 @@
 
 :host::ng-deep button:disabled {
   border: 1px solid rgba(0, 0, 0, 0.38) !important;
+}
+
+.p-button:enabled:focus {
+  outline: 3px solid #000;
 }

@@ -41,12 +41,16 @@ export class KpiHelperService {
     '': 'Check.svg',
     'First Time Pass Stories': 'Warning.svg',
     'Total Stories': 'Warning.svg',
+    'Un-Refined Stories': 'Warning.svg',
   };
 
   stackedBarChartData(inputData: any, color: any, key: string) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
+    let excludeCatForTotal = categoryGroup
+      .filter((cat) => cat.categoryValue === 'NA')
+      .map((cat) => cat.categoryName);
     let selectedDataGroup;
     let unit;
     if (key) {
@@ -70,18 +74,27 @@ export class KpiHelperService {
       );
 
       chartData.push({
-        category: category.categoryName,
+        category: category.categoryName
+          .replace('Sprint', '') // TODO category name needs to handle form BE
+          .trim()
+          .replace(/^\w/, (c) => c.toUpperCase()),
         value:
           (key
             ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
             : filteredIssues.length) *
-          (category.categoryValue === '+' ? 1 : -1),
+          (category.categoryValue === '+' || category.categoryValue === 'NA'
+            ? 1
+            : -1),
         color: color[index % color.length],
+        otherTootipInfo: this.getOtherInfo(filteredIssues, category, key),
       });
     });
 
     let totalCount = chartData.reduce((sum: any, issue: any) => {
-      return sum + (issue.value || 0); // Sum up the values for the key
+      return (
+        sum +
+        ((!excludeCatForTotal.includes(issue.category) ? issue.value : 0) || 0)
+      ); // Sum up the values for the key and excluding the same incase not applicable
     }, 0);
 
     if (!unit || !unit.length) {
@@ -95,6 +108,29 @@ export class KpiHelperService {
     }
 
     return { chartData, totalCount };
+  }
+
+  getOtherInfo(filterdata, categoryInfo, key) {
+    const list = [];
+
+    categoryInfo?.scopeDuration?.forEach((duration) => {
+      let value = 0;
+      const IssueFilterByDuration = filterdata.filter((issue) =>
+        issue?.['scopeDuration']?.includes(duration),
+      );
+      if (key) {
+        value = IssueFilterByDuration.reduce(
+          (sum, issue) => sum + issue[key],
+          0,
+        );
+        list.push(`${duration}d: ${value} SP`);
+      } else {
+        value = IssueFilterByDuration.length;
+        list.push(`${duration}d: ${value} `);
+      }
+    });
+
+    return list;
   }
 
   stackedChartData(inputData: any, color: any, key: string) {

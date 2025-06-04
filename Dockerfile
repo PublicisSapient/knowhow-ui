@@ -11,7 +11,7 @@ RUN apk add openssl --no-cache \
     && addgroup -g $GID $USER \
     && adduser -u $UID -G $USER -s /bin/sh -D $USER
 
-# Set environment variables
+# Set environment variable
 ENV PID_LOC="/run/nginx" \
     CONF_LOC="/etc/nginx" \
     HTML_LOC="/var/lib/nginx/" \

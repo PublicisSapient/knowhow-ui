@@ -15,6 +15,8 @@ export class ReportKpiCardComponent {
   @Input() kpiTrendsObj: any;
   @Input() trendColors: any;
   colors: any;
+  fromReport: string = 'fromReport';
+
   @Input() kpiFilters: any;
   @Input() selectedButtonValue: any;
   @Input() cardData: any;
@@ -30,6 +32,9 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
+  @Input() xAxisLabel: string;
+  @Input() yAxisLabel: string;
+
   constructor(private kpiHelperService: KpiHelperService) {}
 
   /**
@@ -41,6 +46,9 @@ export class ReportKpiCardComponent {
    * @throws None
    */
   ngOnChanges(changes: SimpleChanges) {
+    this.xAxisLabel = this.xAxisLabel || this.kpiData?.xAxis;
+    this.yAxisLabel = this.yAxisLabel || this.kpiData?.yAxis;
+    this.generateTableKPIColumnHeader();
     this.sortColors();
     this.setKpiFilters();
     if (changes['chartType']) {
@@ -72,6 +80,9 @@ export class ReportKpiCardComponent {
     this.colors = Object.keys(this.trendColors).map(
       (key) => this.trendColors[key].color,
     );
+    if (this.kpiData?.kpiId === 'kpi17') {
+      this.colors = this.chartColorList;
+    }
   }
 
   setKpiFilters() {
@@ -142,6 +153,42 @@ export class ReportKpiCardComponent {
       return Math.floor(value) < value
         ? `${Math.round(value)} ${unit}`
         : `${value} ${unit}`;
+    }
+  }
+
+  generateTableKPIColumnHeader() {
+    // For kpi3 and kpi53 generating table column headers and table data
+    if (this.kpiData?.kpiId === 'kpi3' || this.kpiData?.kpiId === 'kpi53') {
+      //generating column headers
+      // Mapping for readable label names (you can expand this list as needed)
+      const labelNameMap: Record<string, string> = {
+        project: 'Project Name',
+        account: 'Account Name',
+        bu: 'Business Unit',
+        ver: 'Vertical',
+        port: 'Portfolio',
+        release: 'Release',
+        sqd: 'Squad',
+      };
+
+      // Extract label name (e.g., 'project') from trendColors object
+      const firstTrendColorKey = Object.keys(this.kpiData.trendColors)[0];
+      const labelName = this.kpiData.trendColors[firstTrendColorKey].labelName;
+
+      // Convert to human-readable header using the mapping
+      const projectHeader = labelNameMap[labelName] || labelName;
+
+      // Extract KPI name from `radioOption`
+      const leadTimeHeader = this.kpiData.radioOption || 'Value';
+
+      // Construct the columnHeaders array
+      const columnHeaders = [
+        { field: 'hierarchyName', header: projectHeader },
+        { field: 'value', header: leadTimeHeader },
+        { field: 'maturity', header: 'Maturity' },
+      ];
+
+      this.currentChartData.columnHeaders = columnHeaders;
     }
   }
 }

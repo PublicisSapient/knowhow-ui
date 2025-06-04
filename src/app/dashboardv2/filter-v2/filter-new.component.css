@@ -384,7 +384,6 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   z-index: 1001;
 }
 
-.disabled {
-  background-color: #f3f3f3;
-  pointer-events: none;
+:host ::ng-deep .p-button:enabled:focus {
+  outline: 3px solid var(--color-black-dark);
 }

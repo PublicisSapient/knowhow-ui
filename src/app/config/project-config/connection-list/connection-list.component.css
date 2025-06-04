@@ -72,6 +72,10 @@ div.main {
   position: relative;
 }
 
+::ng-deep .p-button:focus {
+  outline: auto;
+}
+
 input[type='text']:disabled,
 input[type='password']:disabled {
   background-color: #dee2e6;
@@ -100,4 +104,16 @@ input[type='password']:disabled {
 ::ng-deep .connectionDdwn .p-dropdown .p-inputtext {
   padding: 0.7rem;
   width: 150px;
+}
+
+:host ::ng-deep .p-button:enabled:focus {
+  outline: 3px solid #000;
+}
+
+:host
+  ::ng-deep
+  .p-accordion
+  .p-accordion-tab:not(.p-accordion-tab-active)
+  .p-accordion-header-link:focus {
+  border: 2px solid #000;
 }
