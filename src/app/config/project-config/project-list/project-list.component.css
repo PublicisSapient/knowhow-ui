@@ -57,6 +57,12 @@ div.main {
 ::ng-deep.p-datatable .p-datatable-loading-overlay {
   background-color: initial;
 }
+
+::ng-deep .p-datatable .p-sortable-column:focus,
+::ng-deep .p-button:focus {
+  outline: 3px solid #000;
+}
+
 .col-head {
   word-break: break-word;
 }
@@ -72,6 +78,9 @@ div.main {
   font-size: 14px;
   text-wrap: nowrap;
   color: #06a0ff;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr > td {

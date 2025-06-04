@@ -48,7 +48,7 @@
             <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
             <h3 class="p-my-0">{{ cardData.summary }}</h3>
         </div>
-        <div class="p-d-flex" [ngStyle]="{'height': kpiData?.kpiHeight === 200 ? '500px' : kpiData?.kpiHeight === 100 ? '300px' : (kpiData?.kpiHeight === 50 ? '257px' : '300px') }">
+        <div class="p-d-flex">
             <div class="{{ chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
                 <div class="p-px-3 p-py-0" style="height:auto;" [ngSwitch]="chartType">
                     <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
@@ -96,7 +96,9 @@
                                 [selectedtype]="selectedtype" [viewType]="showChart"
                                 [thresholdValue]="kpiData?.kpiThresholdObj"
                                 [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel"
+                                [kpiId]="kpiData.kpiId">
                             </app-multiline-v2>
                         </ng-container>
                     </ng-container>
@@ -105,7 +107,8 @@
                         <ng-container>
                             <app-multiline-style-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId"
-                                [thresholdValue]="kpiData?.kpiThresholdObj" [color]="colors">
+                                [thresholdValue]="kpiData?.kpiThresholdObj" [color]="colors" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-multiline-style-v2>
                         </ng-container>
                     </ng-container>
@@ -118,8 +121,9 @@
                                 [unit]="kpiData?.kpiUnit" [xCaption]="kpiData?.xaxisLabel"
                                 [yCaption]="kpiData?.yaxisLabel" [barLegend]="kpiData?.barLegend"
                                 [lineLegend]="kpiData?.lineLegend" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors"
-                                [thresholdValue]="kpiData?.kpiThresholdObj">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors" [source]="fromReport"
+                                [thresholdValue]="kpiData?.kpiThresholdObj"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-grouped-column-plus-line-chart-v2>
                         </ng-container>
                     </ng-container>
@@ -131,7 +135,8 @@
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [color]="colors"
                                 [barLegend]="kpiData?.barLegend" [lineLegend]="kpiData?.lineLegend"
                                 [selectedtype]="selectedtype" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [yAxisOrder]="kpiData?.yaxisOrder">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [yAxisOrder]="kpiData?.yaxisOrder" [source]="fromReport"
+                                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
                             </app-bar-with-y-axis-group>
                         </ng-container>
                     </ng-container>
@@ -140,8 +145,8 @@
                         <ng-container>
                             <app-group-bar-chart
                                 [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpiData?.xAxis"
-                                [yCaption]="yAxis" 
-                                [unit]="kpiData?.kpiUnit" 
+                                [yCaption]="yAxis"
+                                [unit]="kpiData?.kpiUnit"
                                 [thresholdValue]="kpiData?.kpiThresholdObj"
                                 [data]="currentChartData" [color]="chartColorList" [releaseEndDate]="releaseEndDate"
                                 [selectedtype]="kpiData?.selectedType" [kpiId]="kpiData?.kpiId" [legendType]="'normal'">
@@ -169,11 +174,11 @@
 
                     <app-table *ngSwitchCase="'table'"
                     [trendBoxColorObj]="kpiData?.trendColors"
-                    [data]="currentChartData?.data"
+                    [data]="kpiTrendsObj"
                     [cols]="currentChartData?.columnHeaders"
                     [showMarker]="'true'"
                     [showMarkerColumnNumber]="0"></app-table>
-                    
+
                     <ng-container *ngSwitchCase="'old-table'">
                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100">
                             <ng-container *ngFor="let item of currentChartData; let index=index">
@@ -237,7 +242,7 @@
         </ul>
     </div>
     <div *ngIf="kpiData?.chartType === 'line' ||  kpiData?.chartType ===  'multipleline' || kpiData?.chartType=== 'grouped_column_plus_line'"
-        class="p-p-3">
+        class="kpi-card-footer p-p-3">
         <app-trend-indicator-v2 [trendData]="kpiTrendsObj" [colorObj]="trendColors">
         </app-trend-indicator-v2>
     </div>

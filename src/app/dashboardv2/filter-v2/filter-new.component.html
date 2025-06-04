@@ -1,11 +1,11 @@
-<!-- <p-toast [style]="{marginTop: '80px'}"></p-toast> -->
+
 <div class="filter-container p-m-0 p-fluid">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
         [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }"
-        role="tab" 
-        tabindex="0" 
+        role="tab"
+        tabindex="0"
         [attr.aria-selected]="selectedType === 'scrum'"
         (keydown.enter)="setSelectedType('Scrum')"
       >
@@ -13,8 +13,8 @@
       </div>
       <div class="tab" (click)="selectedType !== 'kanban' ? setSelectedType('Kanban') : ''"
         [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }"
-        role="tab" 
-        tabindex="0" 
+        role="tab"
+        tabindex="0"
         [attr.aria-selected]="selectedType === 'kanban'"
         (keydown.enter)="setSelectedType('Kanban')"
       >
@@ -66,8 +66,8 @@
         <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Days Left:</span>
         <span class="p-text-bold p-d-inline-block data-container p-mr-3"
-          aria-live="polite" 
-          tabindex="0" 
+          aria-live="polite"
+          tabindex="0"
           aria-label="Number of days left in iteration">
           {{iterationConfigData?.daysLeft}}
         </span>
@@ -76,8 +76,8 @@
         <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Duration:</span>
         <span class="p-text-bold p-d-inline-block data-container p-mr-3"
-          aria-live="polite" 
-          tabindex="0" 
+          aria-live="polite"
+          tabindex="0"
           aria-label="Iteration duration details">
           {{combinedDate}}
         </span>
@@ -88,8 +88,8 @@
         <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
         <span class="p-text-bold p-d-inline-block data-container p-mr-3"
-        aria-live="polite" 
-        tabindex="0" 
+        aria-live="polite"
+        tabindex="0"
         aria-label="Iteration capacity in Hours">
           {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
         </span>
@@ -116,7 +116,7 @@
 
       <div class="show-hide-container" *ngIf="isSprintGoalsHidden()" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext">
-        <span [ngClass]="getBgClass()" class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()">
+        <span [ngClass]="getBgClass()" class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()" (keydown.enter)="toggleSprintGoals()" tabindex="0" aria-label="Toggle Sprint Goals">
           <i class="pi pi-list cursor-pointer" style="font-size: 1rem"></i>
         </span>
       </div>
@@ -224,9 +224,9 @@
   <p-footer>
     <div class="ui-dialog-buttonpane ui-helper-clearfix">
       <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
-        class="p-button p-button-danger p-button-raised" (keydown.enter)="displayModal = false" tabindex="0" aria-label="Cancel Refresh"></button>
+        class="p-button p-button-danger" tabindex="0" aria-label="Cancel Refresh"></button>
       <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
-        class="p-button p-button-success p-button-raised" (keydown.enter)="fetchData()" tabindex="0" aria-label="Confirm Refresh"></button>
+        class="p-button p-button-success" tabindex="0" aria-label="Confirm Refresh"></button>
     </div>
   </p-footer>
 </p-dialog>

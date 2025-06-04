@@ -147,3 +147,7 @@
   right: 10px;
   top: 14px;
 }
+
+:host .p-button:enabled:focus {
+  outline: 3px solid #000;
+}
