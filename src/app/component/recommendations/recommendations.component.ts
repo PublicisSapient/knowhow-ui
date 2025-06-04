@@ -25,6 +25,25 @@ export class RecommendationsComponent implements OnInit {
   noRecommendations: boolean = false;
   selectedSprint: object = {};
   loading: boolean = false;
+  @Input() aiRecommendations: boolean = true;
+
+  selectedRole: any = null;
+  isRoleSelected: boolean = false;
+  roleOptions = [
+    { label: 'Manager', value: 'manager' },
+    { label: 'Analyst', value: 'analyst' },
+    { label: 'Developer', value: 'developer' },
+    { label: 'Other', value: 'other' },
+  ];
+
+  periodOptions = [
+    { label: '1 week', value: 'one_week' },
+    { label: '2 weeks', value: 'two_week' },
+    { label: '4 weeks', value: 'four_week' },
+    { label: '6 weeks', value: 'six_week' },
+  ];
+  selectedPeriod: any = null;
+  isPeriodSelected: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -101,5 +120,51 @@ export class RecommendationsComponent implements OnInit {
         this.loading = false;
       },
     );
+  }
+
+  focusDialogHeader() {}
+
+  onDialogClose() {}
+
+  onRoleChange(event) {
+    this.selectedRole = event.value;
+    this.isRoleSelected = !!this.selectedRole && this.selectedRole !== '';
+  }
+
+  onPeriodSelection(event) {
+    this.selectedPeriod = event.value;
+    this.isPeriodSelected = !!this.selectedPeriod && this.selectedPeriod !== '';
+  }
+
+  generateSprintReport() {
+    this.selectedRole = null;
+    this.selectedPeriod = null;
+
+    const requestSprintDataBody = {
+      selectedRole: this.selectedRole,
+      selectedPeriod: this.selectedPeriod,
+    };
+
+    // --- send request body to backend to get sprint data response
+    const sprintData = this.getSprintData(requestSprintDataBody);
+
+    // --- transform the sprint data into acceptable request body for ai-recommendations api
+
+    // --- send request to ai-recommendations api
+
+    // --- handle the response
+  }
+
+  async getSprintData(reqBody) {
+    const response = await fetch('http://localhost:3000/api/getSprintData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reqBody),
+    });
+    const data = await response.json();
+    console.log(data);
+    return data;
   }
 }

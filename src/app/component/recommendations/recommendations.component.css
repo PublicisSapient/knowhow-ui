@@ -126,10 +126,33 @@
   background: #d38eec;
 }
 :host ::ng-deep .p-dialog {
-  width: auto !important;
-  max-width: 90vw !important;
-  min-width: 544px;
+  width: 50vw !important;
 }
 .red {
   color: var(--color-red);
+}
+
+.dialog-footer {
+  border-top: 1px solid #d5dbe1;
+  text-align: center;
+}
+
+:host ::ng-deep .p-button {
+  background: #0b4bc8;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .p-button-outlined {
+  background: #fff;
+  color: #0b4bc8;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .p-button:enabled:focus,
+:host ::ng-deep .p-button-outlined:enabled:focus {
+  outline: 3px solid #000;
+}
+
+.loading-screen {
+  text-align: center;
 }
