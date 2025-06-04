@@ -132,9 +132,7 @@
   </div>
 
   <div *ngIf="aiRecommendations">
-    <div
-      class="p-fluid"
-    >
+    <div class="p-fluid">
       <h4
         id="pageTitle"
         class="p-text-center"
@@ -155,7 +153,12 @@
         role="group"
         aria-labelledby="roleLabel"
         aria-describedby="roleDesc"
-        style="width: 450px; margin: 2.5rem auto; padding-bottom: 3rem; border-bottom: 1px solid #d5dbe1;"
+        style="
+          width: 450px;
+          margin: 2.5rem auto;
+          padding-bottom: 3rem;
+          border-bottom: 1px solid #d5dbe1;
+        "
       >
         <label
           id="roleLabel"
@@ -185,39 +188,46 @@
       <div
         class="p-field"
         role="group"
-        aria-labelledby="periodLabel"
-        aria-describedby="periodDesc"
-        style="width: 450px; margin: 2.5rem auto;"
+        aria-labelledby="sprintLabel"
+        aria-describedby="sprintDesc"
+        style="width: 450px; margin: 2.5rem auto"
       >
         <label
-          id="periodLabel"
-          for="periodDropdown"
+          id="sprintLabel"
+          for="sprintDropdown"
           class="p-d-block"
           style="font-weight: 600; margin-bottom: 0.25rem"
         >
-          Period:
+          Sprints:
         </label>
-        <small id="periodDesc" class="p-d-block p-mb-2" style="color: #444">
-          Select a custom or default data period for analysis
+        <small id="sprintDesc" class="p-d-block p-mb-2" style="color: #444">
+          Select sprints for analysis
         </small>
-        <p-dropdown
-          inputId="periodDropdown"
-          [options]="periodOptions"
-          placeholder="Select period"
-          aria-labelledby="periodLabel"
-          aria-describedby="periodDesc"
+        <p-multiSelect
+          inputId="sprintDropdown"
+          [options]="sprintOptions"
+          [(ngModel)]="selectedSprints"
+          defaultLabel="Select Sprints"
+          optionLabel="name"
+          selectedItemsLabel="{0} items selected"
+          placeholder="Select sprint"
+          aria-labelledby="sprintLabel"
+          aria-describedby="sprintDesc"
           [showClear]="true"
           appendTo="body"
           styleClass="p-inputtext p-p-0"
-          (onChange)="onPeriodSelection($event)"
-          [(ngModel)]="selectedPeriod"
-        ></p-dropdown>
+          (onChange)="onSprintsSelection($event.value)"
+        ></p-multiSelect>
       </div>
     </div>
 
     <div class="generating-recommendations">
       <div class="loading-screen">
-        <img src="../../../assets/img/ico-recommendations.svg" alt="loading" [style]="{ width: '10%' }" />
+        <img
+          src="../../../assets/img/ico-recommendations.svg"
+          alt="loading"
+          [style]="{ width: '10%' }"
+        />
         <h3>Now we are generating your report</h3>
       </div>
     </div>
@@ -232,7 +242,7 @@
         label="Generate Report"
         styleClass="p-button p-ml-4"
         aria-label="Generate Report dialog"
-        [disabled]="!(isRoleSelected && isPeriodSelected)"
+        [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
       ></p-button>
     </div>
