@@ -43,6 +43,9 @@ export class RecommendationsComponent implements OnInit {
   kpiFilterData: any;
   isLoading: boolean = false;
   isReportGenerated: boolean = false;
+  currentProjectName: string;
+  projectScore: number = 0;
+  recommendationsList: object[] = [];
 
   constructor(
     private httpService: HttpService,
@@ -55,6 +58,9 @@ export class RecommendationsComponent implements OnInit {
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
     this.allSprints = this.service.getCurrentProjectSprints();
+    this.currentProjectName = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0].nodeDisplayName;
     this.sprintOptions = this.allSprints.map((x) => ({
       name: x['nodeDisplayName'],
       code: x['nodeId'],
@@ -154,10 +160,6 @@ export class RecommendationsComponent implements OnInit {
 
     // --- send request body to backend to get sprint data response
     this.getSprintData(this.kpiFilterData);
-
-    // --- send request to ai-recommendations api
-
-    // --- handle the response
   }
 
   getSprintData(reqBody) {
@@ -167,6 +169,19 @@ export class RecommendationsComponent implements OnInit {
         this.isLoading = false;
         this.isReportGenerated = true;
         console.log('response => ', response);
+        const resp: object = response[0];
+        console.log('resp => ', resp);
+        this.projectScore = +resp['projectScore'];
+        this.recommendationsList = resp['recommendations'];
       });
+  }
+
+  resetSelections() {
+    this.selectedRole = null;
+    this.selectedSprints = [];
+    this.selectedCurrentProjectSprintsCode = [];
+    this.isRoleSelected = false;
+    this.isSprintSelected = false;
+    this.isReportGenerated = false;
   }
 }
