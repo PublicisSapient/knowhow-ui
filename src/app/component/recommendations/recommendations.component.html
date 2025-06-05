@@ -145,7 +145,7 @@
         class="p-text-center"
         style="font-weight: 700; font-size: 1.6rem; margin-bottom: 2.5rem"
       >
-        ProjectName
+        {{currentProjectName}}
       </h3>
 
       <div
@@ -232,9 +232,41 @@
       </div>
     </div>
 
+    <div class="p-fluid" *ngIf="isReportGenerated">
+      <h4
+        id="pageTitle"
+        class="p-text-center"
+        tabindex="0"
+        style="font-weight: 500; font-size: 1.4rem; margin-bottom: 1rem"
+      >
+        AI Recommendation Report <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
+      </h4>
+      <h3
+        class="p-text-center"
+        style="font-weight: 700; font-size: 1.6rem; margin-bottom: 2.5rem"
+      >
+        {{currentProjectName}}
+      </h3>
+      <h3>Overall Summary</h3>
+
+      <div class="p-d-flex p-ai-center p-jc-between">
+        <strong>Project Health</strong>
+        <strong>{{projectScore}}</strong>
+      </div>
+      <p-progressBar [value]="projectScore" [style]="{ height: '10px' }"></p-progressBar>
+
+      <article class="ai-nudges">
+        <ul>
+          <li *ngFor="let recommendation of recommendationsList">
+            <p><p-chip><span class="severity" [ngClass]="recommendation.recommendationType"></span>{{ recommendation.recommendationType }}</p-chip> {{ recommendation.recommendationDetails }}</p>
+          </li>
+        </ul>
+      </article>
+    </div>
+
     <div class="dialog-footer p-py-5">
       <p-button
-        (click)="displayModal = false"
+        (click)="displayModal = false; resetSelections()"
         label="Cancel"
         styleClass="p-button-outlined p-button-text"
       ></p-button>
@@ -244,7 +276,7 @@
         aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
-        *ngIf="!isReportGenerated"
+        *ngIf="!isLoading"
       ></p-button>
     </div>
   </div>

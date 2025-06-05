@@ -87,6 +87,7 @@ import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indic
 import { NoAccessComponent } from './component/no-access/no-access.component';
 import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
@@ -224,6 +225,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     InputTextModule,
     ScrollTopModule,
     SelectButtonModule,
+    ProgressBarModule,
   ],
   providers: [
     ExcelService,
