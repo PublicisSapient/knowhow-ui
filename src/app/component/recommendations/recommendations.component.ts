@@ -30,10 +30,9 @@ export class RecommendationsComponent implements OnInit {
   selectedRole: any = null;
   isRoleSelected: boolean = false;
   roleOptions = [
-    { label: 'Manager', value: 'manager' },
-    { label: 'Analyst', value: 'analyst' },
-    { label: 'Developer', value: 'developer' },
-    { label: 'Other', value: 'other' },
+    { label: 'Executive Sponsor', value: 'executive_sponsor' },
+    { label: 'Agile Program Manager', value: 'agile_program_manager' },
+    { label: 'Engineering Lead', value: 'engineering_lead' },
   ];
 
   sprintOptions = [];
@@ -42,6 +41,8 @@ export class RecommendationsComponent implements OnInit {
   isSprintSelected: boolean = false;
   allSprints: any;
   kpiFilterData: any;
+  isLoading: boolean = false;
+  isReportGenerated: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -148,28 +149,24 @@ export class RecommendationsComponent implements OnInit {
     this.kpiFilterData['selectedMap']['sprint'] =
       this.selectedCurrentProjectSprintsCode;
 
-    console.log(this.kpiFilterData);
+    this.isReportGenerated = false;
+    this.isLoading = true;
 
     // --- send request body to backend to get sprint data response
-    // const sprintData = this.getSprintData(this.kpiFilterData);
-
-    // --- transform the sprint data into acceptable request body for ai-recommendations api
+    this.getSprintData(this.kpiFilterData);
 
     // --- send request to ai-recommendations api
 
     // --- handle the response
   }
 
-  async getSprintData(reqBody) {
-    const response = await fetch('http://localhost:3000/api/getSprintData', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reqBody),
-    });
-    const data = await response.json();
-    console.log(data);
-    return data;
+  getSprintData(reqBody) {
+    this.httpService
+      .getRecommendations(reqBody)
+      .subscribe((response: Array<object>) => {
+        this.isLoading = false;
+        this.isReportGenerated = true;
+        console.log('response => ', response);
+      });
   }
 }
