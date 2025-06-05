@@ -132,7 +132,7 @@
   </div>
 
   <div *ngIf="aiRecommendations">
-    <div class="p-fluid">
+    <div class="p-fluid" *ngIf="!isLoading && !isReportGenerated">
       <h4
         id="pageTitle"
         class="p-text-center"
@@ -221,7 +221,7 @@
       </div>
     </div>
 
-    <div class="generating-recommendations">
+    <div class="generating-recommendations" *ngIf="isLoading">
       <div class="loading-screen">
         <img
           src="../../../assets/img/ico-recommendations.svg"
@@ -244,6 +244,7 @@
         aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
+        *ngIf="!isReportGenerated"
       ></p-button>
     </div>
   </div>
