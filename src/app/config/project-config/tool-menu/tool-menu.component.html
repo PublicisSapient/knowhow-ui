@@ -156,7 +156,7 @@
                   <div class="p-md-4 inline-div" tabindex="0">
                     <p class="form_title">Last Updated</p>
                     <p>
-                      <strong class="sub-text" *ngIf="tool.updatedAt">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
+                      <strong class="sub-text" *ngIf="tool.updatedAt">{{ tool.updatedAt | UtcToLocalUserTimeZone : 'dd-MMM-yyyy (EE) - h:mm a'}}</strong>
                       <strong class="sub-text" *ngIf="!tool.updatedAt">-</strong>
                     </p>
                   </div>

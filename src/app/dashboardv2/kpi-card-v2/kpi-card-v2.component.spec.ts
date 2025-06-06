@@ -485,6 +485,7 @@ describe('KpiCardV2Component', () => {
         nodeName: 'API POD 1 - Core',
         color: '#6079C5',
         nodeId: 'API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+        nodeDisplayName: 'API POD 1 - Core',
       },
     };
 

@@ -10,6 +10,7 @@ import {
   OnInit,
 } from '@angular/core';
 import * as d3 from 'd3';
+import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -49,6 +50,7 @@ export class GroupBarChartComponent implements OnChanges {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
+    private helper: HelperService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -801,7 +803,7 @@ export class GroupBarChartComponent implements OnChanges {
         if (isCurrentMonth) {
           this.currentDayIndex = d['group'];
         }
-        d['group'] = d['group'];
+        d['group'] = this.getFormatedDateBasedOnType(d['group'], this.xCaption);
         return d;
       }
     });
@@ -867,5 +869,9 @@ export class GroupBarChartComponent implements OnChanges {
         }
       }
     });
+  }
+  getFormatedDateBasedOnType(date, xCaptionType) {
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 }
