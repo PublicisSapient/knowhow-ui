@@ -14,11 +14,7 @@
   aria-labelledby="dialogTitle"
   (onShow)="focusDialogHeader()"
   (onHide)="onDialogClose()"
-  [header]="
-    aiRecommendations
-      ? 'Generate AI Recommendation'
-      : 'Recommendations for Optimising KPIs'
-  "
+  [header]="getDialogHeader()"
 >
   <div *ngIf="!aiRecommendations">
     <p-header>
@@ -232,15 +228,7 @@
       </div>
     </div>
 
-    <div class="p-fluid" *ngIf="isReportGenerated">
-      <h4
-        id="pageTitle"
-        class="p-text-center"
-        tabindex="0"
-        style="font-weight: 500; font-size: 1.4rem; margin-bottom: 1rem"
-      >
-        AI Recommendation Report <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
-      </h4>
+    <div class="p-fluid generated-report-container" *ngIf="isReportGenerated">
       <h3
         class="p-text-center"
         style="font-weight: 700; font-size: 1.6rem; margin-bottom: 2.5rem"
@@ -248,24 +236,28 @@
         {{currentProjectName}}
       </h3>
       <section class="p-my-5 p-d-flex p-jc-between">
-        <div>Customised for: {{selectedRole}}</div>
+        <div>Customised for: {{formattedPersona}}</div>
         <div>Date generated: {{currentDate}}</div>
         <!-- <div></div> -->
       </section>
-      <h3>Overall Summary</h3>
 
-      <div class="p-d-flex p-ai-center p-jc-between">
-        <strong>Project Health</strong>
-        <strong>{{projectScore}}</strong>
-      </div>
-      <p-progressBar [value]="projectScore" [style]="{ height: '10px' }"></p-progressBar>
+      <h2>Overall Summary</h2>
+
+      <article class="generated-report-container">
+        <div class="p-d-flex p-ai-center p-jc-between p-mb-2">
+          <strong>Project Health</strong>
+          <strong>{{projectScore}}%</strong>
+        </div>
+        <p-progressBar [value]="projectScore" [style]="{ height: '10px', borderRadius: '5px' }"></p-progressBar>
+      </article>
 
       <article class="ai-nudges">
-        <ul>
-          <li *ngFor="let recommendation of recommendationsList">
-            <p><p-chip><span class="severity" [ngClass]="recommendation.recommendationType"></span>{{ recommendation.recommendationType }}</p-chip> {{ recommendation.recommendationDetails }}</p>
+        <h2 class="p-mt-6">AI Nudges <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" style="width: 30px;" /></h2>
+        <ol class="p-pb-2 p-mb-2" style="max-height: 300px; overflow-y: auto">
+          <li class="p-mb-2 p-pb-2 ai-nudges-list" *ngFor="let recommendation of recommendationsList">
+            <p><span class="p-px-2 p-py-1 p-mr-2 priority-chip"><span class="severity rounded" [ngClass]="recommendation.recommendationType"></span>{{ recommendation.recommendationType | uppercase }}</span> {{ recommendation.recommendationDetails }}</p>
           </li>
-        </ul>
+        </ol>
       </article>
     </div>
 
@@ -281,7 +273,7 @@
         aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
-        *ngIf="!isLoading"
+        *ngIf="!isLoading && !isReportGenerated"
       ></p-button>
     </div>
   </div>
