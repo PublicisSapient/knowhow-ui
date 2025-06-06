@@ -156,3 +156,36 @@
 .loading-screen {
   text-align: center;
 }
+
+.priority-chip {
+  border: 1px solid #d5dbe1;
+  border-radius: 5px;
+}
+
+.severity {
+  width: 8px;
+  height: 8px;
+  background-color: #aaa;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ai-nudges-list {
+  border-bottom: 1px solid #d5dbe1;
+}
+.ai-nudges-list:last-child {
+  border-bottom: none;
+}
+
+.ai-nudges-list p {
+  line-height: 2;
+}
+
+:host ::ng-deep .p-progressbar .p-progressbar-value {
+  background: #0b4bc8;
+}
+
+:host ::ng-deep .generated-report-container {
+  width: 80%;
+  margin: 0 auto;
+}

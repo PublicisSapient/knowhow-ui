@@ -47,6 +47,8 @@ export class RecommendationsComponent implements OnInit {
   projectScore: number = 0;
   recommendationsList: object[] = [];
   currentDate: string = '';
+  recommendationType: any;
+  formattedPersona: any;
 
   constructor(
     private httpService: HttpService,
@@ -55,6 +57,16 @@ export class RecommendationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
+
+  getDialogHeader(): string {
+    if (this.aiRecommendations) {
+      return this.isReportGenerated
+        ? 'AI Recommendations Report'
+        : 'Generate AI Recommendation';
+    } else {
+      return 'Recommendations for Optimising KPIs';
+    }
+  }
 
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
@@ -139,11 +151,18 @@ export class RecommendationsComponent implements OnInit {
 
   focusDialogHeader() {}
 
-  onDialogClose() {}
+  onDialogClose() {
+    this.resetSelections();
+  }
 
   onRoleChange(event) {
     this.selectedRole = event.value;
     this.isRoleSelected = !!this.selectedRole && this.selectedRole !== '';
+    this.formattedPersona = this.roleOptions.map((x) => {
+      if (x.value === this.selectedRole) {
+        return x.label;
+      }
+    });
   }
 
   onSprintsSelection(selectedItems: any[]) {
