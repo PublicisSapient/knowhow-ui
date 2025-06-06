@@ -46,6 +46,7 @@ export class RecommendationsComponent implements OnInit {
   currentProjectName: string;
   projectScore: number = 0;
   recommendationsList: object[] = [];
+  currentDate: string = '';
 
   constructor(
     private httpService: HttpService,
@@ -65,6 +66,8 @@ export class RecommendationsComponent implements OnInit {
       name: x['nodeDisplayName'],
       code: x['nodeId'],
     }));
+    this.currentDate = this.getCurrentDateFormatted();
+
     this.displayModal = true;
     this.kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
     this.kpiFilterData['kpiIdList'] = [...this.kpiList];
@@ -80,7 +83,7 @@ export class RecommendationsComponent implements OnInit {
     this.maturities = [];
     this.tabs = [];
     this.tabsContent = {};
-    this.httpService.getRecommendations(this.kpiFilterData).subscribe(
+    /* this.httpService.getRecommendations(this.kpiFilterData).subscribe(
       (response: Array<object>) => {
         if (response?.length > 0) {
           response.forEach((recommendation) => {
@@ -131,7 +134,7 @@ export class RecommendationsComponent implements OnInit {
         });
         this.loading = false;
       },
-    );
+    ); */
   }
 
   focusDialogHeader() {}
@@ -183,5 +186,13 @@ export class RecommendationsComponent implements OnInit {
     this.isRoleSelected = false;
     this.isSprintSelected = false;
     this.isReportGenerated = false;
+  }
+
+  getCurrentDateFormatted(): string {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 }
