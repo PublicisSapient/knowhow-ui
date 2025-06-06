@@ -118,8 +118,8 @@ export class AccessMgmtComponent implements OnInit {
         const tooltipProject = this.allProjectsData?.filter(
           (proj) => proj.id === item.itemId,
         );
-        this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectDisplayName}</span><br/>`;
-        tooltipProject[0].hierarchy.forEach((hier) => {
+        this.toolTipHtml = `<span>Project: ${tooltipProject[0]?.projectDisplayName}</span><br/>`;
+        tooltipProject[0]?.hierarchy.forEach((hier) => {
           this.toolTipHtml += `<span>${hier.hierarchyLevel.hierarchyLevelName}: ${hier.value}</span><br/>`;
         });
       } else {
@@ -417,7 +417,7 @@ export class AccessMgmtComponent implements OnInit {
           accessItems: [...accessItem.value],
         }));
       }
-    } else if (accessItem.valueRemoved.val.length === 1) {
+    } else if (accessItem.valueRemoved.val?.length === 1) {
       this.addedProjectsOrNodes = this.addedProjectsOrNodes.filter(
         (items) =>
           (items.accessItems = items.accessItems.filter(
