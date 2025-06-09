@@ -68,6 +68,10 @@ export class RecommendationsComponent implements OnInit {
     }
   }
 
+  getCleanRecommendationType(rec: any): string {
+    return rec?.replace(/^["']|["']$/g, '') || '';
+  }
+
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
     this.allSprints = this.service.getCurrentProjectSprints();
@@ -158,9 +162,9 @@ export class RecommendationsComponent implements OnInit {
   onRoleChange(event) {
     this.selectedRole = event.value;
     this.isRoleSelected = !!this.selectedRole && this.selectedRole !== '';
-    this.formattedPersona = this.roleOptions.map((x) => {
+    this.formattedPersona = this.roleOptions.filter((x) => {
       if (x.value === this.selectedRole) {
-        return x.label;
+        return x;
       }
     });
   }

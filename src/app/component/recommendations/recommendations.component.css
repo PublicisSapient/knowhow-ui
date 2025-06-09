@@ -165,9 +165,22 @@
 .severity {
   width: 8px;
   height: 8px;
-  background-color: #aaa;
+  background-color: #acb4cb;
   display: inline-block;
   vertical-align: middle;
+}
+
+.severity.critical {
+  background-color: #fe414d;
+}
+.severity.high {
+  background-color: #f68605;
+}
+.severity.medium {
+  background-color: #fbcf5f;
+}
+.severity.low {
+  background-color: #15ba40;
 }
 
 .ai-nudges-list {
@@ -188,4 +201,20 @@
 :host ::ng-deep .generated-report-container {
   width: 80%;
   margin: 0 auto;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+:host ::ng-deep .fade-animation {
+  animation: fadeInOut 2s infinite ease-in-out;
 }
