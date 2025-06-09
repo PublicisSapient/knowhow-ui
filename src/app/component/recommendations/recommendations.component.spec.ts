@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
@@ -132,35 +137,28 @@ describe('RecommendationsComponent', () => {
     expect(component.isSprintSelected).toBeTrue();
   });
 
-  fit('should generate sprint report', () => {
+  it('should generate sprint report', fakeAsync(() => {
     // Arrange
     component.selectedRole = 'executive_sponsor';
     component.selectedCurrentProjectSprintsCode = ['sprint1'];
     component.kpiFilterData = { selectedMap: {} };
 
-    // Mock the HTTP service to return a successful response
-    httpService.getRecommendations.and.returnValue(
-      of([{ projectScore: 85, recommendations: [] }]),
-    );
+    const mockResponse = [{ projectScore: 85, recommendations: [] }];
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
 
-    // expect(component.isLoading).toBeTrue(); // Check if loading is set to true
     // Act
     component.generateSprintReport();
+    tick(); // Simulate async completion
 
     // Assert
     expect(httpService.getRecommendations).toHaveBeenCalledWith(
       component.kpiFilterData,
-    ); // Ensure the service is called with correct data
-
-    // Simulate the completion of the HTTP request
-    fixture.detectChanges();
-
-    // Verify the state after the HTTP request completes
-    expect(component.isLoading).toBeFalse(); // Loading should be false after the request
-    expect(component.isReportGenerated).toBeTrue(); // Report should be marked as generated
-    expect(component.projectScore).toBe(85); // Check if the project score is set correctly
-    expect(component.recommendationsList).toEqual([]); // Ensure recommendations list is updated
-  });
+    );
+    expect(component.isLoading).toBeFalse();
+    expect(component.isReportGenerated).toBeTrue();
+    expect(component.projectScore).toBe(85);
+    expect(component.recommendationsList).toEqual([]);
+  }));
 
   it('should format current date correctly', () => {
     const date = new Date();
