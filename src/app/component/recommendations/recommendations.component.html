@@ -14,7 +14,7 @@
   aria-labelledby="dialogTitle"
   (onShow)="focusDialogHeader()"
   (onHide)="onDialogClose()"
-  [header]="getDialogHeader() | uppercase"
+  [header]="getDialogHeader()"
 >
   <div *ngIf="!aiRecommendations">
     <p-header>
@@ -128,20 +128,21 @@
   </div>
 
   <div *ngIf="aiRecommendations">
-    <div class="p-fluid" *ngIf="!isLoading && !isReportGenerated">
+    <!-- <div class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated"> -->
+    <div class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated">
       <h4
         id="pageTitle"
-        class="p-text-center"
+        class="p-text-center p-mt-6 p-mb-4"
         tabindex="0"
-        style="font-weight: 500; font-size: 1.4rem; margin-bottom: 1rem"
+        style="font-size: 1.1rem;"
       >
         Generate AI recommendations based on KPI’s and other data points
       </h4>
       <h3
-        class="p-text-center"
-        style="font-weight: 700; font-size: 1.6rem; margin-bottom: 2.5rem"
+        class="p-text-center p-mb-8"
+        style="font-size: 1.5rem;"
       >
-        {{currentProjectName}}
+        <strong>{{currentProjectName}}</strong>
       </h3>
 
       <div
@@ -159,14 +160,14 @@
         <label
           id="roleLabel"
           for="roleDropdown"
-          class="p-d-block"
-          style="font-weight: 600; margin-bottom: 0.25rem"
+          class="p-d-block p-mb-4"
+          style="background-color: transparent;"
         >
-          Report tailored for:
+          <strong>Report tailored for:</strong>
         </label>
-        <small id="roleDesc" class="p-d-block p-mb-2" style="color: #444">
+        <p id="roleDesc" class="p-d-block p-mb-4" style="color: #202429">
           We will customise the report so it’s useful for your analysis
-        </small>
+        </p>
         <p-dropdown
           inputId="roleDropdown"
           [options]="roleOptions"
@@ -191,14 +192,14 @@
         <label
           id="sprintLabel"
           for="sprintDropdown"
-          class="p-d-block"
-          style="font-weight: 600; margin-bottom: 0.25rem"
+          class="p-d-block p-mb-4"
+          style="background-color: transparent;"
         >
-          Sprints:
+          <strong>Sprints:</strong>
         </label>
-        <small id="sprintDesc" class="p-d-block p-mb-2" style="color: #444">
+        <p id="sprintDesc" class="p-d-block p-mb-4" style="color: #202429">
           Select sprints for analysis
-        </small>
+        </p>
         <p-multiSelect
           inputId="sprintDropdown"
           [options]="sprintOptions"
@@ -217,6 +218,7 @@
       </div>
     </div>
 
+    <!-- <div class="generating-recommendations" *ngIf="isLoading"> -->
     <div class="generating-recommendations" *ngIf="isLoading">
       <div class="loading-screen">
         <img
@@ -225,38 +227,40 @@
           [style]="{ width: '25%' }"
           class="fade-animation"
         />
-        <h3>Now we are generating your report</h3>
+        <h3 class="p-mt-0 p-mb-6">Now we are generating your report</h3>
       </div>
     </div>
 
+    <!-- <div class="p-fluid generated-report-container" *ngIf="isReportGenerated"> -->
     <div class="p-fluid generated-report-container" *ngIf="isReportGenerated">
       <h3
-        class="p-text-center"
-        style="font-weight: 700; font-size: 1.6rem; margin-bottom: 2.5rem"
+        class="p-text-center p-mb-5"
+        style="font-size: 1.6rem"
       >
-        {{currentProjectName}}
+        <strong>{{currentProjectName}}</strong>
       </h3>
       <section class="p-my-5 p-d-flex p-jc-between">
-        <div>Customised for: <strong>{{formattedPersona[0]['label']}}</strong></div>
-        <div>Date generated: <strong>{{currentDate}}</strong></div>
+        <div><strong>Customised for:</strong> {{formattedPersona[0]['label']}}</div>
+        <div><strong>Date generated:</strong> {{currentDate}}</div>
         <!-- <div></div> -->
       </section>
 
-      <h2>Overall Summary</h2>
-
-      <article class="generated-report-container">
-        <div class="p-d-flex p-ai-center p-jc-between p-mb-2">
-          <strong>Project Health</strong>
-          <strong>{{projectScore}}%</strong>
-        </div>
-        <p-progressBar [value]="projectScore" [style]="{ height: '10px', borderRadius: '5px' }"></p-progressBar>
-      </article>
+      <section class="p-my-4 p-p-6 summary-section">
+        <h2 class="p-mt-0">Overall Summary</h2>
+        <article class="generated-report-container">
+          <div class="p-d-flex p-ai-center p-jc-between p-mb-2">
+            <strong>Project Health</strong>
+            <strong>{{projectScore}}%</strong>
+          </div>
+          <p-progressBar [value]="projectScore" [style]="{ height: '10px', borderRadius: '5px' }"></p-progressBar>
+        </article>
+      </section>
 
       <article class="ai-nudges">
         <h2 class="p-mt-6">AI Nudges <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" style="width: 30px;" /></h2>
         <ol class="p-pb-2 p-mb-2" style="max-height: 300px; overflow-y: auto">
           <li class="p-mb-2 p-pb-2 ai-nudges-list" *ngFor="let recommendation of recommendationsList">
-            <p><span class="p-px-2 p-py-1 p-mr-2 priority-chip"><span class="severity rounded p-mr-2" [ngClass]="getCleanRecommendationType(recommendation.recommendationType)"></span>{{ getCleanRecommendationType(recommendation.recommendationType) | uppercase }}</span> {{ recommendation.recommendationDetails }}</p>
+            <p><span class="p-px-2 p-py-1 p-mr-2 priority-chip"><span class="severity rounded p-mr-2" [ngClass]="getCleanRecommendationType(recommendation.recommendationType)"></span>{{ getCleanRecommendationType(recommendation.recommendationType) | uppercase }}</span> <strong>Recommendation: </strong> {{ getCleanRecommendationType(recommendation.recommendationDetails) }}</p>
           </li>
         </ol>
       </article>
