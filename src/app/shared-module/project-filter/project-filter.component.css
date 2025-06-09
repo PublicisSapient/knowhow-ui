@@ -44,3 +44,8 @@ div.option {
   .parent_item {
   color: green;
 }
+
+:host ::ng-deep .p-multiselect .p-multiselect-panel {
+  width: 100%;
+  min-width: 50% !important;
+}
