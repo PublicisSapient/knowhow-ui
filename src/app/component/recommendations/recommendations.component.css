@@ -218,3 +218,8 @@
 :host ::ng-deep .fade-animation {
   animation: fadeInOut 2s infinite ease-in-out;
 }
+
+:host ::ng-deep .summary-section {
+  border-radius: 20px;
+  border: 1px solid #d5dbe1;
+}
