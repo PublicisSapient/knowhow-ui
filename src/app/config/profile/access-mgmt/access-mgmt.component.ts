@@ -70,6 +70,7 @@ export class AccessMgmtComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   isSuperAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
+  llidInput = '';
 
   constructor(
     private service: SharedService,
@@ -539,5 +540,32 @@ export class AccessMgmtComponent implements OnInit {
         headerEl.focus();
       }
     }, 0);
+  }
+
+  addLLIDUser() {
+    this.httpService.addLLIDUser(this.llidInput).subscribe((response) => {
+      if (response.success) {
+        this.messageService.add({
+          severity: 'success',
+          summary: response.message || 'User added successfully.',
+        });
+        this.llidInput = '';
+        this.getUsers();
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            response.message || 'Error in adding user. Please try again.',
+        });
+      }
+      this.getUsers();
+    });
+  }
+
+  isDisabledLLIDSaveBtn(errObj, isDirty) {
+    if (errObj == null && isDirty && this.llidInput) {
+      return false;
+    }
+    return true;
   }
 }
