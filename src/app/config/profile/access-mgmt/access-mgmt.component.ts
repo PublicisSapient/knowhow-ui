@@ -82,7 +82,7 @@ export class AccessMgmtComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isOpenSource = this.service.getGlobalConfigData().openSource;
+    this.isOpenSource = this.service.getGlobalConfigData()?.openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
     this.getRolesList();
     this.getUsers();
