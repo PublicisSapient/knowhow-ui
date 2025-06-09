@@ -127,9 +127,8 @@
     </div>
   </div>
 
-  <div *ngIf="aiRecommendations">
-    <!-- <div class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated"> -->
-    <div class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated">
+  <section *ngIf="aiRecommendations">
+    <article class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated">
       <h4
         id="pageTitle"
         class="p-text-center p-mt-6 p-mb-4"
@@ -203,6 +202,7 @@
         <p-multiSelect
           inputId="sprintDropdown"
           [options]="sprintOptions"
+          dataKey="code"
           [(ngModel)]="selectedSprints"
           defaultLabel="Select Sprints"
           optionLabel="name"
@@ -213,13 +213,13 @@
           [showClear]="true"
           appendTo="body"
           styleClass="p-inputtext p-p-0"
+          [showToggleAll]="true"
           (onChange)="onSprintsSelection($event.value)"
         ></p-multiSelect>
       </div>
-    </div>
+    </article>
 
-    <!-- <div class="generating-recommendations" *ngIf="isLoading"> -->
-    <div class="generating-recommendations" *ngIf="isLoading">
+    <article class="generating-recommendations" *ngIf="isLoading">
       <div class="loading-screen">
         <img
           src="../../../assets/img/generated-ai.png"
@@ -229,10 +229,9 @@
         />
         <h3 class="p-mt-0 p-mb-6">Now we are generating your report</h3>
       </div>
-    </div>
+    </article>
 
-    <!-- <div class="p-fluid generated-report-container" *ngIf="isReportGenerated"> -->
-    <div class="p-fluid generated-report-container" *ngIf="isReportGenerated">
+    <article class="p-fluid generated-report-container" *ngIf="isReportGenerated">
       <h3
         class="p-text-center p-mb-5"
         style="font-size: 1.6rem"
@@ -264,9 +263,16 @@
           </li>
         </ol>
       </article>
-    </div>
+    </article>
 
-    <div class="dialog-footer p-py-5">
+    <article class="p-fluid" *ngIf="isError">
+      <div class="p-d-flex p-ai-center p-jc-between p-mb-6">
+        <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
+        <span>Please try again, something went wrong!</span>
+      </div>
+    </article>
+
+    <article class="dialog-footer p-py-5">
       <p-button
         (click)="displayModal = false; resetSelections()"
         label="Cancel"
@@ -280,6 +286,6 @@
         (click)="generateSprintReport()"
         *ngIf="!isLoading && !isReportGenerated"
       ></p-button>
-    </div>
-  </div>
+    </article>
+  </section>
 </p-dialog>

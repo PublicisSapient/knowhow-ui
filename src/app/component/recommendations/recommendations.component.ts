@@ -49,6 +49,7 @@ export class RecommendationsComponent implements OnInit {
   currentDate: string = '';
   recommendationType: any;
   formattedPersona: any;
+  isError: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -154,7 +155,16 @@ export class RecommendationsComponent implements OnInit {
     ); */
   }
 
-  focusDialogHeader() {}
+  selectAllSprints() {
+    this.selectedSprints = [...this.sprintOptions];
+    this.onSprintsSelection(this.selectedSprints);
+  }
+
+  focusDialogHeader() {
+    setTimeout(() => {
+      this.selectAllSprints();
+    }, 300);
+  }
 
   onDialogClose() {
     this.resetSelections();
@@ -184,21 +194,33 @@ export class RecommendationsComponent implements OnInit {
 
     this.isReportGenerated = false;
     this.isLoading = true;
+    this.isError = false;
 
     // --- send request body to backend to get sprint data response
     this.getSprintData(this.kpiFilterData);
   }
 
-  getSprintData(reqBody) {
-    this.httpService
-      .getRecommendations(reqBody)
-      .subscribe((response: Array<object>) => {
+  getSprintData(reqBody: any): void {
+    this.httpService.getRecommendations(reqBody).subscribe({
+      next: (response: Array<any>) => {
         this.isLoading = false;
         this.isReportGenerated = true;
-        const resp: object = response[0];
-        this.projectScore = +resp['projectScore'];
-        this.recommendationsList = resp['recommendations'];
-      });
+        this.isError = false;
+
+        const resp = response?.[0];
+        this.projectScore = +resp?.projectScore || 0;
+        this.recommendationsList = resp?.recommendations || [];
+      },
+      error: (err) => {
+        console.error('Failed to fetch sprint recommendations:', err);
+        this.isError = true;
+        this.isLoading = false;
+        this.isReportGenerated = false;
+        this.projectScore = 0;
+        this.recommendationsList = [];
+        // Optionally: show a toast/alert to the user
+      },
+    });
   }
 
   resetSelections() {
@@ -208,6 +230,7 @@ export class RecommendationsComponent implements OnInit {
     this.isRoleSelected = false;
     this.isSprintSelected = false;
     this.isReportGenerated = false;
+    this.isError = false;
   }
 
   getCurrentDateFormatted(): string {
