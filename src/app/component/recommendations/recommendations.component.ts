@@ -77,7 +77,7 @@ export class RecommendationsComponent implements OnInit {
     this.allSprints = this.service.getCurrentProjectSprints();
     this.currentProjectName = JSON.parse(
       localStorage.getItem('selectedTrend'),
-    )[0].nodeDisplayName;
+    )[0]?.nodeDisplayName;
     this.sprintOptions = this.allSprints.map((x) => ({
       name: x['nodeDisplayName'],
       code: x['nodeId'],
@@ -87,6 +87,7 @@ export class RecommendationsComponent implements OnInit {
     this.displayModal = true;
     this.kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
     this.kpiFilterData['kpiIdList'] = [...this.kpiList];
+    this.kpiFilterData['selectedMap'] = this.kpiFilterData['selectedMap'] || {};
     this.kpiFilterData['selectedMap']['project'] = [
       Array.isArray(this.selectedSprint?.['parentId'])
         ? this.selectedSprint?.['parentId']?.[0]
