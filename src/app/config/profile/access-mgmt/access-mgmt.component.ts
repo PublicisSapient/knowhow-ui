@@ -71,6 +71,7 @@ export class AccessMgmtComponent implements OnInit {
   isSuperAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
+  isOpenSource: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -81,6 +82,7 @@ export class AccessMgmtComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isOpenSource = this.service.getGlobalConfigData().openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
     this.getRolesList();
     this.getUsers();
@@ -558,7 +560,6 @@ export class AccessMgmtComponent implements OnInit {
             response.message || 'Error in adding user. Please try again.',
         });
       }
-      this.getUsers();
     });
   }
 

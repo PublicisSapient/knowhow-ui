@@ -194,7 +194,7 @@ export class HttpService {
   private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
   private summariseSprintGoalsUrl =
     this.baseUrl + '/api/ai/sprint-goals/summary';
-  private llidUrl = this.baseUrl + '/api/add-llid-user';
+  private llidUrl = this.baseUrl + '/api/usermanagement/save';
 
   constructor(
     private router: Router,
@@ -1280,6 +1280,6 @@ export class HttpService {
   }
 
   addLLIDUser(llid) {
-    return this.http.post<any>(this.llidUrl, { userName: llid });
+    return this.http.post<any>(this.llidUrl, { username: llid });
   }
 }
