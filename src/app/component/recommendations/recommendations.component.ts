@@ -195,9 +195,7 @@ export class RecommendationsComponent implements OnInit {
       .subscribe((response: Array<object>) => {
         this.isLoading = false;
         this.isReportGenerated = true;
-        console.log('response => ', response);
         const resp: object = response[0];
-        console.log('resp => ', resp);
         this.projectScore = +resp['projectScore'];
         this.recommendationsList = resp['recommendations'];
       });
