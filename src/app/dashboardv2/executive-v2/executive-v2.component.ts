@@ -3566,30 +3566,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  generateExcel() {
-    const kpiData = {
-      headerNames: [],
-      excelData: [],
-    };
-    this.modalDetails['tableHeadings'].forEach((colHeader) => {
-      kpiData.headerNames.push({
-        header: colHeader,
-        key: colHeader,
-        width: 25,
-      });
-    });
-    this.modalDetails['tableValues'].forEach((colData) => {
-      kpiData.excelData.push({
-        ...colData,
-        ['Issue Id']: {
-          text: colData['Issue Id'],
-          hyperlink: colData['Issue URL'],
-        },
-      });
-    });
+  // generateExcel() {
+  //   const kpiData = {
+  //     headerNames: [],
+  //     excelData: [],
+  //   };
+  //   this.modalDetails['tableHeadings'].forEach((colHeader) => {
+  //     kpiData.headerNames.push({
+  //       header: colHeader,
+  //       key: colHeader,
+  //       width: 25,
+  //     });
+  //   });
+  //   this.modalDetails['tableValues'].forEach((colData) => {
+  //     kpiData.excelData.push({
+  //       ...colData,
+  //       ['Issue Id']: {
+  //         text: colData['Issue Id'],
+  //         hyperlink: colData['Issue URL'],
+  //       },
+  //     });
+  //   });
 
-    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-  }
+  //   // this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  // }
 
   /**
    * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
