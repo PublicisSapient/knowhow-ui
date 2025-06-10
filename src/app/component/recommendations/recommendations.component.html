@@ -16,6 +16,10 @@
   (onHide)="onDialogClose()"
   [header]="getDialogHeader()"
 >
+  <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6 loading-container" *ngIf="isTemplateLoading">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+  </div>
+
   <div *ngIf="!aiRecommendations">
     <p-header>
       <div id="dialogTitle">Recommendations for Optimising KPIs</div>
@@ -128,14 +132,14 @@
   </div>
 
   <section *ngIf="aiRecommendations">
-    <article class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated">
+    <article class="p-fluid p-mb-6" *ngIf="!isLoading && !isReportGenerated && !isError">
       <h4
         id="pageTitle"
         class="p-text-center p-mt-6 p-mb-4"
         tabindex="0"
         style="font-size: 1.1rem;"
       >
-        Generate AI recommendations based on KPI’s and other data points
+        Generate AI recommendations based on KPIs and other data points
       </h4>
       <h3
         class="p-text-center p-mb-8"
@@ -153,7 +157,6 @@
           width: 450px;
           margin: 2.5rem auto;
           padding-bottom: 3rem;
-          border-bottom: 1px solid #d5dbe1;
         "
       >
         <label
@@ -165,7 +168,7 @@
           <strong>Report tailored for:</strong>
         </label>
         <p id="roleDesc" class="p-d-block p-mb-4" style="color: #202429">
-          We will customise the report so it’s useful for your analysis
+          We will customise the report so it’s useful for your analysis <span class="asterisk">*</span>
         </p>
         <p-dropdown
           inputId="roleDropdown"
@@ -197,7 +200,7 @@
           <strong>Sprints:</strong>
         </label>
         <p id="sprintDesc" class="p-d-block p-mb-4" style="color: #202429">
-          Select sprints for analysis
+          Select sprints for analysis <span class="asterisk">*</span>
         </p>
         <p-multiSelect
           inputId="sprintDropdown"
@@ -227,7 +230,7 @@
           [style]="{ width: '25%' }"
           class="fade-animation"
         />
-        <h3 class="p-mt-0 p-mb-6">Now we are generating your report</h3>
+        <h3 class="p-mt-0 p-mb-6">Witty Wait in Progress...Crunching your KPIs</h3>
       </div>
     </article>
 
@@ -255,19 +258,25 @@
         </article>
       </section>
 
-      <article class="ai-nudges">
-        <h2 class="p-mt-6">AI Nudges <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" style="width: 30px;" /></h2>
-        <ol class="p-pb-2 p-mb-2" style="max-height: 300px; overflow-y: auto">
+      <article class="p-p-6 p-mb-6 ai-nudges">
+        <h2 class="p-mt-0">AI Nudges <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" style="width: 30px;" /></h2>
+        <ol class="p-pb-2 p-mb-2 p-px-4" style="max-height: 300px; overflow-y: auto;">
           <li class="p-mb-2 p-pb-2 ai-nudges-list" *ngFor="let recommendation of recommendationsList">
-            <p><span class="p-px-2 p-py-1 p-mr-2 priority-chip"><span class="severity rounded p-mr-2" [ngClass]="getCleanRecommendationType(recommendation.recommendationType)"></span>{{ getCleanRecommendationType(recommendation.recommendationType) | uppercase }}</span> <strong>Recommendation: </strong> {{ getCleanRecommendationType(recommendation.recommendationDetails) }}</p>
+            <p class="recommendation-row">
+              <span class="p-px-2 p-py-1 p-mr-2 priority-chip">
+                <span class="severity rounded p-mr-2" [ngClass]="getCleanRecommendationType(recommendation.recommendationType)"></span>
+                {{ getCleanRecommendationType(recommendation.recommendationType) | uppercase }}
+              </span>
+              <span class="details-column">{{ getCleanRecommendationType(recommendation.recommendationDetails) }}</span>
+            </p>
           </li>
         </ol>
       </article>
     </article>
 
     <article class="p-fluid" *ngIf="isError">
-      <div class="p-d-flex p-ai-center p-jc-between p-mb-6">
-        <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
+      <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
+        <i class="pi pi-exclamation-circle" style="font-size: 2rem; margin-right: 15px; color: #fe414d"></i>
         <span>Please try again, something went wrong!</span>
       </div>
     </article>
@@ -275,7 +284,7 @@
     <article class="dialog-footer p-py-5">
       <p-button
         (click)="displayModal = false; resetSelections()"
-        label="Cancel"
+        [label]="closeCancelLabel()"
         styleClass="p-button-outlined p-button-text"
       ></p-button>
       <p-button

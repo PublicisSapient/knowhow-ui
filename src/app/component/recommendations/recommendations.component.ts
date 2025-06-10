@@ -25,7 +25,7 @@ export class RecommendationsComponent implements OnInit {
   noRecommendations: boolean = false;
   selectedSprint: object = {};
   loading: boolean = false;
-  @Input() aiRecommendations: boolean = true;
+  aiRecommendations: boolean = true;
 
   selectedRole: any = null;
   isRoleSelected: boolean = false;
@@ -50,6 +50,7 @@ export class RecommendationsComponent implements OnInit {
   recommendationType: any;
   formattedPersona: any;
   isError: boolean = false;
+  isTemplateLoading: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -101,8 +102,11 @@ export class RecommendationsComponent implements OnInit {
     this.maturities = [];
     this.tabs = [];
     this.tabsContent = {};
-    /* this.httpService.getRecommendations(this.kpiFilterData).subscribe(
+    this.isTemplateLoading = true;
+    this.httpService.getRecommendations(this.kpiFilterData).subscribe(
       (response: Array<object>) => {
+        this.aiRecommendations = false;
+        this.isTemplateLoading = false;
         if (response?.length > 0) {
           response.forEach((recommendation) => {
             if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
@@ -145,14 +149,19 @@ export class RecommendationsComponent implements OnInit {
       },
       (error) => {
         console.log(error);
-        this.messageService.add({
-          severity: 'error',
-          summary:
-            'Error in Kpi Column Configurations. Please try after sometime!',
-        });
-        this.loading = false;
+        this.isTemplateLoading = false;
+        if (error.status === 412) this.aiRecommendations = true;
+        else {
+          this.aiRecommendations = false;
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              'Error in Kpi Column Configurations. Please try after sometime!',
+          });
+          this.loading = false;
+        }
       },
-    ); */
+    );
   }
 
   selectAllSprints() {
@@ -231,6 +240,13 @@ export class RecommendationsComponent implements OnInit {
     this.isSprintSelected = false;
     this.isReportGenerated = false;
     this.isError = false;
+  }
+
+  closeCancelLabel() {
+    if (this.isReportGenerated) {
+      return 'Close';
+    }
+    return 'Cancel';
   }
 
   getCurrentDateFormatted(): string {
