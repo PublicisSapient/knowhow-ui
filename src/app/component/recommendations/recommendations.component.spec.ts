@@ -8,7 +8,7 @@ import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('RecommendationsComponent', () => {
   let component: RecommendationsComponent;
@@ -79,27 +79,6 @@ describe('RecommendationsComponent', () => {
     expect(component.getCleanRecommendationType(null)).toBe('');
   });
 
-  it('should handle click and set up data', () => {
-    const sprint = {
-      nodeId: '1',
-      nodeDisplayName: 'Sprint 1',
-      parentId: 'Project 1',
-    };
-    sharedService.getSprintForRnR.and.returnValue(sprint);
-    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
-    localStorage.setItem(
-      'selectedTrend',
-      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
-    );
-
-    component.handleClick();
-
-    expect(component.selectedSprint).toEqual(sprint);
-    expect(component.currentProjectName).toBe('Project Name');
-    expect(component.sprintOptions).toEqual([{ name: 'Sprint 1', code: '1' }]);
-    expect(component.displayModal).toBeTrue();
-  });
-
   it('should reset selections on dialog close', () => {
     component.selectedRole = 'someRole';
     component.selectedSprints = ['sprint1'];
@@ -166,5 +145,98 @@ describe('RecommendationsComponent', () => {
       date.getMonth() + 1,
     ).padStart(2, '0')}/${date.getFullYear()}`;
     expect(component.getCurrentDateFormatted()).toBe(expectedDate);
+  });
+
+  // -------------------------
+
+  it('should handle click and set up data', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    const mockResponse = [
+      {
+        sprintId: '1',
+        recommendations: [
+          {
+            maturity: 3,
+            recommendationType: 'Type1',
+            recommendationDetails: 'Details1',
+          },
+        ],
+      },
+    ];
+
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
+
+    component.handleClick();
+
+    expect(component.selectedSprint).toEqual(sprint);
+    expect(component.currentProjectName).toBe('Project Name');
+    expect(component.sprintOptions).toEqual([{ name: 'Sprint 1', code: '1' }]);
+    expect(component.displayModal).toBeTrue();
+    expect(component.isTemplateLoading).toBeFalse();
+    expect(component.recommendationsData.length).toBeGreaterThan(0);
+    expect(component.noRecommendations).toBeFalse();
+  });
+
+  it('should handle click and show no recommendations', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    const mockResponse = [
+      {
+        sprintId: '1',
+        recommendations: [],
+      },
+    ];
+
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
+
+    component.handleClick();
+
+    expect(component.noRecommendations).toBeTrue();
+  });
+
+  it('should handle click and manage error', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    httpService.getRecommendations.and.returnValue(throwError({ status: 500 }));
+
+    component.handleClick();
+
+    expect(component.isTemplateLoading).toBeFalse();
+    expect(component.aiRecommendations).toBeFalse();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error in Kpi Column Configurations. Please try after sometime!',
+    });
   });
 });
