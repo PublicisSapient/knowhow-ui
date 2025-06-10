@@ -150,7 +150,7 @@ export class RecommendationsComponent implements OnInit {
       (error) => {
         console.log(error);
         this.isTemplateLoading = false;
-        if (error.status === 412) this.aiRecommendations = true;
+        if (error.msg === 'AiRecommendation') this.aiRecommendations = true;
         else {
           this.aiRecommendations = false;
           this.messageService.add({
