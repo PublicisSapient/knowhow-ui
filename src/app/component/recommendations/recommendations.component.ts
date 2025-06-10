@@ -104,51 +104,59 @@ export class RecommendationsComponent implements OnInit {
     this.tabsContent = {};
     this.isTemplateLoading = true;
     this.httpService.getRecommendations(this.kpiFilterData).subscribe(
-      (response: Array<object>) => {
+      (response: any) => {
         this.aiRecommendations = false;
         this.isTemplateLoading = false;
-        if (response?.length > 0) {
-          response.forEach((recommendation) => {
-            if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
-              if (recommendation?.['recommendations']?.length > 0) {
-                this.recommendationsData = recommendation['recommendations'];
-                this.recommendationsData.forEach((item) => {
-                  let idx = this.maturities?.findIndex(
-                    (x) => x['value'] == item['maturity'],
-                  );
-                  if (idx == -1 && item['maturity']) {
-                    this.maturities = [
-                      ...this.maturities,
-                      { name: 'M' + item['maturity'], value: item['maturity'] },
-                    ];
-                  } else {
-                    this.maturities = [...this.maturities];
-                  }
-                  this.tabs = !this.tabs.includes(item['recommendationType'])
-                    ? [...this.tabs, item['recommendationType']]
-                    : [...this.tabs];
-                  this.tabsContent[item['recommendationType']] = [];
-                });
+        if (response.message === 'AiRecommendation')
+          this.aiRecommendations = true;
+        else {
+          this.aiRecommendations = false;
+          if (response?.length > 0) {
+            response.forEach((recommendation) => {
+              if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
+                if (recommendation?.['recommendations']?.length > 0) {
+                  this.recommendationsData = recommendation['recommendations'];
+                  this.recommendationsData.forEach((item) => {
+                    let idx = this.maturities?.findIndex(
+                      (x) => x['value'] == item['maturity'],
+                    );
+                    if (idx == -1 && item['maturity']) {
+                      this.maturities = [
+                        ...this.maturities,
+                        {
+                          name: 'M' + item['maturity'],
+                          value: item['maturity'],
+                        },
+                      ];
+                    } else {
+                      this.maturities = [...this.maturities];
+                    }
+                    this.tabs = !this.tabs.includes(item['recommendationType'])
+                      ? [...this.tabs, item['recommendationType']]
+                      : [...this.tabs];
+                    this.tabsContent[item['recommendationType']] = [];
+                  });
 
-                this.recommendationsData.forEach((item) => {
-                  this.tabsContent[item['recommendationType']] = [
-                    ...this.tabsContent[item['recommendationType']],
-                    item,
-                  ];
-                });
-                this.noRecommendations = false;
-              } else {
-                this.noRecommendations = true;
+                  this.recommendationsData.forEach((item) => {
+                    this.tabsContent[item['recommendationType']] = [
+                      ...this.tabsContent[item['recommendationType']],
+                      item,
+                    ];
+                  });
+                  this.noRecommendations = false;
+                } else {
+                  this.noRecommendations = true;
+                }
               }
-            }
-          });
-        } else {
-          this.noRecommendations = true;
+            });
+          } else {
+            this.noRecommendations = true;
+          }
+          this.loading = false;
         }
-        this.loading = false;
       },
       (error) => {
-        console.log(error);
+        console.error(error);
         this.isTemplateLoading = false;
         if (error.msg === 'AiRecommendation') this.aiRecommendations = true;
         else {
@@ -211,12 +219,12 @@ export class RecommendationsComponent implements OnInit {
 
   getSprintData(reqBody: any): void {
     this.httpService.getRecommendations(reqBody).subscribe({
-      next: (response: Array<any>) => {
+      next: (response: any) => {
         this.isLoading = false;
         this.isReportGenerated = true;
         this.isError = false;
 
-        const resp = response?.[0];
+        const resp = response?.data[0];
         this.projectScore = +resp?.projectScore || 0;
         this.recommendationsList = resp?.recommendations || [];
       },

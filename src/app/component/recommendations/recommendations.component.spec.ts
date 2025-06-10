@@ -122,7 +122,7 @@ describe('RecommendationsComponent', () => {
     component.selectedCurrentProjectSprintsCode = ['sprint1'];
     component.kpiFilterData = { selectedMap: {} };
 
-    const mockResponse = [{ projectScore: 85, recommendations: [] }];
+    const mockResponse = { data: [{ projectScore: 85, recommendations: [] }] };
     httpService.getRecommendations.and.returnValue(of(mockResponse));
 
     // Act
@@ -146,8 +146,6 @@ describe('RecommendationsComponent', () => {
     ).padStart(2, '0')}/${date.getFullYear()}`;
     expect(component.getCurrentDateFormatted()).toBe(expectedDate);
   });
-
-  // -------------------------
 
   it('should handle click and set up data', () => {
     const sprint = {
