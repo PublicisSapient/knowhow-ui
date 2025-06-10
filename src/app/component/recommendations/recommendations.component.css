@@ -219,7 +219,32 @@
   animation: fadeInOut 2s infinite ease-in-out;
 }
 
-:host ::ng-deep .summary-section {
+:host ::ng-deep .summary-section,
+:host ::ng-deep .ai-nudges {
   border-radius: 20px;
   border: 1px solid #d5dbe1;
+}
+
+.asterisk {
+  color: #fe414d;
+}
+
+.recommendation-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.priority-chip {
+  flex: 0 0 95px;
+  display: flex;
+  align-items: center;
+}
+
+.details-column {
+  flex: 1;
+}
+
+.loading-container {
+  min-height: 400px;
 }
