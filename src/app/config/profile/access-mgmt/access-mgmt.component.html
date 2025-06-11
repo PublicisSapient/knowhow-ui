@@ -21,7 +21,31 @@
 <div class="tabs-content" role="main">
   <div class="p-xl-12">
     <div class="content">
-      <h3 class="form_title" tabindex="0" id="page-heading">Access Management</h3>
+      <div class="p-d-flex p-jc-between">
+        <h3 class="form_title" tabindex="0" id="page-heading">Access Management</h3>
+        <form #addUserForm="ngForm" *ngIf="isSuperAdmin && !isOpenSource">
+          <div class="form-container p-d-flex p-mb-3">
+            <div class="p-mt-3 p-mr-2">
+              <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">
+                <input id="llidInput" name="llidInput" #llidText="ngModel" [style]="{'width':'300px'}" type="text"
+                  pInputText [(ngModel)]="llidInput" aria-labelledby="llidInput-label"
+                  pattern="^[A-Za-z][A-Za-z0-9]*$">
+                <label for="llidInput" id="llidInput-label">Enter LLID</label>
+              </span>
+              <span class="p-invalid p-mt-2" *ngIf="llidText.errors?.pattern && (llidText.touched || llidText.dirty)">
+                Please enter a valid LLID.
+              </span>
+            </div>
+            <div class="p-mt-3">
+              <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
+                iconPos="left" [label]="'Add User'" [disabled]="isDisabledLLIDSaveBtn(llidText.errors,llidText.dirty)" aria-label="Save Hierarchy Name"
+                (click)="addLLIDUser()"></button>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+     
 
       <p-table #dt [value]="users" dataKey="emailAddress" [rows]="10" [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0"
