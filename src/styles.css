@@ -1864,10 +1864,10 @@ a:hover {
 }
 /*********  popup styles starts here  ***********/
 .p-dialog {
-  border: 1px solid #707070;
-  border-radius: 7px;
-  box-shadow: none !important;
-  width: 544px !important;
+  /* border: 1px solid #707070; */
+  border-radius: 20px;
+  /* box-shadow: none !important; */
+  /* width: 544px !important; */
 }
 .p-dialog-mask.p-component-overlay {
   background: rgba(0, 0, 0, 0.29);
