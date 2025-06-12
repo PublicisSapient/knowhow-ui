@@ -24,7 +24,33 @@ export class RecommendationsComponent implements OnInit {
   @Input() kpiList = [];
   noRecommendations = false;
   selectedSprint: object = {};
-  loading = false;
+  loading: boolean = false;
+  aiRecommendations: boolean = true;
+
+  selectedRole: any = null;
+  isRoleSelected = false;
+  roleOptions = [
+    { label: 'Executive Sponsor', value: 'executive_sponsor' },
+    { label: 'Agile Program Manager', value: 'agile_program_manager' },
+    { label: 'Engineering Lead', value: 'engineering_lead' },
+  ];
+
+  sprintOptions = [];
+  selectedSprints: any[] = [];
+  selectedCurrentProjectSprintsCode: any[] = [];
+  isSprintSelected: boolean = false;
+  allSprints: any;
+  kpiFilterData: any;
+  isLoading: boolean = false;
+  isReportGenerated: boolean = false;
+  currentProjectName: string;
+  projectScore: number = 0;
+  recommendationsList: object[] = [];
+  currentDate: string = '';
+  recommendationType: any;
+  formattedPersona: any;
+  isError: boolean = false;
+  isTemplateLoading: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -34,72 +60,208 @@ export class RecommendationsComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  getDialogHeader(): string {
+    if (this.aiRecommendations) {
+      return this.isReportGenerated
+        ? 'AI Recommendations Report'
+        : 'Generate AI Recommendation';
+    } else {
+      return 'Recommendations for Optimising KPIs';
+    }
+  }
+
+  getCleanRecommendationType(rec: any): string {
+    return rec?.replace(/^["']|["']$/g, '') || '';
+  }
+
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
+    this.allSprints = this.service.getCurrentProjectSprints();
+    this.currentProjectName = JSON.parse(
+      localStorage.getItem('selectedTrend'),
+    )[0]?.nodeDisplayName;
+    this.sprintOptions = this.allSprints.map((x) => ({
+      name: x['nodeDisplayName'],
+      code: x['nodeId'],
+    }));
+    this.currentDate = this.getCurrentDateFormatted();
+
     this.displayModal = true;
-    const kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
-    kpiFilterData['kpiIdList'] = [...this.kpiList];
-    kpiFilterData['selectedMap']['project'] = [
+    this.kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
+    this.kpiFilterData['kpiIdList'] = [...this.kpiList];
+    this.kpiFilterData['selectedMap'] = this.kpiFilterData['selectedMap'] || {};
+    this.kpiFilterData['selectedMap']['project'] = [
       Array.isArray(this.selectedSprint?.['parentId'])
         ? this.selectedSprint?.['parentId']?.[0]
         : this.selectedSprint?.['parentId'],
     ];
-    kpiFilterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
+    this.kpiFilterData['selectedMap']['sprint'] = [
+      this.selectedSprint?.['nodeId'],
+    ];
     this.loading = true;
     this.maturities = [];
     this.tabs = [];
     this.tabsContent = {};
-    this.httpService.getRecommendations(kpiFilterData).subscribe(
-      (response: Array<object>) => {
-        if (response?.length > 0) {
-          response.forEach((recommendation) => {
-            if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
-              if (recommendation?.['recommendations']?.length > 0) {
-                this.recommendationsData = recommendation['recommendations'];
-                this.recommendationsData.forEach((item) => {
-                  const idx = this.maturities?.findIndex(
-                    (x) => x['value'] == item['maturity'],
-                  );
-                  if (idx == -1 && item['maturity']) {
-                    this.maturities = [
-                      ...this.maturities,
-                      { name: 'M' + item['maturity'], value: item['maturity'] },
-                    ];
-                  } else {
-                    this.maturities = [...this.maturities];
-                  }
-                  this.tabs = !this.tabs.includes(item['recommendationType'])
-                    ? [...this.tabs, item['recommendationType']]
-                    : [...this.tabs];
-                  this.tabsContent[item['recommendationType']] = [];
-                });
+    this.isTemplateLoading = true;
+    this.httpService.getRecommendations(this.kpiFilterData).subscribe(
+      (response: any) => {
+        this.aiRecommendations = false;
+        this.isTemplateLoading = false;
+        if (response.message === 'AiRecommendation')
+          this.aiRecommendations = true;
+        else {
+          this.aiRecommendations = false;
+          if (response?.length > 0) {
+            response.forEach((recommendation) => {
+              if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
+                if (recommendation?.['recommendations']?.length > 0) {
+                  this.recommendationsData = recommendation['recommendations'];
+                  this.recommendationsData.forEach((item) => {
+                    let idx = this.maturities?.findIndex(
+                      (x) => x['value'] == item['maturity'],
+                    );
+                    if (idx == -1 && item['maturity']) {
+                      this.maturities = [
+                        ...this.maturities,
+                        {
+                          name: 'M' + item['maturity'],
+                          value: item['maturity'],
+                        },
+                      ];
+                    } else {
+                      this.maturities = [...this.maturities];
+                    }
+                    this.tabs = !this.tabs.includes(item['recommendationType'])
+                      ? [...this.tabs, item['recommendationType']]
+                      : [...this.tabs];
+                    this.tabsContent[item['recommendationType']] = [];
+                  });
 
-                this.recommendationsData.forEach((item) => {
-                  this.tabsContent[item['recommendationType']] = [
-                    ...this.tabsContent[item['recommendationType']],
-                    item,
-                  ];
-                });
-                this.noRecommendations = false;
-              } else {
-                this.noRecommendations = true;
+                  this.recommendationsData.forEach((item) => {
+                    this.tabsContent[item['recommendationType']] = [
+                      ...this.tabsContent[item['recommendationType']],
+                      item,
+                    ];
+                  });
+                  this.noRecommendations = false;
+                } else {
+                  this.noRecommendations = true;
+                }
               }
-            }
-          });
-        } else {
-          this.noRecommendations = true;
+            });
+          } else {
+            this.noRecommendations = true;
+          }
+          this.loading = false;
         }
-        this.loading = false;
       },
       (error) => {
-        console.log(error);
-        this.messageService.add({
-          severity: 'error',
-          summary:
-            'Error in Kpi Column Configurations. Please try after sometime!',
-        });
-        this.loading = false;
+        console.error(error);
+        this.isTemplateLoading = false;
+        if (error.msg === 'AiRecommendation') this.aiRecommendations = true;
+        else {
+          this.aiRecommendations = false;
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              'Error in Kpi Column Configurations. Please try after sometime!',
+          });
+          this.loading = false;
+        }
       },
     );
+  }
+
+  selectAllSprints() {
+    this.selectedSprints = [...this.sprintOptions];
+    this.onSprintsSelection(this.selectedSprints);
+  }
+
+  focusDialogHeader() {
+    setTimeout(() => {
+      this.selectAllSprints();
+    }, 300);
+  }
+
+  onDialogClose() {
+    this.resetSelections();
+  }
+
+  onRoleChange(event) {
+    this.selectedRole = event.value;
+    this.isRoleSelected = !!this.selectedRole && this.selectedRole !== '';
+    this.formattedPersona = this.roleOptions.filter((x) => {
+      if (x.value === this.selectedRole) {
+        return x;
+      }
+    });
+  }
+
+  onSprintsSelection(selectedItems: any[]) {
+    this.selectedCurrentProjectSprintsCode = (selectedItems || [])
+      .filter((item) => item && item.code)
+      .map((item) => item.code);
+    this.isSprintSelected = this.selectedCurrentProjectSprintsCode.length > 0;
+  }
+
+  generateSprintReport() {
+    this.kpiFilterData['recommendationFor'] = this.selectedRole;
+    this.kpiFilterData['selectedMap']['sprint'] =
+      this.selectedCurrentProjectSprintsCode;
+
+    this.isReportGenerated = false;
+    this.isLoading = true;
+    this.isError = false;
+
+    // --- send request body to backend to get sprint data response
+    this.getSprintData(this.kpiFilterData);
+  }
+
+  getSprintData(reqBody: any): void {
+    this.httpService.getRecommendations(reqBody).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        this.isReportGenerated = true;
+        this.isError = false;
+
+        const resp = response?.data[0];
+        this.projectScore = +resp?.projectScore || 0;
+        this.recommendationsList = resp?.recommendations || [];
+      },
+      error: (err) => {
+        console.error('Failed to fetch sprint recommendations:', err);
+        this.isError = true;
+        this.isLoading = false;
+        this.isReportGenerated = false;
+        this.projectScore = 0;
+        this.recommendationsList = [];
+        // Optionally: show a toast/alert to the user
+      },
+    });
+  }
+
+  resetSelections() {
+    this.selectedRole = null;
+    this.selectedSprints = [];
+    this.selectedCurrentProjectSprintsCode = [];
+    this.isRoleSelected = false;
+    this.isSprintSelected = false;
+    this.isReportGenerated = false;
+    this.isError = false;
+  }
+
+  closeCancelLabel() {
+    if (this.isReportGenerated) {
+      return 'Close';
+    }
+    return 'Cancel';
+  }
+
+  getCurrentDateFormatted(): string {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 }

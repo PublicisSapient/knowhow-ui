@@ -123,7 +123,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   additionalFiltersArr = {};
   isRecommendationsEnabled = false;
   kpiList: Array<string> = [];
-  releaseEndDate = '';
+  releaseEndDate;
   timeRemaining = 0;
   immediateLoader = true;
   projectCount = 0;
@@ -619,12 +619,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         )[0];
         const endDate =
           selectedRelease !== undefined
-            ? new Date(selectedRelease?.releaseEndDate)
-                .toISOString()
-                .split('T')[0]
+            ? selectedRelease?.releaseEndDate
             : undefined;
-        this.releaseEndDate = endDate;
-        const today = new Date().toISOString().split('T')[0];
+        this.releaseEndDate = this.stripTime(new Date(endDate));
+        const today = this.stripTime(new Date());
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
         this.hieararchy = this.filterApplyData['hieararchy'];
@@ -633,10 +631,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           (x) => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0],
         )[0];
         if (selectedSprint) {
-          const today = new Date().toISOString().split('T')[0];
-          const endDate = new Date(selectedSprint?.sprintEndDate)
-            .toISOString()
-            .split('T')[0];
+          const today = this.stripTime(new Date());
+          const endDate = this.stripTime(
+            new Date(selectedSprint?.sprintEndDate),
+          );
           this.timeRemaining = this.calcBusinessDays(today, endDate);
           this.service.iterationConfigData.next({
             daysLeft: this.timeRemaining,
@@ -2583,11 +2581,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               i +
                 1 +
                 ' - ' +
-                (item?.['sprintNames']?.length > 0
-                  ? item['sprintNames'].join(',')
-                  : item?.['sSprintName']
-                  ? item['sSprintName']
-                  : item?.['date']),
+                this.utcToLocalUser(
+                  item?.['sprintNames']?.length > 0
+                    ? item['sprintNames'].join(',')
+                    : item?.['sSprintName']
+                    ? item['sSprintName']
+                    : item?.['date'],
+                  obj['frequency'],
+                ),
             );
             const val = item?.lineValue >= 0 ? item?.lineValue : item?.value;
             obj[i + 1] =
@@ -4694,13 +4695,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     iDateDiff -= iAdjust; // take into account both days on weekend
-    return iDateDiff + 1; // add 1 because dates are inclusive
+    const total = iDateDiff + 1; // add 1 because dates are inclusive (counting today date)
+    return Math.max(0, total - 2); // need to exlcude today date and last date
   }
 
   /**
    * Checks the Y-axis label for a given KPI based on its trend data and selected filters.
-   * @param kpi - The KPI object containing kpiId and other details.
-   * @returns - The Y-axis label if found; otherwise, the default Y-axis label from kpiDetail.
+   * @param {Object} kpi - The KPI object containing kpiId and other details.
+   * @returns {string | undefined} - The Y-axis label if found; otherwise, the default Y-axis label from kpiDetail.
    */
   checkYAxis(kpi) {
     const kpiDataResponce = this.allKpiArray?.find(
@@ -4825,5 +4827,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       this.postJiraKpi(kpiJiraTest, 'jira');
     }
+  }
+
+  stripTime(date) {
+    console.log('stripTime', date);
+    if (date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    } else {
+      return date;
+    }
+  }
+
+  utcToLocalUser(data, xAxis) {
+    if (data && data?.length) {
+      return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+    }
+    return data;
   }
 }

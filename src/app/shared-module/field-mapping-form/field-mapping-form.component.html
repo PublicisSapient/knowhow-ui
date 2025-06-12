@@ -63,7 +63,10 @@
       <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save" iconPos="left" label="Save" (click)="save()" [disabled]="(form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'removingMandatoryValidationAsPartOfDTS-43148')|| !form.dirty" aria-label="Save Field Mapping Configuration" tabindex="0"></button>
   </div>
 
-  <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{'min-height': '480px'}" styleClass="mapping-selection-popup" (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()" role="dialog" aria-labelledby="add-values-dialog-title" tabindex="0">
+  <p-dialog #addValueDialog [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{'min-height': '480px'}" styleClass="mapping-selection-popup" (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()" role="dialog" aria-labelledby="addValuesDialogTitle">
+      <ng-template pTemplate="header">
+          <h2 tabindex="0" id="addValuesDialogTitle">Add Value(s)</h2>
+      </ng-template>
       <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
           <div *ngIf="singleSelectionDropdown">
               <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false" [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues" placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data" filter="true" showClear="true" aria-label="Single Value Selection" tabindex="0">
@@ -96,7 +99,7 @@
               <h5 class="p-m-0 dateAndName" tabindex="0">Change Log</h5>
               <div *ngFor="let history of individualFieldHistory">
                   <div class="p-p-2">
-                      <div class="dateAndName" tabindex="0">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
+                      <div class="dateAndName" tabindex="0">{{history['Changed At'] |  UtcToLocalUserTimeZone :'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
                       <div class="dateAndName" tabindex="0">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff" aria-hidden="true"></i> <label> {{history?.['Changed To'] | json}}</label></div>
                   </div>
               </div>

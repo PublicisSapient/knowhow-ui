@@ -1043,6 +1043,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           x['parentId']?.includes(event[0].nodeId) &&
           x['sprintState']?.toLowerCase() == 'closed',
       );
+      this.service.setCurrentProjectSprints(currentProjectSprints);
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort(
           (a, b) =>

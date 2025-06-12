@@ -337,8 +337,8 @@ small {
   font-weight: normal;
 }
 
-::ng-deep .p-button:focus {
-  outline: auto;
+::ng-deep .p-button:enabled:focus {
+  outline: 3px solid #000;
 }
 
 ::ng-deep .p-dataview.p-dataview-list .p-dataview-content > .p-grid > div {

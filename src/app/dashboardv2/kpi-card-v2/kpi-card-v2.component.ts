@@ -133,6 +133,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() yAxisLabel: string;
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
+  @Input() xCaption: string;
 
   constructor(
     public service: SharedService,
@@ -794,13 +795,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.projectList = [];
     this.sprintDetailsList = [];
     this.selectedTabIndex = 0;
-    this.projectList = Object.values(this.colors).map((obj) => obj['nodeName']);
+    this.projectList = Object.values(this.colors).map(
+      (obj) => obj['nodeDisplayName'],
+    );
     this.projectList.forEach((project, index) => {
       const selectedProjectTrend = this.trendValueList.find(
         (obj) => obj.data === project,
       );
       const tempColorObjArray = Object.values(this.colors).find(
-        (obj) => obj['nodeName'] === project,
+        (obj) => obj['nodeDisplayName'] === project,
       )['color'];
       if (selectedProjectTrend?.value) {
         const hoverObjectListTemp = [];
@@ -1435,5 +1438,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     // Optional: Improve tab change accessibility
     const newTabElement = document.getElementById(`project-tab-${event.index}`);
     newTabElement?.focus();
+  }
+
+  utcToLocalUser(data, xAxis) {
+    return this.helperService.getFormatedDateBasedOnType(data, xAxis);
   }
 }

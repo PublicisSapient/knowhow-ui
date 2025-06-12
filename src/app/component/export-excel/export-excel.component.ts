@@ -244,11 +244,9 @@ export class ExportExcelComponent implements OnInit {
       (item) => {
         const formattedItem = { ...item };
         for (const key in formattedItem) {
-          if (key.toLowerCase().includes('date') && formattedItem[key]) {
-            formattedItem[key] = this.helperService.transformDateToISO(
-              formattedItem[key],
-            );
-          }
+          // if (key.toLowerCase().includes('date') && formattedItem[key]) {
+          formattedItem[key] = this.utcToLocalUser(formattedItem[key], key);
+          // }
         }
         return formattedItem;
       },
@@ -522,5 +520,9 @@ export class ExportExcelComponent implements OnInit {
     if (link) {
       link.click();
     }
+  }
+
+  utcToLocalUser(data, xAxis) {
+    return this.helperService.getFormatedDateBasedOnType(data, xAxis);
   }
 }

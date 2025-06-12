@@ -1143,4 +1143,13 @@ export class UploadComponent implements OnInit {
     this.message = event !== null ? '' : this.message;
     this.isUploadEnabled = true;
   }
+
+  triggerFileInput(): void {
+    const fileInput = document.getElementById(
+      'file-upload',
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
 }

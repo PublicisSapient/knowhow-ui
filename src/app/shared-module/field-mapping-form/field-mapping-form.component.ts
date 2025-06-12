@@ -15,11 +15,19 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-field-mapping-form',
@@ -59,6 +67,8 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() parentComp: string;
   nestedFieldANDParent = {};
   @Input() nodeId = '';
+
+  @ViewChild('addValueDialog') addValueDialog!: Dialog;
 
   private setting = {
     element: {
@@ -225,7 +235,7 @@ export class FieldMappingFormComponent implements OnInit {
   }
 
   /** once user willl click on search btn, assign the search options based on field category */
-  showDialogToAddValue({ isSingle, fieldName, type }) {
+  showDialogToAddValue({ fieldName, type, isSingle }) {
     this.populateDropdowns = true;
     this.selectedField = fieldName;
 
@@ -405,6 +415,12 @@ export class FieldMappingFormComponent implements OnInit {
 
   recordScrollPosition() {
     this.bodyScrollPosition = document.documentElement.scrollTop;
+
+    // --- focus on dialog header
+    if (this.addValueDialog.contentViewChild) {
+      const headerEl = document.getElementById('addValuesDialogTitle');
+      (headerEl as HTMLElement).focus();
+    }
   }
 
   scrollToPosition() {

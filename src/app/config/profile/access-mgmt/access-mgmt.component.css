@@ -195,3 +195,8 @@
 .p-button:enabled:focus {
   outline: 3px solid #000;
 }
+
+:host::ng-deep .p-button.p-button-lg {
+  font-size: 1.25rem;
+  padding: 0.78rem 1.25rem;
+}
