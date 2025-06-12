@@ -1146,17 +1146,20 @@ export class HelperService {
   }
 
   isDropdownElementSelected($event: any): boolean {
-    try {
-      if (
-        $event.originalEvent.type === 'click' ||
-        $event.originalEvent.type === 'keydown'
-      ) {
-        return true;
-      } else {
-        return false;
+    if (
+      $event &&
+      typeof $event.value !== 'undefined' &&
+      $event.value !== null
+    ) {
+      if ($event.originalEvent) {
+        return (
+          $event.originalEvent.type === 'click' ||
+          $event.originalEvent.type === 'keydown'
+        );
       }
-    } catch (ex) {
-      console.error(ex, 'Not a Browser event');
+      return true;
+    } else {
+      return false;
     }
   }
 
