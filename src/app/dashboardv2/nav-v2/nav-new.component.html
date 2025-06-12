@@ -3,9 +3,9 @@
   *ngIf="!router.url.split('/').includes('Report')">
   <p-tabMenu [model]="items" [activeItem]="activeItem">
     <ng-template pTemplate="item" let-item>
-      <div>
+      <a [routerLink]="item.routerLink" class="p-menuitem-link flex align-items-center gap-2">
         <span> {{ item.label }}</span>
-      </div>
+      </a>
     </ng-template>
   </p-tabMenu>
 </div>

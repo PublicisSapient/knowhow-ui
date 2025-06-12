@@ -35,12 +35,12 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   subscriptions: any[] = [];
   isSummaryAvailableMap: { [projectName: string]: boolean } = {};
   summarisedSprintGoalsMap: { [projectName: string]: any } = {};
-  defaultMessage: boolean = false;
+  defaultMessage = false;
 
   @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
   summarisedData: any;
   userRole: any;
-  isAdmin: boolean = false;
+  isAdmin = false;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const targetElement = event.target as HTMLElement;
