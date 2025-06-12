@@ -146,6 +146,7 @@ export class SharedService {
   selectedReport: any = {};
   onSelectedReportChange = new Subject<any>();
   onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
+  currentProjectSprints: any;
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
@@ -836,6 +837,14 @@ export class SharedService {
 
   getDataForSprintGoal() {
     return this.sprintGoalData;
+  }
+
+  setCurrentProjectSprints(sprints) {
+    this.currentProjectSprints = sprints;
+  }
+
+  getCurrentProjectSprints() {
+    return this.currentProjectSprints;
   }
 
   //#endregion
