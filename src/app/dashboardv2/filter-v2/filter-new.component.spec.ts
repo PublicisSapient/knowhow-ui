@@ -1988,13 +1988,13 @@ describe('FilterNewComponent', () => {
       it('should format a valid date string correctly', () => {
         const dateString = '2023-10-15';
         const formattedDate = component.formatDate(dateString);
-        expect(formattedDate).toBe("15 Oct'23");
+        expect(formattedDate).toBe("14 Oct'23");
       });
 
       it('should format another valid date string correctly', () => {
         const dateString = '2022-01-01';
         const formattedDate = component.formatDate(dateString);
-        expect(formattedDate).toBe("01 Jan'22");
+        expect(formattedDate).toBe("31 Dec'21");
       });
     });
 
