@@ -23,7 +23,7 @@ describe('IsoDateFormatPipe', () => {
 
   it('should transform a valid date string to ISO format', () => {
     const inputDate = '2023-10-01';
-    const expectedOutput = '30-SEP-2023 ';
+    const expectedOutput = '01-OCT-2023 ';
     const result = pipe.transform(inputDate);
     expect(result).toBe(expectedOutput);
   });

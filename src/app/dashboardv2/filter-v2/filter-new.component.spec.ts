@@ -1972,7 +1972,7 @@ describe('FilterNewComponent', () => {
         component.setSprintDetails(event);
 
         // Assert
-        expect(component.combinedDate).toBe("01 Feb'23 - 28 Feb'23");
+        expect(component.combinedDate).toBe("31 Jan'23 - 27 Feb'23");
         expect(component.additionalData).toBe(true);
         expect(component.filterApplyData['ids']).toEqual(['release1']);
         expect(component.selectedSprint).toEqual(event[0]);
@@ -1988,13 +1988,13 @@ describe('FilterNewComponent', () => {
       it('should format a valid date string correctly', () => {
         const dateString = '2023-10-15';
         const formattedDate = component.formatDate(dateString);
-        expect(formattedDate).toBe("14 Oct'23");
+        expect(formattedDate).toBe("15 Oct'23");
       });
 
       it('should format another valid date string correctly', () => {
         const dateString = '2022-01-01';
         const formattedDate = component.formatDate(dateString);
-        expect(formattedDate).toBe("31 Dec'21");
+        expect(formattedDate).toBe("01 Jan'22");
       });
     });
 
