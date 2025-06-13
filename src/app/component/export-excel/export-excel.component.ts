@@ -538,11 +538,6 @@ export class ExportExcelComponent implements OnInit {
     if (!att) {
       return;
     }
-    console.log('att', att);
-    console.log(
-      'hyperlink',
-      att.startsWith('http://') || att.startsWith('https://'),
-    );
     return att.startsWith('http://') || att.startsWith('https://');
   }
 
