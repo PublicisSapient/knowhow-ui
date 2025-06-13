@@ -79,7 +79,7 @@ export class ExportExcelComponent implements OnInit {
     testKpi?,
   ) {
     this.iskanban = isKanban;
-    this.xCaption = filterApplyData?.selectedMap?.date[0];
+    this.xCaption = filterApplyData?.selectedMap?.date?.[0];
 
     const sprintIncluded =
       filterApplyData.sprintIncluded.length > 0
