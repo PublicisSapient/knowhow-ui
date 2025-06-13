@@ -525,4 +525,34 @@ export class ExportExcelComponent implements OnInit {
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
   }
+  // New Change
+
+  checkIfString(str){
+    if(!str) return
+    if (typeof str === "string") {
+  return true
+} 
+return false
+  }
+
+  checkIsItHyperlink(att){
+    if(!att){
+      return
+    }
+    console.log("att",att)
+    console.log('hyperlink',att.startsWith("http://") || att.startsWith("https://"))
+    return att.startsWith("http://") || att.startsWith("https://")
+  }
+
+  getHyperlinkDefectId(att){
+    if(!att){
+      return
+    }
+    let match = att.match(/DRP-\d+/);
+
+    if (match) {
+      return match[0]; // "DRP-XXXXX"
+    }
+  }
+
 }
