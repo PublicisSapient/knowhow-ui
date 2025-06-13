@@ -629,8 +629,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           selectedRelease !== undefined
             ? selectedRelease?.releaseEndDate
             : undefined;
-        this.releaseEndDate = this.stripTime(new Date(endDate));
-        const today = this.stripTime(new Date());
+        this.releaseEndDate = new Date(endDate).toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
         this.hieararchy = this.filterApplyData['hieararchy'];
