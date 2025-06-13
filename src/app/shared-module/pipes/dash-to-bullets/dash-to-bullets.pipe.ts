@@ -5,7 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DashToBulletsPipe implements PipeTransform {
   transform(value: string): string[] {
-    if (!value) return [];
+    if (!value) {
+      return [];
+    }
     return value
       .split(/\r?\n/)
       .map((line) => line.trim())

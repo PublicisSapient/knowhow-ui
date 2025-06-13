@@ -9,7 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./recommendations.component.css'],
 })
 export class RecommendationsComponent implements OnInit {
-  displayModal: boolean = false;
+  displayModal = false;
   modalDetails = {
     tableHeadings: [],
     tableValues: [],
@@ -22,13 +22,13 @@ export class RecommendationsComponent implements OnInit {
   filteredMaturity;
   @Input() filterData = {};
   @Input() kpiList = [];
-  noRecommendations: boolean = false;
+  noRecommendations = false;
   selectedSprint: object = {};
   loading: boolean = false;
   aiRecommendations: boolean = true;
 
   selectedRole: any = null;
-  isRoleSelected: boolean = false;
+  isRoleSelected = false;
   roleOptions = [
     { label: 'Executive Sponsor', value: 'executive_sponsor' },
     { label: 'Agile Program Manager', value: 'agile_program_manager' },

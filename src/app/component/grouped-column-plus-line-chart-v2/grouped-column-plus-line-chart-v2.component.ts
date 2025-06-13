@@ -36,7 +36,7 @@ export class GroupedColumnPlusLineChartV2Component
   implements OnInit, OnChanges
 {
   @Input() data: any;
-  @Input() lineChart: boolean = true; // Decide whether a line is needed in the bar+line chart
+  @Input() lineChart = true; // Decide whether a line is needed in the bar+line chart
   @Input() thresholdValue: number;
   @Input() color: any;
   @Input() yCaption: string;
@@ -45,7 +45,7 @@ export class GroupedColumnPlusLineChartV2Component
   @Input() barLegend: string;
   @Input() lineLegend: string;
   @Input() selectedtype: string;
-  @Input() isXaxisGroup: boolean = false; // Decide whether the x-axis should be numeric or non-numeric
+  @Input() isXaxisGroup = false; // Decide whether the x-axis should be numeric or non-numeric
   @Input() kpiId: string; // id of the kpi
   @Input() source: string;
   elem: any;
@@ -56,11 +56,11 @@ export class GroupedColumnPlusLineChartV2Component
   maxValue = 1000;
   unmodifiedData: any = [];
   sprintList: Array<any> = [];
-  height: number = 0;
-  @Input() viewType: string = 'chart';
+  height = 0;
+  @Input() viewType = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
-  hierarchyLevel: string = '';
+  hierarchyLevel = '';
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
 
@@ -69,7 +69,7 @@ export class GroupedColumnPlusLineChartV2Component
     this.draw2(data);
   });
 
-  counter: number = 0;
+  counter = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -177,7 +177,7 @@ export class GroupedColumnPlusLineChartV2Component
       'check-ins': 'CI',
       tickets: 'T',
     };
-    let sprintList = [];
+    const sprintList = [];
     const kpiId = this.kpiId;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -488,7 +488,7 @@ export class GroupedColumnPlusLineChartV2Component
               let dataString = '';
               let htmlString = '';
 
-              for (let key in d.value[0].hoverValue) {
+              for (const key in d.value[0].hoverValue) {
                 dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
               }
 
@@ -798,7 +798,7 @@ export class GroupedColumnPlusLineChartV2Component
             .join('div')
             .attr('class', (d) => {
               let cssClass = 'tooltip2';
-              let value = d.lineValue;
+              const value = d.lineValue;
               if (
                 this.thresholdValue &&
                 this.thresholdValue !== 0 &&
@@ -815,16 +815,14 @@ export class GroupedColumnPlusLineChartV2Component
               return cssClass;
             })
             .style('left', (d, i) => {
-              let left = d.date || d.sortSprint;
+              const left = d.date || d.sortSprint;
               if (this.isXaxisGroup === true) {
                 return x0(left) + x0.bandwidth() / 2 + 'px';
               } else {
                 return x0(i + 1) + x0.bandwidth() / 2 + 'px';
               }
             })
-            .style('top', (d) => {
-              return yScale(d.lineValue) - 25 + 'px';
-            })
+            .style('top', (d) => yScale(d.lineValue) - 25 + 'px')
             .text(
               (d) =>
                 d.lineValue +
@@ -999,20 +997,20 @@ export class GroupedColumnPlusLineChartV2Component
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));
@@ -1032,7 +1030,7 @@ export class GroupedColumnPlusLineChartV2Component
   }
 
   flattenData(data) {
-    let sprintMap = new Map();
+    const sprintMap = new Map();
     let sprintCounter = 1;
 
     data.forEach((project) => {
@@ -1075,12 +1073,10 @@ export class GroupedColumnPlusLineChartV2Component
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
-      const legendData = data.map((item) => {
-        return {
-          sprintNumber: item.sprintNumber,
-          sprintLabel: item.sprints.join(', '),
-        };
-      });
+      const legendData = data.map((item) => ({
+        sprintNumber: item.sprintNumber,
+        sprintLabel: item.sprints.join(', '),
+      }));
 
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
