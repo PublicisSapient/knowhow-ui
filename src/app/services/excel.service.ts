@@ -76,14 +76,14 @@ export class ExcelService {
     }
   }
 
-  generateExcel(kpiData, kpiName) {
+  generateExcel(kpiData, kpiName, xCaption) {
     //UTC to local timezpone conversion
     const helper = this.injector.get(HelperService); // on demand creating the dependency
     kpiData.excelData.forEach((element) => {
       Object.keys(element).forEach((colName) => {
         element[colName] = helper.getFormatedDateBasedOnType(
           element[colName],
-          colName,
+          colName?.toLowerCase() === 'day/week/month' ? xCaption : colName,
         );
       });
     });

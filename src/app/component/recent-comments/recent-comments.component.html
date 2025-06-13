@@ -14,7 +14,7 @@
                 <div class="p-d-flex p-align-center">
                     <b class="comment-author p-mr-2">{{comment?.commentBy}}</b>
                     <span class="comment-separator p-mr-2" aria-hidden="true"></span>
-                    <span class="comment-date">{{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy  hh:mm'}}</span>
+                    <span class="comment-date">{{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy hh:mm'}}</span>
                 </div>
                 <div class="comment-meta p-mb-2 font-grey p-d-flex p-align-center" aria-label="Comment Details">
                     <div class="p-mr-1">{{comment.nodeChildId ? getNodeName(comment.nodeChildId) : getNodeName(comment.node)}}</div>
