@@ -1938,8 +1938,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'sprint1',
-            sprintStartDate: '2023-01-01T00:00:00',
-            sprintEndDate: '2023-01-15T00:00:00',
+            sprintStartDate: '2023-01-01T00:00:00Z',
+            sprintEndDate: '2023-01-15T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');
@@ -1962,8 +1962,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'release1',
-            releaseStartDate: '2023-02-01T00:00:00',
-            releaseEndDate: '2023-02-28T00:00:00',
+            releaseStartDate: '2023-02-01T00:00:00Z',
+            releaseEndDate: '2023-02-28T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');
