@@ -257,9 +257,9 @@ describe('ConfigComponent', () => {
   it('should subscribe to router events and call setActiveTabOnClick', () => {
     spyOn(component, 'setActiveTabOnClick');
     const navigationEndEvent = new NavigationEnd(1, 'url', 'urlAfterRedirects');
-    spyOn(router.events, 'subscribe').and.callFake((callback: any) => {
-      return callback(navigationEndEvent);
-    });
+    spyOn(router.events, 'subscribe').and.callFake((callback: any) =>
+      callback(navigationEndEvent),
+    );
     component.ngOnInit();
     expect(component.setActiveTabOnClick).toHaveBeenCalledWith(
       'urlAfterRedirects',

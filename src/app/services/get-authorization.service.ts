@@ -77,7 +77,6 @@ export class GetAuthorizationService {
                 project.projectId === selectedProject?.basicProjectConfigId)
             ) {
               isViewer = true;
-              return;
             }
           });
         }

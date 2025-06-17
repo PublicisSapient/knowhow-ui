@@ -50,11 +50,11 @@ export class MultilineComponent implements OnChanges {
   @Input() unit?: string;
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
-  @Input() board: string = '';
+  @Input() board = '';
   elem;
   sliderLimit = <any>'750';
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart';
+  @Input() viewType = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
@@ -317,7 +317,7 @@ export class MultilineComponent implements OnChanges {
           .join('div')
           .attr('class', (d) => {
             let cssClass = 'tooltip2';
-            let value = Math.round(d.value * 100) / 100;
+            const value = Math.round(d.value * 100) / 100;
             if (
               thresholdValue &&
               thresholdValue !== 0 &&
@@ -334,7 +334,7 @@ export class MultilineComponent implements OnChanges {
             return cssClass;
           })
           .style('left', (d, i) => {
-            let left = d.date || d.sortSprint;
+            const left = d.date || d.sortSprint;
             if (
               viewType === 'large' ||
               (board === 'dora' && viewType === 'chart')
@@ -344,9 +344,10 @@ export class MultilineComponent implements OnChanges {
               return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
             }
           })
-          .style('top', (d) => {
-            return yScale(Math.round(d.value * 100) / 100) + 10 + 'px';
-          })
+          .style(
+            'top',
+            (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
+          )
           .text(
             (d) =>
               Math.round(d.value * 100) / 100 +
@@ -639,7 +640,7 @@ export class MultilineComponent implements OnChanges {
             const tooltipDivWidth = document
               .getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`)
               .getBoundingClientRect().width;
-            let newLeft = xPosition - tooltipDivWidth / 2;
+            const newLeft = xPosition - tooltipDivWidth / 2;
 
             //  console.log("point xPosition : ",xPosition, " Div half width : ",(tooltipDivWidth/2), ' new wodth : ',newLeft, ' Full width : ',tooltipDivWidth)
             //  console.log(circle.getBoundingClientRect())
@@ -757,7 +758,7 @@ export class MultilineComponent implements OnChanges {
           .style('opacity', 1)
           .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
-        let colorArr = [];
+        const colorArr = [];
         for (let i = 0; i < color?.length; i++) {
           if (!colorArr.includes(color[i])) {
             colorArr.push(color[i]);
@@ -785,20 +786,20 @@ export class MultilineComponent implements OnChanges {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));

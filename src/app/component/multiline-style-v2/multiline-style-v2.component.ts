@@ -45,11 +45,11 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
   elem;
-  @Input() source: string = '';
+  @Input() source = '';
   sprintList: Array<any> = [];
-  height: number = 0;
-  @Input() viewType: string = 'chart';
-  hierarchyLevel: string = '';
+  height = 0;
+  @Input() viewType = 'chart';
+  hierarchyLevel = '';
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
 
@@ -57,7 +57,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     this.draw();
   });
 
-  counter: number = 0;
+  counter = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -281,16 +281,14 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         .join('div')
         .attr('class', 'tooltip2')
         .style('left', (d, i) => {
-          let left = d.date || d.sSprintName;
+          const left = d.date || d.sSprintName;
           if (viewType === 'large') {
             return xScale(left) + xScale.bandwidth() / 2 - 5 + 'px';
           } else {
             return xScale(i + 1) + xScale.bandwidth() / 2 - 5 + 'px';
           }
         })
-        .style('top', (d) => {
-          return yScale(d.value) + 7 + 'px';
-        })
+        .style('top', (d) => yScale(d.value) + 7 + 'px')
         .text((d) => Math.round(d.value * 100) / 100 + ' ' + showUnit)
         .transition()
         .duration(500)
@@ -713,7 +711,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
           .style('width', '400px');
 
         let htmlString = ``;
-        for (let d of dataCategory) {
+        for (const d of dataCategory) {
           htmlString += `<div>`;
           lineTypes.forEach((lineType, i) => {
             htmlString += `<div class="legend-item"><span>${
@@ -769,7 +767,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   }
 
   flattenData(data) {
-    let sprintMap = new Map();
+    const sprintMap = new Map();
     let sprintCounter = 1;
 
     data.forEach((project) => {
@@ -813,12 +811,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
-      const legendData = data.map((item) => {
-        return {
-          sprintNumber: item.sprintNumber,
-          sprintLabel: item.sprints.join(', '),
-        };
-      });
+      const legendData = data.map((item) => ({
+        sprintNumber: item.sprintNumber,
+        sprintLabel: item.sprints.join(', '),
+      }));
 
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);

@@ -6,6 +6,8 @@ import {
   Validators,
   UntypedFormControl,
 } from '@angular/forms';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-auto-approval',
@@ -108,25 +110,29 @@ export class AutoApprovalComponent implements OnInit {
     if (this.autoApprovedId) {
       submitData['id'] = this.autoApprovedId;
     }
-    this.httpService.submitAutoApproveData(submitData).subscribe(
-      (response) => {
-        if (response && response['success']) {
+    this.httpService
+      .submitAutoApproveData(submitData)
+      .pipe(
+        tap((response) => {
+          if (response?.success) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Added new auto approve role',
+            });
+          }
+        }),
+        catchError((errorResponse) => {
+          const error = errorResponse?.error;
+          const msg =
+            error?.message || 'Some error occurred. Please try again later.';
           this.messageService.add({
-            severity: 'success',
-            summary: 'Added new auto approve role',
+            severity: 'error',
+            summary: msg,
           });
-        }
-      },
-      (errorResponse) => {
-        const error = errorResponse['error'];
-        const msg =
-          error['message'] || 'Some error occurred. Please try again later.';
-        this.messageService.add({
-          severity: 'error',
-          summary: msg,
-        });
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   shouldBeDisabled() {

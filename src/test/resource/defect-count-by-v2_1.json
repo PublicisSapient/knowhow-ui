@@ -77,23 +77,14 @@
       "Change Date": "2024-09-10",
       "Labels": [],
       "Created Date": "2024-09-05",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sitesh Agrawal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sitesh Agrawal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Merceds_Benz_HF2_9_Sep",
       "Updated Date": "2024-09-10",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49753",
@@ -112,27 +103,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49774",
@@ -152,22 +132,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Kunal Chaursiya"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Kunal Chaursiya"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49373",
@@ -188,23 +159,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49368",
@@ -223,27 +185,15 @@
       "Dev Due Date": "-",
       "Assignee": "Hasmukh Rawal",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Production_Issue",
-        "edge_case"
-      ],
+      "Labels": ["Production_Issue", "edge_case"],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49771",
@@ -264,23 +214,14 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "duplicate"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["duplicate"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48486",
@@ -299,26 +240,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-08-14",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "RTI_Dummy_FixVersion",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49500",
@@ -337,27 +268,16 @@
       "Dev Due Date": "-",
       "Assignee": "Kirty Gupta",
       "Change Date": "2024-09-12",
-      "Labels": [
-        "Regression_Issue"
-      ],
+      "Labels": ["Regression_Issue"],
       "Created Date": "2024-09-11",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-12",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49759",
@@ -377,22 +297,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Manoj Varma Alluri"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Manoj Varma Alluri"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49375",
@@ -411,27 +322,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49360",
@@ -452,23 +352,14 @@
       "Change Date": "2024-09-10",
       "Labels": [],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sitesh Agrawal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sitesh Agrawal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Merceds_Benz_HF2_9_Sep",
       "Updated Date": "2024-09-10",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49755",
@@ -489,23 +380,14 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "client – sfcc configuration "
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["client – sfcc configuration "],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49779",
@@ -525,22 +407,13 @@
       "Change Date": "2024-09-15",
       "Labels": [],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Kunal Chaursiya"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Kunal Chaursiya"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-15",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49656",
@@ -561,23 +434,14 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49776",
@@ -596,27 +460,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "configuration"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["configuration"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48278",
@@ -635,25 +488,15 @@
       "Dev Due Date": "03-Sep-2024",
       "Assignee": "Sindhu Jayaprakash",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-08-12",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Sindhu Jayaprakash"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Sindhu Jayaprakash"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49166",
@@ -672,26 +515,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49445",
@@ -710,26 +543,15 @@
       "Dev Due Date": "-",
       "Assignee": "Hasmukh Rawal",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Regression_Issue"
-      ],
+      "Labels": ["Regression_Issue"],
       "Created Date": "2024-09-11",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49761",
@@ -748,26 +570,15 @@
       "Dev Due Date": "-",
       "Assignee": "Namitha Kn",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Namitha Kn"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Namitha Kn"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48753",
@@ -787,21 +598,13 @@
       "Change Date": "2024-09-06",
       "Labels": [],
       "Created Date": "2024-08-23",
-      "Root Cause List": [
-        "configuration"
-      ],
-      "Owner Full Name": [
-        "Cassandra Milicia (C)"
-      ],
+      "Root Cause List": ["configuration"],
+      "Owner Full Name": ["Cassandra Milicia (C)"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-06",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49263",
@@ -820,26 +623,15 @@
       "Dev Due Date": "-",
       "Assignee": "Virupaksha MP",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "automation-defect"
-      ],
+      "Labels": ["automation-defect"],
       "Created Date": "2024-09-05",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Virupaksha MP"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Virupaksha MP"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48483",
@@ -858,26 +650,15 @@
       "Dev Due Date": "11-Sep-2024",
       "Assignee": "Parijatham Soundararajan",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-08-14",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Parijatham Soundararajan"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Parijatham Soundararajan"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49669",
@@ -897,22 +678,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Namitha Kn"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Namitha Kn"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49783",
@@ -931,27 +703,16 @@
       "Dev Due Date": "-",
       "Assignee": "Hasmukh Rawal",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48908",
@@ -971,21 +732,13 @@
       "Change Date": "2024-08-29",
       "Labels": [],
       "Created Date": "2024-08-28",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Kapil Sharma"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Kapil Sharma"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-08-29",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-45505",
@@ -1004,26 +757,16 @@
       "Dev Due Date": "03-Sep-2024",
       "Assignee": "Sanjay Kumar 8",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-06-18",
-      "Root Cause List": [
-        "configuration"
-      ],
-      "Owner Full Name": [
-        "Sanjay Kumar 8"
-      ],
+      "Root Cause List": ["configuration"],
+      "Owner Full Name": ["Sanjay Kumar 8"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49751",
@@ -1042,28 +785,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue",
-        "Production_Issue"
-      ],
+      "Labels": ["Functional_issue", "Production_Issue"],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49374",
@@ -1082,27 +813,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49188",
@@ -1123,21 +843,13 @@
       "Change Date": "2024-09-11",
       "Labels": [],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "other (provide details)"
-      ],
-      "Owner Full Name": [
-        "Virupaksha MP"
-      ],
+      "Root Cause List": ["other (provide details)"],
+      "Owner Full Name": ["Virupaksha MP"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49211",
@@ -1158,22 +870,13 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-04",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Prateek Shrivastava"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Prateek Shrivastava"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49781",
@@ -1192,26 +895,15 @@
       "Dev Due Date": "-",
       "Assignee": "Kunal Chaursiya",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "configuration"
-      ],
-      "Owner Full Name": [
-        "Kunal Chaursiya"
-      ],
+      "Root Cause List": ["configuration"],
+      "Owner Full Name": ["Kunal Chaursiya"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49784",
@@ -1230,26 +922,15 @@
       "Dev Due Date": "-",
       "Assignee": "Namitha Kn",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Namitha Kn"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Namitha Kn"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49259",
@@ -1268,27 +949,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-05",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49165",
@@ -1307,25 +977,15 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49657",
@@ -1344,27 +1004,16 @@
       "Dev Due Date": "-",
       "Assignee": "Virupaksha MP",
       "Change Date": "2024-09-12",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Virupaksha MP"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Virupaksha MP"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-12",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49659",
@@ -1385,23 +1034,14 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48922",
@@ -1420,25 +1060,15 @@
       "Dev Due Date": "10-Sep-2024",
       "Assignee": "Vikas Kumar Singh",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-08-29",
-      "Root Cause List": [
-        "dev – design"
-      ],
-      "Owner Full Name": [
-        "Vikas Kumar Singh"
-      ],
+      "Root Cause List": ["dev – design"],
+      "Owner Full Name": ["Vikas Kumar Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49369",
@@ -1459,23 +1089,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48482",
@@ -1494,26 +1115,15 @@
       "Dev Due Date": "12-Sep-2024",
       "Assignee": "Parijatham Soundararajan",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-08-14",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Parijatham Soundararajan"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Parijatham Soundararajan"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49763",
@@ -1531,26 +1141,15 @@
       "Dev Due Date": "-",
       "Assignee": "Lovepreet Singh",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Regression_Issue"
-      ],
+      "Labels": ["Regression_Issue"],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Lovepreet Singh"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Lovepreet Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49411",
@@ -1570,22 +1169,13 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "client – sfcc configuration "
-      ],
-      "Owner Full Name": [
-        "Prateek Shrivastava"
-      ],
+      "Root Cause List": ["client – sfcc configuration "],
+      "Owner Full Name": ["Prateek Shrivastava"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49754",
@@ -1606,23 +1196,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Sonal Mittal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Sonal Mittal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48789",
@@ -1643,21 +1224,13 @@
       "Change Date": "2024-09-06",
       "Labels": [],
       "Created Date": "2024-08-27",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Monisha Gor"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Monisha Gor"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-06",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49370",
@@ -1676,27 +1249,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49115",
@@ -1717,21 +1279,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-08-30",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49746",
@@ -1752,23 +1306,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "environment"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["environment"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-48490",
@@ -1788,21 +1333,13 @@
       "Change Date": "2024-09-09",
       "Labels": [],
       "Created Date": "2024-08-14",
-      "Root Cause List": [
-        "other (provide details)"
-      ],
-      "Owner Full Name": [
-        "Kishalaya Singh"
-      ],
+      "Root Cause List": ["other (provide details)"],
+      "Owner Full Name": ["Kishalaya Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-09",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-48793",
@@ -1820,25 +1357,15 @@
       "Dev Due Date": "-",
       "Assignee": "Sahil Sehgal",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "automation-defect"
-      ],
+      "Labels": ["automation-defect"],
       "Created Date": "2024-08-27",
-      "Root Cause List": [
-        "3rd party"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["3rd party"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49262",
@@ -1858,22 +1385,13 @@
       "Change Date": "2024-09-05",
       "Labels": [],
       "Created Date": "2024-09-05",
-      "Root Cause List": [
-        "other (provide details)"
-      ],
-      "Owner Full Name": [
-        "Cassandra Milicia (C)"
-      ],
+      "Root Cause List": ["other (provide details)"],
+      "Owner Full Name": ["Cassandra Milicia (C)"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-05",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49439",
@@ -1894,23 +1412,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49780",
@@ -1930,22 +1439,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Sitesh Agrawal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Sitesh Agrawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49151",
@@ -1964,27 +1464,16 @@
       "Dev Due Date": "26-Jul-2024",
       "Assignee": "Parijatham Soundararajan",
       "Change Date": "2024-09-09",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-09-02",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Parijatham Soundararajan"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Parijatham Soundararajan"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-09",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49760",
@@ -2004,22 +1493,13 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Akshay Agarwal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Akshay Agarwal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49176",
@@ -2038,26 +1518,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-09",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "RTI_Dummy_FixVersion",
       "Updated Date": "2024-09-09",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49782",
@@ -2077,22 +1547,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Sitesh Agrawal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Sitesh Agrawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49356",
@@ -2113,23 +1574,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-06",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Prateek Shrivastava"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Prateek Shrivastava"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49412",
@@ -2149,22 +1601,13 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49440",
@@ -2184,22 +1627,13 @@
       "Change Date": "2024-09-10",
       "Labels": [],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Kishalaya Singh"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Kishalaya Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-10",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49358",
@@ -2218,27 +1652,16 @@
       "Dev Due Date": "-",
       "Assignee": "Ashwati Menon",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-06",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Ashwati Menon"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Ashwati Menon"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-47969",
@@ -2257,26 +1680,15 @@
       "Dev Due Date": "29-Aug-2024",
       "Assignee": "Parijatham Soundararajan",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-08-06",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Parijatham Soundararajan"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Parijatham Soundararajan"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-46194",
@@ -2295,25 +1707,15 @@
       "Dev Due Date": "-",
       "Assignee": "Devaraj Arasu T S",
       "Change Date": "2024-09-03",
-      "Labels": [
-        "Sprint33_Initial"
-      ],
+      "Labels": ["Sprint33_Initial"],
       "Created Date": "2024-07-01",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Devaraj Arasu T S"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Devaraj Arasu T S"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-03",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49714",
@@ -2334,23 +1736,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "other (provide details)"
-      ],
-      "Owner Full Name": [
-        "Ashwati Menon"
-      ],
+      "Root Cause List": ["other (provide details)"],
+      "Owner Full Name": ["Ashwati Menon"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Won't Fix",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49707",
@@ -2371,23 +1764,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "other (provide details)"
-      ],
-      "Owner Full Name": [
-        "Ashwati Menon"
-      ],
+      "Root Cause List": ["other (provide details)"],
+      "Owner Full Name": ["Ashwati Menon"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-47766",
@@ -2406,25 +1790,15 @@
       "Dev Due Date": "12-Sep-2024",
       "Assignee": "Kapil Sharma",
       "Change Date": "2024-09-12",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-08-02",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Kapil Sharma"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Kapil Sharma"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "RTI_Dummy_FixVersion",
       "Updated Date": "2024-09-12",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49444",
@@ -2443,28 +1817,16 @@
       "Dev Due Date": "-",
       "Assignee": "Vishal Prajapati",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "automation-defect",
-        "Regression_Issue"
-      ],
+      "Labels": ["automation-defect", "Regression_Issue"],
       "Created Date": "2024-09-11",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Vishal Prajapati"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Vishal Prajapati"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49670",
@@ -2485,23 +1847,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "not a defect"
-      ],
-      "Owner Full Name": [
-        "Vikas Kumar Singh"
-      ],
+      "Root Cause List": ["not a defect"],
+      "Owner Full Name": ["Vikas Kumar Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49772",
@@ -2520,27 +1873,15 @@
       "Dev Due Date": "-",
       "Assignee": "Hussain Bharmal",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-09-14",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Hussain Bharmal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Hussain Bharmal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49764",
@@ -2561,23 +1902,14 @@
       "Change Date": "2024-09-14",
       "Labels": [],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Kirty Gupta"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Kirty Gupta"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49164",
@@ -2598,21 +1930,13 @@
       "Change Date": "2024-09-06",
       "Labels": [],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Vikas Kumar Singh"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Vikas Kumar Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-06",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49757",
@@ -2631,27 +1955,15 @@
       "Dev Due Date": "-",
       "Assignee": "Namitha Kn",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue",
-        "Regression_Issue"
-      ],
+      "Labels": ["Functional_issue", "Regression_Issue"],
       "Created Date": "2024-09-13",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Namitha Kn"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Namitha Kn"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49632",
@@ -2670,27 +1982,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Creative_Issue"
-      ],
+      "Labels": ["Creative_Issue"],
       "Created Date": "2024-09-12",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49355",
@@ -2711,23 +2012,14 @@
       "Change Date": "2024-09-13",
       "Labels": [],
       "Created Date": "2024-09-06",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49366",
@@ -2748,23 +2040,14 @@
       "Change Date": "2024-09-11",
       "Labels": [],
       "Created Date": "2024-09-09",
-      "Root Cause List": [
-        "dev – data     "
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – data     "],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49252",
@@ -2785,23 +2068,14 @@
       "Change Date": "2024-09-05",
       "Labels": [],
       "Created Date": "2024-09-04",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Sahil Sehgal"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Sahil Sehgal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Merceds_Benz_HF_5 Sep",
       "Updated Date": "2024-09-05",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     },
     {
       "Issue Id": "GECP-49162",
@@ -2820,26 +2094,16 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-02",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues"]
     },
     {
       "Issue Id": "GECP-49359",
@@ -2858,26 +2122,15 @@
       "Dev Due Date": "-",
       "Assignee": "Shikha Jain",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Functional_issue"
-      ],
+      "Labels": ["Functional_issue"],
       "Created Date": "2024-09-06",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Shikha Jain"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Shikha Jain"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
-      "Category": [
-        "Total Issues",
-        "Created during Iteration"
-      ]
+      "Testing Phase": ["Undefined"],
+      "Category": ["Total Issues", "Created during Iteration"]
     }
   ],
   "categoryData": {
