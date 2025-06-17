@@ -158,7 +158,6 @@ export class HeaderComponent implements OnInit {
     this.backToDashboardLoader = true;
     this.router.navigateByUrl(this.lastVisitedFromUrl);
     this.backToDashboardLoader = false;
-    this.sharedService.switchBoard.next(true);
   }
 
   getNotification() {
@@ -224,7 +223,6 @@ export class HeaderComponent implements OnInit {
         detail: '',
       });
     } else {
-      this.lastVisitedFromUrl = window.location.hash.substring(1);
       this.router.navigate(['/dashboard/Report/default-report']);
     }
   }
