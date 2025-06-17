@@ -94,7 +94,7 @@ describe('ParentFilterComponent', () => {
         currentValue: 'developer',
         previousValue: null,
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -102,7 +102,7 @@ describe('ParentFilterComponent', () => {
         currentValue: 'scrum',
         previousValue: null,
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -110,7 +110,7 @@ describe('ParentFilterComponent', () => {
         currentValue: { labelName: 'Organization Level' },
         previousValue: null,
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -152,7 +152,7 @@ describe('ParentFilterComponent', () => {
         currentValue: 'iteration',
         previousValue: 'speed',
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -160,7 +160,7 @@ describe('ParentFilterComponent', () => {
         currentValue: 'scrum',
         previousValue: 'kanban',
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },
@@ -170,7 +170,7 @@ describe('ParentFilterComponent', () => {
           labelName: 'Organization Level',
         },
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },

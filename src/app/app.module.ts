@@ -131,9 +131,7 @@ import { PanelModule } from 'primeng/panel';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
-  return (): Promise<any> => {
-    return appInitializerService.checkFeatureFlag();
-  };
+  return (): Promise<any> => appInitializerService.checkFeatureFlag();
 }
 
 @NgModule({

@@ -389,7 +389,7 @@ describe('NavNewComponent', () => {
         success: true,
         data: { userBoardConfigDTO: { scrum: [], others: [] } },
       };
-      let getAllHierarchyLevelsSpy = spyOn(
+      const getAllHierarchyLevelsSpy = spyOn(
         httpService,
         'getAllHierarchyLevels',
       ).and.returnValue(of({ data: 'mockHierarchyData' }));
@@ -517,7 +517,7 @@ describe('NavNewComponent', () => {
       success: true,
       data: { userBoardConfigDTO: {}, configDetails: {} },
     };
-    let getAllHierarchyLevelsSpy = spyOn(
+    const getAllHierarchyLevelsSpy = spyOn(
       httpService,
       'getAllHierarchyLevels',
     ).and.returnValue(of({ data: [] }));

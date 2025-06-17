@@ -14,30 +14,30 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  notificationCount: number = 0;
+  notificationCount = 0;
   notificationList: Array<object> = [];
-  commentCount: number = 0;
+  commentCount = 0;
   commentList: Array<object> = [];
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
   userDetails: object = {};
   userMenuItems: MenuItem[] | undefined;
-  backToDashboardLoader: boolean = false;
+  backToDashboardLoader = false;
   kpiListDataProjectLevel: any = {};
   kpiListData: any = {};
-  lastVisitedFromUrl: string = '';
-  ifSuperUser: boolean = false;
-  ifProjectAdmin: boolean = false;
-  isGuest: boolean = false;
+  lastVisitedFromUrl = '';
+  ifSuperUser = false;
+  ifProjectAdmin = false;
+  isGuest = false;
   appList: MenuItem[] | undefined;
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
   isSpeedSuite = environment?.['SPEED_SUITE']
     ? environment?.['SPEED_SUITE']
     : false;
-  userRole: string = '';
+  userRole = '';
   noToolsConfigured: boolean;
-  isNotConfigPage: boolean = false;
+  isNotConfigPage = false;
 
   constructor(
     private httpService: HttpService,

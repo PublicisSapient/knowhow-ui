@@ -37,11 +37,11 @@ export class TooltipComponent implements OnChanges {
   @Input() showChartView = 'chart';
   @Input() filterNo?: string = '';
   @Input() kpiName;
-  @Input() showingMaturityRange: boolean = false;
+  @Input() showingMaturityRange = false;
   @Input() toolTipTop = 0;
   relativeTooltipTop = 400;
-  show: boolean = true;
-  bottomArrow: boolean = false;
+  show = true;
+  bottomArrow = false;
 
   constructor(private elementRef: ElementRef) {}
 

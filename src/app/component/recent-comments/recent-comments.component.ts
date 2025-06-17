@@ -9,11 +9,11 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class RecentCommentsComponent {
   commentList: Array<object> = [];
-  showSpinner: boolean = false;
-  displayCommentModal: boolean = false;
-  selectedTab: string = '';
+  showSpinner = false;
+  displayCommentModal = false;
+  selectedTab = '';
   kpiObj: object = {};
-  nodeChildName: string = '';
+  nodeChildName = '';
 
   @ViewChild('commentsDialog') commentsDialog: ElementRef;
 
@@ -25,7 +25,7 @@ export class RecentCommentsComponent {
   getRecentComments() {
     this.showSpinner = true;
     this.displayCommentModal = true;
-    let reqObj = this.createReqObj();
+    const reqObj = this.createReqObj();
     this.httpService.getCommentSummary(reqObj).subscribe(
       (response) => {
         if (response['success']) {
@@ -45,19 +45,21 @@ export class RecentCommentsComponent {
   }
 
   getNodeName(nodeId) {
-    let filterData: Array<any> = this.sharedService.sharedObject['filterData'];
+    const filterData: Array<any> =
+      this.sharedService.sharedObject['filterData'];
     return filterData.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
   }
 
   createReqObj() {
-    let filterApplyData: object =
+    const filterApplyData: object =
       this.sharedService.sharedObject['filterApplyData'];
-    let kpiList: Array<object> =
+    const kpiList: Array<object> =
       this.sharedService.sharedObject['masterData']?.kpiList;
     this.selectedTab = this.sharedService.sharedObject['selectedTab'];
-    let filterData: Array<any> = this.sharedService.sharedObject['filterData'];
+    const filterData: Array<any> =
+      this.sharedService.sharedObject['filterData'];
 
-    let reqObj = {
+    const reqObj = {
       level: filterApplyData?.['level'],
       nodeChildId:
         filterApplyData?.['selectedMap']['sprint']?.[0] ||

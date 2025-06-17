@@ -59,14 +59,14 @@ export class FieldMappingFormComponent implements OnInit {
   formConfig: any;
   //isFormDirty : boolean = false;
   historyList = [];
-  showSpinner: boolean = false;
+  showSpinner = false;
   isHistoryPopup: any = {};
   @Input() kpiId: string;
   individualFieldHistory = [];
   @Input() metaDataTemplateCode: any;
   @Input() parentComp: string;
   nestedFieldANDParent = {};
-  @Input() nodeId: string = '';
+  @Input() nodeId = '';
 
   @ViewChild('addValueDialog') addValueDialog!: Dialog;
 
@@ -228,7 +228,7 @@ export class FieldMappingFormComponent implements OnInit {
 
       Object.keys(this.selectedFieldMapping).forEach((fieldName) => {
         const originalVal = this.selectedFieldMapping[fieldName];
-        finalList.push({ fieldName: fieldName, originalValue: originalVal });
+        finalList.push({ fieldName, originalValue: originalVal });
       });
       this.saveFieldMapping(finalList, true);
     }
@@ -486,7 +486,7 @@ export class FieldMappingFormComponent implements OnInit {
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData, isImport?) {
-    let mappingObj = {
+    const mappingObj = {
       releaseNodeId: this.nodeId || null,
       fieldMappingRequests: [...mappingData],
     };
@@ -589,7 +589,7 @@ export class FieldMappingFormComponent implements OnInit {
   }
 
   refreshFieldMapppingValueANDHistory() {
-    let obj = {
+    const obj = {
       releaseNodeId: this.nodeId || null,
     };
     this.http

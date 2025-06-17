@@ -95,8 +95,8 @@ describe('TrendIndicatorV2Component', () => {
     it('should update dataObj and headerObj when trendData is available', () => {
       // Mock color object
       component.colorObj = {
-        '1': { nodeId: '1', color: 'red' },
-        '2': { nodeId: '2', color: 'blue' },
+        1: { nodeId: '1', color: 'red' },
+        2: { nodeId: '2', color: 'blue' },
       };
 
       // Mock trendData
@@ -150,7 +150,7 @@ describe('TrendIndicatorV2Component', () => {
 
     xit('should handle empty hierarchyName gracefully', () => {
       component.colorObj = {
-        '1': { nodeId: '1', color: 'red' },
+        1: { nodeId: '1', color: 'red' },
       };
 
       component.trendData = [
