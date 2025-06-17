@@ -70,10 +70,10 @@ export class DashboardconfigComponent implements OnInit {
                 (boardDetails) =>
                   boardDetails.boardName.toLowerCase() === 'iteration',
               );
-              const kpiIndex = iterationData.kpis.findIndex(
+              const kpiIndex = iterationData?.kpis?.findIndex(
                 (kpi) => kpi.kpiId === 'kpi121',
               );
-              this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex, 1);
+              this.kpiToBeHidden = iterationData?.kpis?.splice(kpiIndex, 1);
             }
             this.tabListContent[i] = this.kpiListData[i];
             if (!this.tabHeaders.includes(i)) this.tabHeaders.push(i);
