@@ -26,6 +26,7 @@ import {
 } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-grouped-column-plus-line-chart-v2',
@@ -74,6 +75,7 @@ export class GroupedColumnPlusLineChartV2Component
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
+    private helper: HelperService,
   ) {}
 
   ngOnInit(): void {
@@ -737,7 +739,10 @@ export class GroupedColumnPlusLineChartV2Component
 
               div
                 .html(
-                  `${d.date || d.sSprintName} ` +
+                  `${self.getFormatedDateBasedOnType(
+                    d.date || d.sSprintName,
+                    self.xCaption,
+                  )} ` +
                     ' : ' +
                     "<span class='toolTipValue'> " +
                     `${d.lineValue + ' ' + showUnit} ` +
@@ -1205,7 +1210,9 @@ export class GroupedColumnPlusLineChartV2Component
       rows
         .append('td')
         .attr('role', 'cell')
-        .text((d) => d.sprintLabel)
+        .text((d) =>
+          this.getFormatedDateBasedOnType(d.sprintLabel, this.xCaption),
+        )
         .style('padding', '10px 10px')
         .style('border-bottom', '1px solid #eee')
         .style('word-break', 'break-word')
@@ -1215,5 +1222,10 @@ export class GroupedColumnPlusLineChartV2Component
 
   ngAfterViewInit() {
     this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
+  }
+
+  getFormatedDateBasedOnType(date, xCaptionType) {
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 }

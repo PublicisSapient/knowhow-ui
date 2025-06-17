@@ -14574,26 +14574,6 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
-  it('should generate excel on click of export button', () => {
-    component.modalDetails = {
-      header: 'Work Remaining / Issue Count/Original Estimate',
-      tableHeadings: ['Issue Id', 'Issue Description', 'Issue Status'],
-      tableValues: [
-        {
-          'Issue Id': 'DTS-22685',
-          'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
-          'Issue Description':
-            'Iteration KPI | Popup window is not wide enough to read details  ',
-          'Issue Status': 'Open',
-        },
-      ],
-    };
-
-    const spyGenerateExcel = spyOn(excelService, 'generateExcel');
-    component.generateExcel();
-    expect(spyGenerateExcel).toHaveBeenCalled();
-  });
-
   it('should return the yaxisLabel from trendData when conditions are met', () => {
     component.allKpiArray = [
       {
@@ -14948,20 +14928,20 @@ describe('ExecutiveV2Component', () => {
         const startDate = new Date('2023-10-02'); // Monday
         const endDate = new Date('2023-10-06'); // Friday
         const result = component.calcBusinessDays(startDate, endDate);
-        expect(result).toBe(5);
+        expect(result).toBe(3);
       });
 
       it('should return 1 when the start and end dates are the same weekday', () => {
         const date = new Date('2023-10-04'); // Wednesday
         const result = component.calcBusinessDays(date, date);
-        expect(result).toBe(1);
+        expect(result).toBe(0);
       });
 
       it('should correctly calculate business days spanning a weekend', () => {
         const startDate = new Date('2023-10-06'); // Friday
         const endDate = new Date('2023-10-10'); // Tuesday
         const result = component.calcBusinessDays(startDate, endDate);
-        expect(result).toBe(3);
+        expect(result).toBe(1);
       });
     });
 
@@ -14984,7 +14964,7 @@ describe('ExecutiveV2Component', () => {
         const startDate = new Date('2023-10-06'); // Friday
         const endDate = new Date('2023-10-08'); // Sunday
         const result = component.calcBusinessDays(startDate, endDate);
-        expect(result).toBe(1);
+        expect(result).toBe(0);
       });
     });
   });

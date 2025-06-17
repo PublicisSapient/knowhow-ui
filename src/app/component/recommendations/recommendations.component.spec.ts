@@ -1,146 +1,240 @@
 import {
   ComponentFixture,
-  TestBed,
   fakeAsync,
+  TestBed,
   tick,
 } from '@angular/core/testing';
-
 import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
-import { of, throwError } from 'rxjs';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
-import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
-import { ActivatedRoute } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
+import { of, throwError } from 'rxjs';
 
 describe('RecommendationsComponent', () => {
   let component: RecommendationsComponent;
   let fixture: ComponentFixture<RecommendationsComponent>;
-  let httpService: HttpService;
-  let service: SharedService;
-  let messageService: MessageService;
-  const filterData = {
-    kpiIdList: ['kpi72'],
-    ids: ['xyz_123'],
-    level: 6,
-    selectedMap: {
-      project: [],
-      sprint: ['xyz_123'],
-    },
-    sprintIncluded: ['CLOSED'],
-    label: 'sprint',
-  };
-  const recommendationsRes = [
-    {
-      projectId: 'xyz',
-      sprintId: 'xyz_123',
-      recommendations: [
-        {
-          kpiId: 'kpi14',
-          kpiName: 'KPI name for kpi14',
-          maturity: 3,
-          recommendationSummary: 'The project quality can be improved!',
-          recommendationDetails:
-            'The last data has showed a decrease in the quality of the project for the last sprints!',
-          recommendationType: 'Warnings',
-          filter: 'Overall',
-        },
-        {
-          kpiId: 'kpi35',
-          kpiName: 'KPI name for kpi35',
-          maturity: 5,
-          recommendationSummary: 'Nice job!',
-          recommendationDetails:
-            'The team did a great job during the last sprints!',
-          recommendationType: 'Good Practices',
-          filter: 'Overall',
-        },
-        {
-          kpiId: 'kpi11',
-          kpiName: 'KPI name for kpi11',
-          maturity: 5,
-          recommendationSummary: 'Nice job!',
-          recommendationDetails:
-            'The team did a great job during the last sprints!',
-          recommendationType: 'Critical',
-          filter: 'Overall',
-        },
-      ],
-    },
-  ];
+  let httpService: jasmine.SpyObj<HttpService>;
+  let messageService: jasmine.SpyObj<MessageService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
 
   beforeEach(async () => {
+    const httpSpy = jasmine.createSpyObj('HttpService', ['getRecommendations']);
+    const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
+    const sharedSpy = jasmine.createSpyObj('SharedService', [
+      'getSprintForRnR',
+      'getCurrentProjectSprints',
+    ]);
+
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       declarations: [RecommendationsComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParams: of({ toolName: 'Jira', tab: '2' }),
-          },
-        },
-        HttpService,
-        SharedService,
-        { provide: APP_CONFIG, useValue: AppConfig },
-        MessageService,
+        { provide: HttpService, useValue: httpSpy },
+        { provide: MessageService, useValue: messageSpy },
+        { provide: SharedService, useValue: sharedSpy },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
-    service = TestBed.inject(SharedService);
-    messageService = TestBed.inject(MessageService);
+
     fixture = TestBed.createComponent(RecommendationsComponent);
     component = fixture.componentInstance;
-    httpService = TestBed.inject(HttpService);
-    fixture.detectChanges();
+    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    messageService = TestBed.inject(
+      MessageService,
+    ) as jasmine.SpyObj<MessageService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get recommendations based on kpiIdList', fakeAsync(() => {
-    component.selectedSprint = {};
-    const sprintObj = { nodeId: 'xyz_123', nodeName: 'xyz' };
-    spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
-    component.filterData = filterData;
-    component.displayModal = true;
-    component.tabs = [];
-    component.maturities = [];
-    component.recommendationsData = [];
-    spyOn(httpService, 'getRecommendations').and.returnValue(
-      of(recommendationsRes),
-    );
-    component.handleClick();
-    tick();
-    expect(component.tabs.length).toBe(3);
-    expect(component.maturities.length).toBe(2);
-    expect(component.recommendationsData.length).toBe(3);
-  }));
+  it('should initialize with default values', () => {
+    expect(component.displayModal).toBeFalse();
+    expect(component.recommendationsData).toEqual([]);
+    expect(component.tabs).toEqual([]);
+    expect(component.maturities).toEqual([]);
+    expect(component.noRecommendations).toBeFalse();
+    expect(component.isLoading).toBeFalse();
+    expect(component.isReportGenerated).toBeFalse();
+  });
 
-  it('should display error message on error', fakeAsync(() => {
-    component.filterData = filterData;
-    // Arrange
-    const errorMessage =
-      'Error in Kpi Column Configurations. Please try after sometime!';
-    // spyOn(component, 'handleClick').and.callThrough();
-    const spy = spyOn(httpService, 'getRecommendations').and.returnValue(
-      throwError(errorMessage),
+  it('should return correct dialog header', () => {
+    component.aiRecommendations = true;
+    component.isReportGenerated = false;
+    expect(component.getDialogHeader()).toBe('Generate AI Recommendation');
+
+    component.isReportGenerated = true;
+    expect(component.getDialogHeader()).toBe('AI Recommendations Report');
+
+    component.aiRecommendations = false;
+    expect(component.getDialogHeader()).toBe(
+      'Recommendations for Optimising KPIs',
     );
-    const messageSpy = spyOn(messageService, 'add');
-    const sprintObj = { nodeId: 'xyz_123', nodeName: 'xyz' };
-    spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
+  });
+
+  it('should clean recommendation type', () => {
+    expect(component.getCleanRecommendationType('"type"')).toBe('type');
+    expect(component.getCleanRecommendationType("'type'")).toBe('type');
+    expect(component.getCleanRecommendationType(null)).toBe('');
+  });
+
+  it('should reset selections on dialog close', () => {
+    component.selectedRole = 'someRole';
+    component.selectedSprints = ['sprint1'];
+    component.selectedCurrentProjectSprintsCode = ['code1'];
+    component.isRoleSelected = true;
+    component.isSprintSelected = true;
+    component.isReportGenerated = true;
+
+    component.onDialogClose();
+
+    expect(component.selectedRole).toBeNull();
+    expect(component.selectedSprints).toEqual([]);
+    expect(component.selectedCurrentProjectSprintsCode).toEqual([]);
+    expect(component.isRoleSelected).toBeFalse();
+    expect(component.isSprintSelected).toBeFalse();
+    expect(component.isReportGenerated).toBeFalse();
+  });
+
+  it('should update role on role change', () => {
+    const event = { value: 'executive_sponsor' };
+    component.onRoleChange(event);
+
+    expect(component.selectedRole).toBe('executive_sponsor');
+    expect(component.isRoleSelected).toBeTrue();
+  });
+
+  it('should update selected sprints on selection', () => {
+    const selectedItems = [{ code: 'sprint1' }, { code: 'sprint2' }];
+    component.onSprintsSelection(selectedItems);
+
+    expect(component.selectedCurrentProjectSprintsCode).toEqual([
+      'sprint1',
+      'sprint2',
+    ]);
+    expect(component.isSprintSelected).toBeTrue();
+  });
+
+  it('should generate sprint report', fakeAsync(() => {
+    // Arrange
+    component.selectedRole = 'executive_sponsor';
+    component.selectedCurrentProjectSprintsCode = ['sprint1'];
+    component.kpiFilterData = { selectedMap: {} };
+
+    const mockResponse = { data: [{ projectScore: 85, recommendations: [] }] };
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
+
     // Act
-    component.handleClick();
-    tick();
+    component.generateSprintReport();
+    tick(); // Simulate async completion
 
     // Assert
-    expect(spy).toHaveBeenCalled();
-    expect(messageSpy).toHaveBeenCalledWith({
-      severity: 'error',
-      summary: errorMessage,
-    });
+    expect(httpService.getRecommendations).toHaveBeenCalledWith(
+      component.kpiFilterData,
+    );
+    expect(component.isLoading).toBeFalse();
+    expect(component.isReportGenerated).toBeTrue();
+    expect(component.projectScore).toBe(85);
+    expect(component.recommendationsList).toEqual([]);
   }));
+
+  it('should format current date correctly', () => {
+    const date = new Date();
+    const expectedDate = `${String(date.getDate()).padStart(2, '0')}/${String(
+      date.getMonth() + 1,
+    ).padStart(2, '0')}/${date.getFullYear()}`;
+    expect(component.getCurrentDateFormatted()).toBe(expectedDate);
+  });
+
+  it('should handle click and set up data', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    const mockResponse = [
+      {
+        sprintId: '1',
+        recommendations: [
+          {
+            maturity: 3,
+            recommendationType: 'Type1',
+            recommendationDetails: 'Details1',
+          },
+        ],
+      },
+    ];
+
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
+
+    component.handleClick();
+
+    expect(component.selectedSprint).toEqual(sprint);
+    expect(component.currentProjectName).toBe('Project Name');
+    expect(component.sprintOptions).toEqual([{ name: 'Sprint 1', code: '1' }]);
+    expect(component.displayModal).toBeTrue();
+    expect(component.isTemplateLoading).toBeFalse();
+    expect(component.recommendationsData.length).toBeGreaterThan(0);
+    expect(component.noRecommendations).toBeFalse();
+  });
+
+  it('should handle click and show no recommendations', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    const mockResponse = [
+      {
+        sprintId: '1',
+        recommendations: [],
+      },
+    ];
+
+    httpService.getRecommendations.and.returnValue(of(mockResponse));
+
+    component.handleClick();
+
+    expect(component.noRecommendations).toBeTrue();
+  });
+
+  it('should handle click and manage error', () => {
+    const sprint = {
+      nodeId: '1',
+      nodeDisplayName: 'Sprint 1',
+      parentId: 'Project 1',
+    };
+    sharedService.getSprintForRnR.and.returnValue(sprint);
+    sharedService.getCurrentProjectSprints.and.returnValue([sprint]);
+    localStorage.setItem(
+      'selectedTrend',
+      JSON.stringify([{ nodeDisplayName: 'Project Name' }]),
+    );
+
+    httpService.getRecommendations.and.returnValue(throwError({ status: 500 }));
+
+    component.handleClick();
+
+    expect(component.isTemplateLoading).toBeFalse();
+    expect(component.aiRecommendations).toBeFalse();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error in Kpi Column Configurations. Please try after sometime!',
+    });
+  });
 });
