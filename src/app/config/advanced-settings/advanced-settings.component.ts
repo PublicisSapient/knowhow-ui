@@ -216,8 +216,12 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findTraceLogForTool(processorName) {
-    if (processorName.toLowerCase() === 'jira') {
+    if (
+      processorName.toLowerCase() === 'jira' ||
+      processorName.toLowerCase() === 'rally'
+    ) {
       const jiraInd = this.findCorrectJiraDetails(processorName);
+      console.log(this.processorsTracelogs[jiraInd], processorName);
       return this.processorsTracelogs[jiraInd];
     } else {
       return this.processorsTracelogs.find(
@@ -436,6 +440,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findCorrectJiraDetails(processesor?) {
+    console.log(processesor);
     const processorName = processesor ?? 'Jira';
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
