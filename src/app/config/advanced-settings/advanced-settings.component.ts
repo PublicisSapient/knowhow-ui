@@ -221,7 +221,6 @@ export class AdvancedSettingsComponent implements OnInit {
       processorName.toLowerCase() === 'rally'
     ) {
       const jiraInd = this.findCorrectJiraDetails(processorName);
-      console.log(this.processorsTracelogs[jiraInd], processorName);
       return this.processorsTracelogs[jiraInd];
     } else {
       return this.processorsTracelogs.find(
@@ -270,7 +269,6 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    console.log(processorName);
     let runProcessorInput = {
       processor: processorName,
       projects: [],
@@ -440,7 +438,6 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findCorrectJiraDetails(processesor?) {
-    console.log(processesor);
     const processorName = processesor ?? 'Jira';
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
