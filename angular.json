@@ -129,21 +129,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "dashboard:build"
+            "buildTarget": "dashboard:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "dashboard:build:production"
+              "buildTarget": "dashboard:build:production"
             },
             "local": {
-              "browserTarget": "dashboard:build:local"
+              "buildTarget": "dashboard:build:local"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "dashboard:build"
+            "buildTarget": "dashboard:build"
           }
         },
         "test": {
