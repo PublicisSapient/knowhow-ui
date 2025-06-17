@@ -216,7 +216,8 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findTraceLogForTool(processorName) {
-    if (processorName.toLowerCase() === 'jira') {
+   
+    if (processorName.toLowerCase() === 'jira' ) {
       const jiraInd = this.findCorrectJiraDetails();
       return this.processorsTracelogs[jiraInd];
     } else {
