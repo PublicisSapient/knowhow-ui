@@ -1192,7 +1192,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.setSelectedMapLevels();
     if (this.filterType === 'Sprint:' || this.filterType === 'Release:') {
-      console.log(this.filterDataArr[this.selectedType]);
       let filterType = '';
       if (
         typeof this.selectedLevel === 'object' &&
@@ -1453,20 +1452,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   formatDate(dateString) {
     if (dateString !== '') {
       const date = new Date(dateString);
-      if (this.selectedTab?.toLowerCase() === 'iteration') {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('default', { month: 'short' });
-        const year = String(date.getFullYear()).slice(-2);
-        return `${day} ${month}'${year}`;
-      } else {
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const month = date.toLocaleString('en-US', {
-          month: 'short',
-          timeZone: 'UTC',
-        });
-        const year = String(date.getUTCFullYear()).slice(-2);
-        return `${day} ${month}'${year}`;
-      }
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const month = date.toLocaleString('en-US', {
+        month: 'short',
+        timeZone: 'UTC',
+      });
+      const year = String(date.getUTCFullYear()).slice(-2);
+      return `${day} ${month}'${year}`;
     } else {
       return 'N/A';
     }
@@ -2220,7 +2212,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       longKPIFiltersString: kpiFilters || '',
     };
     this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
-      console.log(response);
       const shortStateFilterString = response.data.shortStateFiltersString;
       const shortKPIFilterString = response.data.shortKPIFilterString;
       const shortUrl = `${
