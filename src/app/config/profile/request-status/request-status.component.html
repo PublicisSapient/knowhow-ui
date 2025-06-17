@@ -42,42 +42,21 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-request>
-              <tr>
-                <td class="custom-table-cell">
+              <tr *ngIf="request.status?.toLowerCase() !== 'rejected'">
+                <td class='custom-table-cell'>
                   <div class="info-block-container">
-                    <div
-                      class="info-block"
-                      *ngFor="let item of request.accessNode.accessItems"
+                    <div class="info-block" *ngFor="let item of request.accessNode.accessItems"
                       title="{{ item.itemName }}">
-                      {{
-                        item.itemName.length > 25
-                          ? item.itemName.substring(0, 24) + '...'
-                          : item.itemName
-                      }}
+                      {{ (item.itemName.length>25)? (item.itemName.substring(0,24) + "...")
+                      :(item.itemName) }}
                     </div>
                   </div>
                 </td>
-                <td class="custom-table-cell">
-                  <div
-                    class="p-text-uppercase"
-                    *ngIf="request.role === 'ROLE_PROJECT_ADMIN'">
-                    Project Admin
-                  </div>
-                  <div
-                    class="p-text-uppercase"
-                    *ngIf="request.role === 'ROLE_PROJECT_VIEWER'">
-                    Project Viewer
-                  </div>
-                  <div
-                    class="p-text-uppercase"
-                    *ngIf="request.role === 'ROLE_SUPERADMIN'">
-                    Superadmin
-                  </div>
-                  <div
-                    class="p-text-uppercase"
-                    *ngIf="request.role === 'ROLE_GUEST'">
-                    Guest
-                  </div>
+                <td class='custom-table-cell'>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_SUPERADMIN'">Superadmin</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_GUEST'">Guest</div>
                 </td>
                 <td
                   class="custom-table-cell"

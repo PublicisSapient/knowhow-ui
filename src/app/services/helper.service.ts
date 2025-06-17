@@ -1355,7 +1355,7 @@ export class HelperService {
 
   getFormatedDateBasedOnType(date, type) {
     const xCaption = type?.toLowerCase();
-    if (xCaption?.includes('date')) {
+    if (xCaption?.includes('date') || xCaption?.includes('day')) {
       return this.utcToLocal(date);
     } else if (xCaption?.includes('month')) {
       return this.utcToLocal(date, 'MMM YYYY');
