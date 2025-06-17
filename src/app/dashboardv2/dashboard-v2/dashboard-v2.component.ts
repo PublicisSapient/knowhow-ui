@@ -97,6 +97,7 @@ export class DashboardV2Component implements AfterContentInit {
   receiveKPISearchQuery(searchDataQuery) {
     if (this.navNewComponent) {
       this.navNewComponent.updateDataDirectly(searchDataQuery);
+      this.service.updateValue(searchDataQuery);
     }
   }
 }

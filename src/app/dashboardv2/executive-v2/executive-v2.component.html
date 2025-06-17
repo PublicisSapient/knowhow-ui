@@ -37,7 +37,7 @@
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
                                     <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
-                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
+                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}" [id]="kpi.kpiId">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
