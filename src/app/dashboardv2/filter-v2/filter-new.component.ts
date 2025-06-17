@@ -1459,10 +1459,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   formatDate(dateString) {
     if (dateString !== '') {
       const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = date.toLocaleString('default', { month: 'short' });
-      const year = String(date.getFullYear()).slice(-2);
-      return `${day} ${month}'${year}`;
+      if (this.selectedTab?.toLowerCase() === 'iteration') {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = String(date.getFullYear()).slice(-2);
+        return `${day} ${month}'${year}`;
+      } else {
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-US', {
+          month: 'short',
+          timeZone: 'UTC',
+        });
+        const year = String(date.getUTCFullYear()).slice(-2);
+        return `${day} ${month}'${year}`;
+      }
     } else {
       return 'N/A';
     }
