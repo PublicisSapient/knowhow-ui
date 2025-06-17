@@ -387,3 +387,48 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 :host ::ng-deep .p-button:enabled:focus {
   outline: 3px solid var(--color-black-dark);
 }
+
+.kpi-search-container {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+:host ::ng-deep .p-fluid .p-autocomplete-dd .p-autocomplete-input {
+  border: 1px solid #d7dade !important;
+  border-right: none !important;
+}
+
+:host ::ng-deep .p-autocomplete-dd .p-autocomplete-dropdown {
+  background: #fff !important;
+  border: 1px solid #d5dbe1 !important;
+  border-left: none !important;
+}
+
+:host
+  ::ng-deep
+  .p-autocomplete-dd
+  .p-autocomplete-dropdown
+  .pi-chevron-down:before {
+  color: var(--color-black);
+}
+
+:host ::ng-deep .p-autocomplete-input {
+  width: 200px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+  padding: 0 1rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-color: #d5dbe1;
+}
+
+:host ::ng-deep .p-fluid .p-button {
+  background: #0b4bc8;
+}
+
+:host ::ng-deep .p-button.p-button-icon-only {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

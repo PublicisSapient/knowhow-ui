@@ -60,7 +60,7 @@
 
 
 <ng-template #cardWithOutRawJsonTemplate>
-  <div class="kpi-card-container">
+  <div class="kpi-card-container" [id]="kpiData.kpiId">
     <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
       <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader role="region"
         aria-label="KPI Card Header">
