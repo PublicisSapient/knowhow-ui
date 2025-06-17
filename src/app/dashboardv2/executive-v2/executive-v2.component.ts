@@ -621,8 +621,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           selectedRelease !== undefined
             ? selectedRelease?.releaseEndDate
             : undefined;
-        this.releaseEndDate = this.stripTime(new Date(endDate));
-        const today = this.stripTime(new Date());
+        this.releaseEndDate = new Date(endDate).toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
         this.hieararchy = this.filterApplyData['hieararchy'];
@@ -3551,30 +3551,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  generateExcel() {
-    const kpiData = {
-      headerNames: [],
-      excelData: [],
-    };
-    this.modalDetails['tableHeadings'].forEach((colHeader) => {
-      kpiData.headerNames.push({
-        header: colHeader,
-        key: colHeader,
-        width: 25,
-      });
-    });
-    this.modalDetails['tableValues'].forEach((colData) => {
-      kpiData.excelData.push({
-        ...colData,
-        ['Issue Id']: {
-          text: colData['Issue Id'],
-          hyperlink: colData['Issue URL'],
-        },
-      });
-    });
+  // generateExcel() {
+  //   const kpiData = {
+  //     headerNames: [],
+  //     excelData: [],
+  //   };
+  //   this.modalDetails['tableHeadings'].forEach((colHeader) => {
+  //     kpiData.headerNames.push({
+  //       header: colHeader,
+  //       key: colHeader,
+  //       width: 25,
+  //     });
+  //   });
+  //   this.modalDetails['tableValues'].forEach((colData) => {
+  //     kpiData.excelData.push({
+  //       ...colData,
+  //       ['Issue Id']: {
+  //         text: colData['Issue Id'],
+  //         hyperlink: colData['Issue URL'],
+  //       },
+  //     });
+  //   });
 
-    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-  }
+  //   // this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  // }
 
   /**
    * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
