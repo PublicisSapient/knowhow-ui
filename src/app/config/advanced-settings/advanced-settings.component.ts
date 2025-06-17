@@ -216,9 +216,8 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findTraceLogForTool(processorName) {
-   
-    if (processorName.toLowerCase() === 'jira' ) {
-      const jiraInd = this.findCorrectJiraDetails();
+    if (processorName.toLowerCase() === 'jira') {
+      const jiraInd = this.findCorrectJiraDetails(processorName);
       return this.processorsTracelogs[jiraInd];
     } else {
       return this.processorsTracelogs.find(
@@ -267,6 +266,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
+    console.log(processorName);
     let runProcessorInput = {
       processor: processorName,
       projects: [],
@@ -279,13 +279,16 @@ export class AdvancedSettingsComponent implements OnInit {
       pDetails['executionOngoing'] = true;
     }
 
-    if (processorName === 'Jira') {
+    if (processorName === 'Jira' || processorName === 'Rally') {
       this.resetLogs();
     }
     this.httpService.runProcessor(runProcessorInput).subscribe((response) => {
       if (!response.error && response.success) {
         this.updateflagsAfterTracelogSuccess(runProcessorInput);
-      } else if (runProcessorInput['processor'].toLowerCase() === 'jira') {
+      } else if (
+        runProcessorInput['processor'].toLowerCase() === 'jira' ||
+        runProcessorInput['processor'].toLowerCase() === 'rally'
+      ) {
         this.messageService.add({ severity: 'error', summary: response.data });
       } else {
         this.messageService.add({
@@ -307,7 +310,10 @@ export class AdvancedSettingsComponent implements OnInit {
       severity: 'success',
       summary: `${runProcessorInput['processor']} started successfully.`,
     });
-    if (runProcessorInput['processor'].toLowerCase() === 'jira') {
+    if (
+      runProcessorInput['processor'].toLowerCase() === 'jira' ||
+      runProcessorInput['processor'].toLowerCase() === 'rally'
+    ) {
       this.jiraStatusContinuePulling = true;
       this.getProcessorCompletionSteps(runProcessorInput);
     } else {
@@ -395,7 +401,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   getProcessorCompletionSteps(runProcessorInput) {
-    const jiraInd = this.findCorrectJiraDetails();
+    const jiraInd = this.findCorrectJiraDetails(runProcessorInput['processor']);
     this.subscription = interval(15000)
       .pipe(
         takeWhile(() => this.jiraStatusContinuePulling),
@@ -413,7 +419,10 @@ export class AdvancedSettingsComponent implements OnInit {
             this.jiraStatusContinuePulling = false;
             this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
           }
-          Object.assign(this.findTraceLogForTool('Jira'), response['data'][0]);
+          Object.assign(
+            this.findTraceLogForTool(runProcessorInput['processor']),
+            response['data'][0],
+          );
         }
       });
   }
@@ -426,8 +435,8 @@ export class AdvancedSettingsComponent implements OnInit {
     }
   }
 
-  findCorrectJiraDetails() {
-    const processorName = 'Jira';
+  findCorrectJiraDetails(processesor?) {
+    const processorName = processesor ?? 'Jira';
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
     ).length;
@@ -442,14 +451,24 @@ export class AdvancedSettingsComponent implements OnInit {
           ptl['progressStats'] === true,
       );
     } else {
-      this.processorsTracelogs.push({
-        processorName: 'Jira',
-        errorMessage: '',
-        progressStatusList: [],
-        executionOngoing: false,
-        executionEndedAt: 0,
-        isDeleteDisable: true,
-      });
+      this.processorsTracelogs.push(
+        {
+          processorName: 'Jira',
+          errorMessage: '',
+          progressStatusList: [],
+          executionOngoing: false,
+          executionEndedAt: 0,
+          isDeleteDisable: true,
+        },
+        {
+          processorName: 'Rally',
+          errorMessage: '',
+          progressStatusList: [],
+          executionOngoing: false,
+          executionEndedAt: 0,
+          isDeleteDisable: true,
+        },
+      );
       return this.processorsTracelogs.length;
     }
   }

@@ -111,7 +111,6 @@
                     aria-label="Processor status: {{showProcessorLastState(processor.toolName)}}" role="status" tabindex="0">
                       {{ showProcessorLastState(processor.toolName)}}
                     </div>
-                    <div *ngIf="showProcessorLastState(processor.toolName) === 'NA'">NA</div>
                   </div>
                   <div class="p-ml-2" *ngIf="processor.toolName === 'Jira'">
                     <i class="pi pi-info-circle"
