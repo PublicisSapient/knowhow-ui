@@ -4,6 +4,8 @@ import {
   ChangeDetectorRef,
   OnDestroy,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
@@ -88,6 +90,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dashConfigDataDeepCopyBackup: any;
   refreshCounter: number = 0;
   showSprintGoalsPanel: boolean = false;
+  selectedKPI: string = '';
+  groupedKpiOptions: any[] = [];
+  filteredKpis: any[];
+
+  @Output() onKPISearch = new EventEmitter<string>();
 
   constructor(
     private httpService: HttpService,
@@ -577,6 +584,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           (response) => {
             if (response.success === true) {
               let data = response.data.userBoardConfigDTO;
+              this.extractUserConfig(data);
               // let data = this.dummyData.data.userBoardConfigDTO;
               data = this.setLevelNames(data);
               data['configDetails'] = response.data.configDetails;
@@ -2389,5 +2397,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+  }
+
+  extractUserConfig(data: any) {
+    this.groupedKpiOptions = this.helperService.getGroupedKpiOptions(data);
+  }
+
+  filterKpis(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredKpis = this.groupedKpiOptions
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          item.label.toLowerCase().includes(query),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  }
+
+  onKpiSearch() {
+    this.onKPISearch.emit(this.selectedKPI);
   }
 }

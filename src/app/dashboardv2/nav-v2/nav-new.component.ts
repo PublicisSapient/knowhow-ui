@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -20,6 +20,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedBasicConfigIds: any[] = [];
   previousSelectedTrend: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
+
+  @Input() kpiSearchQuery!: string;
 
   constructor(
     public httpService: HttpService,
@@ -246,5 +248,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
       selected_tab: obj['boardSlug'],
     });
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+  }
+
+  updateDataDirectly(searchQuery) {
+    this.handleMenuTabFunctionality(searchQuery.value);
   }
 }

@@ -1,5 +1,5 @@
 
-<div class="filter-container p-m-0 p-fluid">
+<div class="filter-container p-m-0 p-fluid p-jc-space-between p-ai-center">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
@@ -37,6 +37,23 @@
         [additionalFilterConfig]="additionalFilterConfig" [additionalFilterLevelArr]="additionalFilterLevelArr"
         (onAdditionalFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
     </ng-container>
+  </div>
+
+  <div class="p-d-flex p-jc-end p-pr-0 kpi-search-container">
+    <p-autoComplete
+      [suggestions]="filteredKpis"
+      [(ngModel)]="selectedKPI"
+      [group]="true"
+      [field]="'label'"
+      [optionGroupLabel]="'label'"
+      [optionGroupChildren]="'items'"
+      (completeMethod)="filterKpis($event)"
+      [placeholder]="'Search for KPI'">
+    </p-autoComplete>
+    <p-button icon="pi pi-search" iconPos="right" (onClick)="onKpiSearch()"></p-button>
+    <p-button icon="pi pi-search" label="AI" class="p-ml-2" iconPos="right"></p-button>
+    <!-- <button pButton pRipple type="button" icon="pi pi-search" label="AI Search" class="p-button-rounded"></button>
+    <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
   </div>
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
