@@ -75,7 +75,6 @@ export class FieldMappingComponent implements OnInit {
         this.selectedConfig,
       );
     } else {
-      console.log('field-mapping-getKPIFieldMappingRelationships() - 78');
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
     this.kpiId =
@@ -90,7 +89,6 @@ export class FieldMappingComponent implements OnInit {
             tool.toolName === 'Rally',
         );
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
-        console.log('firld-mapping-getKPIFieldMappingRelationships() - 90');
         this.router.navigate(['./dashboard/Config/ProjectList']);
       } else {
         this.getDropdownData();
@@ -133,9 +131,6 @@ export class FieldMappingComponent implements OnInit {
           }
         });
     } else {
-      console.log(
-        'fied-mapping getKPIFieldMappingRelationships() - No project selected',
-      );
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
   }
