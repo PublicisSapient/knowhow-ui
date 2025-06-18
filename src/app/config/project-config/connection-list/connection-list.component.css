@@ -73,7 +73,7 @@ div.main {
 }
 
 ::ng-deep .p-button:focus {
-  outline: auto;
+  outline: 3px solid #0b4bc8;
 }
 
 input[type='text']:disabled,
@@ -107,7 +107,7 @@ input[type='password']:disabled {
 }
 
 :host ::ng-deep .p-button:enabled:focus {
-  outline: 3px solid #000;
+  outline: 3px solid #0b4bc8;
 }
 
 :host
@@ -115,5 +115,5 @@ input[type='password']:disabled {
   .p-accordion
   .p-accordion-tab:not(.p-accordion-tab-active)
   .p-accordion-header-link:focus {
-  border: 2px solid #000;
+  border: 2px solid #0b4bc8;
 }

@@ -115,6 +115,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+*:focus-visible {
+  outline: 3px solid #0b4bc8;
+  border-radius: 5px;
+}
+
 a {
   text-decoration: none;
 }
@@ -1586,7 +1592,7 @@ a:hover {
   border: none;
 }
 .action-btns:focus {
-  outline: 3px solid #000;
+  outline: 3px solid #0b4bc8;
 }
 .table-head-fixed {
   position: sticky;
