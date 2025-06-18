@@ -184,7 +184,7 @@
                         (processor.toolName === 'Jira' ||
                           processor.toolName === 'Rally')) ||
                       processor.toolName !== 'Jira' ||
-                        processor.toolName !== 'Rally'
+                      processor.toolName !== 'Rally'
                     "
                   >
                     <div
@@ -212,52 +212,40 @@
                       {{ showProcessorLastState(processor.toolName) }}
                     </div>
                   </div>
-                  <div class="p-ml-2" *ngIf="processor.toolName === 'Jira'">
+                  <div
+                    class="p-ml-2"
+                    *ngIf="
+                      processor.toolName === 'Jira' ||
+                      processor.toolName === 'Rally'
+                    "
+                  >
                     <i
                       class="pi pi-info-circle"
                       [ngClass]="{
                         disabled: !(
-                          findTraceLogForTool('Jira')?.progressStatusList
-                            ?.length ||
-                          findTraceLogForTool('Jira')?.errorMessage
+                          findTraceLogForTool(processor.toolName)
+                            ?.progressStatusList?.length ||
+                          findTraceLogForTool(processor.toolName)?.errorMessage
                         )
                       }"
                       (click)="
-                        findTraceLogForTool('Jira')?.errorMessage ||
-                        findTraceLogForTool('Jira')?.progressStatusList?.length
+                        findTraceLogForTool(processor.toolName)?.errorMessage ||
+                        findTraceLogForTool(processor.toolName)
+                          ?.progressStatusList?.length
                           ? op.toggle($event)
                           : ''
                       "
                       (keydown.enter)="
-                        findTraceLogForTool('Jira')?.errorMessage ||
-                        findTraceLogForTool('Jira')?.progressStatusList?.length
+                        findTraceLogForTool(processor.toolName)?.errorMessage ||
+                        findTraceLogForTool(processor.toolName)
+                          ?.progressStatusList?.length
                           ? op.toggle($event)
                           : ''
                       "
                       style="font-size: 1.2rem"
-                      aria-label="Show Jira progress details"
-                      role="button"
-                      tabindex="0"
-                    ></i>
-                  </div>
-                  <div class="p-ml-2" *ngIf="processor.toolName === 'Rally'">
-                    <i
-                      class="pi pi-info-circle"
-                      [ngClass]="{
-                        disabled: !(
-                          findTraceLogForTool('Rally')?.progressStatusList
-                            ?.length ||
-                          findTraceLogForTool('Rally')?.errorMessage
-                        )
-                      }"
-                      (click)="
-                        findTraceLogForTool('Rally')?.errorMessage ||
-                        findTraceLogForTool('Rally')?.progressStatusList?.length
-                          ? op.toggle($event)
-                          : ''
-                      "
-                      style="font-size: 1.2rem"
-                      aria-label="Show Rally progress details"
+                      aria-label="Show {{
+                        processor.toolName
+                      }} progress details"
                       role="button"
                       tabindex="0"
                     ></i>
