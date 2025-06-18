@@ -150,7 +150,7 @@
 
 :host ::ng-deep .p-button:enabled:focus,
 :host ::ng-deep .p-button-outlined:enabled:focus {
-  outline: 3px solid #000;
+  outline: 3px solid #0b4bc8;
 }
 
 .loading-screen {

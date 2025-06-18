@@ -176,7 +176,7 @@
   background: transparent;
 }
 .p-button.p-button-text.btn-toggle:focus {
-  outline: auto;
+  outline: 3px solid #0b4bc8;
 }
 .p-input-custom {
   height: 46px;
@@ -193,7 +193,7 @@
 }
 
 .p-button:enabled:focus {
-  outline: 3px solid #000;
+  outline: 3px solid #0b4bc8;
 }
 
 :host::ng-deep .p-button.p-button-lg {

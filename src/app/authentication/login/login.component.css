@@ -228,7 +228,7 @@ input[type='password'],
 
 .login-form form input:focus,
 .login-form form textarea:focus {
-  outline: none;
+  outline: 3px solid #0b4bc8;
 }
 
 /* .login-form input:focus~label,
