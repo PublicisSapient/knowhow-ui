@@ -1388,7 +1388,7 @@ export class HelperService {
     return Object.entries(data)
       .filter(([key, value]) => Array.isArray(value))
       .map(([key, boards]) => ({
-        label: key,
+        label: key.toUpperCase(),
         value: key,
         items: (boards as any[]).reduce((acc, board) => {
           const kpis = (board.kpis || []).map((kpi: any) => ({
