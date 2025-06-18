@@ -171,7 +171,10 @@ export class AdvancedSettingsComponent implements OnInit {
         if (response.success) {
           that.processorsTracelogs = response.data;
           that.processorsTracelogs.forEach((pDetails) => {
-            if (pDetails.processorName !== 'Jira') {
+            if (
+              pDetails.processorName !== 'Jira' &&
+              pDetails.processorName !== 'Rally'
+            ) {
               pDetails['executionOngoing'] = false;
             }
             if (pDetails.dataMismatch && pDetails.firstRunDate) {
@@ -180,7 +183,12 @@ export class AdvancedSettingsComponent implements OnInit {
             }
           });
 
-          if (this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))) {
+          if (
+            this.decideWhetherLoaderOrNot(
+              that.findTraceLogForTool('Jira') ||
+                that.findTraceLogForTool('Rally'),
+            )
+          ) {
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
@@ -282,7 +290,7 @@ export class AdvancedSettingsComponent implements OnInit {
     }
 
     if (processorName === 'Jira' || processorName === 'Rally') {
-      this.resetLogs();
+      this.resetLogs(processorName);
     }
     this.httpService.runProcessor(runProcessorInput).subscribe((response) => {
       if (!response.error && response.success) {
@@ -403,7 +411,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   getProcessorCompletionSteps(runProcessorInput) {
-    const jiraInd = this.findCorrectJiraDetails(runProcessorInput['processor']);
+    const jiraInd = this.findCorrectJiraDetails(runProcessorInput.processor);
     this.subscription = interval(15000)
       .pipe(
         takeWhile(() => this.jiraStatusContinuePulling),
@@ -429,16 +437,15 @@ export class AdvancedSettingsComponent implements OnInit {
       });
   }
 
-  resetLogs() {
-    const jiraInd = this.findCorrectJiraDetails();
+  resetLogs(processorName) {
+    const jiraInd = this.findCorrectJiraDetails(processorName);
     if (jiraInd !== -1) {
       this.processorsTracelogs[jiraInd].errorMessage = '';
       this.processorsTracelogs[jiraInd].progressStatusList = [];
     }
   }
 
-  findCorrectJiraDetails(processesor?) {
-    const processorName = processesor ?? 'Jira';
+  findCorrectJiraDetails(processorName?) {
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
     ).length;
@@ -453,24 +460,14 @@ export class AdvancedSettingsComponent implements OnInit {
           ptl['progressStats'] === true,
       );
     } else {
-      this.processorsTracelogs.push(
-        {
-          processorName: 'Jira',
-          errorMessage: '',
-          progressStatusList: [],
-          executionOngoing: false,
-          executionEndedAt: 0,
-          isDeleteDisable: true,
-        },
-        {
-          processorName: 'Rally',
-          errorMessage: '',
-          progressStatusList: [],
-          executionOngoing: false,
-          executionEndedAt: 0,
-          isDeleteDisable: true,
-        },
-      );
+      this.processorsTracelogs.push({
+        processorName: 'processorName',
+        errorMessage: '',
+        progressStatusList: [],
+        executionOngoing: false,
+        executionEndedAt: 0,
+        isDeleteDisable: true,
+      });
       return this.processorsTracelogs.length;
     }
   }
