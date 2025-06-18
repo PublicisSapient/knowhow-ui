@@ -138,9 +138,9 @@
   /* padding: 5px; */
 }
 
-:host ::ng-deep .p-dialog-header-close-icon {
-  /* color: white; */
-}
+/* :host ::ng-deep .p-dialog-header-close-icon {
+  color: white;
+} */
 
 .export-button {
   position: absolute;
