@@ -254,7 +254,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((searchQuery) => {
         if (searchQuery) {
-          console.log('executive data', searchQuery);
           setTimeout(() => {
             this.handlePageScrollOnSearch(searchQuery.value);
           }, 1000);

@@ -251,6 +251,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   updateDataDirectly(searchQuery) {
-    this.handleMenuTabFunctionality(searchQuery.value);
+    setTimeout(() => {
+      this.handleMenuTabFunctionality(searchQuery.value);
+    }, 300);
   }
 }

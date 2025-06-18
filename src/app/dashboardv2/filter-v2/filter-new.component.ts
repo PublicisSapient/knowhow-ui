@@ -2426,6 +2426,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   onKpiSearch() {
+    const selectedSource = this.selectedKPI['value'].source;
     this.onKPISearch.emit(this.selectedKPI);
+    if (this.selectedType !== selectedSource) {
+      setTimeout(() => {
+        this.setSelectedType(selectedSource);
+      }, 500);
+    }
   }
 }
