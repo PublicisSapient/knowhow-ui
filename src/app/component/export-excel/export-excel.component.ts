@@ -44,6 +44,8 @@ export class ExportExcelComponent implements OnInit {
   exportExcelRawVariable;
   // Define blank values to handle
   blankValues = ['', null, undefined, '-', 'NA', 'N/A', 'Undefined'];
+  iskanban = false; // to check if kpi is kanban or not
+  xCaption = '';
 
   constructor(
     private excelService: ExcelService,
@@ -76,6 +78,9 @@ export class ExportExcelComponent implements OnInit {
     chartType?,
     testKpi?,
   ) {
+    this.iskanban = isKanban;
+    this.xCaption = filterApplyData?.selectedMap?.date?.[0];
+
     const sprintIncluded =
       filterApplyData.sprintIncluded.length > 0
         ? filterApplyData.sprintIncluded
@@ -134,6 +139,7 @@ export class ExportExcelComponent implements OnInit {
     kpiName,
     kpiId,
   ) {
+    this.iskanban = false;
     rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
@@ -245,7 +251,10 @@ export class ExportExcelComponent implements OnInit {
         const formattedItem = { ...item };
         for (const key in formattedItem) {
           // if (key.toLowerCase().includes('date') && formattedItem[key]) {
-          formattedItem[key] = this.utcToLocalUser(formattedItem[key], key);
+          formattedItem[key] = this.utcToLocalUser(
+            formattedItem[key],
+            key?.toLowerCase() === 'day/week/month' ? this.xCaption : key,
+          );
           // }
         }
         return formattedItem;
@@ -254,7 +263,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   exportExcel(kpiName) {
-    this.excelService.generateExcel(this.kpiExcelData, kpiName);
+    this.excelService.generateExcel(this.kpiExcelData, kpiName, this.xCaption);
   }
 
   clearModalDataOnClose() {
@@ -316,6 +325,7 @@ export class ExportExcelComponent implements OnInit {
       this.excelService.generateExcel(
         this.kpiExcelData,
         this.modalDetails['header'],
+        this.xCaption,
       );
     } else {
       let filteredData = this.tableComponent?.filteredValue
@@ -331,7 +341,11 @@ export class ExportExcelComponent implements OnInit {
       tableData['headerNames'] = headerNames;
       tableData['excelData'] = filteredData;
 
-      this.excelService.generateExcel(tableData, this.modalDetails['header']);
+      this.excelService.generateExcel(
+        tableData,
+        this.modalDetails['header'],
+        this.xCaption,
+      );
     }
   }
 
