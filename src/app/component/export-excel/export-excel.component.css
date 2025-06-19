@@ -173,7 +173,7 @@
   background-color: white !important;
 }
 
-.p-button:focus {
+.p-button:focus-visible {
   outline: 3px solid #0b4bc8;
 }
 

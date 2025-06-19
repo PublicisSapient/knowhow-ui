@@ -16,6 +16,7 @@ import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-filter-new',
@@ -95,6 +96,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   filteredKpis: any[];
 
   @Output() onKPISearch = new EventEmitter<string>();
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
+  isSearchingKPI: boolean = false;
+  private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   constructor(
     private httpService: HttpService,
@@ -838,7 +842,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let stateFilters = this.service.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      console.log(Object.values(this.colorObj).map((m) => m['nodeId']));
       if (!stateFilters['additional_level']) {
         let selectedFilters = this.filterDataArr[this.selectedType][
           this.selectedLevel
@@ -1198,7 +1201,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.setSelectedMapLevels();
     if (this.filterType === 'Sprint:' || this.filterType === 'Release:') {
-      console.log(this.filterDataArr[this.selectedType]);
       let filterType = '';
       if (
         typeof this.selectedLevel === 'object' &&
@@ -2219,7 +2221,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       longKPIFiltersString: kpiFilters || '',
     };
     this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
-      console.log(response);
       const shortStateFilterString = response.data.shortStateFiltersString;
       const shortKPIFilterString = response.data.shortKPIFilterString;
       const shortUrl = `${
@@ -2410,10 +2411,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   extractUserConfig(data: any) {
-    this.groupedKpiOptions = this.helperService.getGroupedKpiOptions(data);
+    const allGroupKpiOptions = this.helperService.getGroupedKpiOptions(data);
+    this.groupedKpiOptions = allGroupKpiOptions.map((group) => ({
+      ...group,
+      items: group.items.filter(
+        (item) => item.value.boardSlug !== 'my-knowhow',
+      ),
+    }));
   }
 
-  filterKpis(event: any) {
+  debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
+    console.log('groupedKpiOptions ', this.groupedKpiOptions);
     const query = event.query.toLowerCase();
     this.filteredKpis = this.groupedKpiOptions
       .map((group) => ({
@@ -2423,7 +2431,43 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         ),
       }))
       .filter((group) => group.items.length > 0);
-  }
+
+    if (this.filteredKpis.length === 0) {
+      if (this.kpiSearchCache[query]) {
+        // Use cached results if available
+        this.filteredKpis = this.kpiSearchCache[query];
+        this.cdr.detectChanges();
+        this.showAutoCompleteDropdown();
+      } else {
+        this.isSearchingKPI = true;
+        try {
+          const res = await this.httpService.aiKpiSearch(query).toPromise();
+          this.filteredKpis = this.groupedKpiOptions
+            .map((group) => ({
+              ...group,
+              items: group.items.filter((item) =>
+                res.includes(item.value.kpiId),
+              ),
+            }))
+            .filter((group) => group.items.length > 0);
+
+          // Cache the results
+          this.kpiSearchCache[query] = this.filteredKpis;
+
+          // Force change detection and show dropdown
+          this.cdr.detectChanges();
+          this.showAutoCompleteDropdown();
+        } catch (error) {
+          console.error('AI search failed:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: error.message,
+          });
+          this.isSearchingKPI = false;
+        }
+      }
+    }
+  }, 300);
 
   onKpiSearch() {
     const selectedSource = this.selectedKPI['value'].source;
@@ -2433,5 +2477,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.setSelectedType(selectedSource);
       }, 500);
     }
+  }
+
+  showAutoCompleteDropdown() {
+    setTimeout(() => {
+      if (this.autoComplete && this.filteredKpis.length > 0) {
+        // --- Remove focus after HTTP response
+        const inputEl =
+          this.autoComplete.el.nativeElement.querySelector('input');
+        if (inputEl) {
+          inputEl.blur();
+        }
+
+        this.autoComplete.show();
+        // --- Fallback if autoComplete.show() do not work
+        if (!this.autoComplete.overlayVisible) {
+          this.autoComplete.overlayVisible = true;
+          this.autoComplete.onShow.emit();
+        }
+        this.isSearchingKPI = false;
+      }
+    }, 10);
   }
 }

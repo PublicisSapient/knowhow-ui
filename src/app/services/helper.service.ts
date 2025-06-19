@@ -1407,4 +1407,14 @@ export class HelperService {
       }))
       .filter((group) => group.items.length > 0);
   }
+
+  // Debounce utility function
+  debounce(func: Function, wait: number) {
+    let timeout: any;
+    return function (...args: any[]) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+  }
 }

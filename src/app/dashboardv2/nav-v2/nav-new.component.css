@@ -42,7 +42,7 @@
   .p-tabmenu
   .p-tabmenu-nav
   .p-tabmenuitem
-  .p-menuitem-link:not(.p-disabled):focus {
+  .p-menuitem-link:not(.p-disabled):focus-visible {
   border: 3px solid #0b4bc8;
 }
 
