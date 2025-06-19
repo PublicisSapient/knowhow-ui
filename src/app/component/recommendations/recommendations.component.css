@@ -149,7 +149,7 @@
 }
 
 :host ::ng-deep .p-button:enabled:focus,
-:host ::ng-deep .p-button-outlined:enabled:focus {
+:host ::ng-deep .p-button-outlined:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
 

@@ -193,7 +193,7 @@ div.main {
 }
 
 ::ng-deep .p-button:focus,
-button.btn:enabled:focus {
+button.btn:enabled:focus-visible {
   box-shadow: none;
   outline: 3px solid #0b4bc8;
 }

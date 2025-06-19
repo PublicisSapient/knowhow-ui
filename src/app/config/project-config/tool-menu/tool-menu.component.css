@@ -337,7 +337,7 @@ small {
   font-weight: normal;
 }
 
-::ng-deep .p-button:enabled:focus {
+::ng-deep .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
 

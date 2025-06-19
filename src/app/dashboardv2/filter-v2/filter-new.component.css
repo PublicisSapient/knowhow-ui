@@ -384,13 +384,13 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   z-index: 1001;
 }
 
-:host ::ng-deep .p-button:enabled:focus {
+:host ::ng-deep .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
 
 .kpi-search-container {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
 }
 

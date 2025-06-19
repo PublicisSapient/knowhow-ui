@@ -114,6 +114,6 @@ div.main {
   height: 23px;
 }
 
-:host .p-button:enabled:focus {
+:host .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }

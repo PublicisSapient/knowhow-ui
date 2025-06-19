@@ -22,7 +22,7 @@
 .autocomplete label:focus,
 .autocomplete div,
 .autocomplete span,
-.autocomplete .form-control:focus {
+.autocomplete .form-control:focus-visible {
   outline: 0;
   box-shadow: none;
 }

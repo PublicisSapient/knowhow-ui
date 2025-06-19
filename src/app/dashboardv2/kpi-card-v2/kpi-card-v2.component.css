@@ -283,7 +283,7 @@
   border: 2px solid #eaedf0;
 }
 
-:host ::ng-deep .p-selectbutton .p-button:focus {
+:host ::ng-deep .p-selectbutton .p-button:focus-visible {
   border: 2px solid #0b4bc8;
 }
 

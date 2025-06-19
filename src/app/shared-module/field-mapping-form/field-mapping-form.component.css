@@ -216,6 +216,6 @@ label.btn-import-label {
   display: flex;
 }
 
-.p-button:enabled:focus {
+.p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }

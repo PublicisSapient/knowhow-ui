@@ -53,7 +53,7 @@ header {
   .p-tabmenu
   .p-tabmenu-nav
   li.p-highlight
-  .p-menuitem-link:focus {
+  .p-menuitem-link:focus-visible {
   background-color: none;
 }
 
