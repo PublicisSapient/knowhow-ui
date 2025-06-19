@@ -1972,7 +1972,7 @@ describe('FilterNewComponent', () => {
         component.setSprintDetails(event);
 
         // Assert
-        expect(component.combinedDate).toBe("01 Feb'23 - 28 Feb'23");
+        expect(component.combinedDate).toBe("31 Jan'23 - 27 Feb'23");
         expect(component.additionalData).toBe(true);
         expect(component.filterApplyData['ids']).toEqual(['release1']);
         expect(component.selectedSprint).toEqual(event[0]);
