@@ -49,7 +49,7 @@ export class KpiHelperService {
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
     let excludeCatForTotal = categoryGroup
-      .filter((cat) => cat.categoryValue === 'NA')
+      ?.filter((cat) => cat.categoryValue === 'NA')
       .map((cat) => cat.categoryName);
     let selectedDataGroup;
     let unit;
