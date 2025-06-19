@@ -55,9 +55,9 @@
                                 {{col.header}}
                             </th>
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
-                                      formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
+                                      formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr' ||formTitle?.toLowerCase() == 'rally' ">Edit</th>
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
-                                      formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
+                                      formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr' &&formTitle?.toLowerCase() !== 'rally'">Delete</th>
                         </tr>
                     </ng-template>
 
@@ -67,14 +67,14 @@
                                 [attr.aria-label]="col.header + ': ' + tool[col.field]">
                                 {{tool[col.field]}}
                             </td>
-                            <td role="cell" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
+                            <td role="cell" *ngIf="formTitle?.toLowerCase() == 'jira' ||formTitle?.toLowerCase() == 'rally' || formTitle?.toLowerCase() == 'jiratest' ||
                                 formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
                                 <div class="action-btns p-d-flex p-justify-center" tabindex="0" role="button"
                                      (click)="editTool(tool)" (keydown.enter)="editTool(tool)" aria-label="Edit tool {{tool.name}}">
                                     <i class="far fa-edit" aria-hidden="true"></i>
                                 </div>
                             </td>
-                            <td role="cell" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
+                            <td role="cell" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'rally' && formTitle?.toLowerCase() !== 'jiratest' &&
                                 formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
                                 <div class="action-btns p-d-flex p-justify-center" tabindex="0" role="button"
                                      (click)="confirmDeteleTool(tool)" (keydown.enter)="confirmDeteleTool(tool)" aria-label="Delete tool {{tool.name}}">
