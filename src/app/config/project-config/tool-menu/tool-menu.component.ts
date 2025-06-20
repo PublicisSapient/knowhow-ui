@@ -363,9 +363,11 @@ export class ToolMenuComponent implements OnInit {
               },
             ];
           }
-
           const jiraOrAzure = response['data']?.filter(
-            (tool) => tool.toolName === 'Jira' || tool.toolName === 'Azure',
+            (tool) =>
+              tool.toolName === 'Jira' ||
+              tool.toolName === 'Azure' ||
+              tool.toolName === 'Rally',
           );
           if (jiraOrAzure.length) {
             const fakeEvent = {
