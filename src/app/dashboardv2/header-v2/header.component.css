@@ -156,7 +156,7 @@ header {
 .tab-button button:hover {
   color: #0056b3;
 }
-.disablePointer{
+.disablePointer {
   pointer-events: none;
 }
 
