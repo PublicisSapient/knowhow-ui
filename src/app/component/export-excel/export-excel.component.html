@@ -23,7 +23,7 @@
     <div class="dialog-body p-mb-4">
       <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage" [reorderableColumns]="true"
         [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [columns]="modalDetails['tableHeadings']"
-        [scrollable]="true" scrollHeight="65vh"  >
+        [scrollable]="true" scrollHeight="65vh" >  
         <ng-template pTemplate="caption">
           <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
             selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
