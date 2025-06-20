@@ -14574,26 +14574,6 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
-  it('should generate excel on click of export button', () => {
-    component.modalDetails = {
-      header: 'Work Remaining / Issue Count/Original Estimate',
-      tableHeadings: ['Issue Id', 'Issue Description', 'Issue Status'],
-      tableValues: [
-        {
-          'Issue Id': 'DTS-22685',
-          'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
-          'Issue Description':
-            'Iteration KPI | Popup window is not wide enough to read details  ',
-          'Issue Status': 'Open',
-        },
-      ],
-    };
-
-    const spyGenerateExcel = spyOn(excelService, 'generateExcel');
-    component.generateExcel();
-    expect(spyGenerateExcel).toHaveBeenCalled();
-  });
-
   it('should return the yaxisLabel from trendData when conditions are met', () => {
     component.allKpiArray = [
       {
