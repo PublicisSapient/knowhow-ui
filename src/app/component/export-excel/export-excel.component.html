@@ -23,7 +23,7 @@
     <div class="dialog-body p-mb-4">
       <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage" [reorderableColumns]="true"
         [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [columns]="modalDetails['tableHeadings']"
-        [scrollable]="true" scrollHeight="65vh" >  
+        [scrollable]="true" scrollHeight="65vh" >
         <ng-template pTemplate="caption">
           <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
             selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -84,7 +84,7 @@
               <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4 ? '380px' : '190px'}" tabindex="0" (keydown.enter)="openOnEnter($event)">
                 <div class="cell-indicator">
                   <div class="color-indicator" [ngStyle]="{'background-color': rowData['marker'] ? rowData['marker'] : ''}"></div>
-                  <a *ngIf="typeOf(rowData[column],rowData,column) else simpleText" [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank" aria-label="Link to {{rowData[column]?.text}}">{{rowData[column]?.text}}</a>
+                  <a *ngIf="typeOf(rowData[column]) else simpleText" [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank" aria-label="Link to {{rowData[column]?.text}}">{{rowData[column]?.text}}</a>
                   <ng-template #simpleText>{{rowData[column]}}</ng-template>
                 </div>
               </td>
