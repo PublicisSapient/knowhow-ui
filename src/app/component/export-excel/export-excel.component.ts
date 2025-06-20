@@ -349,7 +349,7 @@ export class ExportExcelComponent implements OnInit {
     }
   }
 
-  typeOf(value, rowdata?, column?) {
+  typeOf(value) {
     return typeof value === 'object' && value !== null;
   }
 
