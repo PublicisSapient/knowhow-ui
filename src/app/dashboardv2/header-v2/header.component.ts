@@ -158,8 +158,7 @@ export class HeaderComponent implements OnInit {
     this.backToDashboardLoader = true;
     this.router.navigateByUrl(this.lastVisitedFromUrl);
     this.backToDashboardLoader = false;
-    //dts-46119
-    // this.sharedService.switchBoard.next(true);
+    this.sharedService.switchBoard.next(true);
   }
 
   getNotification() {
@@ -225,8 +224,7 @@ export class HeaderComponent implements OnInit {
         detail: '',
       });
     } else {
-      //dts-46119
-      // this.lastVisitedFromUrl = window.location.hash.substring(1);
+      this.lastVisitedFromUrl = window.location.hash.substring(1);
       this.router.navigate(['/dashboard/Report/default-report']);
     }
   }
