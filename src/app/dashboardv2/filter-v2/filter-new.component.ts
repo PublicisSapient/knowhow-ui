@@ -2442,21 +2442,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.isSearchingKPI = true;
         try {
           const res = await this.httpService.aiKpiSearch(query).toPromise();
-          this.filteredKpis = this.groupedKpiOptions
-            .map((group) => ({
-              ...group,
-              items: group.items.filter((item) =>
-                res.includes(item.value.kpiId),
-              ),
-            }))
-            .filter((group) => group.items.length > 0);
+          if (res['kpis'].length !== 0) {
+            this.filteredKpis = this.groupedKpiOptions
+              .map((group) => ({
+                ...group,
+                items: group.items.filter((item) =>
+                  res['kpis'].includes(item.value.kpiId),
+                ),
+              }))
+              .filter((group) => group.items.length > 0);
 
-          // Cache the results
-          this.kpiSearchCache[query] = this.filteredKpis;
+            // Cache the results
+            this.kpiSearchCache[query] = this.filteredKpis;
 
-          // Force change detection and show dropdown
-          this.cdr.detectChanges();
-          this.showAutoCompleteDropdown();
+            // Force change detection and show dropdown
+            this.cdr.detectChanges();
+            this.showAutoCompleteDropdown();
+          } else {
+            this.isSearchingKPI = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: res.message,
+            });
+          }
         } catch (error) {
           console.error('AI search failed:', error);
           this.messageService.add({
@@ -2469,9 +2477,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }, 300);
 
-  onKpiSearch() {
-    const selectedSource = this.selectedKPI['value'].source;
-    this.onKPISearch.emit(this.selectedKPI);
+  onKpiSearch(event) {
+    const selectedSource = event.value.source;
+    this.onKPISearch.emit(event);
     if (this.selectedType !== selectedSource) {
       setTimeout(() => {
         this.setSelectedType(selectedSource);

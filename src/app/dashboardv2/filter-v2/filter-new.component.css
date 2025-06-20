@@ -388,11 +388,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   outline: 3px solid #0b4bc8;
 }
 
-.kpi-search-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+/* .kpi-search-container {
+} */
 
 :host ::ng-deep .p-fluid .p-autocomplete-dd .p-autocomplete-input {
   border: 1px solid #d7dade !important;
@@ -413,14 +410,17 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: var(--color-black);
 }
 
+:host ::ng-deep .kpi-search {
+  width: 500px;
+  position: relative;
+}
+
 :host ::ng-deep .p-autocomplete-input {
-  width: 200px;
+  width: 500px;
   height: 40px;
   line-height: 40px;
   font-size: 14px;
-  padding: 0 1rem;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  padding: 1rem 4rem 1rem 3rem;
   border-color: #d5dbe1;
 }
 
@@ -431,4 +431,27 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 :host ::ng-deep .p-button.p-button-icon-only {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.search-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+}
+
+.reset-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+.loader-icon {
+  position: absolute;
+  top: 8px;
+  right: -110px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
 }
