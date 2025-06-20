@@ -23,7 +23,7 @@
     <div class="dialog-body p-mb-4">
       <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage" [reorderableColumns]="true"
         [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [columns]="modalDetails['tableHeadings']"
-        [scrollable]="true" scrollHeight="65vh" >
+        [scrollable]="true" scrollHeight="65vh"  >
         <ng-template pTemplate="caption">
           <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
             selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -48,7 +48,7 @@
                 <div class="table-head" >
                   <span [ngStyle]="{'width':'max-content'}">{{item}}</span>
                   <div class="p-d-flex">
-                    <p-columnFilter [field]="item" matchMode="in"
+                    <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"
                       [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                       [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                       <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
@@ -69,7 +69,7 @@
                         </p-multiSelect>
                       </ng-template>
                     </p-columnFilter>
-                    <p-sortIcon [field]="sortableColumn(item,modalDetails)" aria-label="Sort by column"></p-sortIcon>
+                    <p-sortIcon [field]="sortableColumn(item,modalDetails)" aria-label="Sort by column"  *ngIf="!excludeColumnFilter.includes(item)"></p-sortIcon>
                   </div>
                 </div>
               </th>

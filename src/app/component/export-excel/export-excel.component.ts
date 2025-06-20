@@ -34,7 +34,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumnData = {};
   tableColumnForm = {};
   filteredColumn;
-  //excludeColumnFilter = [];
+  excludeColumnFilter = [];
   //includeColumnFilter = [];
   selectedColumns = []; // store all columns which is default or shown in table
   tableColumns = []; // store all table coumns with configurations
@@ -267,7 +267,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   clearModalDataOnClose() {
-    //this.excludeColumnFilter = [];
+    this.excludeColumnFilter = [];
     //this.includeColumnFilter = [];
     this.tableColumnData = {};
     this.tableColumnForm = {};
@@ -297,7 +297,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    // this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
+     this.excludeColumnFilter = ['Linked Defect','Linked Stories'];
     // this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(
@@ -551,11 +551,6 @@ export class ExportExcelComponent implements OnInit {
     if (!att) {
       return;
     }
-    console.log('att', att);
-    console.log(
-      'hyperlink',
-      att.startsWith('http://') || att.startsWith('https://'),
-    );
     return att.startsWith('http://') || att.startsWith('https://');
   }
 
