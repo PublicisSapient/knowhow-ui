@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -51,6 +51,9 @@ export class RecommendationsComponent implements OnInit {
   formattedPersona: any;
   isError: boolean = false;
   isTemplateLoading: boolean = false;
+
+  @ViewChild('loadingScreen') loadingScreen: ElementRef;
+  @ViewChild('generatedReport') generatedReport: ElementRef;
 
   constructor(
     private httpService: HttpService,
@@ -211,6 +214,9 @@ export class RecommendationsComponent implements OnInit {
 
     this.isReportGenerated = false;
     this.isLoading = true;
+    if (this.isLoading && this.loadingScreen) {
+      this.loadingScreen.nativeElement.focus();
+    }
     this.isError = false;
 
     // --- send request body to backend to get sprint data response
@@ -222,6 +228,9 @@ export class RecommendationsComponent implements OnInit {
       next: (response: any) => {
         this.isLoading = false;
         this.isReportGenerated = true;
+        if (!this.isLoading && this.generatedReport) {
+          this.generatedReport.nativeElement.focus();
+        }
         this.isError = false;
 
         const resp = response?.data[0];

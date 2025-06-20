@@ -38,9 +38,12 @@
         (onAdditionalFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
     </ng-container>
   </div>
-
-  <div class="p-d-flex p-jc-end p-pr-0 kpi-search-container">
-    <span *ngIf="isSearchingKPI"><i class="pi pi-spin pi-spinner" style="font-size: 2rem; margin-right: 10px;"></i></span>
+</div>
+<div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
+  <div class="p-d-flex p-ai-center kpi-search">
+    <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
+    <span class="search-icon"><i class="pi pi-search" style="font-size: 1.5rem;"></i></span>
+    <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem;" (click)="selectedKPI = ''" (keydown.enter)="selectedKPI = null"></i></span>
     <p-autoComplete
       #autoComplete
       [suggestions]="filteredKpis"
@@ -50,13 +53,11 @@
       [optionGroupLabel]="'label'"
       [optionGroupChildren]="'items'"
       (completeMethod)="debouncedFilterKpis($event)"
-      [placeholder]="'Search for KPI'">
+      [placeholder]="'Search for KPI'"
+      (onSelect)="onKpiSearch($event)">
     </p-autoComplete>
-    <p-button icon="pi pi-search" iconPos="right" (onClick)="onKpiSearch()"></p-button>
-    <p-button icon="pi pi-times" label="Clear" class="p-ml-2" (onClick)="selectedKPI = null" [disabled]="!selectedKPI"></p-button>
-    <!-- <button pButton pRipple type="button" icon="pi pi-search" label="AI Search" class="p-button-rounded"></button>
-    <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
   </div>
+  <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">

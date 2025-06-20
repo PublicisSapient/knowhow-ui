@@ -24,6 +24,7 @@ import {
   ViewChild,
   ChangeDetectorRef,
   Renderer2,
+  ElementRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -149,6 +150,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   nonUniqueNames: boolean;
 
   private destroy$ = new Subject<void>();
+  @ViewChild('recommendationsComponent', { read: ElementRef })
+  recommendationsComponent: ElementRef;
 
   constructor(
     public service: SharedService,
@@ -4886,6 +4889,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       setTimeout(() => {
         this.renderer2.removeClass(element, 'highlighted');
       }, 1000);
+    }
+  }
+
+  goToRecommendation() {
+    console.log('goToRecommendation', this.recommendationsComponent);
+    if (this.recommendationsComponent) {
+      this.recommendationsComponent.nativeElement.children[0].firstChild.focus();
+      // this.recommendationsComponent.nativeElement.scrollIntoView({
+      //   behaviour: 'smooth',
+      //   block: 'start',
+      // });
     }
   }
 }
