@@ -156,6 +156,9 @@ header {
 .tab-button button:hover {
   color: #0056b3;
 }
+.disablePointer {
+  pointer-events: none;
+}
 
 @media print {
   :host ::ng-deep header nav .tab-container {
