@@ -208,19 +208,21 @@ export class RecommendationsComponent implements OnInit {
   }
 
   generateSprintReport() {
-    this.kpiFilterData['recommendationFor'] = this.selectedRole;
-    this.kpiFilterData['selectedMap']['sprint'] =
-      this.selectedCurrentProjectSprintsCode;
+    if (this.kpiFilterData) {
+      this.kpiFilterData['recommendationFor'] = this.selectedRole;
+      this.kpiFilterData['selectedMap']['sprint'] =
+        this.selectedCurrentProjectSprintsCode;
 
-    this.isReportGenerated = false;
-    this.isLoading = true;
-    if (this.isLoading && this.loadingScreen) {
-      this.loadingScreen.nativeElement.focus();
+      this.isReportGenerated = false;
+      this.isLoading = true;
+      if (this.isLoading && this.loadingScreen) {
+        this.loadingScreen.nativeElement.focus();
+      }
+      this.isError = false;
+
+      // --- send request body to backend to get sprint data response
+      this.getSprintData(this.kpiFilterData);
     }
-    this.isError = false;
-
-    // --- send request body to backend to get sprint data response
-    this.getSprintData(this.kpiFilterData);
   }
 
   getSprintData(reqBody: any): void {

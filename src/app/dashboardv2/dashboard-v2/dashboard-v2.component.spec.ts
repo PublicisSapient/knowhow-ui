@@ -71,7 +71,6 @@ describe('DashboardV2Component', () => {
     fixture = TestBed.createComponent(DashboardV2Component);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
-
     fixture.detectChanges();
   });
 
