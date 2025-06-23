@@ -4893,7 +4893,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   goToRecommendation() {
-    console.log('goToRecommendation', this.recommendationsComponent);
     if (this.recommendationsComponent) {
       this.recommendationsComponent.nativeElement.children[0].firstChild.focus();
       // this.recommendationsComponent.nativeElement.scrollIntoView({
