@@ -126,7 +126,7 @@
   background: #d38eec;
 }
 :host ::ng-deep .p-dialog {
-  width: 50vw !important;
+  width: 75vw !important;
 }
 .red {
   color: var(--color-red);
