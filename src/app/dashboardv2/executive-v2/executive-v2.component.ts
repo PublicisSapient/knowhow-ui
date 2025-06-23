@@ -4902,4 +4902,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       // });
     }
   }
+
+  onFocusGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.remove('sr-only');
+  }
+
+  onBlurGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.add('sr-only');
+  }
 }
