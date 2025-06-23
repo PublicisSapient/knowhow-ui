@@ -94,6 +94,10 @@ export class DashboardV2Component implements AfterContentInit {
     this.isApply = false;
   }
 
+  /**
+   * Update the KPISearchQuery data in navNewComponent and send the searchDataQuery to shared service
+   * @param searchDataQuery KPISearchQuery data from navNewComponent
+   */
   receiveKPISearchQuery(searchDataQuery) {
     if (this.navNewComponent) {
       this.navNewComponent.updateDataDirectly(searchDataQuery);
