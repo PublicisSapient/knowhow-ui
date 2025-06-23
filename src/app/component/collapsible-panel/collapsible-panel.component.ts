@@ -226,22 +226,32 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     // --- Set loading/visibility only for this project --- //
     this.isSummaryAvailableMap[projectName] = false;
 
-    // --- post call with the above request body --- //
-    this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
-      next: (res) => {
-        this.isSummaryAvailableMap[projectName] = true;
-        this.summarisedSprintGoalsMap[projectName] = res;
-        this.defaultMessage = false;
-      },
-      error: (error) => {
-        console.error('Error summarising sprint goals:', error);
-        this.summarisedSprintGoalsMap[
-          projectName
-        ] = `Failed to summarize: ${error.message}`;
-        this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
-        this.defaultMessage = false;
-      },
-    });
+    const existingSummary = this.sharedService.getSprintGoalSUmmerizeData(
+      requestBody.sprintGoals.join('||'),
+    );
+
+    if (existingSummary) {
+      this.summarisedSprintGoalsMap[projectName] = { summary: existingSummary };
+    } else {
+      // --- post call with the above request body --- //
+      this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
+        next: (res) => {
+          this.summarisedSprintGoalsMap[projectName] = res;
+          // Store the summary in shared service for future use
+          this.sharedService.setSprintGoalSUmmerizeData({
+            [requestBody.sprintGoals.join('||')]: res.summary,
+          });
+        },
+        error: (error) => {
+          console.error('Error summarising sprint goals:', error);
+          this.summarisedSprintGoalsMap[
+            projectName
+          ] = `Failed to summarize: ${error.message}`;
+        },
+      });
+    }
+    this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
+    this.defaultMessage = false;
   }
 
   ngOnDestroy() {

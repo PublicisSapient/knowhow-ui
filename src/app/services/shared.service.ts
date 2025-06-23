@@ -147,6 +147,8 @@ export class SharedService {
   onSelectedReportChange = new Subject<any>();
   onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
   currentProjectSprints: any;
+  sprintGoalSUmmerizeData: any = {};
+  CACHE_KEY = 'sprintGoalSummaryCache';
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
@@ -845,6 +847,26 @@ export class SharedService {
 
   getCurrentProjectSprints() {
     return this.currentProjectSprints;
+  }
+
+  getSprintGoalSUmmerizeData(array) {
+    const summaryCache = localStorage.getItem(this.CACHE_KEY);
+    this.sprintGoalSUmmerizeData = summaryCache ? JSON.parse(summaryCache) : {};
+    if (this.sprintGoalSUmmerizeData.hasOwnProperty(array)) {
+      return this.sprintGoalSUmmerizeData[array];
+    }
+    return '';
+  }
+
+  setSprintGoalSUmmerizeData(data) {
+    this.sprintGoalSUmmerizeData = {
+      ...this.sprintGoalSUmmerizeData,
+      ...data,
+    };
+    localStorage.setItem(
+      this.CACHE_KEY,
+      JSON.stringify(this.sprintGoalSUmmerizeData),
+    );
   }
 
   //#endregion
