@@ -18,6 +18,7 @@
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { KpiFilterComponent } from './kpi-filter.component';
+import { DropdownModule } from 'primeng/dropdown';
 
 describe('KpiFilterComponent', () => {
   let component: KpiFilterComponent;
@@ -26,6 +27,7 @@ describe('KpiFilterComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [KpiFilterComponent],
+      imports: [DropdownModule],
     }).compileComponents();
   }));
 
