@@ -235,11 +235,11 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       // --- post call with the above request body --- //
       this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.summarisedSprintGoalsMap[projectName] = res;
           // Store the summary in shared service for future use
           this.sharedService.setSprintGoalSUmmerizeData({
-            [requestBody.sprintGoals.join('||')]: res.summary,
+            [requestBody.sprintGoals.join('||')]: res?.summary,
           });
         },
         error: (error) => {
