@@ -33,6 +33,65 @@ export class ProfileComponent implements OnInit {
   isProjectAdmin = false;
   changePswdDisabled = false;
   loginType = '';
+  menuItems = [
+    {
+      label: 'My Profile',
+      icon: 'fas fa-user-circle',
+      routerLink: ['/dashboard/Config/Profile/MyProfile'],
+      routerLinkActiveOptions: { exact: true },
+    },
+    {
+      label: 'Grant Project Access',
+      icon: 'fa fa-user-plus',
+      routerLink: ['/dashboard/Config/Profile/GrantRequests'],
+      routerLinkActiveOptions: { exact: true },
+      visible: this.isSuperAdmin || this.isProjectAdmin,
+    },
+    {
+      label: 'Grant User Access',
+      icon: 'fa fa-unlock-alt',
+      routerLink: ['/dashboard/Config/Profile/GrantNewUserAuthRequests'],
+      routerLinkActiveOptions: { exact: true },
+      visible: this.isSuperAdmin,
+    },
+    {
+      label: 'Manage Access',
+      icon: 'fa fa-universal-access',
+      routerLink: ['/dashboard/Config/Profile/AccessMgmt'],
+      routerLinkActiveOptions: { exact: true },
+      visible: this.isSuperAdmin,
+    },
+    {
+      label: 'Raise Request',
+      icon: 'fa fa-unlock-alt',
+      routerLink: ['/dashboard/Config/Profile/RaiseRequest'],
+      routerLinkActiveOptions: { exact: true },
+      visible: !this.isSuperAdmin,
+    },
+    {
+      label: 'My Requests',
+      icon: 'fa fa-address-card',
+      routerLink: ['/dashboard/Config/Profile/RequestStatus'],
+      routerLinkActiveOptions: { exact: true },
+      visible: !this.isSuperAdmin,
+    },
+    {
+      label: 'Change Password',
+      icon: 'fa fa-key',
+      routerLink: ['/dashboard/Config/Profile/UserSettings'],
+      routerLinkActiveOptions: { exact: true },
+      visible: this.loginType?.toLowerCase() === 'standard',
+      disabled: this.changePswdDisabled,
+    },
+    {
+      label: 'Auto Approve',
+      icon: 'fas fa-check-circle',
+      routerLink: ['/dashboard/Config/Profile/AutoApprove'],
+      routerLinkActiveOptions: { exact: true },
+      visible: this.isSuperAdmin,
+    },
+  ];
+
   constructor(
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
