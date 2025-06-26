@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -173,7 +175,8 @@ export class RecommendationsComponent implements OnInit {
   }
 
   selectAllSprints() {
-    this.selectedSprints = [...this.sprintOptions];
+    // this.selectedSprints = [...this.sprintOptions];
+    this.selectedSprints = this.sprintOptions.slice(-6);
     this.onSprintsSelection(this.selectedSprints);
   }
 
@@ -263,5 +266,48 @@ export class RecommendationsComponent implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  exportAsPDF(): void {
+    const element = document.getElementById('generatedReport');
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const padding = 20;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const aspectRatio = imgProps.height / imgProps.width;
+
+      const pdfWidth = pageWidth - 2 * padding;
+      const pdfHeight = pdfWidth * aspectRatio;
+
+      const centeredX = (pageWidth - pdfWidth) / 2;
+      const startY = padding;
+
+      // Adjust image if it's longer than one page
+      let position = padding;
+      if (pdfHeight < pageHeight) {
+        pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
+      } else {
+        // Multi-page logic
+        let heightLeft = pdfHeight;
+        while (heightLeft > 0) {
+          pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
+          heightLeft -= pageHeight;
+          if (heightLeft > 0) {
+            pdf.addPage();
+            position = -heightLeft;
+          }
+        }
+      }
+
+      pdf.save('project-summary.pdf');
+    });
   }
 }
