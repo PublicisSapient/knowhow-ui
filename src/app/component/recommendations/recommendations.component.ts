@@ -111,6 +111,7 @@ export class RecommendationsComponent implements OnInit {
     this.tabs = [];
     this.tabsContent = {};
     this.isTemplateLoading = true;
+    this.isReportGenerated = false;
     this.httpService.getRecommendations(this.kpiFilterData).subscribe(
       (response: any) => {
         this.aiRecommendations = false;
@@ -232,6 +233,7 @@ export class RecommendationsComponent implements OnInit {
   }
 
   getSprintData(reqBody: any): void {
+    this.isReportGenerated = false;
     this.cancelCurrentRequest$.next();
     this.httpService
       .getRecommendations(reqBody)
@@ -275,7 +277,6 @@ export class RecommendationsComponent implements OnInit {
     this.selectedCurrentProjectSprintsCode = [];
     this.isRoleSelected = false;
     this.isSprintSelected = false;
-    this.isReportGenerated = false;
     this.isError = false;
   }
 
