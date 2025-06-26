@@ -234,7 +234,7 @@
       </div>
     </article>
 
-    <article class="p-fluid generated-report-container" *ngIf="isReportGenerated">
+    <article class="p-fluid generated-report-container" id="generatedReport" *ngIf="isReportGenerated">
       <h3
         class="p-text-center p-mb-5"
         style="font-size: 1.6rem"
@@ -244,6 +244,7 @@
       <section class="p-my-5 p-d-flex p-jc-between">
         <div><strong>Customised for:</strong> {{formattedPersona[0]['label']}}</div>
         <div><strong>Date generated:</strong> {{currentDate}}</div>
+        <div><strong>Considered data interval: </strong> Last {{selectedSprints.length}} sprints</div>
         <!-- <div></div> -->
       </section>
 
@@ -290,10 +291,22 @@
       <p-button
         label="Generate Report"
         styleClass="p-button p-ml-4"
-        aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
         *ngIf="!isLoading && !isReportGenerated"
+      ></p-button>
+      <p-button
+        label="Share via Email"
+        icon="pi pi-external-link"
+        styleClass="p-button p-ml-4"
+        *ngIf="!isLoading && isReportGenerated"
+      ></p-button>
+      <p-button
+        label="Export as PDF"
+        styleClass="p-button p-ml-4"
+        icon="pi pi-file-export"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="exportAsPDF()"
       ></p-button>
     </article>
   </section>
