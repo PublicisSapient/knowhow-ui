@@ -11,7 +11,9 @@ export class NamePipePipe implements PipeTransform {
         JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
       value = hierarchyData?.filter((h) => h.hierarchyLevelId === value).length
         ? hierarchyData.filter((h) => h.hierarchyLevelId === value)[0]
-            .hierarchyLevelName
+            .hierarchyLevelName ||
+          hierarchyData.filter((h) => h.hierarchyLevelId === value)[0]
+            .hierarchyLevelIdName
         : value;
     } else {
       value = 'Project';
