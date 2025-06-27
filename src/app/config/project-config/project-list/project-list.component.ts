@@ -402,8 +402,15 @@ export class ProjectListComponent implements OnInit {
       console.log('Form submitted:', this.newProjectName);
     }
   }
+  dynamicButtons=[]
 
   toggleMenu(event, project) {
+    this.dynamicButtons=[]
+    if(this.getAuthorizationService.checkIfViewer(project)){
+this.dynamicButtons=JSON.parse(JSON.stringify(this.roleBasedItems))
+}else{
+      this.dynamicButtons=JSON.parse(JSON.stringify(this.items))    
+    }
     this.kpimenu.toggle(event);
     this.handleActionsClick(project);
   }
