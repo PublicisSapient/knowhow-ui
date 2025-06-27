@@ -1,5 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -55,6 +57,9 @@ export class RecommendationsComponent implements OnInit {
   @ViewChild('loadingScreen') loadingScreen: ElementRef;
   @ViewChild('generatedReport') generatedReport: ElementRef;
 
+  private destroy$ = new Subject<void>();
+  private cancelCurrentRequest$ = new Subject<void>();
+
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
@@ -106,6 +111,7 @@ export class RecommendationsComponent implements OnInit {
     this.tabs = [];
     this.tabsContent = {};
     this.isTemplateLoading = true;
+    this.isReportGenerated = false;
     this.httpService.getRecommendations(this.kpiFilterData).subscribe(
       (response: any) => {
         this.aiRecommendations = false;
@@ -188,6 +194,7 @@ export class RecommendationsComponent implements OnInit {
 
   onDialogClose() {
     this.resetSelections();
+    this.cancelCurrentRequest$.next();
   }
 
   onRoleChange(event) {
@@ -226,29 +233,45 @@ export class RecommendationsComponent implements OnInit {
   }
 
   getSprintData(reqBody: any): void {
-    this.httpService.getRecommendations(reqBody).subscribe({
-      next: (response: any) => {
-        this.isLoading = false;
-        this.isReportGenerated = true;
-        if (!this.isLoading && this.generatedReport) {
+    this.isReportGenerated = false;
+    this.cancelCurrentRequest$.next();
+    this.httpService
+      .getRecommendations(reqBody)
+      .pipe(
+        takeUntil(this.cancelCurrentRequest$),
+        takeUntil(this.destroy$), // Also cancel on component destroy
+        finalize(() => {
+          // This runs whether completed, errored, or cancelled
+          this.isLoading = false;
+          this.onDialogClose();
+        }),
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.isLoading = false;
+          this.isReportGenerated = true;
+          if (!this.isLoading && this.generatedReport) {
+            this.generatedReport.nativeElement.focus();
+          }
+          if (!this.isLoading && this.generatedReport) {
           this.generatedReport.nativeElement.focus();
         }
         this.isError = false;
 
-        const resp = response?.data[0];
-        this.projectScore = +resp?.projectScore || 0;
-        this.recommendationsList = resp?.recommendations || [];
-      },
-      error: (err) => {
-        console.error('Failed to fetch sprint recommendations:', err);
-        this.isError = true;
-        this.isLoading = false;
-        this.isReportGenerated = false;
-        this.projectScore = 0;
-        this.recommendationsList = [];
-        // Optionally: show a toast/alert to the user
-      },
-    });
+          const resp = response?.data[0];
+          this.projectScore = +resp?.projectScore || 0;
+          this.recommendationsList = resp?.recommendations || [];
+        },
+        error: (err) => {
+          console.error('Failed to fetch sprint recommendations:', err);
+          this.isError = true;
+          this.isLoading = false;
+          this.isReportGenerated = false;
+          this.projectScore = 0;
+          this.recommendationsList = [];
+          // Optionally: show a toast/alert to the user
+        },
+      });
   }
 
   resetSelections() {
@@ -257,7 +280,6 @@ export class RecommendationsComponent implements OnInit {
     this.selectedCurrentProjectSprintsCode = [];
     this.isRoleSelected = false;
     this.isSprintSelected = false;
-    this.isReportGenerated = false;
     this.isError = false;
   }
 
@@ -274,5 +296,11 @@ export class RecommendationsComponent implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cancelCurrentRequest$.complete();
   }
 }
