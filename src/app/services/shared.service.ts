@@ -148,6 +148,9 @@ export class SharedService {
   onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
   currentProjectSprints: any;
 
+  private searchQueryBSubject = new BehaviorSubject<any>(null);
+  public searchQuery$ = this.searchQueryBSubject.asObservable();
+
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -845,6 +848,14 @@ export class SharedService {
 
   getCurrentProjectSprints() {
     return this.currentProjectSprints;
+  }
+
+  updateValue(value: any) {
+    this.searchQueryBSubject.next(value);
+  }
+
+  getCurrentValue() {
+    return this.searchQueryBSubject.value;
   }
 
   //#endregion

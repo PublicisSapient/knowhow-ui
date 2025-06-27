@@ -115,6 +115,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+*:focus-visible {
+  outline: 3px solid #0b4bc8;
+  border-radius: 5px;
+}
+
 a {
   text-decoration: none;
 }
@@ -135,7 +141,7 @@ a {
 .p-splitbutton.p-button-success > .p-button:enabled:active,
 .p-button.p-button-success:enabled:focus,
 .p-buttonset.p-button-success > .p-button:enabled:focus,
-.p-splitbutton.p-button-success > .p-button:enabled:focus {
+.p-splitbutton.p-button-success > .p-button:enabled:focus-visible {
   background: #06a0ff;
 }
 .p-button.p-button-secondary.p-button-text,
@@ -155,7 +161,7 @@ a {
 .p-splitbutton.p-button-secondary > .p-button:enabled:hover,
 .p-button.p-button-secondary:enabled:focus,
 .p-buttonset.p-button-secondary > .p-button:enabled:focus,
-.p-splitbutton.p-button-secondary > .p-button:enabled:focus {
+.p-splitbutton.p-button-secondary > .p-button:enabled:focus-visible {
   background: #6b6b6b;
 }
 .p-button.p-button-secondary.p-button-text:enabled:hover,
@@ -169,7 +175,8 @@ a {
 .p-buttonset.p-button-secondary > .p-button.p-button-text:enabled:focus,
 .p-buttonset.p-button-secondary > .p-button.p-button-outlined:enabled:focus,
 .p-splitbutton.p-button-secondary > .p-button.p-button-text:enabled:focus,
-.p-splitbutton.p-button-secondary > .p-button.p-button-outlined:enabled:focus {
+.p-splitbutton.p-button-secondary
+  > .p-button.p-button-outlined:enabled:focus-visible {
   color: #222222;
   background: rgba(0, 0, 0, 0.12);
 }
@@ -1110,7 +1117,7 @@ h3 {
   text-decoration: none;
 }
 
-#add-config .ui-accordion-header a:focus {
+#add-config .ui-accordion-header a:focus-visible {
   outline: 0;
   -webkit-appearance: none;
   box-shadow: none;
@@ -1585,8 +1592,8 @@ a:hover {
   background: none;
   border: none;
 }
-.action-btns:focus {
-  outline: 3px solid #000;
+.action-btns:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
 .table-head-fixed {
   position: sticky;
