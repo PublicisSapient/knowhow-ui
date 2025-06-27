@@ -254,9 +254,9 @@ export class RecommendationsComponent implements OnInit {
             this.generatedReport.nativeElement.focus();
           }
           if (!this.isLoading && this.generatedReport) {
-          this.generatedReport.nativeElement.focus();
-        }
-        this.isError = false;
+            this.generatedReport.nativeElement.focus();
+          }
+          this.isError = false;
 
           const resp = response?.data[0];
           this.projectScore = +resp?.projectScore || 0;
