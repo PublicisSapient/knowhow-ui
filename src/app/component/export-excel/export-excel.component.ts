@@ -553,7 +553,7 @@ export class ExportExcelComponent implements OnInit {
     let match = att.match(/DRP-\d+/);
 
     if (match) {
-      return match[0]; // "DRP-XXXXX"
+      return match[0];
     }
   }
 }
