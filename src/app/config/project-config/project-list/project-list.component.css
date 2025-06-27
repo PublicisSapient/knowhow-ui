@@ -59,8 +59,8 @@ div.main {
 }
 
 ::ng-deep .p-datatable .p-sortable-column:focus,
-::ng-deep .p-button:focus {
-  outline: 3px solid #000;
+::ng-deep .p-button:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
 
 .col-head {
