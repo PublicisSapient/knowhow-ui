@@ -150,6 +150,9 @@ export class SharedService {
   sprintGoalSUmmerizeData: any = {};
   CACHE_KEY = 'sprintGoalSummaryCache';
 
+  private searchQueryBSubject = new BehaviorSubject<any>(null);
+  public searchQuery$ = this.searchQueryBSubject.asObservable();
+
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -867,6 +870,13 @@ export class SharedService {
       this.CACHE_KEY,
       JSON.stringify(this.sprintGoalSUmmerizeData),
     );
+  }
+  updateValue(value: any) {
+    this.searchQueryBSubject.next(value);
+  }
+
+  getCurrentValue() {
+    return this.searchQueryBSubject.value;
   }
 
   //#endregion
