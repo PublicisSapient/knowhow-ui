@@ -198,7 +198,9 @@ export class AdvancedSettingsComponent implements OnInit {
           } else {
             that.jiraStatusContinuePulling = false;
             const jiraDAta = that.findTraceLogForTool('Jira');
-           if (jiraDAta) jiraDAta.executionOngoing = false;
+            if (jiraDAta) {
+              jiraDAta.executionOngoing = false;
+            }
           }
         } else {
           this.messageService.add({
