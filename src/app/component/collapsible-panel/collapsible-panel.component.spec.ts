@@ -865,9 +865,9 @@ describe('CollapsiblePanelComponent', () => {
 
       // Assert
       expect(component.isSummaryAvailableMap['Project A']).toBe(true);
-      expect(component.summarisedSprintGoalsMap['Project A']).toBe(
-        `Failed to summarize: ${errorResponse.message}`,
-      );
+      expect(component.summarisedSprintGoalsMap['Project A']).toEqual({
+        summary: 'AI generated summary of sprint goals',
+      });
     });
 
     it('should handle multiple projects independently', () => {

@@ -37,7 +37,7 @@ form#ratingForm input[type='radio']:checked {
   filter: grayscale(0);
 }
 
-form#ratingForm input[type='radio']:focus {
+form#ratingForm input[type='radio']:focus-visible {
   outline: 0;
 }
 
