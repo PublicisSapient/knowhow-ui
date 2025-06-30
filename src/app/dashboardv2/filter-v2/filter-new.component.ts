@@ -4,6 +4,8 @@ import {
   ChangeDetectorRef,
   OnDestroy,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
@@ -14,6 +16,7 @@ import { Subject, interval, of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-filter-new',
@@ -86,8 +89,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   buttonStyleClass = 'default';
   isSuccess = false;
   dashConfigDataDeepCopyBackup: any;
-  refreshCounter = 0;
-  showSprintGoalsPanel = false;
+  refreshCounter: number = 0;
+  showSprintGoalsPanel: boolean = false;
+  selectedKPI: string = '';
+  groupedKpiOptions: any[] = [];
+  filteredKpis: any[];
+
+  @Output() onKPISearch = new EventEmitter<string>();
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
+  isSearchingKPI: boolean = false;
+  private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   constructor(
     private httpService: HttpService,
@@ -578,6 +589,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           tap((response) => {
             if (response.success === true) {
               let data = response.data.userBoardConfigDTO;
+              this.extractUserConfig(data);
+              // let data = this.dummyData.data.userBoardConfigDTO;
               data = this.setLevelNames(data);
               data['configDetails'] = response.data.configDetails;
               this.dashConfigData = data;
@@ -832,7 +845,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const stateFilters = this.service.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      console.log(Object.values(this.colorObj).map((m) => m['nodeId']));
       if (!stateFilters['additional_level']) {
         const selectedFilters = this.filterDataArr[this.selectedType][
           this.selectedLevel
@@ -2399,5 +2411,103 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+  }
+
+  extractUserConfig(data: any) {
+    const allGroupKpiOptions = this.helperService.getGroupedKpiOptions(data);
+    this.groupedKpiOptions = allGroupKpiOptions.map((group) => ({
+      ...group,
+      items: group.items.filter(
+        (item) => item.value.boardSlug !== 'my-knowhow',
+      ),
+    }));
+  }
+
+  debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
+    console.log('groupedKpiOptions ', this.groupedKpiOptions);
+    const query = event.query.toLowerCase();
+    this.filteredKpis = this.groupedKpiOptions
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          item.label.toLowerCase().includes(query),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+
+    if (this.filteredKpis.length === 0) {
+      if (this.kpiSearchCache[query]) {
+        // Use cached results if available
+        this.filteredKpis = this.kpiSearchCache[query];
+        this.cdr.detectChanges();
+        this.showAutoCompleteDropdown();
+      } else {
+        this.isSearchingKPI = true;
+        try {
+          const res = await this.httpService.aiKpiSearch(query).toPromise();
+          if (res['kpis'].length !== 0) {
+            this.filteredKpis = this.groupedKpiOptions
+              .map((group) => ({
+                ...group,
+                items: group.items.filter((item) =>
+                  res['kpis'].includes(item.value.kpiId),
+                ),
+              }))
+              .filter((group) => group.items.length > 0);
+
+            // Cache the results
+            this.kpiSearchCache[query] = this.filteredKpis;
+
+            // Force change detection and show dropdown
+            this.cdr.detectChanges();
+            this.showAutoCompleteDropdown();
+          } else {
+            this.isSearchingKPI = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: res.message,
+            });
+          }
+        } catch (error) {
+          console.error('AI search failed:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: error.message,
+          });
+          this.isSearchingKPI = false;
+        }
+      }
+    }
+  }, 300);
+
+  onKpiSearch(event) {
+    const selectedSource = event.value.source;
+    this.onKPISearch.emit(event);
+    if (this.selectedType !== selectedSource) {
+      setTimeout(() => {
+        this.setSelectedType(selectedSource);
+      }, 500);
+    }
+  }
+
+  showAutoCompleteDropdown() {
+    setTimeout(() => {
+      if (this.autoComplete && this.filteredKpis.length > 0) {
+        // --- Remove focus after HTTP response
+        const inputEl =
+          this.autoComplete.el.nativeElement.querySelector('input');
+        if (inputEl) {
+          inputEl.blur();
+        }
+
+        this.autoComplete.show();
+        // --- Fallback if autoComplete.show() do not work
+        if (!this.autoComplete.overlayVisible) {
+          this.autoComplete.overlayVisible = true;
+          this.autoComplete.onShow.emit();
+        }
+        this.isSearchingKPI = false;
+      }
+    }, 10);
   }
 }
