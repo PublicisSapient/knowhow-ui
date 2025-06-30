@@ -4,8 +4,12 @@ import jsPDF from 'jspdf';
 import { MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
+
+import { FormControl, Validators } from '@angular/forms';
+
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -62,13 +66,25 @@ export class RecommendationsComponent implements OnInit {
   private destroy$ = new Subject<void>();
   private cancelCurrentRequest$ = new Subject<void>();
 
+  toShareViaEmail: boolean = false;
+  emailIds: string[];
+  invalidEmails: string[] = [];
+  private emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
     public service: SharedService,
+    public helperService: HelperService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('init recommendations');
+    const currentUserEmailId = JSON.parse(
+      localStorage.getItem('currentUserDetails'),
+    ).user_email;
+    this.emailIds = [currentUserEmailId];
+  }
 
   getDialogHeader(): string {
     if (this.aiRecommendations) {
@@ -307,46 +323,131 @@ export class RecommendationsComponent implements OnInit {
     this.cancelCurrentRequest$.complete();
   }
 
-  exportAsPDF(): void {
+  openShareEmailField(): void {
+    this.toShareViaEmail = !this.toShareViaEmail;
+  }
+
+  validateEmail(event: any): void {
+    const email = event.value;
+
+    if (!this.isValidEmail(email)) {
+      // Remove invalid email from the array
+      this.emailIds = this.emailIds.filter((e) => e !== email);
+
+      // Add to invalid emails list for display
+      if (!this.invalidEmails.includes(email)) {
+        this.invalidEmails.push(email);
+      }
+    } else {
+      // Remove from invalid emails list
+      this.invalidEmails = this.invalidEmails.filter((e) => e !== email);
+      7;
+    }
+  }
+
+  private isValidEmail(email: string): boolean {
+    return this.emailRegex.test(email.trim());
+  }
+
+  onEmailRemove(event: any): void {
+    const removedEmail = event.value;
+    // Remove from invalid emails list if present
+    this.invalidEmails = this.invalidEmails.filter((e) => e !== removedEmail);
+  }
+
+  shareRecommendationViaEmail(pdfAttachment: any): void {
+    const payload = {
+      recipients: this.emailIds,
+      pdfAttachment: pdfAttachment,
+    };
+
+    // Send via HTTP client
+    this.httpService.shareViaEmail(payload).subscribe({
+      next: (response) => {
+        if (response && response['success'] && response['data']) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'PDF uploaded successfully.',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error uploading PDF.',
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error uploading PDF:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: error.message,
+        });
+      },
+    });
+  }
+
+  exportAsPDF(toDownload: boolean): void {
     const element = document.getElementById('generatedReport');
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
+    html2canvas(element, { scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
 
-      const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF('p', 'mm', 'a4');
 
-      const padding = 20;
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+        const padding = 20;
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
 
-      const imgProps = pdf.getImageProperties(imgData);
-      const aspectRatio = imgProps.height / imgProps.width;
+        const imgProps = pdf.getImageProperties(imgData);
+        const aspectRatio = imgProps.height / imgProps.width;
 
-      const pdfWidth = pageWidth - 2 * padding;
-      const pdfHeight = pdfWidth * aspectRatio;
+        const pdfWidth = pageWidth - 2 * padding;
+        const pdfHeight = pdfWidth * aspectRatio;
 
-      const centeredX = (pageWidth - pdfWidth) / 2;
-      const startY = padding;
+        const centeredX = (pageWidth - pdfWidth) / 2;
+        const startY = padding;
 
-      // Adjust image if it's longer than one page
-      let position = padding;
-      if (pdfHeight < pageHeight) {
-        pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
-      } else {
-        // Multi-page logic
-        let heightLeft = pdfHeight;
-        while (heightLeft > 0) {
+        // Adjust image if it's longer than one page
+        let position = padding;
+        if (pdfHeight < pageHeight) {
           pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
-          heightLeft -= pageHeight;
-          if (heightLeft > 0) {
-            pdf.addPage();
-            position = -heightLeft;
+        } else {
+          // Multi-page logic
+          let heightLeft = pdfHeight;
+          while (heightLeft > 0) {
+            pdf.addImage(
+              imgData,
+              'PNG',
+              centeredX,
+              startY,
+              pdfWidth,
+              pdfHeight,
+            );
+            heightLeft -= pageHeight;
+            if (heightLeft > 0) {
+              pdf.addPage();
+              position = -heightLeft;
+            }
           }
         }
-      }
 
-      pdf.save('project-summary.pdf');
-    });
+        if (toDownload) {
+          pdf.save('project-summary.pdf');
+        } else {
+          // Get PDF as blob for sending as payload
+          const base64StringPDF = pdf.output('datauristring');
+          const base64data = base64StringPDF.split(',')[1]; // -- to remove data:application/pdf;base64, prefix
+          this.shareRecommendationViaEmail(base64data);
+        }
+      })
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: error.message,
+        });
+      });
   }
 }

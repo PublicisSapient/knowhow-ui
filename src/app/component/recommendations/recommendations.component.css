@@ -220,7 +220,8 @@
 }
 
 :host ::ng-deep .summary-section,
-:host ::ng-deep .ai-nudges {
+:host ::ng-deep .ai-nudges,
+:host ::ng-deep .share-email-container {
   border-radius: 20px;
   border: 1px solid #d5dbe1;
 }
