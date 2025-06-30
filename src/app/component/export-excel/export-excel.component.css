@@ -173,8 +173,8 @@
   background-color: white !important;
 }
 
-.p-button:focus {
-  outline: 3px solid #000;
+.p-button:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
 
 :host ::ng-deep .dialog-body .p-multiselect .p-multiselect-label {
