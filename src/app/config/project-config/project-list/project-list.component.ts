@@ -405,12 +405,12 @@ export class ProjectListComponent implements OnInit {
   dynamicButtons = [];
   toggleMenu(event, project) {
     this.dynamicButtons = [];
+     this.kpimenu.toggle(event);
+     this.handleActionsClick(project);
     if (this.getAuthorizationService.checkIfViewer(project)) {
-      this.dynamicButtons = JSON.parse(JSON.stringify(this.roleBasedItems));
+      this.dynamicButtons = this.roleBasedItems;
     } else {
-      this.dynamicButtons = JSON.parse(JSON.stringify(this.items));
+      this.dynamicButtons = this.items;
     }
-    this.kpimenu.toggle(event);
-    this.handleActionsClick(project);
   }
 }
