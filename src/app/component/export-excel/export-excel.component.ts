@@ -539,4 +539,21 @@ export class ExportExcelComponent implements OnInit {
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
   }
+  checkIsItHyperlink(att) {
+    if (!att) {
+      return;
+    }
+    return att.startsWith('http://') || att.startsWith('https://');
+  }
+
+  getHyperlinkDefectId(att) {
+    if (!att) {
+      return;
+    }
+    let match = att.match(/DRP-\d+/);
+
+    if (match) {
+      return match[0];
+    }
+  }
 }
