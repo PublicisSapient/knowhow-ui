@@ -341,16 +341,41 @@
           </li>
         </ol>
       </article>
-    </article>
 
-    <article class="p-fluid" *ngIf="isError">
-      <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
-        <i
-          class="pi pi-exclamation-circle"
-          style="font-size: 2rem; margin-right: 15px; color: #fe414d"
-        ></i>
-        <span>Please try again, something went wrong!</span>
-      </div>
+      <article class="p-fluid" *ngIf="isError">
+        <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
+          <i
+            class="pi pi-exclamation-circle"
+            style="font-size: 2rem; margin-right: 15px; color: #fe414d"
+          ></i>
+          <span>Please try again, something went wrong!</span>
+        </div>
+      </article>
+
+      <article class="p-p-6 share-email-container p-mb-6" *ngIf="toShareViaEmail">
+        <h2 class="p-mt-0">Enter Email Ids:</h2>
+        <div class="p-d-flex p-ai-center p-jc-center">
+          <p-card header="Simple Card" [style]="{'width': '100%'}">
+            <p-chips [style]="{'width': '100%'}" [(ngModel)]="emailIds" separator="," placeholder="Use comma to separate multiple email ids you want to share with."
+            [addOnBlur]="true"
+            [addOnTab]="true"
+            (onAdd)="validateEmail($event)"
+            (onRemove)="onEmailRemove($event)"
+            [allowDuplicate]="false">
+            </p-chips>
+            <div *ngIf="invalidEmails.length > 0" class="error-message">
+              <small class="p-error">Invalid email(s): {{ invalidEmails.join(', ') }}</small>
+            </div>
+            <p-button
+              label="Send Email"
+              icon="pi pi-external-link"
+              styleClass="p-button p-ml-4 p-mt-3"
+              [style]="{'width': 'fit-content', 'float': 'right'}"
+              (click)="exportAsPDF(false)"
+            ></p-button>
+          </p-card>
+        </div>
+      </article>
     </article>
 
     <article class="dialog-footer p-py-5">
@@ -368,16 +393,17 @@
       ></p-button>
       <p-button
         label="Share via Email"
-        icon="pi pi-external-link"
+        icon="pi pi-share-alt"
         styleClass="p-button p-ml-4"
         *ngIf="!isLoading && isReportGenerated"
+        (click)="openShareEmailField()"
       ></p-button>
       <p-button
         label="Export as PDF"
         styleClass="p-button p-ml-4"
         icon="pi pi-file-export"
         *ngIf="!isLoading && isReportGenerated"
-        (click)="exportAsPDF()"
+        (click)="exportAsPDF(true)"
       ></p-button>
     </article>
   </section>

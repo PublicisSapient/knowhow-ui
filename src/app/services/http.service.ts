@@ -196,6 +196,7 @@ export class HttpService {
     this.baseUrl + '/api/ai/sprint-goals/summary';
   private llidUrl = this.baseUrl + '/api/usermanagement/save';
   private aiKpiSearchUrl = this.baseUrl + '/api/ai/kpisearch';
+  private shareViaEmailUrl: string = this.baseUrl + '/api/shareViaEmail'; // TODO: Add proper api endpoint here
 
   constructor(
     private router: Router,
@@ -1294,5 +1295,9 @@ export class HttpService {
     const url = params ? this.aiKpiSearchUrl + params : this.aiKpiSearchUrl;
 
     return this.http.get<any>(url);
+  }
+
+  shareViaEmail(payload) {
+    return this.http.post<any>(this.shareViaEmailUrl, payload);
   }
 }
