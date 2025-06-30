@@ -346,7 +346,7 @@
 </p-dialog>
 
 <ng-template #noDataRawDataKPIs>
-  <div class="min-ht" *ngIf="!loader && (currentChartData?.chartData?.length === 0 || currentChartData?.chartData?.data?.length === 0 || currentChartData?.chartData?.chartData?.length === 0); else defaultMessage">
+  <div class="min-ht" *ngIf="!loader && (!currentChartData?.chartData?.length || !currentChartData?.chartData?.data?.length || !currentChartData?.chartData?.chartData?.length) else defaultMessage">
     <div class="p-w-100  p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
