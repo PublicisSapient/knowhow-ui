@@ -149,7 +149,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    // console.log('xAxisLabel', this.xAxisLabel, 'yAxisLabel', this.yAxisLabel);
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};

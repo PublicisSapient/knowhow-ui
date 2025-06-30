@@ -129,6 +129,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
 
+import { AutoCompleteModule } from 'primeng/autocomplete';
+
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
   return (): Promise<any> => appInitializerService.checkFeatureFlag();
@@ -224,6 +226,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     ScrollTopModule,
     SelectButtonModule,
     ProgressBarModule,
+    AutoCompleteModule,
   ],
   providers: [
     ExcelService,

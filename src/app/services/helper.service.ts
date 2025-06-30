@@ -30,6 +30,25 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { UtcToLocalUserPipe } from '../shared-module/pipes/utc-to-local-user/utc-to-local-user.pipe';
+
+interface KpiOption {
+  label: string;
+  value: {
+    kpiName: string;
+    kpiId: string;
+    isEnabled: boolean;
+    source: string;
+    boardName: string;
+    boardSlug: string;
+  };
+}
+
+interface KpiGroup {
+  label: string; // e.g., 'scrum', 'kanban'
+  value: string;
+  items: KpiOption[];
+}
+
 @Injectable()
 export class HelperService {
   isKanban = false;
@@ -1374,5 +1393,39 @@ export class HelperService {
 
   utcToLocal(utcDate, format?) {
     return this.utcToLocalUserPipe.transform(utcDate, format);
+  }
+
+  getGroupedKpiOptions(data: any): KpiGroup[] {
+    return Object.entries(data)
+      .filter(([key, value]) => Array.isArray(value))
+      .map(([key, boards]) => ({
+        label: key.toUpperCase(),
+        value: key,
+        items: (boards as any[]).reduce((acc, board) => {
+          const kpis = (board.kpis || []).map((kpi: any) => ({
+            label: kpi.kpiName,
+            value: {
+              kpiName: kpi.kpiName,
+              kpiId: kpi.kpiId,
+              isEnabled: kpi.isEnabled,
+              source: key,
+              boardName: board.boardName,
+              boardSlug: board.boardSlug,
+            },
+          }));
+          return acc.concat(kpis);
+        }, [] as KpiOption[]),
+      }))
+      .filter((group) => group.items.length > 0);
+  }
+
+  // Debounce utility function
+  debounce(func: Function, wait: number) {
+    let timeout: any;
+    return function (...args: any[]) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
   }
 }

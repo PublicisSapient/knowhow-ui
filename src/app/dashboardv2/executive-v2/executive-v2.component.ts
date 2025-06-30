@@ -23,16 +23,24 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectorRef,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  first,
+  mergeMap,
+  takeUntil,
+} from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
-import { throwError, Subscription } from 'rxjs';
+import { Subject, throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
 
 @Component({
@@ -140,6 +148,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
 
+  private destroy$ = new Subject<void>();
+  @ViewChild('recommendationsComponent', { read: ElementRef })
+  recommendationsComponent: ElementRef;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -149,6 +161,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private location: Location,
+    private renderer2: Renderer2,
   ) {}
 
   arrayDeepCompare(a1, a2) {
@@ -236,6 +249,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // const selectedTab = window.location.hash.substring(1);
+    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    this.service.searchQuery$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((searchQuery) => {
+        if (searchQuery) {
+          setTimeout(() => {
+            this.handlePageScrollOnSearch(searchQuery.value);
+          }, 1000);
+        }
+      });
+
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch.subscribe((data) => {
         this.resetToDefaults();
@@ -572,6 +598,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -1368,6 +1396,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.handleKPIError(postData);
           },
         );
+      return;
     } else if (this.selectedTab === 'release') {
       this.postJiraKPIForRelease(postData, source);
     } else if (this.selectedTab === 'backlog') {
@@ -4843,5 +4872,41 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return this.helperService.getFormatedDateBasedOnType(data, xAxis);
     }
     return data;
+  }
+
+  private handlePageScrollOnSearch(searchValue) {
+    if (searchValue) {
+      this.scrollToHighlightedKpi(searchValue.kpiId);
+    }
+  }
+
+  scrollToHighlightedKpi(kpiId) {
+    const element = document.getElementById(kpiId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      this.renderer2.addClass(element, 'highlighted');
+
+      setTimeout(() => {
+        this.renderer2.removeClass(element, 'highlighted');
+      }, 1000);
+    }
+  }
+
+  goToRecommendation() {
+    if (this.recommendationsComponent) {
+      this.recommendationsComponent.nativeElement.children[0].firstChild.focus();
+      // this.recommendationsComponent.nativeElement.scrollIntoView({
+      //   behaviour: 'smooth',
+      //   block: 'start',
+      // });
+    }
+  }
+
+  onFocusGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.remove('sr-only');
+  }
+
+  onBlurGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.add('sr-only');
   }
 }

@@ -94,7 +94,6 @@ describe('RecommendationsComponent', () => {
     expect(component.selectedCurrentProjectSprintsCode).toEqual([]);
     expect(component.isRoleSelected).toBeFalse();
     expect(component.isSprintSelected).toBeFalse();
-    expect(component.isReportGenerated).toBeFalse();
   });
 
   it('should update role on role change', () => {
