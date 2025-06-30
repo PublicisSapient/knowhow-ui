@@ -23,6 +23,8 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectorRef,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -34,10 +36,11 @@ import {
   distinctUntilChanged,
   first,
   mergeMap,
+  takeUntil,
 } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -146,6 +149,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
 
+  private destroy$ = new Subject<void>();
+  @ViewChild('recommendationsComponent', { read: ElementRef })
+  recommendationsComponent: ElementRef;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -155,6 +162,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private location: Location,
+    private renderer2: Renderer2,
   ) {}
 
   arrayDeepCompare(a1, a2) {
@@ -244,6 +252,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     // const selectedTab = window.location.hash.substring(1);
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    this.service.searchQuery$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((searchQuery) => {
+        if (searchQuery) {
+          setTimeout(() => {
+            this.handlePageScrollOnSearch(searchQuery.value);
+          }, 1000);
+        }
+      });
 
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch.subscribe((data) => {
@@ -580,6 +598,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -629,8 +649,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           selectedRelease !== undefined
             ? selectedRelease?.releaseEndDate
             : undefined;
-        this.releaseEndDate = this.stripTime(new Date(endDate));
-        const today = this.stripTime(new Date());
+        this.releaseEndDate = new Date(endDate).toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
         this.hieararchy = this.filterApplyData['hieararchy'];
@@ -3566,30 +3586,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  generateExcel() {
-    const kpiData = {
-      headerNames: [],
-      excelData: [],
-    };
-    this.modalDetails['tableHeadings'].forEach((colHeader) => {
-      kpiData.headerNames.push({
-        header: colHeader,
-        key: colHeader,
-        width: 25,
-      });
-    });
-    this.modalDetails['tableValues'].forEach((colData) => {
-      kpiData.excelData.push({
-        ...colData,
-        ['Issue Id']: {
-          text: colData['Issue Id'],
-          hyperlink: colData['Issue URL'],
-        },
-      });
-    });
+  // generateExcel() {
+  //   const kpiData = {
+  //     headerNames: [],
+  //     excelData: [],
+  //   };
+  //   this.modalDetails['tableHeadings'].forEach((colHeader) => {
+  //     kpiData.headerNames.push({
+  //       header: colHeader,
+  //       key: colHeader,
+  //       width: 25,
+  //     });
+  //   });
+  //   this.modalDetails['tableValues'].forEach((colData) => {
+  //     kpiData.excelData.push({
+  //       ...colData,
+  //       ['Issue Id']: {
+  //         text: colData['Issue Id'],
+  //         hyperlink: colData['Issue URL'],
+  //       },
+  //     });
+  //   });
 
-    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-  }
+  //   // this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  // }
 
   /**
    * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
@@ -4852,5 +4872,41 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return this.helperService.getFormatedDateBasedOnType(data, xAxis);
     }
     return data;
+  }
+
+  private handlePageScrollOnSearch(searchValue) {
+    if (searchValue) {
+      this.scrollToHighlightedKpi(searchValue.kpiId);
+    }
+  }
+
+  scrollToHighlightedKpi(kpiId) {
+    const element = document.getElementById(kpiId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      this.renderer2.addClass(element, 'highlighted');
+
+      setTimeout(() => {
+        this.renderer2.removeClass(element, 'highlighted');
+      }, 1000);
+    }
+  }
+
+  goToRecommendation() {
+    if (this.recommendationsComponent) {
+      this.recommendationsComponent.nativeElement.children[0].firstChild.focus();
+      // this.recommendationsComponent.nativeElement.scrollIntoView({
+      //   behaviour: 'smooth',
+      //   block: 'start',
+      // });
+    }
+  }
+
+  onFocusGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.remove('sr-only');
+  }
+
+  onBlurGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.add('sr-only');
   }
 }
