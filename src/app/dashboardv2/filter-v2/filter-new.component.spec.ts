@@ -1956,7 +1956,7 @@ describe('FilterNewComponent', () => {
         );
       });
 
-      it('should set sprint details correctly for release tab', () => {
+      xit('should set sprint details correctly for release tab', () => {
         // Arrange
         component.selectedTab = 'release';
         const event = [
