@@ -198,7 +198,7 @@ export class AdvancedSettingsComponent implements OnInit {
           } else {
             that.jiraStatusContinuePulling = false;
             const jiraDAta = that.findTraceLogForTool('Jira');
-            jiraDAta.executionOngoing = false;
+           if(jiraDAta) jiraDAta.executionOngoing = false;
           }
         } else {
           this.messageService.add({
@@ -439,7 +439,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   resetLogs(processorName) {
     const jiraInd = this.findCorrectJiraDetails(processorName);
-    if (jiraInd !== -1) {
+    if (jiraInd !== -1 && this.processorsTracelogs[jiraInd]) {
       this.processorsTracelogs[jiraInd].errorMessage = '';
       this.processorsTracelogs[jiraInd].progressStatusList = [];
     }
