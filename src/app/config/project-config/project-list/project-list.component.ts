@@ -405,8 +405,8 @@ export class ProjectListComponent implements OnInit {
   dynamicButtons = [];
   toggleMenu(event, project) {
     this.dynamicButtons = [];
-     this.kpimenu.toggle(event);
-     this.handleActionsClick(project);
+    this.kpimenu.toggle(event);
+    this.handleActionsClick(project);
     if (this.getAuthorizationService.checkIfViewer(project)) {
       this.dynamicButtons = this.roleBasedItems;
     } else {
