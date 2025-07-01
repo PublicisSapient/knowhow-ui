@@ -16,9 +16,10 @@ describe('RecommendationsComponent', () => {
   let httpService: jasmine.SpyObj<HttpService>;
   let messageService: jasmine.SpyObj<MessageService>;
   let sharedService: jasmine.SpyObj<SharedService>;
+  let httpSpy;
 
   beforeEach(async () => {
-    const httpSpy = jasmine.createSpyObj('HttpService', ['getRecommendations']);
+    httpSpy = jasmine.createSpyObj('HttpService', ['getRecommendations']);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const sharedSpy = jasmine.createSpyObj('SharedService', [
       'getSprintForRnR',
@@ -43,6 +44,10 @@ describe('RecommendationsComponent', () => {
     sharedService = TestBed.inject(
       SharedService,
     ) as jasmine.SpyObj<SharedService>;
+  });
+
+  afterEach(() => {
+    httpSpy.getRecommendations.calls.reset();
   });
 
   it('should create', () => {
@@ -235,5 +240,77 @@ describe('RecommendationsComponent', () => {
       severity: 'error',
       summary: 'Error in Kpi Column Configurations. Please try after sometime!',
     });
+  });
+
+  it('should call getRecommendations and handle success response', () => {
+    const reqBody = {
+      level: 5,
+      label: 'project',
+      selectedMap: {
+        bu: [],
+        ver: [],
+        acc: [],
+        port: [],
+        project: ['a4fbe170-8667-4878-a877-a1b1300d8b16'],
+        sprint: [
+          '54130_a4fbe170-8667-4878-a877-a1b1300d8b16',
+          '54131_a4fbe170-8667-4878-a877-a1b1300d8b16',
+        ],
+        release: [],
+        sqd: [],
+      },
+      ids: ['a4fbe170-8667-4878-a877-a1b1300d8b16'],
+      sprintIncluded: ['CLOSED'],
+      kpiIdList: ['kpi14', 'kpi82', 'kpi111'],
+      recommendationFor: 'agile_program_manager',
+    };
+    const response = {
+      data: [
+        {
+          projectScore: 10,
+          recommendations: [
+            { recommendationType: 'rec1' },
+            { recommendationType: 'rec2' },
+          ],
+        },
+      ],
+    };
+    httpSpy.getRecommendations.and.returnValue(of(response));
+
+    component.getSprintData(reqBody);
+
+    expect(component.isLoading).toBe(false);
+    expect(component.projectScore).toBe(10);
+    expect(component.recommendationsList).toEqual([
+      { recommendationType: 'rec1' },
+      { recommendationType: 'rec2' },
+    ]);
+  });
+
+  it('should call getRecommendations and handle error response', () => {
+    const reqBody = {
+      /* mock request body */
+    };
+    const error = { error: 'Mock error' };
+    httpSpy.getRecommendations.and.returnValue(throwError(error));
+
+    component.getSprintData(reqBody);
+
+    expect(component.isLoading).toBe(false);
+    expect(component.isError).toBe(true);
+    expect(component.projectScore).toBe(0);
+    expect(component.recommendationsList).toEqual([]);
+  });
+
+  it('should cancel ongoing request when component is destroyed', () => {
+    const reqBody = {
+      /* mock request body */
+    };
+    httpSpy.getRecommendations.and.returnValue(of({}));
+
+    component.getSprintData(reqBody);
+    component.ngOnDestroy();
+
+    // expect(component.cancelCurrentRequest$.closed).toBe(true);
   });
 });

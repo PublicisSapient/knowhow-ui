@@ -277,17 +277,9 @@ export class RecommendationsComponent implements OnInit {
             return;
           } else {
             // -- handling success response
-            this.shouldCloseDialog = true;
-            this.isReportGenerated = true;
-            if (!this.isLoading && this.generatedReport) {
-              this.generatedReport.nativeElement.focus();
-            }
-            if (!this.isLoading && this.generatedReport) {
-              this.generatedReport.nativeElement.focus();
-            }
-            this.isError = false;
+            this.handleSuccessResponse();
 
-            const resp = response?.data[0];
+            const resp = response?.data && response?.data[0];
             this.projectScore = +resp?.projectScore || 0;
             this.recommendationsList = resp?.recommendations || [];
           }
@@ -304,6 +296,18 @@ export class RecommendationsComponent implements OnInit {
           // Optionally: show a toast/alert to the user
         },
       });
+  }
+
+  handleSuccessResponse() {
+    this.shouldCloseDialog = true;
+    this.isReportGenerated = true;
+    if (!this.isLoading && this.generatedReport) {
+      this.generatedReport.nativeElement.focus();
+    }
+    if (!this.isLoading && this.generatedReport) {
+      this.generatedReport.nativeElement.focus();
+    }
+    this.isError = false;
   }
 
   resetSelections() {
