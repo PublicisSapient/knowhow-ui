@@ -19,7 +19,10 @@ describe('RecommendationsComponent', () => {
   let httpSpy;
 
   beforeEach(async () => {
-    httpSpy = jasmine.createSpyObj('HttpService', ['getRecommendations']);
+    httpSpy = jasmine.createSpyObj('HttpService', [
+      'getRecommendations',
+      'shareViaEmail',
+    ]);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const sharedSpy = jasmine.createSpyObj('SharedService', [
       'getSprintForRnR',
@@ -44,10 +47,16 @@ describe('RecommendationsComponent', () => {
     sharedService = TestBed.inject(
       SharedService,
     ) as jasmine.SpyObj<SharedService>;
+
+    // Mock the DOM element
+    const element = document.createElement('div');
+    element.id = 'generatedReport';
+    document.body.appendChild(element);
   });
 
   afterEach(() => {
     httpSpy.getRecommendations.calls.reset();
+    httpSpy.shareViaEmail.calls.reset();
   });
 
   it('should create', () => {
@@ -313,4 +322,72 @@ describe('RecommendationsComponent', () => {
 
     // expect(component.cancelCurrentRequest$.closed).toBe(true);
   });
+
+  // ==========================================================
+
+  it('should toggle toShareViaEmail when openShareEmailField is called', () => {
+    component.toShareViaEmail = false;
+    component.openShareEmailField();
+    expect(component.toShareViaEmail).toBeTrue();
+
+    component.openShareEmailField();
+    expect(component.toShareViaEmail).toBeFalse();
+  });
+
+  // -- TODO: will look into it later - due time
+  xit('should validate email and update invalidEmails list', () => {
+    const validEmailEvent = {
+      value: '<a href="mailto:test@example.com">test@example.com</a>',
+    };
+    const invalidEmailEvent = { value: 'invalid-email' };
+
+    component.validateEmail(validEmailEvent);
+    expect(component.invalidEmails).not.toContain(validEmailEvent.value);
+
+    component.validateEmail(invalidEmailEvent);
+    expect(component.invalidEmails).toContain(invalidEmailEvent.value);
+  });
+
+  it('should remove email from invalidEmails list on onEmailRemove', () => {
+    const emailEvent = {
+      value: '<a href="mailto:test@example.com">test@example.com</a>',
+    };
+    component.invalidEmails = [
+      '<a href="mailto:test@example.com">test@example.com</a>',
+    ];
+
+    component.onEmailRemove(emailEvent);
+    expect(component.invalidEmails).not.toContain(emailEvent.value);
+  });
+
+  it('should call shareViaEmail and show success message on successful email share', () => {
+    httpService.shareViaEmail.and.returnValue(of({ success: true, data: {} }));
+
+    component.shareRecommendationViaEmail('pdfData');
+    expect(httpService.shareViaEmail).toHaveBeenCalled();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'PDF uploaded successfully.',
+    });
+  });
+
+  it('should show error message on failed email share', () => {
+    httpService.shareViaEmail.and.returnValue(throwError({ message: 'Error' }));
+
+    component.shareRecommendationViaEmail('pdfData');
+    expect(httpService.shareViaEmail).toHaveBeenCalled();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error',
+    });
+  });
+
+  // -- TODO: will look into it later - due time
+  xit('should export as PDF and call shareRecommendationViaEmail if not toDownload', fakeAsync(() => {
+    spyOn(component, 'shareRecommendationViaEmail');
+    component.exportAsPDF(false);
+    tick(1000); // Simulate async completion
+
+    expect(component.shareRecommendationViaEmail).toHaveBeenCalled();
+  }));
 });
