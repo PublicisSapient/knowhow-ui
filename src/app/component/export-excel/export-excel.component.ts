@@ -550,10 +550,11 @@ export class ExportExcelComponent implements OnInit {
     if (!att) {
       return;
     }
-    let match = att.match(/DRP-\d+/);
+    let match = att.split('/');
+    let matchLength = match.length;
 
     if (match) {
-      return match[0];
+      return match[matchLength - 1];
     }
   }
 }
