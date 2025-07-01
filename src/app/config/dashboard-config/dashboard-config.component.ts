@@ -78,7 +78,7 @@ export class DashboardconfigComponent implements OnInit {
             if (!this.tabHeaders.includes(i)) this.tabHeaders.push(i);
           }
         }
-          this.setFormControlData();
+        this.setFormControlData();
       } else {
         this.messageService.add({
           severity: 'error',
