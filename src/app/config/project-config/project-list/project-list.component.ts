@@ -69,6 +69,7 @@ export class ProjectListComponent implements OnInit {
   newProjectName: string = '';
   projectGroup;
   selectedProject: any;
+  dynamicButtons = [];
   @ViewChild('kpimenu') kpimenu: Menu;
   @ViewChild('renameProjectRef') renameProjectRef: Dialog;
 
@@ -402,7 +403,6 @@ export class ProjectListComponent implements OnInit {
       console.log('Form submitted:', this.newProjectName);
     }
   }
-  dynamicButtons = [];
   toggleMenu(event, project) {
     this.dynamicButtons = [];
     this.kpimenu.toggle(event);
