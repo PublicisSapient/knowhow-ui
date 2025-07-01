@@ -100,7 +100,7 @@ describe('DashboardconfigComponent', () => {
     component.userProjects = [{ name: 'p1', id: 'id1', type: 'common' }];
     httpreq.flush(fakeGetDashData);
     expect(
-      Object.keys(component.kpiFormValue['kpis']['controls']).length + 4,
+      Object.keys(component.kpiFormValue['kpis']['controls']).length + 5,
     ).toBe(fakeGetDashDataOthers.length);
   }));
 
