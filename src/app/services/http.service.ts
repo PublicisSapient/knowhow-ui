@@ -197,7 +197,8 @@ export class HttpService {
   private llidUrl = this.baseUrl + '/api/usermanagement/save';
   private aiKpiSearchUrl = this.baseUrl + '/api/ai/kpisearch';
   private shareViaEmailUrl: string =
-    this.baseUrl + '/api/notifications/email?templateKey=Recommendation_Email'; // TODO: Add proper api endpoint here
+    this.baseUrl +
+    '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
 
   constructor(
     private router: Router,
