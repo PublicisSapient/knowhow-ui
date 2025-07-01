@@ -349,7 +349,7 @@ export class RecommendationsComponent implements OnInit {
 
     if (!this.isValidEmail(email)) {
       // Remove invalid email from the array
-      this.emailIds = this.emailIds.filter((e) => e !== email);
+      this.emailIds = this.emailIds?.filter((e) => e !== email);
 
       // Add to invalid emails list for display
       if (!this.invalidEmails.includes(email)) {
