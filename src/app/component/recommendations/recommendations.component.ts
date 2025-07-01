@@ -5,11 +5,8 @@ import { MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 
-import { FormControl, Validators } from '@angular/forms';
-
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -71,15 +68,16 @@ export class RecommendationsComponent implements OnInit {
   invalidEmails: string[] = [];
   private emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+  errorMessage: string = '';
+  shouldCloseDialog: boolean = true;
+
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
     public service: SharedService,
-    public helperService: HelperService,
   ) {}
 
   ngOnInit(): void {
-    console.log('init recommendations');
     const currentUserEmailId = JSON.parse(
       localStorage.getItem('currentUserDetails'),
     ).user_email;
@@ -262,30 +260,45 @@ export class RecommendationsComponent implements OnInit {
         finalize(() => {
           // This runs whether completed, errored, or cancelled
           this.isLoading = false;
-          this.onDialogClose();
+          if (this.shouldCloseDialog) this.onDialogClose();
         }),
       )
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;
-          this.isReportGenerated = true;
-          if (!this.isLoading && this.generatedReport) {
-            this.generatedReport.nativeElement.focus();
-          }
-          if (!this.isLoading && this.generatedReport) {
-            this.generatedReport.nativeElement.focus();
-          }
-          this.isError = false;
+          if (response?.error) {
+            this.errorMessage = response?.originalError?.error?.message;
+            this.isError = true;
+            this.shouldCloseDialog = false; // Don't close on error
+            this.isReportGenerated = false;
+            this.isTemplateLoading = false;
+            this.projectScore = 0;
+            this.recommendationsList = [];
+            return;
+          } else {
+            // -- handling success response
+            this.shouldCloseDialog = true;
+            this.isReportGenerated = true;
+            if (!this.isLoading && this.generatedReport) {
+              this.generatedReport.nativeElement.focus();
+            }
+            if (!this.isLoading && this.generatedReport) {
+              this.generatedReport.nativeElement.focus();
+            }
+            this.isError = false;
 
-          const resp = response?.data[0];
-          this.projectScore = +resp?.projectScore || 0;
-          this.recommendationsList = resp?.recommendations || [];
+            const resp = response?.data[0];
+            this.projectScore = +resp?.projectScore || 0;
+            this.recommendationsList = resp?.recommendations || [];
+          }
         },
         error: (err) => {
           console.error('Failed to fetch sprint recommendations:', err);
           this.isError = true;
           this.isLoading = false;
           this.isReportGenerated = false;
+          this.isTemplateLoading = false;
+          this.shouldCloseDialog = false;
           this.projectScore = 0;
           this.recommendationsList = [];
           // Optionally: show a toast/alert to the user

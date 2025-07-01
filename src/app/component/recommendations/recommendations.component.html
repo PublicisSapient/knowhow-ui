@@ -342,16 +342,6 @@
         </ol>
       </article>
 
-      <article class="p-fluid" *ngIf="isError">
-        <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
-          <i
-            class="pi pi-exclamation-circle"
-            style="font-size: 2rem; margin-right: 15px; color: #fe414d"
-          ></i>
-          <span>Please try again, something went wrong!</span>
-        </div>
-      </article>
-
       <article class="p-p-6 share-email-container p-mb-6" *ngIf="toShareViaEmail">
         <h2 class="p-mt-0">Enter Email Ids:</h2>
         <div class="p-d-flex p-ai-center p-jc-center">
@@ -378,6 +368,17 @@
       </article>
     </article>
 
+    <article class="p-fluid" *ngIf="isError">
+      <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
+        <i
+          class="pi pi-exclamation-circle"
+          style="font-size: 2rem; margin-right: 15px; color: #fe414d"
+        ></i>
+        <div>{{errorMessage}}. </div>
+        <span> Please try again, something went wrong!</span>
+      </div>
+    </article>
+
     <article class="dialog-footer p-py-5">
       <p-button
         (click)="displayModal = false; resetSelections()"
@@ -389,7 +390,7 @@
         styleClass="p-button p-ml-4"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
-        *ngIf="!isLoading && !isReportGenerated"
+        *ngIf="!isLoading && !isReportGenerated && !isError"
       ></p-button>
       <p-button
         label="Share via Email"
