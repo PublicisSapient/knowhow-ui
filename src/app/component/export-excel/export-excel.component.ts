@@ -550,11 +550,11 @@ export class ExportExcelComponent implements OnInit {
     if (!att) {
       return;
     }
-    let match = att.split('/');
-    let matchLength = match.length;
+    let matchDefectId = att.split('/');
+    let matchLength = matchDefectId.length;
 
-    if (match) {
-      return match[matchLength - 1];
+    if (matchDefectId) {
+      return matchDefectId[matchLength - 1];
     }
   }
 }
