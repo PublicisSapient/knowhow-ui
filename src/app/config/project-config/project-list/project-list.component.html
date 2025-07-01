@@ -69,7 +69,7 @@
             <div class="p-d-flex p-jc-end">
               <div *ngIf="isAdminOrSuperAdmin">
                 <p-button (click)="toggleMenu($event,project)" icon="pi pi-cog" styleClass="p-button-text" aria-label="Open Project Actions Menu" tabindex="0"></p-button>
-                <p-menu #kpimenu [model]="getAuthorizationService.checkIfViewer(project)?roleBasedItems:items" [popup]="true"></p-menu>
+                <p-menu #kpimenu [model]="dynamicButtons" [popup]="true"></p-menu>
               </div>
             </div>
           </td>
