@@ -34,7 +34,7 @@ export class RecommendationsComponent implements OnInit {
 
   selectedRole: any = null;
   isRoleSelected: boolean = false;
-  roleOptions = [
+  readonly roleOptions = [
     { label: 'Executive Sponsor', value: 'executive_sponsor' },
     { label: 'Agile Program Manager', value: 'agile_program_manager' },
     { label: 'Engineering Lead', value: 'engineering_lead' },
@@ -60,21 +60,21 @@ export class RecommendationsComponent implements OnInit {
   @ViewChild('loadingScreen') loadingScreen: ElementRef;
   @ViewChild('generatedReport') generatedReport: ElementRef;
 
-  private destroy$ = new Subject<void>();
-  private cancelCurrentRequest$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
+  private readonly cancelCurrentRequest$ = new Subject<void>();
 
   toShareViaEmail: boolean = false;
   emailIds: string[];
   invalidEmails: string[] = [];
-  private emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private readonly emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   errorMessage: string = '';
   shouldCloseDialog: boolean = true;
 
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    public service: SharedService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    public readonly service: SharedService,
   ) {}
 
   ngOnInit(): void {
