@@ -78,18 +78,32 @@ export class RecommendationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const currentUserEmailId = JSON.parse(
-      localStorage.getItem('currentUserDetails'),
-    ).user_email;
-    this.emailIds = [currentUserEmailId];
+    this.initializeEmailIds();
   }
 
-  getDialogHeader(): string {
-    if (this.aiRecommendations) {
-      return this.isReportGenerated
-        ? 'AI Recommendations Report'
-        : 'Generate AI Recommendation';
+  private initializeEmailIds(): void {
+    const currentUserDetails = localStorage.getItem('currentUserDetails');
+    if (currentUserDetails) {
+      const currentUserEmailId = JSON.parse(currentUserDetails).user_email;
+      this.emailIds = [currentUserEmailId];
     } else {
+      this.emailIds = [];
+    }
+  }
+
+  // This method returns a string to be used as the dialog header
+  getDialogHeader(): string {
+    // Check if AI recommendations are available
+    if (this.aiRecommendations) {
+      // If a report has been generated, return 'AI Recommendations Report'
+      if (this.isReportGenerated) {
+        return 'AI Recommendations Report';
+      } else {
+        // If no report has been generated yet, return 'Generate AI Recommendation'
+        return 'Generate AI Recommendation';
+      }
+    } else {
+      // If AI recommendations are not available, return 'Recommendations for Optimising KPIs'
       return 'Recommendations for Optimising KPIs';
     }
   }
@@ -99,17 +113,26 @@ export class RecommendationsComponent implements OnInit {
   }
 
   handleClick() {
+    this.prepareSprintData();
+    this.prepareKpiFilterData();
+    this.fetchRecommendations();
+  }
+
+  private prepareSprintData(): void {
     this.selectedSprint = this.service.getSprintForRnR();
     this.allSprints = this.service.getCurrentProjectSprints();
-    this.currentProjectName = JSON.parse(
-      localStorage.getItem('selectedTrend'),
-    )[0]?.nodeDisplayName;
+    const selectedTrend = localStorage.getItem('selectedTrend');
+    if (selectedTrend) {
+      this.currentProjectName = JSON.parse(selectedTrend)[0]?.nodeDisplayName;
+    }
     this.sprintOptions = this.allSprints.map((x) => ({
       name: x['nodeDisplayName'],
       code: x['nodeId'],
     }));
     this.currentDate = this.getCurrentDateFormatted();
+  }
 
+  private prepareKpiFilterData(): void {
     this.displayModal = true;
     this.kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
     this.kpiFilterData['kpiIdList'] = [...this.kpiList];
@@ -122,6 +145,9 @@ export class RecommendationsComponent implements OnInit {
     this.kpiFilterData['selectedMap']['sprint'] = [
       this.selectedSprint?.['nodeId'],
     ];
+  }
+
+  private fetchRecommendations(): void {
     this.loading = true;
     this.maturities = [];
     this.tabs = [];
@@ -129,76 +155,96 @@ export class RecommendationsComponent implements OnInit {
     this.isTemplateLoading = true;
     this.isReportGenerated = false;
     this.httpService.getRecommendations(this.kpiFilterData).subscribe(
-      (response: any) => {
-        this.aiRecommendations = false;
-        this.isTemplateLoading = false;
-        if (response.message === 'AiRecommendation')
-          this.aiRecommendations = true;
-        else {
-          this.aiRecommendations = false;
-          if (response?.length > 0) {
-            response.forEach((recommendation) => {
-              if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
-                if (recommendation?.['recommendations']?.length > 0) {
-                  this.recommendationsData = recommendation['recommendations'];
-                  this.recommendationsData.forEach((item) => {
-                    let idx = this.maturities?.findIndex(
-                      (x) => x['value'] == item['maturity'],
-                    );
-                    if (idx == -1 && item['maturity']) {
-                      this.maturities = [
-                        ...this.maturities,
-                        {
-                          name: 'M' + item['maturity'],
-                          value: item['maturity'],
-                        },
-                      ];
-                    } else {
-                      this.maturities = [...this.maturities];
-                    }
-                    this.tabs = !this.tabs.includes(item['recommendationType'])
-                      ? [...this.tabs, item['recommendationType']]
-                      : [...this.tabs];
-                    this.tabsContent[item['recommendationType']] = [];
-                  });
-
-                  this.recommendationsData.forEach((item) => {
-                    this.tabsContent[item['recommendationType']] = [
-                      ...this.tabsContent[item['recommendationType']],
-                      item,
-                    ];
-                  });
-                  this.noRecommendations = false;
-                } else {
-                  this.noRecommendations = true;
-                }
-              }
-            });
-          } else {
-            this.noRecommendations = true;
-          }
-          this.loading = false;
-        }
-      },
-      (error) => {
-        console.error(error);
-        this.isTemplateLoading = false;
-        if (error.msg === 'AiRecommendation') this.aiRecommendations = true;
-        else {
-          this.aiRecommendations = false;
-          this.messageService.add({
-            severity: 'error',
-            summary:
-              'Error in Kpi Column Configurations. Please try after sometime!',
-          });
-          this.loading = false;
-        }
-      },
+      (response: any) => this.handleRecommendationsResponse(response),
+      (error) => this.handleRecommendationsError(error),
     );
   }
 
+  private handleRecommendationsResponse(response: any): void {
+    this.aiRecommendations = false;
+    this.isTemplateLoading = false;
+    if (response.message === 'AiRecommendation') {
+      this.aiRecommendations = true;
+    } else {
+      this.processRecommendations(response);
+    }
+  }
+
+  private processRecommendations(response: any): void {
+    this.aiRecommendations = false;
+    if (response?.length > 0) {
+      response.forEach((recommendation) => {
+        if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
+          if (recommendation?.['recommendations']?.length > 0) {
+            this.recommendationsData = recommendation['recommendations'];
+            this.populateMaturitiesAndTabs();
+            this.noRecommendations = false;
+          } else {
+            this.noRecommendations = true;
+          }
+        }
+      });
+    } else {
+      this.noRecommendations = true;
+    }
+    this.loading = false;
+  }
+
+  private populateMaturitiesAndTabs(): void {
+    this.recommendationsData.forEach((item) => {
+      this.addMaturity(item);
+      this.addTab(item);
+    });
+
+    this.recommendationsData.forEach((item) => {
+      this.tabsContent[item['recommendationType']] = [
+        ...this.tabsContent[item['recommendationType']],
+        item,
+      ];
+    });
+  }
+
+  private addMaturity(item: any): void {
+    const idx = this.maturities?.findIndex(
+      (x) => x['value'] == item['maturity'],
+    );
+    if (idx == -1 && item['maturity']) {
+      this.maturities = [
+        ...this.maturities,
+        {
+          name: 'M' + item['maturity'],
+          value: item['maturity'],
+        },
+      ];
+    } else {
+      this.maturities = [...this.maturities];
+    }
+  }
+
+  private addTab(item: any): void {
+    if (!this.tabs.includes(item['recommendationType'])) {
+      this.tabs = [...this.tabs, item['recommendationType']];
+    }
+    this.tabsContent[item['recommendationType']] = [];
+  }
+
+  private handleRecommendationsError(error: any): void {
+    console.error(error);
+    this.isTemplateLoading = false;
+    if (error.msg === 'AiRecommendation') {
+      this.aiRecommendations = true;
+    } else {
+      this.aiRecommendations = false;
+      this.messageService.add({
+        severity: 'error',
+        summary:
+          'Error in Kpi Column Configurations. Please try after sometime!',
+      });
+      this.loading = false;
+    }
+  }
+
   selectAllSprints() {
-    // this.selectedSprints = [...this.sprintOptions];
     this.selectedSprints = this.sprintOptions.slice(-6);
     this.onSprintsSelection(this.selectedSprints);
   }
@@ -264,46 +310,38 @@ export class RecommendationsComponent implements OnInit {
         }),
       )
       .subscribe({
-        next: (response: any) => {
-          this.isLoading = false;
-          if (response?.error) {
-            this.errorMessage = response?.originalError?.error?.message;
-            this.isError = true;
-            this.shouldCloseDialog = false; // Don't close on error
-            this.isReportGenerated = false;
-            this.isTemplateLoading = false;
-            this.projectScore = 0;
-            this.recommendationsList = [];
-            return;
-          } else {
-            // -- handling success response
-            this.handleSuccessResponse();
-
-            const resp = response?.data && response?.data[0];
-            this.projectScore = +resp?.projectScore || 0;
-            this.recommendationsList = resp?.recommendations || [];
-          }
-        },
-        error: (err) => {
-          console.error('Failed to fetch sprint recommendations:', err);
-          this.isError = true;
-          this.isLoading = false;
-          this.isReportGenerated = false;
-          this.isTemplateLoading = false;
-          this.shouldCloseDialog = false;
-          this.projectScore = 0;
-          this.recommendationsList = [];
-          // Optionally: show a toast/alert to the user
-        },
+        next: (response: any) => this.handleSprintDataResponse(response),
+        error: (err) => this.handleSprintDataError(err),
       });
   }
 
-  handleSuccessResponse() {
+  private handleSprintDataResponse(response: any): void {
+    this.isLoading = false;
+    if (response?.error) {
+      this.handleSprintDataError(response);
+    } else {
+      this.handleSuccessResponse();
+      const resp = response?.data && response?.data[0];
+      this.projectScore = +resp?.projectScore || 0;
+      this.recommendationsList = resp?.recommendations || [];
+    }
+  }
+
+  private handleSprintDataError(err: any): void {
+    console.error('Failed to fetch sprint recommendations:', err);
+    this.errorMessage = err?.originalError?.error?.message;
+    this.isError = true;
+    this.isLoading = false;
+    this.isReportGenerated = false;
+    this.isTemplateLoading = false;
+    this.shouldCloseDialog = false;
+    this.projectScore = 0;
+    this.recommendationsList = [];
+  }
+
+  private handleSuccessResponse() {
     this.shouldCloseDialog = true;
     this.isReportGenerated = true;
-    if (!this.isLoading && this.generatedReport) {
-      this.generatedReport.nativeElement.focus();
-    }
     if (!this.isLoading && this.generatedReport) {
       this.generatedReport.nativeElement.focus();
     }
@@ -320,10 +358,7 @@ export class RecommendationsComponent implements OnInit {
   }
 
   closeCancelLabel() {
-    if (this.isReportGenerated) {
-      return 'Close';
-    }
-    return 'Cancel';
+    return this.isReportGenerated ? 'Close' : 'Cancel';
   }
 
   getCurrentDateFormatted(): string {
@@ -350,7 +385,6 @@ export class RecommendationsComponent implements OnInit {
     if (!this.isValidEmail(email)) {
       // Remove invalid email from the array
       this.emailIds = this.emailIds?.filter((e) => e !== email);
-
       // Add to invalid emails list for display
       if (!this.invalidEmails.includes(email)) {
         this.invalidEmails.push(email);
@@ -358,7 +392,6 @@ export class RecommendationsComponent implements OnInit {
     } else {
       // Remove from invalid emails list
       this.invalidEmails = this.invalidEmails.filter((e) => e !== email);
-      7;
     }
   }
 
@@ -381,6 +414,7 @@ export class RecommendationsComponent implements OnInit {
     // Send via HTTP client
     this.httpService.shareViaEmail(payload).subscribe({
       next: (response) => {
+        this.isTemplateLoading = false;
         if (response && response['success'] && response['data']) {
           this.messageService.add({
             severity: 'success',
@@ -394,6 +428,7 @@ export class RecommendationsComponent implements OnInit {
         }
       },
       error: (error) => {
+        this.isTemplateLoading = false;
         console.error('Error uploading PDF:', error);
         this.messageService.add({
           severity: 'error',
@@ -404,6 +439,7 @@ export class RecommendationsComponent implements OnInit {
   }
 
   exportAsPDF(toDownload: boolean): void {
+    this.isTemplateLoading = true;
     const element = document.getElementById('generatedReport');
     if (!element) return;
 
@@ -451,11 +487,12 @@ export class RecommendationsComponent implements OnInit {
         }
 
         if (toDownload) {
+          this.isTemplateLoading = false;
           pdf.save('project-summary.pdf');
         } else {
-          // Get PDF as blob for sending as payload
+          // Get PDF as base64encoded for sending as payload
           const base64StringPDF = pdf.output('datauristring');
-          const base64data = base64StringPDF.split(',')[1]; // -- to remove data:application/pdf;base64, prefix
+          const base64data = base64StringPDF.split(',')[1];
           this.shareRecommendationViaEmail(base64data);
         }
       })
