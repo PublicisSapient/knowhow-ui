@@ -60,7 +60,6 @@ export class DashboardconfigComponent implements OnInit {
       this.loader = false;
       if (response?.success === true) {
         this.kpiListData = response.data;
-        this.setFormControlData();
         const kpiObjects = Object.keys(this.kpiListData);
         for (const i of kpiObjects) {
           if (typeof this.kpiListData[i] === 'object') {
@@ -79,6 +78,7 @@ export class DashboardconfigComponent implements OnInit {
             if (!this.tabHeaders.includes(i)) this.tabHeaders.push(i);
           }
         }
+        this.setFormControlData();
       } else {
         this.messageService.add({
           severity: 'error',
