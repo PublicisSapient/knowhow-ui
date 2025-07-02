@@ -66,7 +66,8 @@ export class RecommendationsComponent implements OnInit {
   toShareViaEmail: boolean = false;
   emailIds: string[];
   invalidEmails: string[] = [];
-  private readonly emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private readonly emailRegex =
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   errorMessage: string = '';
   shouldCloseDialog: boolean = true;
