@@ -66,6 +66,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BlockUIModule } from 'primeng/blockui';
+import { ChipsModule } from 'primeng/chips';
 /******************************************************/
 
 /******************* Services   ***********************/
@@ -128,6 +129,8 @@ import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
+
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -226,6 +229,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     ScrollTopModule,
     SelectButtonModule,
     ProgressBarModule,
+    AutoCompleteModule,
+    ChipsModule,
   ],
   providers: [
     ExcelService,

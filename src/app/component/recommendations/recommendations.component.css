@@ -126,7 +126,8 @@
   background: #d38eec;
 }
 :host ::ng-deep .p-dialog {
-  width: 50vw !important;
+  width: 75vw !important;
+  min-height: 700px !important;
 }
 .red {
   color: var(--color-red);
@@ -149,8 +150,8 @@
 }
 
 :host ::ng-deep .p-button:enabled:focus,
-:host ::ng-deep .p-button-outlined:enabled:focus {
-  outline: 3px solid #000;
+:host ::ng-deep .p-button-outlined:enabled:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
 
 .loading-screen {
@@ -220,7 +221,8 @@
 }
 
 :host ::ng-deep .summary-section,
-:host ::ng-deep .ai-nudges {
+:host ::ng-deep .ai-nudges,
+:host ::ng-deep .share-email-container {
   border-radius: 20px;
   border: 1px solid #d5dbe1;
 }
@@ -245,6 +247,21 @@
   flex: 1;
 }
 
+.loader-bg {
+  min-height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
 .loading-container {
-  min-height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 }
