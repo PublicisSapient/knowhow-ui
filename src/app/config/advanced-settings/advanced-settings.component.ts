@@ -441,7 +441,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   resetLogs(processorName) {
     const jiraInd = this.findCorrectJiraDetails(processorName);
-    if (jiraInd !== -1 && this.processorsTracelogs[jiraInd] !== undefined) {
+    if (jiraInd !== -1 && this.processorsTracelogs[jiraInd]) {
       this.processorsTracelogs[jiraInd].errorMessage = '';
       this.processorsTracelogs[jiraInd].progressStatusList = [];
     }
