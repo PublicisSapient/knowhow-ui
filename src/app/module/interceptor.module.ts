@@ -126,7 +126,10 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         }
       }),
       catchError((err) => {
-        if (reqUrl.indexOf('kpiRecommendation') !== -1) {
+        if (
+          reqUrl.indexOf('kpiRecommendation') !== -1 &&
+          reqUrl.indexOf('notifications') !== -1
+        ) {
           // Return error as successful response instead of throwing
           return of(
             new HttpResponse({
