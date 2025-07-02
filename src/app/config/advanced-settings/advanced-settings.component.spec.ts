@@ -532,6 +532,10 @@ describe('AdvancedSettingsComponent', () => {
           loader: true,
         },
         {
+          processorName: 'Rally',
+          loader: true,
+        },
+        {
           processorName: 'Github',
           loader: true,
         },

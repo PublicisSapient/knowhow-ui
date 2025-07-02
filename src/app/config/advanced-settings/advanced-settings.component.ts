@@ -197,12 +197,13 @@ export class AdvancedSettingsComponent implements OnInit {
             that.getProcessorCompletionSteps(runProcessorInput);
           } else {
             that.jiraStatusContinuePulling = false;
-            const jiraDAta = that.findTraceLogForTool('Rally');
-            if (
-              that.findTraceLogForTool('Jira') ||
-              that.findTraceLogForTool('Rally')
-            )
+            let jiraDAta = that.findTraceLogForTool('Jira');
+            if (jiraDAta) {
               jiraDAta.executionOngoing = false;
+            } else if (that.findTraceLogForTool('Rally')) {
+              jiraDAta = that.findTraceLogForTool('Rally');
+              jiraDAta.executionOngoing = false;
+            }
           }
         } else {
           this.messageService.add({
