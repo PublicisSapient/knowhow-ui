@@ -16,11 +16,17 @@
  *
  ******************************************************************************/
 
-import { Component, ChangeDetectorRef, AfterContentInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectorRef,
+  AfterContentInit,
+  ViewChild,
+} from '@angular/core';
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
+import { NavNewComponent } from '../nav-v2/nav-new.component';
 
 @Component({
   selector: 'app-dashboard-v2',
@@ -46,6 +52,8 @@ export class DashboardV2Component implements AfterContentInit {
   goToTopButton: HTMLElement;
   selectedTab;
   refreshCounter: number = 0;
+
+  @ViewChild('kpiSearchQuery') navNewComponent!: NavNewComponent;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -84,5 +92,16 @@ export class DashboardV2Component implements AfterContentInit {
 
   ngOnDestroy() {
     this.isApply = false;
+  }
+
+  /**
+   * Update the KPISearchQuery data in navNewComponent and send the searchDataQuery to shared service
+   * @param searchDataQuery KPISearchQuery data from navNewComponent
+   */
+  receiveKPISearchQuery(searchDataQuery) {
+    if (this.navNewComponent) {
+      this.navNewComponent.updateDataDirectly(searchDataQuery);
+      this.service.updateValue(searchDataQuery);
+    }
   }
 }

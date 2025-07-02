@@ -96,7 +96,8 @@
                     <ng-container *ngFor="let data of rowData[column]">
                       <a *ngIf="data?.hasOwnProperty('hyperlink') else dataWithOutHyperlink" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data['text']}}">{{data['text']}}</a>
                       <ng-template #dataWithOutHyperlink>
-                         {{data}}
+                         <span *ngIf="!checkIsItHyperlink(data)">{{data}}</span>
+                         <span><a [href]="data" *ngIf="checkIsItHyperlink(data)" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data}}">{{getHyperlinkDefectId(data)}}</a></span>
                       </ng-template>
                       <ng-template #displayData>
                         <p class="column-content-spacing">{{data}}</p>
@@ -110,7 +111,8 @@
                     <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
                   </ng-container>
                   <ng-container *ngSwitchCase="'other'">
-                    {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}
+                    <span *ngIf="!checkIsItHyperlink(rowData[column])">{{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}</span>
+                    <span><a [href]="rowData[column]" *ngIf="checkIsItHyperlink(rowData[column])" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{rowData[column]}}">{{getHyperlinkDefectId(rowData[column])}}</a></span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'date'">
                     {{utcToLocalUser(rowData[column],(iskanban ? xCaption : column))}}

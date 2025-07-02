@@ -30,17 +30,20 @@
   .board-menu
   .p-tabmenu
   .p-tabmenu-nav
-  .p-tabmenuitem
-  .p-menuitem-link:not(.p-disabled):focus,
-::ng-deep
-  .board-menu
-  .p-tabmenu
-  .p-tabmenu-nav
   .p-tabmenuitem.p-highlight
   .p-menuitem-link {
   background: #0b4bc8;
   color: #fff;
   border-color: #d5dbe1;
+}
+
+::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link:not(.p-disabled):focus-visible {
+  border: 3px solid #0b4bc8;
 }
 
 ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight {
