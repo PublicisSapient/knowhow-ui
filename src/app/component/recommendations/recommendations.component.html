@@ -22,11 +22,10 @@
   (onHide)="onDialogClose()"
   [header]="getDialogHeader()"
 >
-  <div
-    class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6 loading-container"
-    *ngIf="isTemplateLoading"
-  >
-    <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+  <div class="p-d-flex p-ai-center p-jc-center loader-bg" *ngIf="isTemplateLoading">
+    <div class="loading-container">
+      <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+    </div>
   </div>
 
   <div *ngIf="!aiRecommendations">
@@ -263,7 +262,7 @@
     <article
       #generatedReport
       class="p-fluid generated-report-container"
-      *ngIf="isReportGenerated"
+      id="generatedReport" *ngIf="isReportGenerated"
       aria-label="Generated Report Section"
       aria-describedby="generatedReportDescription"
       tabindex="0"
@@ -279,7 +278,7 @@
           <strong>Customised for:</strong> {{ formattedPersona[0]['label'] }}
         </div>
         <div tabindex="0"><strong>Date generated:</strong> {{ currentDate }}</div>
-        <!-- <div></div> -->
+        <div tabindex="0"><strong>Considered data interval: </strong> Last {{selectedSprints.length}} sprints</div>
       </section>
 
       <section class="p-my-4 p-p-6 summary-section">
@@ -341,6 +340,31 @@
           </li>
         </ol>
       </article>
+
+      <article class="p-p-6 share-email-container p-mb-6" *ngIf="toShareViaEmail">
+        <h2 class="p-mt-0">Enter Email Ids:</h2>
+        <div class="p-d-flex p-ai-center p-jc-center">
+          <p-card header="Simple Card" [style]="{'width': '100%'}">
+            <p-chips [style]="{'width': '100%'}" [(ngModel)]="emailIds" separator="," placeholder="Use comma to separate multiple email ids you want to share with."
+            [addOnBlur]="true"
+            [addOnTab]="true"
+            (onAdd)="validateEmail($event)"
+            (onRemove)="onEmailRemove($event)"
+            [allowDuplicate]="false">
+            </p-chips>
+            <div *ngIf="invalidEmails.length > 0" class="error-message">
+              <small class="p-error">Invalid email(s): {{ invalidEmails.join(', ') }}</small>
+            </div>
+            <p-button
+              label="Send Email"
+              icon="pi pi-external-link"
+              styleClass="p-button p-ml-4 p-mt-3"
+              [style]="{'width': 'fit-content', 'float': 'right'}"
+              (click)="exportAsPDF(false)"
+            ></p-button>
+          </p-card>
+        </div>
+      </article>
     </article>
 
     <article class="p-fluid" *ngIf="isError">
@@ -349,7 +373,8 @@
           class="pi pi-exclamation-circle"
           style="font-size: 2rem; margin-right: 15px; color: #fe414d"
         ></i>
-        <span>Please try again, something went wrong!</span>
+        <div>{{errorMessage}}. </div>
+        <span> Please try again, something went wrong!</span>
       </div>
     </article>
 
@@ -362,10 +387,23 @@
       <p-button
         label="Generate Report"
         styleClass="p-button p-ml-4"
-        aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
-        *ngIf="!isLoading && !isReportGenerated"
+        *ngIf="!isLoading && !isReportGenerated && !isError"
+      ></p-button>
+      <p-button
+        label="Share via Email"
+        icon="pi pi-share-alt"
+        styleClass="p-button p-ml-4"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="openShareEmailField()"
+      ></p-button>
+      <p-button
+        label="Export as PDF"
+        styleClass="p-button p-ml-4"
+        icon="pi pi-file-export"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="exportAsPDF(true)"
       ></p-button>
     </article>
   </section>
