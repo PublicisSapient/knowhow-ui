@@ -455,6 +455,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findCorrectJiraDetails(processorName?) {
+  
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
     ).length;
