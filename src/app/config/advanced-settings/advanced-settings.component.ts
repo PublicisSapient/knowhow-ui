@@ -232,7 +232,7 @@ export class AdvancedSettingsComponent implements OnInit {
     if (!processorName) {
       return undefined;
     }
-    
+
     if (
       processorName.toLowerCase() === 'jira' ||
       processorName.toLowerCase() === 'rally'
@@ -455,10 +455,10 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findCorrectJiraDetails(processorName?) {
-  
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
     ).length;
+
     if (jiraCount === 1) {
       return this.processorsTracelogs.findIndex(
         (ptl) => ptl['processorName'] == processorName,
