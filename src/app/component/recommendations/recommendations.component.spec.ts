@@ -361,7 +361,7 @@ describe('RecommendationsComponent', () => {
   });
 
   it('should call shareViaEmail and show success message on successful email share', () => {
-    httpService.shareViaEmail.and.returnValue(of({ success: true, data: {} }));
+    httpService.shareViaEmail.and.returnValue(of({ success: true }));
 
     component.shareRecommendationViaEmail('pdfData');
     expect(httpService.shareViaEmail).toHaveBeenCalled();
