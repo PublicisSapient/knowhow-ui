@@ -1146,6 +1146,64 @@ describe('AdvancedSettingsComponent', () => {
     expect(result).toBe(true);
   });
 
+  it('should set executionOngoing to false for Jira trace log when available', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const jiraTraceLog = { processorName: 'Jira', executionOngoing: true };
+    
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of({
+      success: true,
+      data: [jiraTraceLog]
+    }));
+    
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+    
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+    
+    // Assert
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(jiraTraceLog.executionOngoing).toBeFalse();
+  });
+
+  it('should set executionOngoing to false for Rally trace log when Jira is not available', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const rallyTraceLog = { processorName: 'Rally', executionOngoing: true };
+    
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of({
+      success: true,
+      data: [rallyTraceLog]
+    }));
+    
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+    
+    // Mock findTraceLogForTool to return null for Jira and the Rally object for Rally
+    spyOn(component, 'findTraceLogForTool').and.callFake((processorName) => {
+      if (processorName === 'Jira') {
+        return null;
+      } else if (processorName === 'Rally') {
+        return rallyTraceLog;
+      }
+      return null;
+    });
+    
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+    
+    // Assert
+    expect(component.findTraceLogForTool).toHaveBeenCalledWith('Jira');
+    expect(component.findTraceLogForTool).toHaveBeenCalledWith('Rally');
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(rallyTraceLog.executionOngoing).toBeFalse();
+  });
+
   // it('should navigate to the project list', () => {
   // 	component.backToProjectList();
   // 	expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ProjectList']);
