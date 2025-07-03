@@ -1203,6 +1203,48 @@ describe('AdvancedSettingsComponent', () => {
     expect(component.jiraStatusContinuePulling).toBeFalse();
     expect(rallyTraceLog.executionOngoing).toBeFalse();
   });
+  
+  it('should explicitly test the Rally fallback path when Jira is not found', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const rallyTraceLog = { processorName: 'Rally', executionOngoing: true };
+    
+    // Create a spy that tracks all calls and allows us to verify the sequence
+    const findTraceLogSpy = spyOn(component, 'findTraceLogForTool');
+    
+    // Configure the spy to return different values based on arguments and call count
+    // First call with 'Jira' returns null
+    let jiraCallCount = 0;
+    findTraceLogSpy.withArgs('Jira').and.callFake(() => {
+      jiraCallCount++;
+      return null; // Always return null for Jira
+    });
+    
+    // Calls with 'Rally' return the Rally trace log
+    findTraceLogSpy.withArgs('Rally').and.returnValue(rallyTraceLog);
+    
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of({
+      success: true,
+      data: [rallyTraceLog]
+    }));
+    
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+    
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+    
+    // Assert
+    // Verify that findTraceLogForTool was called with the right arguments
+    expect(findTraceLogSpy).toHaveBeenCalledWith('Jira');
+    expect(findTraceLogSpy).toHaveBeenCalledWith('Rally');
+    
+    // Verify Rally's executionOngoing was set to false
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(rallyTraceLog.executionOngoing).toBeFalse();
+  });
 
   // it('should navigate to the project list', () => {
   // 	component.backToProjectList();
