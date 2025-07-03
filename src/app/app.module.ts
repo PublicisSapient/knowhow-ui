@@ -66,6 +66,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BlockUIModule } from 'primeng/blockui';
+import { ChipsModule } from 'primeng/chips';
 /******************************************************/
 
 /******************* Services   ***********************/
@@ -227,6 +228,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     SelectButtonModule,
     ProgressBarModule,
     AutoCompleteModule,
+    ChipsModule,
   ],
   providers: [
     ExcelService,
