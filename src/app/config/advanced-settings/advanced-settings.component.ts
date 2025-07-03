@@ -197,8 +197,11 @@ export class AdvancedSettingsComponent implements OnInit {
             that.getProcessorCompletionSteps(runProcessorInput);
           } else {
             that.jiraStatusContinuePulling = false;
-            const jiraDAta = that.findTraceLogForTool('Jira');
+            let jiraDAta = that.findTraceLogForTool('Jira');
             if (jiraDAta) {
+              jiraDAta.executionOngoing = false;
+            } else if (that.findTraceLogForTool('Rally')) {
+              jiraDAta = that.findTraceLogForTool('Rally');
               jiraDAta.executionOngoing = false;
             }
           }
@@ -226,6 +229,10 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findTraceLogForTool(processorName) {
+    if (!processorName) {
+      return undefined;
+    }
+
     if (
       processorName.toLowerCase() === 'jira' ||
       processorName.toLowerCase() === 'rally'
@@ -451,6 +458,7 @@ export class AdvancedSettingsComponent implements OnInit {
     const jiraCount = this.processorsTracelogs.filter(
       (ptl) => ptl['processorName'] == processorName,
     ).length;
+
     if (jiraCount === 1) {
       return this.processorsTracelogs.findIndex(
         (ptl) => ptl['processorName'] == processorName,
@@ -463,14 +471,14 @@ export class AdvancedSettingsComponent implements OnInit {
       );
     } else {
       this.processorsTracelogs.push({
-        processorName: 'processorName',
+        processorName: processorName,
         errorMessage: '',
         progressStatusList: [],
         executionOngoing: false,
         executionEndedAt: 0,
         isDeleteDisable: true,
       });
-      return this.processorsTracelogs.length;
+      return this.processorsTracelogs.length - 1;
     }
   }
 
@@ -486,10 +494,8 @@ export class AdvancedSettingsComponent implements OnInit {
       let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if (differenceInMilliseconds > 600000) {
         return false;
-      } else if (differenceInMilliseconds <= 600000) {
-        return true;
       } else {
-        return false;
+        return true;
       }
     } else {
       return false;
