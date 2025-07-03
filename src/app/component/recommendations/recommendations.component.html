@@ -151,6 +151,7 @@
     <article
       class="p-fluid p-mb-6"
       *ngIf="!isLoading && !isReportGenerated && !isError && !isTemplateLoading"
+      style="min-height: 450px;"
     >
       <h4
         id="pageTitle"
@@ -170,11 +171,11 @@
       </h3>
 
       <div
-        class="p-field"
+        class="p-field p-my-3 p-pb-3"
         role="group"
         aria-labelledby="roleLabel"
         aria-describedby="roleDesc"
-        style="width: 450px; margin: 2.5rem auto; padding-bottom: 3rem"
+        style="width: 450px; margin-left: auto; margin-right: auto;"
       >
         <label
           id="roleLabel"
