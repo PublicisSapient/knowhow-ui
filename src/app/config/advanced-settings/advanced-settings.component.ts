@@ -229,6 +229,10 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   findTraceLogForTool(processorName) {
+    if (!processorName) {
+      return undefined;
+    }
+    
     if (
       processorName.toLowerCase() === 'jira' ||
       processorName.toLowerCase() === 'rally'
@@ -466,14 +470,14 @@ export class AdvancedSettingsComponent implements OnInit {
       );
     } else {
       this.processorsTracelogs.push({
-        processorName: 'processorName',
+        processorName: processorName,
         errorMessage: '',
         progressStatusList: [],
         executionOngoing: false,
         executionEndedAt: 0,
         isDeleteDisable: true,
       });
-      return this.processorsTracelogs.length;
+      return this.processorsTracelogs.length - 1;
     }
   }
 
@@ -489,10 +493,8 @@ export class AdvancedSettingsComponent implements OnInit {
       let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if (differenceInMilliseconds > 600000) {
         return false;
-      } else if (differenceInMilliseconds <= 600000) {
-        return true;
       } else {
-        return false;
+        return true;
       }
     } else {
       return false;
