@@ -278,7 +278,7 @@
           <strong>Customised for:</strong> {{ formattedPersona[0]['label'] }}
         </div>
         <div tabindex="0"><strong>Date generated:</strong> {{ currentDate }}</div>
-        <div tabindex="0"><strong>Considered data interval: </strong> Last {{selectedSprints.length}} sprints</div>
+        <div tabindex="0"><strong>Considered data interval: </strong> Last {{selectedSprintsLength}} sprints</div>
       </section>
 
       <section class="p-my-4 p-p-6 summary-section">
@@ -341,7 +341,7 @@
         </ol>
       </article>
 
-      <article class="p-p-6 share-email-container p-mb-6" *ngIf="toShareViaEmail">
+      <article class="p-p-6 share-email-container p-mb-6" id="shareViaEmail" *ngIf="toShareViaEmail">
         <h2 class="p-mt-0">Enter Email Ids:</h2>
         <div class="p-d-flex p-ai-center p-jc-center">
           <p-card header="Simple Card" [style]="{'width': '100%'}">

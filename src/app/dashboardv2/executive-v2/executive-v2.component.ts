@@ -152,6 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
+  floatingRecommendation: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -252,6 +253,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     // const selectedTab = window.location.hash.substring(1);
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    const currentUserDetails = localStorage.getItem('currentUserDetails');
+    if (currentUserDetails) {
+      this.floatingRecommendation =
+        JSON.parse(currentUserDetails).authorities?.includes('ROLE_SUPERADMIN');
+    }
 
     this.service.searchQuery$
       .pipe(takeUntil(this.destroy$))
