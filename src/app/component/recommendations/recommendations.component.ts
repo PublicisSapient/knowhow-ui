@@ -71,6 +71,7 @@ export class RecommendationsComponent implements OnInit {
 
   errorMessage: string = '';
   shouldCloseDialog: boolean = true;
+  selectedSprintsLength: number;
 
   constructor(
     private readonly httpService: HttpService,
@@ -343,6 +344,7 @@ export class RecommendationsComponent implements OnInit {
   private handleSuccessResponse() {
     this.shouldCloseDialog = true;
     this.isReportGenerated = true;
+    this.selectedSprintsLength = this.selectedSprints.length;
     if (!this.isLoading && this.generatedReport) {
       this.generatedReport.nativeElement.focus();
     }
@@ -416,7 +418,7 @@ export class RecommendationsComponent implements OnInit {
     this.httpService.shareViaEmail(payload).subscribe({
       next: (response) => {
         this.isTemplateLoading = false;
-        if (response && response['success'] && response['data']) {
+        if (response && response['success']) {
           this.messageService.add({
             severity: 'success',
             summary: 'PDF uploaded successfully.',
@@ -439,14 +441,34 @@ export class RecommendationsComponent implements OnInit {
     });
   }
 
-  exportAsPDF(toDownload: boolean): void {
+  exportAsPDF(toDownload: boolean = true): void {
     this.isTemplateLoading = true;
     const element = document.getElementById('generatedReport');
-    if (!element) return;
+    const shareDiv = document.getElementById('shareViaEmail');
 
-    html2canvas(element, { scale: 2 })
+    if (!element) throw new Error('Report element not found');
+
+    // Hide the share div before capturing
+    let originalDisplay = null;
+    if (shareDiv) {
+      originalDisplay = shareDiv.style.display;
+      shareDiv.style.display = 'none';
+    }
+
+    // --- Generate canvas with optimized settings
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      removeContainer: true,
+    })
       .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
+        // Restore the share div visibility
+        if (shareDiv && originalDisplay !== null) {
+          shareDiv.style.display = originalDisplay;
+        }
+        const imgData = canvas.toDataURL('image/png', 0.95);
 
         const pdf = new jsPDF('p', 'mm', 'a4');
 
@@ -488,8 +510,8 @@ export class RecommendationsComponent implements OnInit {
         }
 
         if (toDownload) {
-          this.isTemplateLoading = false;
           pdf.save('project-summary.pdf');
+          this.isTemplateLoading = false;
         } else {
           // Get PDF as base64encoded for sending as payload
           const base64StringPDF = pdf.output('datauristring');
