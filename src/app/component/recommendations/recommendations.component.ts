@@ -382,6 +382,16 @@ export class RecommendationsComponent implements OnInit {
     this.toShareViaEmail = !this.toShareViaEmail;
   }
 
+  getShareButtonClasses(): string {
+    const classes = ['p-button', 'p-ml-4'];
+    if (this.toShareViaEmail) {
+      classes.push('toggle-on');
+    } else {
+      classes.push('toggle-off');
+    }
+    return classes.join(' ');
+  }
+
   validateEmail(event: any): void {
     const email = event.value;
 
