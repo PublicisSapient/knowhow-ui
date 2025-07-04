@@ -149,9 +149,12 @@
   border-radius: 10px;
 }
 
+:host ::ng-deep .p-button:enabled:focus-visible,
+:host ::ng-deep .p-button-outlined:enabled:focus-visible,
 :host ::ng-deep .p-button:enabled:focus,
-:host ::ng-deep .p-button-outlined:enabled:focus-visible {
+:host ::ng-deep .p-button-outlined:enabled:focus {
   outline: 3px solid #0b4bc8;
+  background: #0b4bc8;
 }
 
 .loading-screen {
@@ -264,4 +267,12 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+}
+
+:host ::ng-deep .p-inputtext.p-chips-multiple-container {
+  border-radius: 10px;
+}
+
+:host ::ng-deep .toggle-on {
+  background: #05225a !important;
 }
