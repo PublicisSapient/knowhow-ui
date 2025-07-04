@@ -532,6 +532,10 @@ describe('AdvancedSettingsComponent', () => {
           loader: true,
         },
         {
+          processorName: 'Rally',
+          loader: true,
+        },
+        {
           processorName: 'Github',
           loader: true,
         },
@@ -1140,8 +1144,275 @@ describe('AdvancedSettingsComponent', () => {
     expect(result).toBe(true);
   });
 
-  // it('should navigate to the project list', () => {
-  // 	component.backToProjectList();
-  // 	expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ProjectList']);
-  // });
+  it('should set executionOngoing to false for Jira trace log when available', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const jiraTraceLog = { processorName: 'Jira', executionOngoing: true };
+
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+      of({
+        success: true,
+        data: [jiraTraceLog],
+      }),
+    );
+
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+
+    // Assert
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(jiraTraceLog.executionOngoing).toBeFalse();
+  });
+
+  it('should set executionOngoing to false for Rally trace log when Jira is not available', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const rallyTraceLog = { processorName: 'Rally', executionOngoing: true };
+
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+      of({
+        success: true,
+        data: [rallyTraceLog],
+      }),
+    );
+
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+
+    // Mock findTraceLogForTool to return null for Jira and the Rally object for Rally
+    spyOn(component, 'findTraceLogForTool').and.callFake((processorName) => {
+      if (processorName === 'Jira') {
+        return null;
+      } else if (processorName === 'Rally') {
+        return rallyTraceLog;
+      }
+      return null;
+    });
+
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+
+    // Assert
+    expect(component.findTraceLogForTool).toHaveBeenCalledWith('Jira');
+    expect(component.findTraceLogForTool).toHaveBeenCalledWith('Rally');
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(rallyTraceLog.executionOngoing).toBeFalse();
+  });
+
+  it('should explicitly test the Rally fallback path when Jira is not found', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    component.jiraStatusContinuePulling = true;
+    const rallyTraceLog = { processorName: 'Rally', executionOngoing: true };
+
+    // Create a spy that tracks all calls and allows us to verify the sequence
+    const findTraceLogSpy = spyOn(component, 'findTraceLogForTool');
+
+    // Configure the spy to return different values based on arguments and call count
+    // First call with 'Jira' returns null
+    let jiraCallCount = 0;
+    findTraceLogSpy.withArgs('Jira').and.callFake(() => {
+      jiraCallCount++;
+      return null; // Always return null for Jira
+    });
+
+    // Calls with 'Rally' return the Rally trace log
+    findTraceLogSpy.withArgs('Rally').and.returnValue(rallyTraceLog);
+
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+      of({
+        success: true,
+        data: [rallyTraceLog],
+      }),
+    );
+
+    // Mock decideWhetherLoaderOrNot to return false to trigger our code path
+    spyOn(component, 'decideWhetherLoaderOrNot').and.returnValue(false);
+
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+
+    // Assert
+    // Verify that findTraceLogForTool was called with the right arguments
+    expect(findTraceLogSpy).toHaveBeenCalledWith('Jira');
+    expect(findTraceLogSpy).toHaveBeenCalledWith('Rally');
+
+    // Verify Rally's executionOngoing was set to false
+    expect(component.jiraStatusContinuePulling).toBeFalse();
+    expect(rallyTraceLog.executionOngoing).toBeFalse();
+  });
+
+  it('should handle error response in getProcessorsTraceLogsForProject', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+
+    // Mock HTTP service to return error response
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+      of({
+        success: false,
+      }),
+    );
+
+    // Spy on messageService.add
+    spyOn(messageService, 'add');
+
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+
+    // Assert
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary:
+        "Error in fetching processor's execution date. Please try after some time.",
+    });
+  });
+
+  it('should handle the true branch of decideWhetherLoaderOrNot', () => {
+    // Arrange
+    component.selectedProject = { id: 'testProjectId' };
+    const jiraTraceLog = {
+      processorName: 'Jira',
+      executionOngoing: true,
+      progressStatusList: [
+        {
+          endTime: new Date().getTime() - 300000, // 5 minutes ago (less than 10 minutes)
+        },
+      ],
+    };
+
+    // Mock HTTP service
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+      of({
+        success: true,
+        data: [jiraTraceLog],
+      }),
+    );
+
+    // Mock findTraceLogForTool to return jiraTraceLog
+    spyOn(component, 'findTraceLogForTool').and.returnValue(jiraTraceLog);
+
+    // Use the real decideWhetherLoaderOrNot method
+    spyOn(component, 'decideWhetherLoaderOrNot').and.callThrough();
+
+    // Mock getProcessorCompletionSteps
+    spyOn(component, 'getProcessorCompletionSteps');
+
+    // Act
+    component.getProcessorsTraceLogsForProject('testProjectId');
+
+    // Assert
+    expect(component.jiraStatusContinuePulling).toBeTrue();
+    expect(component.getProcessorCompletionSteps).toHaveBeenCalledWith({
+      processor: 'Jira',
+      projects: ['testProjectId'],
+    });
+  });
+
+  it('should test decideWhetherLoaderOrNot with valid jiraLogDetails', () => {
+    // Case 1: Time difference > 600000 ms (10 minutes)
+    const oldLog = {
+      executionOngoing: true,
+      progressStatusList: [
+        {
+          endTime: new Date().getTime() - 700000, // 11+ minutes ago
+        },
+      ],
+    };
+    expect(component.decideWhetherLoaderOrNot(oldLog)).toBeFalse();
+
+    // Case 2: Time difference <= 600000 ms (10 minutes)
+    const recentLog = {
+      executionOngoing: true,
+      progressStatusList: [
+        {
+          endTime: new Date().getTime() - 300000, // 5 minutes ago
+        },
+      ],
+    };
+    expect(component.decideWhetherLoaderOrNot(recentLog)).toBeTrue();
+  });
+
+  it('should test decideWhetherLoaderOrNot with invalid jiraLogDetails', () => {
+    // Case 1: null jiraLogDetails
+    expect(component.decideWhetherLoaderOrNot(null)).toBeFalse();
+
+    // Case 2: executionOngoing is false
+    const log1 = {
+      executionOngoing: false,
+      progressStatusList: [{ endTime: new Date().getTime() }],
+    };
+    expect(component.decideWhetherLoaderOrNot(log1)).toBeFalse();
+
+    // Case 3: empty progressStatusList
+    const log2 = { executionOngoing: true, progressStatusList: [] };
+    expect(component.decideWhetherLoaderOrNot(log2)).toBeFalse();
+
+    // Case 4: undefined progressStatusList
+    const log3 = { executionOngoing: true };
+    expect(component.decideWhetherLoaderOrNot(log3)).toBeFalse();
+  });
+
+  it('should test findTraceLogForTool for Jira', () => {
+    // Arrange
+    const jiraTraceLog = { processorName: 'Jira', executionOngoing: true };
+    component.processorsTracelogs = [jiraTraceLog];
+
+    // Mock findCorrectJiraDetails
+    spyOn(component, 'findCorrectJiraDetails').and.returnValue(0);
+
+    // Act & Assert
+    expect(component.findTraceLogForTool('Jira')).toBe(jiraTraceLog);
+    expect(component.findCorrectJiraDetails).toHaveBeenCalledWith('Jira');
+  });
+
+  it('should test findTraceLogForTool for non-Jira/Rally processors', () => {
+    // Arrange
+    const gitHubTraceLog = { processorName: 'GitHub', executionOngoing: true };
+    component.processorsTracelogs = [gitHubTraceLog];
+
+    // Act & Assert
+    expect(component.findTraceLogForTool('GitHub')).toBe(gitHubTraceLog);
+  });
+
+  it('should test resetLogs method', () => {
+    // Arrange
+    const jiraTraceLog = {
+      processorName: 'Jira',
+      executionOngoing: true,
+      errorMessage: 'Some error',
+      progressStatusList: ['status1', 'status2'],
+    };
+    component.processorsTracelogs = [jiraTraceLog];
+
+    // Mock findCorrectJiraDetails
+    spyOn(component, 'findCorrectJiraDetails').and.returnValue(0);
+
+    // Act
+    component.resetLogs('Jira');
+
+    // Assert
+    expect(jiraTraceLog.errorMessage).toBe('');
+    expect(jiraTraceLog.progressStatusList).toEqual([]);
+  });
+
+  it('should navigate to the project list', () => {
+    // Arrange
+    spyOn(component.router, 'navigate');
+
+    // Act
+    component.backToProjectList();
+
+    // Assert
+    expect(component.router.navigate).toHaveBeenCalledWith([
+      '/dashboard/Config/ProjectList',
+    ]);
+  });
 });

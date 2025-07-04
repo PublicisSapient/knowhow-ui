@@ -460,7 +460,7 @@
           alt="Failure Icon"
           class="p-mr-1"
         />
-        {{ findTraceLogForTool('Jira')?.errorMessage }}
+        {{ findTraceLogForTool('Jira')?.errorMessage ||  findTraceLogForTool('Rally')?.errorMessage }}
       </h3>
     </ng-template>
 
