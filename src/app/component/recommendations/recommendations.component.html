@@ -300,7 +300,7 @@
         </article>
       </section>
 
-      <article class="p-p-6 p-mb-6 ai-nudges" aria-label="AI Nudges: Suggested Improvements" tabindex="0">
+      <article class="p-p-6 p-mb-4 ai-nudges" aria-label="AI Nudges: Suggested Improvements" tabindex="0">
         <h2 class="p-mt-0">
           AI Nudges
           <img
@@ -342,27 +342,36 @@
         </ol>
       </article>
 
-      <article class="p-p-6 share-email-container p-mb-6" id="shareViaEmail" *ngIf="toShareViaEmail">
+      <article class="p-p-6 share-email-container p-mb-4" id="shareViaEmail" *ngIf="toShareViaEmail">
         <h2 class="p-mt-0">Enter Email Ids:</h2>
         <div class="p-d-flex p-ai-center p-jc-center">
           <p-card header="Simple Card" [style]="{'width': '100%'}">
-            <p-chips [style]="{'width': '100%'}" [(ngModel)]="emailIds" separator="," placeholder="Use comma to separate multiple email ids you want to share with."
-            [addOnBlur]="true"
-            [addOnTab]="true"
-            (onAdd)="validateEmail($event)"
-            (onRemove)="onEmailRemove($event)"
-            [allowDuplicate]="false">
-            </p-chips>
-            <div *ngIf="invalidEmails.length > 0" class="error-message">
+            <div class="p-d-flex p-ai-center p-jc-between p-gap-3">
+              <div class="p-fluid" [style]="{'flex': '1'}">
+                <p-chips
+                  [(ngModel)]="emailIds"
+                  separator=","
+                  placeholder="Use comma to separate multiple email ids you want to share with."
+                  [addOnBlur]="true"
+                  [addOnTab]="true"
+                  (onAdd)="validateEmail($event)"
+                  (onRemove)="onEmailRemove($event)"
+                  [allowDuplicate]="false">
+                </p-chips>
+              </div>
+              <div class="p-d-flex p-ai-center p-ml-3">
+                <p-button
+                  label="Send"
+                  icon="pi pi-external-link"
+                  styleClass="p-button"
+                  [style]="{'white-space': 'nowrap'}"
+                  (click)="exportAsPDF(false)">
+                </p-button>
+              </div>
+            </div>
+            <div *ngIf="invalidEmails.length > 0" class="error-message p-mt-2">
               <small class="p-error">Invalid email(s): {{ invalidEmails.join(', ') }}</small>
             </div>
-            <p-button
-              label="Send Email"
-              icon="pi pi-external-link"
-              styleClass="p-button p-ml-4 p-mt-3"
-              [style]="{'width': 'fit-content', 'float': 'right'}"
-              (click)="exportAsPDF(false)"
-            ></p-button>
           </p-card>
         </div>
       </article>
@@ -395,7 +404,7 @@
       <p-button
         label="Share via Email"
         icon="pi pi-share-alt"
-        styleClass="p-button p-ml-4"
+        [styleClass]="getShareButtonClasses()"
         *ngIf="!isLoading && isReportGenerated"
         (click)="openShareEmailField()"
       ></p-button>
