@@ -390,4 +390,69 @@ describe('RecommendationsComponent', () => {
 
     expect(component.shareRecommendationViaEmail).toHaveBeenCalled();
   }));
+
+  describe('getShareButtonClasses', () => {
+    it('should return base classes when initialized', () => {
+      // Arrange
+      component.toShareViaEmail = false;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-off');
+    });
+
+    it('should include toggle-on class when toShareViaEmail is true', () => {
+      // Arrange
+      component.toShareViaEmail = true;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-on');
+      expect(result).toContain('toggle-on');
+      expect(result).not.toContain('toggle-off');
+    });
+
+    it('should include toggle-off class when toShareViaEmail is false', () => {
+      // Arrange
+      component.toShareViaEmail = false;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-off');
+      expect(result).toContain('toggle-off');
+      expect(result).not.toContain('toggle-on');
+    });
+
+    it('should maintain consistent base classes regardless of toggle state', () => {
+      // Arrange & Act
+      component.toShareViaEmail = true;
+      const resultOn = component.getShareButtonClasses();
+      component.toShareViaEmail = false;
+      const resultOff = component.getShareButtonClasses();
+
+      // Assert
+      expect(resultOn).toContain('p-button');
+      expect(resultOn).toContain('p-ml-4');
+      expect(resultOff).toContain('p-button');
+      expect(resultOff).toContain('p-ml-4');
+    });
+
+    it('should return space-separated string of classes', () => {
+      // Arrange
+      component.toShareViaEmail = true;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result.split(' ').length).toBe(3);
+      expect(result).toMatch(/^[a-zA-Z0-9\-\s]+$/);
+    });
+  });
 });
