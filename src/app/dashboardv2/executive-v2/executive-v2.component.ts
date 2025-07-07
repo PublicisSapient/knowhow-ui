@@ -152,6 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
+  floatingRecommendation: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -249,20 +250,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    // const selectedTab = window.location.hash.substring(1);
-    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
-
+  private setupSearchQuerySubscription(): void {
     this.service.searchQuery$
       .pipe(takeUntil(this.destroy$))
       .subscribe((searchQuery) => {
         if (searchQuery) {
-          setTimeout(() => {
-            this.handlePageScrollOnSearch(searchQuery.value);
-          }, 1000);
+          setTimeout(
+            () => this.handlePageScrollOnSearch(searchQuery.value),
+            1000,
+          );
         }
       });
+  }
 
+  private setupScrumKanbanSwitchSubscription(): void {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch.subscribe((data) => {
         this.resetToDefaults();
@@ -271,6 +272,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noProjects = this.service.noProjectsObj;
       }),
     );
+  }
+
+  ngOnInit() {
+    // const selectedTab = window.location.hash.substring(1);
+    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    this.initializeUserDetails();
+    this.setupSearchQuerySubscription();
+    this.setupScrumKanbanSwitchSubscription();
 
     this.subscriptions.push(
       this.service.onTabSwitch.subscribe((data) => {
@@ -426,109 +436,104 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (!this.refreshCounter) {
-          let stateFiltersParam = params['stateFilters'];
-          let kpiFiltersParam = params['kpiFilters'];
-          let tabParam = params['selectedTab'];
-          if (!tabParam) {
-            if (!this.service.getSelectedTab()) {
-              let selectedTab = decodeURIComponent(this.location.path());
-              selectedTab = selectedTab?.split('/')[2]
-                ? selectedTab?.split('/')[2]
-                : 'iteration';
-              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-              this.selectedTab = selectedTab.split('?statefilters=')[0];
-              this.service.setSelectedBoard(this.selectedTab);
-            } else {
-              this.selectedTab = this.service.getSelectedTab();
-              this.service.setSelectedBoard(this.selectedTab);
-            }
+        if (this.refreshCounter) return;
+        let stateFiltersParam = params['stateFilters'];
+        let kpiFiltersParam = params['kpiFilters'];
+        let tabParam = params['selectedTab'];
+        if (!tabParam) {
+          if (!this.service.getSelectedTab()) {
+            let selectedTab = decodeURIComponent(this.location.path());
+            selectedTab = selectedTab?.split('/')[2]
+              ? selectedTab?.split('/')[2]
+              : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.service.setSelectedBoard(this.selectedTab);
           } else {
-            this.selectedTab = tabParam;
+            this.selectedTab = this.service.getSelectedTab();
             this.service.setSelectedBoard(this.selectedTab);
           }
+        } else {
+          this.selectedTab = tabParam;
+          this.service.setSelectedBoard(this.selectedTab);
+        }
 
-          if (this.selectedTab === 'kpi-maturity') {
-            setTimeout(() => {
-              this.router.navigate([`dashboard/${this.selectedTab}`], {
-                queryParams: {
-                  stateFilters: stateFiltersParam,
-                  kpiFilters: kpiFiltersParam,
-                  selectedTab: this.selectedTab,
-                }, // Pass the object here
-              });
+        if (this.selectedTab === 'kpi-maturity') {
+          setTimeout(() => {
+            this.router.navigate([`dashboard/${this.selectedTab}`], {
+              queryParams: {
+                stateFilters: stateFiltersParam,
+                kpiFilters: kpiFiltersParam,
+                selectedTab: this.selectedTab,
+              }, // Pass the object here
             });
-          }
-          if (stateFiltersParam?.length) {
-            if (
-              stateFiltersParam?.length <= 8 &&
-              kpiFiltersParam?.length <= 8
-            ) {
-              this.httpService
-                .handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
-                .pipe(
-                  catchError((error) => {
-                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                    setTimeout(() => {
-                      this.service.raiseError({
-                        status: 900,
-                        message: error.message || 'Invalid URL.',
-                      });
+          });
+        }
+        if (stateFiltersParam?.length) {
+          if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+            this.httpService
+              .handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+              .pipe(
+                catchError((error) => {
+                  this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                  setTimeout(() => {
+                    this.service.raiseError({
+                      status: 900,
+                      message: error.message || 'Invalid URL.',
                     });
-
-                    return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
-                  }),
-                )
-                .subscribe((response: any) => {
-                  if (response.success) {
-                    const longKPIFiltersString =
-                      response.data['longKPIFiltersString'];
-                    const longStateFiltersString =
-                      response.data['longStateFiltersString'];
-                    stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
-
-                    // const kpiFiltersParam = params['kpiFilters'];
-                    if (longKPIFiltersString) {
-                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
-
-                      const kpiFilterValFromUrl =
-                        kpiFilterParamDecoded &&
-                        JSON.parse(kpiFilterParamDecoded)
-                          ? JSON.parse(kpiFilterParamDecoded)
-                          : this.service.getKpiSubFilterObj();
-                      this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                    }
-
-                    // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-
-                    this.urlRedirection(stateFiltersParam);
-                    this.refreshCounter++;
-                  }
-                });
-            } else {
-              try {
-                stateFiltersParam = atob(stateFiltersParam);
-                if (kpiFiltersParam) {
-                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
-                  const kpiFilterValFromUrl =
-                    kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
-                      ? JSON.parse(kpiFilterParamDecoded)
-                      : this.service.getKpiSubFilterObj();
-                  this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                }
-                // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-                this.urlRedirection(stateFiltersParam);
-                this.refreshCounter++;
-              } catch (error) {
-                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                setTimeout(() => {
-                  this.service.raiseError({
-                    status: 900,
-                    message: 'Invalid URL.',
                   });
-                }, 100);
+
+                  return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
+                }),
+              )
+              .subscribe((response: any) => {
+                if (response.success) {
+                  const longKPIFiltersString =
+                    response.data['longKPIFiltersString'];
+                  const longStateFiltersString =
+                    response.data['longStateFiltersString'];
+                  stateFiltersParam = atob(longStateFiltersString);
+                  // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                  // const kpiFiltersParam = params['kpiFilters'];
+                  if (longKPIFiltersString) {
+                    const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                    const kpiFilterValFromUrl =
+                      kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
+                        ? JSON.parse(kpiFilterParamDecoded)
+                        : this.service.getKpiSubFilterObj();
+                    this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                  }
+
+                  // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+
+                  this.urlRedirection(stateFiltersParam);
+                  this.refreshCounter++;
+                }
+              });
+          } else {
+            try {
+              stateFiltersParam = atob(stateFiltersParam);
+              if (kpiFiltersParam) {
+                const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                const kpiFilterValFromUrl =
+                  kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
+                    ? JSON.parse(kpiFilterParamDecoded)
+                    : this.service.getKpiSubFilterObj();
+                this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
               }
+              // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+              this.urlRedirection(stateFiltersParam);
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: 'Invalid URL.',
+                });
+              }, 100);
             }
           }
         }
@@ -4908,5 +4913,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   onBlurGoToRecommendation(event) {
     (event.target as HTMLElement).classList.add('sr-only');
+  }
+
+  private initializeUserDetails(): void {
+    const currentUserDetails = localStorage.getItem('currentUserDetails');
+    if (currentUserDetails) {
+      const userDetails = JSON.parse(currentUserDetails);
+      this.floatingRecommendation =
+        userDetails.authorities?.includes('ROLE_SUPERADMIN');
+    }
   }
 }
