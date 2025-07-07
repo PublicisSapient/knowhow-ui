@@ -45,6 +45,7 @@
   height: 5rem;
   margin-top: 5px;
   padding: 5px;
+  border-radius: 0.5rem;
 }
 
 .comment-box {
@@ -120,7 +121,7 @@ textarea:focus-visible {
 
 ::ng-deep .comments-modal .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   padding: 5px;
-  border-radius: 2px;
+  border-radius: 0.5rem;
   font-size: 0.8rem;
   border: 1px solid var(--color-black);
 }
@@ -134,6 +135,7 @@ textarea:focus-visible {
   color: #fff;
   background: var(--color-secondary-blue);
   border-color: var(--color-secondary-blue);
+  border-radius: 0.5rem;
 }
 
 ::ng-deep .comments-modal .p-tabview .p-tabview-nav li {
@@ -156,4 +158,26 @@ textarea:focus-visible {
 
 .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
+}
+:host ::ng-deep.cancel-btn {
+  border: 1px solid #0b4bc8;
+  color: #0b4bc8;
+  background-color: transparent;
+}
+:host ::ng-deep.cancel-btn:enabled:hover {
+  background-color: #dee8fc;
+  border: 1px solid #0b4bc8;
+  color: #0b4bc8;
+}
+.submit-btn {
+  background-color: #0b4bc8;
+  color: #fff;
+}
+.submit-btn:hover {
+  background-color: #083896 !important;
+}
+.submit-btn-before {
+  background-color: #0b4bc8 !important;
+  opacity: 0.6;
+  color: #fff !important;
 }

@@ -65,7 +65,7 @@
   --color-cyan-blue: #437495;
   --color-occur-yellow: #9d6000;
   --color-light-red: #eb3d4b;
-  --color-secondary-blue: #079fff;
+  --color-secondary-blue: #0b4bc8;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00e6c3;
   --font-regular: 'Poppins_Regular', sans-serif;
@@ -1883,8 +1883,8 @@ a:hover {
   color: #4b4b4b;
 }
 .p-dialog .p-dialog-header-icons {
-  width: 21px;
-  height: 21px;
+  /* width: 21px;
+  height: 21px; */
   padding: 3px;
   position: absolute;
   right: 21px;
@@ -2166,4 +2166,13 @@ p-dialog .p-button-cancel.p-button-secondary {
 }
 .color-blue {
   color: #06a0ff;
+}
+
+.p-dialog .p-dialog-header {
+  border-top-left-radius: 1.5rem !important;
+  border-top-right-radius: 1.5rem !important;
+}
+.p-dialog .p-dialog-content:last-of-type {
+  border-bottom-left-radius: 1.5rem !important;
+  border-bottom-right-radius: 1.5rem !important;
 }

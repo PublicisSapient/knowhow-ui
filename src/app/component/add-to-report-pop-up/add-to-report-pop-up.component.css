@@ -73,20 +73,23 @@ ul li.selectedfilter {
   border: 1px solid #ccc;
   background-color: #f5f5f5;
   color: rgb(107, 115, 124);
-  border-radius: 4px;
+  border-radius: 0.5rem;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.3s;
+  font-family: 'Poppins', sans-serif;
 }
 
 :host ::ng-deep .slider-item.active .p-button {
-  border: 1px solid #06a0ff;
-  background-color: #06a0ff;
+  border: 1px solid #0b4bc8;
+  background-color: #0b4bc8;
   color: #fff;
 }
-
-:host ::ng-deep .slider-item:hover {
-  background: #e0e0e0;
+:host ::ng-deep .slider-item.active button:hover {
+  background-color: #083896;
+}
+:host ::ng-deep .slider-item.active .p-button .p-button-label {
+  background-color: transparent;
 }
 
 /* Optional styling for navigation buttons */
