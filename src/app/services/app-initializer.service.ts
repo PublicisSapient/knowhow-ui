@@ -253,7 +253,11 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
-              this.router.navigateByUrl(location);
+              if (localStorage.getItem('last_link')) {
+                this.router.navigateByUrl(localStorage.getItem('last_link'));
+              } else {
+                this.router.navigateByUrl(location);
+              }
             } else {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
