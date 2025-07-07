@@ -434,7 +434,7 @@
   border-radius: 1.5rem;
   border: 1px solid transparent;
   background-color: #fff;
-  width: 97%;
+  width: 95%;
 }
 
 :host
@@ -495,7 +495,6 @@
   box-shadow: none !important;
 }
 :host ::ng-deep .p-button:disabled {
-  background: #0b4bc8 !important;
-  opacity: 0.6 !important;
+  background: #ccd0d5 !important;
   color: #fff !important;
 }
