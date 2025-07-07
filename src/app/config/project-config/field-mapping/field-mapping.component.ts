@@ -157,7 +157,7 @@ export class FieldMappingComponent implements OnInit {
   }
 
   onUpload(event) {
-    this.uploadedFileName = event.target.files[0].name;
+    this.uploadedFileName = event.target.files[0]?.name;
     const fileReader = new FileReader();
     fileReader.readAsText(event.target.files[0], 'UTF-8');
     fileReader.onload = () => {

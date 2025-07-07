@@ -22,11 +22,10 @@
   (onHide)="onDialogClose()"
   [header]="getDialogHeader()"
 >
-  <div
-    class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6 loading-container"
-    *ngIf="isTemplateLoading"
-  >
-    <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+  <div class="p-d-flex p-ai-center p-jc-center loader-bg" *ngIf="isTemplateLoading">
+    <div class="loading-container">
+      <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+    </div>
   </div>
 
   <div *ngIf="!aiRecommendations">
@@ -152,6 +151,7 @@
     <article
       class="p-fluid p-mb-6"
       *ngIf="!isLoading && !isReportGenerated && !isError && !isTemplateLoading"
+      style="min-height: 450px;"
     >
       <h4
         id="pageTitle"
@@ -171,11 +171,11 @@
       </h3>
 
       <div
-        class="p-field"
+        class="p-field p-my-3 p-pb-3"
         role="group"
         aria-labelledby="roleLabel"
         aria-describedby="roleDesc"
-        style="width: 450px; margin: 2.5rem auto; padding-bottom: 3rem"
+        style="width: 450px; margin-left: auto; margin-right: auto;"
       >
         <label
           id="roleLabel"
@@ -263,7 +263,7 @@
     <article
       #generatedReport
       class="p-fluid generated-report-container"
-      *ngIf="isReportGenerated"
+      id="generatedReport" *ngIf="isReportGenerated"
       aria-label="Generated Report Section"
       aria-describedby="generatedReportDescription"
       tabindex="0"
@@ -279,7 +279,7 @@
           <strong>Customised for:</strong> {{ formattedPersona[0]['label'] }}
         </div>
         <div tabindex="0"><strong>Date generated:</strong> {{ currentDate }}</div>
-        <!-- <div></div> -->
+        <div tabindex="0"><strong>Considered data interval: </strong> Last {{selectedSprintsLength}} sprints</div>
       </section>
 
       <section class="p-my-4 p-p-6 summary-section">
@@ -300,7 +300,7 @@
         </article>
       </section>
 
-      <article class="p-p-6 p-mb-6 ai-nudges" aria-label="AI Nudges: Suggested Improvements" tabindex="0">
+      <article class="p-p-6 p-mb-4 ai-nudges" aria-label="AI Nudges: Suggested Improvements" tabindex="0">
         <h2 class="p-mt-0">
           AI Nudges
           <img
@@ -341,6 +341,40 @@
           </li>
         </ol>
       </article>
+
+      <article class="p-p-6 share-email-container p-mb-4" id="shareViaEmail" *ngIf="toShareViaEmail">
+        <h2 class="p-mt-0">Enter Email Ids:</h2>
+        <div class="p-d-flex p-ai-center p-jc-center">
+          <p-card header="Simple Card" [style]="{'width': '100%'}">
+            <div class="p-d-flex p-ai-center p-jc-between p-gap-3">
+              <div class="p-fluid" [style]="{'flex': '1'}">
+                <p-chips
+                  [(ngModel)]="emailIds"
+                  separator=","
+                  placeholder="Use comma to separate multiple email ids you want to share with."
+                  [addOnBlur]="true"
+                  [addOnTab]="true"
+                  (onAdd)="validateEmail($event)"
+                  (onRemove)="onEmailRemove($event)"
+                  [allowDuplicate]="false">
+                </p-chips>
+              </div>
+              <div class="p-d-flex p-ai-center p-ml-3">
+                <p-button
+                  label="Send"
+                  icon="pi pi-external-link"
+                  styleClass="p-button"
+                  [style]="{'white-space': 'nowrap'}"
+                  (click)="exportAsPDF(false)">
+                </p-button>
+              </div>
+            </div>
+            <div *ngIf="invalidEmails.length > 0" class="error-message p-mt-2">
+              <small class="p-error">Invalid email(s): {{ invalidEmails.join(', ') }}</small>
+            </div>
+          </p-card>
+        </div>
+      </article>
     </article>
 
     <article class="p-fluid" *ngIf="isError">
@@ -349,7 +383,8 @@
           class="pi pi-exclamation-circle"
           style="font-size: 2rem; margin-right: 15px; color: #fe414d"
         ></i>
-        <span>Please try again, something went wrong!</span>
+        <div>{{errorMessage}}. </div>
+        <span> Please try again, something went wrong!</span>
       </div>
     </article>
 
@@ -362,10 +397,23 @@
       <p-button
         label="Generate Report"
         styleClass="p-button p-ml-4"
-        aria-label="Generate Report dialog"
         [disabled]="!(isRoleSelected && isSprintSelected)"
         (click)="generateSprintReport()"
-        *ngIf="!isLoading && !isReportGenerated"
+        *ngIf="!isLoading && !isReportGenerated && !isError"
+      ></p-button>
+      <p-button
+        label="Share via Email"
+        icon="pi pi-share-alt"
+        [styleClass]="getShareButtonClasses()"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="openShareEmailField()"
+      ></p-button>
+      <p-button
+        label="Export as PDF"
+        styleClass="p-button p-ml-4"
+        icon="pi pi-file-export"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="exportAsPDF(true)"
       ></p-button>
     </article>
   </section>

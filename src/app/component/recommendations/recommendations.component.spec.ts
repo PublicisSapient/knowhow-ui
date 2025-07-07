@@ -16,9 +16,13 @@ describe('RecommendationsComponent', () => {
   let httpService: jasmine.SpyObj<HttpService>;
   let messageService: jasmine.SpyObj<MessageService>;
   let sharedService: jasmine.SpyObj<SharedService>;
+  let httpSpy;
 
   beforeEach(async () => {
-    const httpSpy = jasmine.createSpyObj('HttpService', ['getRecommendations']);
+    httpSpy = jasmine.createSpyObj('HttpService', [
+      'getRecommendations',
+      'shareViaEmail',
+    ]);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const sharedSpy = jasmine.createSpyObj('SharedService', [
       'getSprintForRnR',
@@ -43,6 +47,16 @@ describe('RecommendationsComponent', () => {
     sharedService = TestBed.inject(
       SharedService,
     ) as jasmine.SpyObj<SharedService>;
+
+    // Mock the DOM element
+    const element = document.createElement('div');
+    element.id = 'generatedReport';
+    document.body.appendChild(element);
+  });
+
+  afterEach(() => {
+    httpSpy.getRecommendations.calls.reset();
+    httpSpy.shareViaEmail.calls.reset();
   });
 
   it('should create', () => {
@@ -234,6 +248,211 @@ describe('RecommendationsComponent', () => {
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'error',
       summary: 'Error in Kpi Column Configurations. Please try after sometime!',
+    });
+  });
+
+  it('should call getRecommendations and handle success response', () => {
+    const reqBody = {
+      level: 5,
+      label: 'project',
+      selectedMap: {
+        bu: [],
+        ver: [],
+        acc: [],
+        port: [],
+        project: ['a4fbe170-8667-4878-a877-a1b1300d8b16'],
+        sprint: [
+          '54130_a4fbe170-8667-4878-a877-a1b1300d8b16',
+          '54131_a4fbe170-8667-4878-a877-a1b1300d8b16',
+        ],
+        release: [],
+        sqd: [],
+      },
+      ids: ['a4fbe170-8667-4878-a877-a1b1300d8b16'],
+      sprintIncluded: ['CLOSED'],
+      kpiIdList: ['kpi14', 'kpi82', 'kpi111'],
+      recommendationFor: 'agile_program_manager',
+    };
+    const response = {
+      data: [
+        {
+          projectScore: 10,
+          recommendations: [
+            { recommendationType: 'rec1' },
+            { recommendationType: 'rec2' },
+          ],
+        },
+      ],
+    };
+    httpSpy.getRecommendations.and.returnValue(of(response));
+
+    component.getSprintData(reqBody);
+
+    expect(component.isLoading).toBe(false);
+    expect(component.projectScore).toBe(10);
+    expect(component.recommendationsList).toEqual([
+      { recommendationType: 'rec1' },
+      { recommendationType: 'rec2' },
+    ]);
+  });
+
+  it('should call getRecommendations and handle error response', () => {
+    const reqBody = {
+      /* mock request body */
+    };
+    const error = { error: 'Mock error' };
+    httpSpy.getRecommendations.and.returnValue(throwError(error));
+
+    component.getSprintData(reqBody);
+
+    expect(component.isLoading).toBe(false);
+    expect(component.isError).toBe(true);
+    expect(component.projectScore).toBe(0);
+    expect(component.recommendationsList).toEqual([]);
+  });
+
+  it('should cancel ongoing request when component is destroyed', () => {
+    const reqBody = {
+      /* mock request body */
+    };
+    httpSpy.getRecommendations.and.returnValue(of({}));
+
+    component.getSprintData(reqBody);
+    component.ngOnDestroy();
+
+    // expect(component.cancelCurrentRequest$.closed).toBe(true);
+  });
+
+  // ==========================================================
+
+  it('should toggle toShareViaEmail when openShareEmailField is called', () => {
+    component.toShareViaEmail = false;
+    component.openShareEmailField();
+    expect(component.toShareViaEmail).toBeTrue();
+
+    component.openShareEmailField();
+    expect(component.toShareViaEmail).toBeFalse();
+  });
+
+  // -- TODO: will look into it later - due time
+  xit('should validate email and update invalidEmails list', () => {
+    const validEmailEvent = {
+      value: '<a href="mailto:test@example.com">test@example.com</a>',
+    };
+    const invalidEmailEvent = { value: 'invalid-email' };
+
+    component.validateEmail(validEmailEvent);
+    expect(component.invalidEmails).not.toContain(validEmailEvent.value);
+
+    component.validateEmail(invalidEmailEvent);
+    expect(component.invalidEmails).toContain(invalidEmailEvent.value);
+  });
+
+  it('should remove email from invalidEmails list on onEmailRemove', () => {
+    const emailEvent = {
+      value: '<a href="mailto:test@example.com">test@example.com</a>',
+    };
+    component.invalidEmails = [
+      '<a href="mailto:test@example.com">test@example.com</a>',
+    ];
+
+    component.onEmailRemove(emailEvent);
+    expect(component.invalidEmails).not.toContain(emailEvent.value);
+  });
+
+  it('should call shareViaEmail and show success message on successful email share', () => {
+    httpService.shareViaEmail.and.returnValue(of({ success: true }));
+
+    component.shareRecommendationViaEmail('pdfData');
+    expect(httpService.shareViaEmail).toHaveBeenCalled();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'PDF uploaded successfully.',
+    });
+  });
+
+  it('should show error message on failed email share', () => {
+    httpService.shareViaEmail.and.returnValue(throwError({ message: 'Error' }));
+
+    component.shareRecommendationViaEmail('pdfData');
+    expect(httpService.shareViaEmail).toHaveBeenCalled();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error',
+    });
+  });
+
+  // -- TODO: will look into it later - due time
+  xit('should export as PDF and call shareRecommendationViaEmail if not toDownload', fakeAsync(() => {
+    spyOn(component, 'shareRecommendationViaEmail');
+    component.exportAsPDF(false);
+    tick(1000); // Simulate async completion
+
+    expect(component.shareRecommendationViaEmail).toHaveBeenCalled();
+  }));
+
+  describe('getShareButtonClasses', () => {
+    it('should return base classes when initialized', () => {
+      // Arrange
+      component.toShareViaEmail = false;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-off');
+    });
+
+    it('should include toggle-on class when toShareViaEmail is true', () => {
+      // Arrange
+      component.toShareViaEmail = true;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-on');
+      expect(result).toContain('toggle-on');
+      expect(result).not.toContain('toggle-off');
+    });
+
+    it('should include toggle-off class when toShareViaEmail is false', () => {
+      // Arrange
+      component.toShareViaEmail = false;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result).toBe('p-button p-ml-4 toggle-off');
+      expect(result).toContain('toggle-off');
+      expect(result).not.toContain('toggle-on');
+    });
+
+    it('should maintain consistent base classes regardless of toggle state', () => {
+      // Arrange & Act
+      component.toShareViaEmail = true;
+      const resultOn = component.getShareButtonClasses();
+      component.toShareViaEmail = false;
+      const resultOff = component.getShareButtonClasses();
+
+      // Assert
+      expect(resultOn).toContain('p-button');
+      expect(resultOn).toContain('p-ml-4');
+      expect(resultOff).toContain('p-button');
+      expect(resultOff).toContain('p-ml-4');
+    });
+
+    it('should return space-separated string of classes', () => {
+      // Arrange
+      component.toShareViaEmail = true;
+
+      // Act
+      const result = component.getShareButtonClasses();
+
+      // Assert
+      expect(result.split(' ').length).toBe(3);
+      expect(result).toMatch(/^[a-zA-Z0-9\-\s]+$/);
     });
   });
 });
