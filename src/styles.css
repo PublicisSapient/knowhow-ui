@@ -1883,8 +1883,6 @@ a:hover {
   color: #4b4b4b;
 }
 .p-dialog .p-dialog-header-icons {
-  /* width: 21px;
-  height: 21px; */
   padding: 3px;
   position: absolute;
   right: 21px;
@@ -2172,6 +2170,7 @@ p-dialog .p-button-cancel.p-button-secondary {
   border-top-left-radius: 1.5rem !important;
   border-top-right-radius: 1.5rem !important;
 }
+
 .p-dialog .p-dialog-content:last-of-type {
   border-bottom-left-radius: 1.5rem !important;
   border-bottom-right-radius: 1.5rem !important;

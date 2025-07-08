@@ -88,6 +88,7 @@ ul li.selectedfilter {
 :host ::ng-deep .slider-item.active button:hover {
   background-color: #083896;
 }
+
 :host ::ng-deep .slider-item.active .p-button .p-button-label {
   background-color: transparent;
 }

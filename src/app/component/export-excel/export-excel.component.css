@@ -184,42 +184,52 @@
 :host ::ng-deep .dialog-body .p-multiselect .p-multiselect-label .p-button {
   padding-right: 0;
 }
+
 :host ::ng-deep .p-dialog-draggable .p-dialog-header {
   border-top-right-radius: 1.5rem;
   border-top-left-radius: 1.5rem;
 }
+
 :host ::ng-deep .p-dialog .p-dialog-footer {
   border-bottom-right-radius: 1.5rem;
   border-bottom-left-radius: 1.5rem;
 }
+
 :host ::ng-deep .p-dialog .p-dialog-content:last-of-type {
   border-bottom-right-radius: 1.5rem;
   border-bottom-left-radius: 1.5rem;
 }
+
 .save-btn {
   background-color: #0b4bc8 !important;
   color: #fff !important;
 }
+
 .save-btn:hover {
   background-color: #083896 !important;
 }
+
 :host ::ng-deep .primary-selector-btn button {
   font-family: 'Poppins', sans-serif;
   background-color: #0b4bc8 !important;
   border-radius: 0.5rem;
 }
+
 :host ::ng-deep .primary-selector-btn button:hover {
   background-color: #083896 !important;
 }
+
 .export-btn {
   font-family: 'Poppins', sans-serif;
   background-color: #0b4bc8;
   border-radius: 0.5rem;
 }
+
 .export-btn:hover {
   background-color: #083896;
   border-radius: 0.5rem;
 }
+
 .save-btn-before {
   background-color: #0b4bc8 !important;
   opacity: 0.6;
