@@ -140,34 +140,47 @@
   display: none !important;
 }
 
-::ng-deep .sprint-hover-project1 [aria-selected='true'] {
-  background-color: #6079c5 !important;
-  color: black !important;
+:host ::ng-deep.sprint-hover-project1 [aria-selected='true'] {
+  background-color: #0b4bc8 !important;
+  color: #fff !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project2 [aria-selected='true'] {
   background-color: #ffb587 !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project3 [aria-selected='true'] {
   background-color: #d48def !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project4 [aria-selected='true'] {
   background-color: #a4f6a5 !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project5 [aria-selected='true'] {
   background-color: #fbcf5f !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project6 [aria-selected='true'] {
   background-color: #9fecff !important;
   color: black !important;
+  border-radius: 0.5rem !important;
+}
+:host
+  ::ng-deep.p-tabview
+  .p-tabview-nav
+  li:not(.p-highlight):not(.p-disabled):hover
+  .p-tabview-nav-link {
+  border-radius: 0.5rem !important;
 }
 
 .sprint-hover-icon {
@@ -418,9 +431,10 @@
   ::ng-deep
   .add-to-reports-overlay.p-dialog
   .p-dialog-content:last-of-type {
-  border-radius: 10px;
+  border-radius: 1.5rem;
   border: 1px solid transparent;
   background-color: #fff;
+  width: 95%;
 }
 
 :host
@@ -431,6 +445,56 @@
   border: 1px solid #0b4bc8;
   color: #0b4bc8;
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   font-size: 12px;
+}
+:host
+  ::ng-deep
+  .add-to-reports-overlay.p-dialog
+  .p-dialog-header
+  .add-to-reports-btn:hover {
+  background-color: #dee8fc;
+}
+
+:host ::ng-deep .p-dialog-draggable .p-dialog-header {
+  border-top-right-radius: 1.5rem;
+  border-top-left-radius: 1.5rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  border-bottom-right-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-content:last-of-type {
+  border-bottom-right-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+}
+:host ::ng-deep .p-button,
+.p-button.p-button-success,
+.p-buttonset.p-button-success > .p-button,
+.p-splitbutton.p-button-success > .p-button {
+  background: #0b4bc8;
+  border-radius: 0.5rem !important;
+}
+
+:host ::ng-deep .p-button:not(.cancel-btn):enabled:hover {
+  background-color: #083896;
+  color: #fff;
+}
+:host ::ng-deep .add-to-reports-btn.cancel-btn {
+  border: 1px solid #0b4bc8;
+  color: #0b4bc8;
+  background-color: transparent;
+}
+:host ::ng-deep .add-to-reports-btn.cancel-btn:enabled:hover {
+  background-color: #dee8fc;
+}
+:host ::ng-deep .p-multiselect.p-component:hover {
+  border: 1px solid #3b82f6 !important;
+}
+:host ::ng-deep .p-multiselect.p-component.p-focus {
+  box-shadow: none !important;
+}
+:host ::ng-deep .p-button:disabled {
+  background: #ccd0d5 !important;
+  color: #fff !important;
 }
