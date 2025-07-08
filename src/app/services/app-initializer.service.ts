@@ -227,7 +227,11 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.router.resetConfig([...this.routes]);
-        this.router.navigate([location]);
+        if (localStorage.getItem('last_link')) {
+          this.router.navigateByUrl(localStorage.getItem('last_link'));
+        } else {
+          this.router.navigate([location]);
+        }
       } else {
         // Make API call or initialization logic here...
         this.httpService.getUserDetailsForCentral().subscribe(
