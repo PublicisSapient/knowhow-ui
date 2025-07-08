@@ -253,11 +253,6 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
-              // if (localStorage.getItem('last_link')) {
-              //   this.router.navigateByUrl(localStorage.getItem('last_link'));
-              // } else {
-              //   this.router.navigateByUrl(location);
-              // }
               this.sharedService.navigateToLastVisitedURL(location);
             } else {
               if (localStorage.getItem('shared_link')) {
