@@ -455,6 +455,8 @@ export class RecommendationsComponent implements OnInit {
     this.isTemplateLoading = true;
     const element = document.getElementById('generatedReport');
     const shareDiv = document.getElementById('shareViaEmail');
+    const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+    let pdfInstance: jsPDF | null = null;
 
     if (!element) throw new Error('Report element not found');
 
@@ -467,73 +469,126 @@ export class RecommendationsComponent implements OnInit {
 
     // --- Generate canvas with optimized settings
     html2canvas(element, {
-      scale: 2,
+      scale: 1.2, // Reduced scale for better compression
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       removeContainer: true,
+      logging: false,
+      imageTimeout: 0,
+      onclone: (doc) => {
+        // Optimize images before capture
+        Array.from(doc.getElementsByTagName('img')).forEach((img) => {
+          img.style.maxWidth = '100%';
+          img.style.height = 'auto';
+        });
+      },
     })
-      .then((canvas) => {
+      .then(async (canvas) => {
         // Restore the share div visibility
         if (shareDiv && originalDisplay !== null) {
           shareDiv.style.display = originalDisplay;
         }
-        const imgData = canvas.toDataURL('image/png', 0.95);
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        // Start with high quality and reduce if needed
+        let quality = 0.9;
+        let imgData: string;
+        let pdfSize: number;
 
-        const padding = 20;
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
+        do {
+          imgData = canvas.toDataURL('image/jpeg', quality);
+          pdfInstance = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4',
+            compress: true,
+            precision: 2,
+            filters: ['ASCIIHexEncode'],
+          });
 
-        const imgProps = pdf.getImageProperties(imgData);
-        const aspectRatio = imgProps.height / imgProps.width;
+          const padding = 20;
+          const pageWidth = pdfInstance.internal.pageSize.getWidth();
+          const pageHeight = pdfInstance.internal.pageSize.getHeight();
 
-        const pdfWidth = pageWidth - 2 * padding;
-        const pdfHeight = pdfWidth * aspectRatio;
+          const imgProps = pdfInstance.getImageProperties(imgData);
+          const aspectRatio = imgProps.height / imgProps.width;
 
-        const centeredX = (pageWidth - pdfWidth) / 2;
-        const startY = padding;
+          const pdfWidth = pageWidth - 2 * padding;
+          const pdfHeight = pdfWidth * aspectRatio;
 
-        // Adjust image if it's longer than one page
-        let position = padding;
-        if (pdfHeight < pageHeight) {
-          pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
-        } else {
-          // Multi-page logic
-          let heightLeft = pdfHeight;
-          while (heightLeft > 0) {
-            pdf.addImage(
+          const centeredX = (pageWidth - pdfWidth) / 2;
+          const startY = padding;
+
+          // Adjust image if it's longer than one page
+          if (pdfHeight < pageHeight) {
+            pdfInstance.addImage(
               imgData,
-              'PNG',
+              'JPEG',
               centeredX,
               startY,
               pdfWidth,
               pdfHeight,
+              undefined,
+              'FAST',
             );
-            heightLeft -= pageHeight;
-            if (heightLeft > 0) {
-              pdf.addPage();
-              position = -heightLeft;
+          } else {
+            let heightLeft = pdfHeight;
+            let position = startY;
+
+            while (heightLeft > 0) {
+              pdfInstance.addImage(
+                imgData,
+                'JPEG',
+                centeredX,
+                position,
+                pdfWidth,
+                pdfHeight,
+                undefined,
+                'FAST',
+              );
+              heightLeft -= pageHeight;
+
+              if (heightLeft > 0) {
+                pdfInstance.addPage();
+                position = -heightLeft;
+              }
             }
           }
-        }
+
+          // Check PDF size
+          const pdfOutput = pdfInstance.output('arraybuffer');
+          pdfSize = pdfOutput.byteLength;
+
+          // Reduce quality if file is too large
+          quality -= 0.1;
+
+          // If quality gets too low, break to prevent infinite loop
+          if (quality < 0.3) {
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'PDF quality reduced to meet size limit',
+              detail: 'The generated PDF might have lower image quality',
+            });
+            break;
+          }
+        } while (pdfSize > MAX_FILE_SIZE);
 
         if (toDownload) {
-          pdf.save('project-summary.pdf');
+          pdfInstance.save('project-summary.pdf');
           this.isTemplateLoading = false;
         } else {
-          // Get PDF as base64encoded for sending as payload
-          const base64StringPDF = pdf.output('datauristring');
+          const base64StringPDF = pdfInstance.output('datauristring');
           const base64data = base64StringPDF.split(',')[1];
-          this.shareRecommendationViaEmail(base64data);
+          await this.shareRecommendationViaEmail(base64data);
         }
       })
       .catch((error) => {
         console.error('Error generating PDF:', error);
+        this.isTemplateLoading = false;
         this.messageService.add({
           severity: 'error',
-          summary: error.message,
+          summary: 'PDF Generation Failed',
+          detail: error.message,
         });
       });
   }
