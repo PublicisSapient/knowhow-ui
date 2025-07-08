@@ -467,20 +467,35 @@ export class RecommendationsComponent implements OnInit {
 
     // --- Generate canvas with optimized settings
     html2canvas(element, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       removeContainer: true,
+      logging: false,
+      imageTimeout: 0,
+      onclone: (doc) => {
+        // Optional: Modify cloned document before rendering
+        Array.from(doc.getElementsByTagName('img')).forEach((img) => {
+          img.style.maxWidth = '100%';
+          img.style.height = 'auto';
+        });
+      },
     })
       .then((canvas) => {
         // Restore the share div visibility
         if (shareDiv && originalDisplay !== null) {
           shareDiv.style.display = originalDisplay;
         }
-        const imgData = canvas.toDataURL('image/png', 0.95);
+        const imgData = canvas.toDataURL('image/jpeg', 0.75);
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF({
+          orientation: 'p',
+          unit: 'mm',
+          format: 'a4',
+          compress: true,
+          precision: 2,
+        });
 
         const padding = 20;
         const pageWidth = pdf.internal.pageSize.getWidth();
@@ -498,14 +513,14 @@ export class RecommendationsComponent implements OnInit {
         // Adjust image if it's longer than one page
         let position = padding;
         if (pdfHeight < pageHeight) {
-          pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', centeredX, startY, pdfWidth, pdfHeight);
         } else {
           // Multi-page logic
           let heightLeft = pdfHeight;
           while (heightLeft > 0) {
             pdf.addImage(
               imgData,
-              'PNG',
+              'JPEG',
               centeredX,
               startY,
               pdfWidth,
