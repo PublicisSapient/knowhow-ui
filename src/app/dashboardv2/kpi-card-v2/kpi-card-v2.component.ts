@@ -24,6 +24,7 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { Dialog } from 'primeng/dialog';
+import { borderTopLeftRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -428,6 +429,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         kpiName: this.kpiData?.kpiName,
         selectedTab: this.selectedTab,
       },
+      styleClass: 'custom-dialog-class',
     });
 
     this.commentDialogRef.onClose.subscribe(() => {
