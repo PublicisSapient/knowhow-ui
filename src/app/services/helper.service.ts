@@ -1030,6 +1030,7 @@ export class HelperService {
           }, 500);
         });
       } else {
+        localStorage.removeItem('sprintGoalSummaryCache');
         let redirect_uri = window.location.href;
         window.location.href =
           environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
