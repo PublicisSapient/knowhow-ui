@@ -164,18 +164,22 @@ textarea:focus-visible {
   color: #0b4bc8;
   background-color: transparent;
 }
+
 :host ::ng-deep.cancel-btn:enabled:hover {
   background-color: #dee8fc;
   border: 1px solid #0b4bc8;
   color: #0b4bc8;
 }
+
 .submit-btn {
   background-color: #0b4bc8;
   color: #fff;
 }
+
 .submit-btn:hover {
   background-color: #083896 !important;
 }
+
 .submit-btn-before {
   background-color: #0b4bc8 !important;
   opacity: 0.6;
