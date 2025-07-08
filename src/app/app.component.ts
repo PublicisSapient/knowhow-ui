@@ -209,11 +209,7 @@ export class AppComponent implements OnInit {
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
-        if (localStorage.getItem('last_link')) {
-          this.router.navigate([localStorage.getItem('last_link')]);
-        } else {
-          this.router.navigate([url]);
-        }
+        this.service.navigateToLastVisitedURL(url);
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({
