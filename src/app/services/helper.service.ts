@@ -1030,6 +1030,9 @@ export class HelperService {
           }, 500);
         });
       } else {
+        localStorage.removeItem('sprintGoalSummaryCache');
+        localStorage.removeItem('last_link');
+        localStorage.removeItem('shared_link');
         let redirect_uri = window.location.href;
         window.location.href =
           environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
