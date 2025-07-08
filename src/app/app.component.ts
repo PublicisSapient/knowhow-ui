@@ -210,7 +210,6 @@ export class AppComponent implements OnInit {
     if (projectLevelSelected) {
       if (hasAccessToAll) {
         if (localStorage.getItem('last_link')) {
-          console.log('last link :', localStorage.getItem('last_link'));
           this.router.navigate([localStorage.getItem('last_link')]);
         } else {
           this.router.navigate([url]);

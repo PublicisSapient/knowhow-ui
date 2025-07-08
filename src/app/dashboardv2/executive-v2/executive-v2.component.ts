@@ -4864,7 +4864,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   stripTime(date) {
-    console.log('stripTime', date);
     if (date) {
       return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     } else {
