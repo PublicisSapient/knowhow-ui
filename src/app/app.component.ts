@@ -95,6 +95,17 @@ export class AppComponent implements OnInit {
           uiType: 'New',
         };
         this.ga.setPageLoad(data);
+        let loc = window.location.hash
+          ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
+          : '';
+        if (
+          loc &&
+          loc.indexOf('authentication') === -1 &&
+          loc.indexOf('Error') === -1 &&
+          loc.indexOf('Config') === -1
+        ) {
+          localStorage.setItem('last_link', loc);
+        }
       }
     });
 
@@ -198,7 +209,7 @@ export class AppComponent implements OnInit {
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
-        this.router.navigate([url]);
+        this.service.navigateToLastVisitedURL(url);
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({
