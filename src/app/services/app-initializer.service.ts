@@ -227,7 +227,7 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.router.resetConfig([...this.routes]);
-        this.router.navigate([location]);
+        this.sharedService.navigateToLastVisitedURL(location);
       } else {
         // Make API call or initialization logic here...
         this.httpService.getUserDetailsForCentral().subscribe(
@@ -253,7 +253,7 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
-              this.router.navigateByUrl(location);
+              this.sharedService.navigateToLastVisitedURL(location);
             } else {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
