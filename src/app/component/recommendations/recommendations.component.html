@@ -315,7 +315,7 @@
           style="max-height: 300px; overflow-y: auto; list-style-type: none"
         >
           <li
-            class="p-mb-2 p-pb-2 ai-nudges-list"
+            class="p-mb-2 ai-nudges-list"
             *ngFor="let recommendation of recommendationsList"
             tabindex="0"
           >
@@ -351,7 +351,7 @@
                 <p-chips
                   [(ngModel)]="emailIds"
                   separator=","
-                  placeholder="Use comma to separate multiple email ids you want to share with."
+                  placeholder="Use comma or hit enter to add multiple email ids"
                   [addOnBlur]="true"
                   [addOnTab]="true"
                   (onAdd)="validateEmail($event)"
@@ -365,7 +365,8 @@
                   icon="pi pi-external-link"
                   styleClass="p-button"
                   [style]="{'white-space': 'nowrap'}"
-                  (click)="exportAsPDF(false)">
+                  (click)="exportAsPDF(false)"
+                  [disabled]="emailIds.length < 1">
                 </p-button>
               </div>
             </div>
