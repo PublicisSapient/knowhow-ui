@@ -127,7 +127,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       }),
       catchError((err) => {
         if (
-          reqUrl.indexOf('kpiRecommendation') !== -1 &&
+          reqUrl.indexOf('kpiRecommendation') !== -1 ||
           reqUrl.indexOf('notifications') !== -1
         ) {
           // Return error as successful response instead of throwing
@@ -135,9 +135,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             new HttpResponse({
               body: {
                 error: true,
-                message: err.message,
-                status: err.status,
-                originalError: err,
+                message: err.error.message,
+                status: err.error.status,
+                originalError: err.error,
               },
               status: 200, // Return as successful response
               url: req.url,
