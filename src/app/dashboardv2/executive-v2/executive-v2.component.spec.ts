@@ -5443,7 +5443,7 @@ describe('ExecutiveV2Component', () => {
   it('should call createCombinations', () => {
     const t1 = ['Initial Commitment (Story Points)'];
     const t2 = ['Overall'];
-    const response = component.createCombinations(t1, t2);
+    const response = component.createCombinations(t1, t2, '');
     const t3 = [
       {
         filter1: 'Initial Commitment (Story Points)',
