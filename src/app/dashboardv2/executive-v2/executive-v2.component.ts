@@ -1332,8 +1332,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
-      const kpi193 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi193');
-      if (kpi193) kpi193['filterDuration'] = this.appendFilterDuratioKpi193();
+      const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
+      if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -1358,7 +1358,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
 
               // const cycleTime = getData.findIndex(
-              //   (details) => details.kpiId === 'kpi193',
+              //   (details) => details.kpiId === 'kpi171',
               // );
 
               // if (cycleTime !== -1) {
@@ -1652,13 +1652,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForBacklog(postData, source) {
-    const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
-    if (kpi171)
-      kpi171['filterDuration'] = {
-        duration: 'MONTHS',
-        value: 6,
-      };
-
     this.jiraKpiRequest = this.httpService
       .postKpiNonTrend(postData, source)
       .subscribe(
@@ -2050,7 +2043,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               );
             }
             if (preAggregatedValues && preAggregatedValues.length > 1) {
-              if (kpiId === 'kpi193') {
+              if (kpiId === 'kpi171') {
                 this.kpiChartData[kpiId] =
                   this.helperService.kpiCycleTime193Aggregration(
                     preAggregatedValues,
@@ -2168,7 +2161,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.showKpiTrendIndicator[kpiId] = false;
     }
 
-    if (kpiId === 'kpi193') {
+    if (kpiId === 'kpi171') {
       this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
         this.kpiChartData[kpiId],
       );
@@ -2228,7 +2221,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
               }
             } else {
-              if (kpiId === 'kpi193') {
+              if (kpiId === 'kpi171') {
                 this.kpiSelectedFilterObj[kpiId] = {
                   filter1: ['Past 6 Months'],
                   filter2: ['Overall'],
@@ -2908,7 +2901,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
-          if (kpiId === 'kpi193') {
+          if (kpiId === 'kpi171') {
             arr.push({ filter1: [arr1[i]], filter2: [arr2[j]] });
           } else {
             arr.push({ filter1: arr1[i], filter2: arr2[j] });
@@ -2937,7 +2930,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // data = this.appendParentName(data);
 
     for (const key in data) {
-      if (key === 'kpi193') {
+      if (key === 'kpi171') {
         const y = 5;
         console.log('came here', data[key]);
       }
@@ -3471,14 +3464,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiChartData[kpiId] =
               this.applyAggregationLogicForkpi138(preAggregatedValues);
           } else {
-            if (kpiId === 'kpi171') {
-              this.kpiChartData[kpiId] = [
-                this.helperService.aggregationCycleTime(preAggregatedValues),
-              ];
-            } else {
-              this.kpiChartData[kpiId] =
-                this.applyAggregationLogic(preAggregatedValues);
-            }
+            // if (kpiId === 'kpi171') {
+            //   this.kpiChartData[kpiId] = [
+            //     this.helperService.aggregationCycleTime(preAggregatedValues),
+            //   ];
+            // } else {
+            this.kpiChartData[kpiId] =
+              this.applyAggregationLogic(preAggregatedValues);
+            // }
           }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
@@ -3489,11 +3482,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           (!Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) ||
             !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])))
       ) {
-        if (kpiId === 'kpi171') {
-          this.getkpi171Data(kpiId, trendValueList);
-        } else {
-          this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
-        }
+        // if (kpiId === 'kpi171') {
+        //   // this.getkpi171Data(kpiId, trendValueList);
+        // } else {
+        this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
+        // }
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
@@ -3522,16 +3515,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
     let filters = this.kpiSelectedFilterObj[kpiId];
-    if (kpiId === 'kpi171') {
-      const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty(
-        'filter2',
-      )
-        ? this.kpiSelectedFilterObj[kpiId]['filter2']
-        : ['Overall'];
-      filters = {
-        filter1: issueFilter,
-      };
-    }
+    // if (kpiId === 'kpi171') {
+    //   const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty(
+    //     'filter2',
+    //   )
+    //     ? this.kpiSelectedFilterObj[kpiId]['filter2']
+    //     : ['Overall'];
+    //   filters = {
+    //     filter1: issueFilter,
+    //   };
+    // }
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -3594,84 +3587,84 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  getkpi171Data(kpiId, trendValueList) {
-    let durationChanged = false;
-    if (
-      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
-      this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter
-    ) {
-      durationChanged = true;
-      this.kpiChartData[kpiId] = [];
-      this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'];
-    }
+  // getkpi171Data(kpiId, trendValueList) {
+  //   let durationChanged = false;
+  //   if (
+  //     this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
+  //     this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter
+  //   ) {
+  //     durationChanged = true;
+  //     this.kpiChartData[kpiId] = [];
+  //     this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'];
+  //   }
 
-    // if duration filter (filter1) changes,  make an api call to fetch data
-    if (durationChanged) {
-      delete this.kpiSelectedFilterObj[kpiId]['filter2'];
-      const idx = this.ifKpiExist(kpiId);
-      if (idx !== -1) {
-        this.allKpiArray.splice(idx, 1);
-      }
+  //   // if duration filter (filter1) changes,  make an api call to fetch data
+  //   if (durationChanged) {
+  //     delete this.kpiSelectedFilterObj[kpiId]['filter2'];
+  //     const idx = this.ifKpiExist(kpiId);
+  //     if (idx !== -1) {
+  //       this.allKpiArray.splice(idx, 1);
+  //     }
 
-      const kpi171Payload = this.updatedConfigGlobalData?.map(
-        (kpiDetails) => kpiDetails.kpiId,
-      );
-      const groupIdSet = new Set();
-      this.updatedConfigGlobalData?.forEach((obj) => {
-        if (
-          !obj['kpiDetail']?.kanban &&
-          obj['kpiDetail']?.kpiSource === 'Jira'
-        ) {
-          groupIdSet.add(obj['kpiDetail']?.groupId);
-        }
-      });
+  //     const kpi171Payload = this.updatedConfigGlobalData?.map(
+  //       (kpiDetails) => kpiDetails.kpiId,
+  //     );
+  //     const groupIdSet = new Set();
+  //     this.updatedConfigGlobalData?.forEach((obj) => {
+  //       if (
+  //         !obj['kpiDetail']?.kanban &&
+  //         obj['kpiDetail']?.kpiSource === 'Jira'
+  //       ) {
+  //         groupIdSet.add(obj['kpiDetail']?.groupId);
+  //       }
+  //     });
 
-      // sending requests after grouping the the KPIs according to group Id
-      groupIdSet.forEach((groupId) => {
-        if (groupId) {
-          this.kpiJira = this.helperService.groupKpiFromMaster(
-            'Jira',
-            false,
-            this.updatedConfigGlobalData,
-            this.filterApplyData,
-            this.filterData,
-            kpi171Payload,
-            groupId,
-            'backlog',
-          );
-          const kpi171 = this.kpiJira.kpiList.filter(
-            (kpi) => kpi.kpiId === 'kpi171',
-          )[0];
-          if (kpi171) {
-            kpi171['filterDuration'] = {
-              duration: this.durationFilter.includes('Week')
-                ? 'WEEKS'
-                : 'MONTHS',
-              value: !isNaN(+this.durationFilter.split(' ')[1])
-                ? +this.durationFilter.split(' ')[1]
-                : 1,
-            };
-            this.kpiJira.kpiList = [kpi171];
-            this.kpiLoader.add('kpi171');
+  //     // sending requests after grouping the the KPIs according to group Id
+  //     groupIdSet.forEach((groupId) => {
+  //       if (groupId) {
+  //         this.kpiJira = this.helperService.groupKpiFromMaster(
+  //           'Jira',
+  //           false,
+  //           this.updatedConfigGlobalData,
+  //           this.filterApplyData,
+  //           this.filterData,
+  //           kpi171Payload,
+  //           groupId,
+  //           'backlog',
+  //         );
+  //         const kpi171 = this.kpiJira.kpiList.filter(
+  //           (kpi) => kpi.kpiId === 'kpi171',
+  //         )[0];
+  //         if (kpi171) {
+  //           kpi171['filterDuration'] = {
+  //             duration: this.durationFilter.includes('Week')
+  //               ? 'WEEKS'
+  //               : 'MONTHS',
+  //             value: !isNaN(+this.durationFilter.split(' ')[1])
+  //               ? +this.durationFilter.split(' ')[1]
+  //               : 1,
+  //           };
+  //           this.kpiJira.kpiList = [kpi171];
+  //           this.kpiLoader.add('kpi171');
 
-            this.httpService
-              .postKpiNonTrend(this.kpiJira, 'jira')
-              .subscribe((data) => {
-                const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
-                this.allKpiArray.push(kpi171Data);
-                this.getChartDataForCardWithCombinationFilter(
-                  kpiId,
-                  JSON.parse(JSON.stringify(kpi171Data.trendValueList)),
-                );
-                this.kpiLoader.delete('kpi171');
-              });
-          }
-        }
-      });
-    } else {
-      this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
-    }
-  }
+  //           this.httpService
+  //             .postKpiNonTrend(this.kpiJira, 'jira')
+  //             .subscribe((data) => {
+  //               const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
+  //               this.allKpiArray.push(kpi171Data);
+  //               this.getChartDataForCardWithCombinationFilter(
+  //                 kpiId,
+  //                 JSON.parse(JSON.stringify(kpi171Data.trendValueList)),
+  //               );
+  //               this.kpiLoader.delete('kpi171');
+  //             });
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
+  //   }
+  // }
 
   applyAggregationLogicForkpi138(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr));
@@ -4006,15 +3999,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiStatusCodeArr[kpi.kpiId] === '203') &&
         kpi.kpiId === 'kpi171'
       ) {
-        if (
+        return (
           this.kpiChartData[kpi.kpiId] &&
-          this.kpiChartData[kpi.kpiId][0] &&
-          this.kpiChartData[kpi.kpiId][0]?.data?.length > 0
-        ) {
-          return true;
-        } else {
-          return false;
-        }
+          this.kpiChartData[kpi.kpiId]?.data?.length &&
+          this.kpiChartData[kpi.kpiId]?.data?.length
+        );
       } else {
         return (
           (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
@@ -4040,9 +4029,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiData && filters && kpi.kpiId !== 'kpi171') {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
-      if (kpi.kpiId === 'kpi171') {
-        return this.checkIfPartialDataForKpi171(kpiData);
-      }
+      // if (kpi.kpiId === 'kpi171') {
+      //   return this.checkIfPartialDataForKpi171(kpiData);
+      // }
       return false;
     }
   }
@@ -4080,16 +4069,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  checkIfPartialDataForKpi171(kpiData) {
-    kpiData = kpiData?.value;
-    let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
-    for (let i = 0; i < filters?.length; i++) {
-      let partialKpiData = kpiData.filter((x) => x.filter1 === filters[i])[0];
-      if (partialKpiData && partialKpiData.data?.length) {
-        return true;
-      }
-    }
-  }
+  // checkIfPartialDataForKpi171(kpiData) {
+  //   kpiData = kpiData?.value;
+  //   let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+  //   for (let i = 0; i < filters?.length; i++) {
+  //     let partialKpiData = kpiData.filter((x) => x.filter1 === filters[i])[0];
+  //     if (partialKpiData && partialKpiData.data?.length) {
+  //       return true;
+  //     }
+  //   }
+  // }
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
     if (!arr?.length) return [];
@@ -4216,7 +4205,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (kpiId === 'kpi193') {
+    if (kpiId === 'kpi171') {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
       this.kpiSelectedFilterObj[kpiId] = {
         filter1: ['Past 6 Months'],
@@ -4224,7 +4213,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       };
     }
 
-    if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi193') {
+    if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi171') {
       this.kpiSelectedFilterObj[kpiId] = {};
       for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
         this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
@@ -4331,7 +4320,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleSelectedOptionForCard(event, kpi);
       }
     } else {
-      if (kpi.kpiId === 'kpi72' || kpi.kpiId === 'kpi193') {
+      if (kpi.kpiId === 'kpi72' || kpi.kpiId === 'kpi171') {
         if (
           event.hasOwnProperty('filter1') ||
           event.hasOwnProperty('filter2')
@@ -4350,9 +4339,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           typeof event === 'object'
         ) {
           for (const key in event) {
-            if (event[key]?.length == 0 && kpi.kpiId !== 'kpi193') {
+            if (event[key]?.length == 0 && kpi.kpiId !== 'kpi171') {
               delete event[key];
-            } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi193') {
+            } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi171') {
               event[key] = ['Overall'];
             }
           }
@@ -4425,8 +4414,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
-      if (kpi?.kpiId === 'kpi193') {
-        this.getkpi193Data(kpi?.kpiId);
+      if (kpi?.kpiId === 'kpi171') {
+        this.getkpi171Data(kpi?.kpiId);
       } else {
         this.getChartData(
           kpi?.kpiId,
@@ -5181,7 +5170,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return { data: rows, columnHeaders: cols };
   }
 
-  getkpi193Data(kpiId) {
+  getkpi171Data(kpiId) {
     let durationChanged = false;
     if (
       this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
@@ -5196,23 +5185,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (durationChanged) {
       this.kpiSelectedFilterObj[kpiId]['filter2'] = ['Overall'];
       const idx = this.ifKpiExist(kpiId);
-      // if (idx !== -1) {
-      //   this.allKpiArray.splice(idx, 1);
-      // }
 
       const gID = this.allKpiArray[idx].groupId;
-      const kpi193Payload = this.updatedConfigGlobalData
+      const kpi171Payload = this.updatedConfigGlobalData
         ?.filter((kpiDetails) => kpiDetails.kpiDetail.groupId === gID)
         .map((d) => d.kpiId);
       const groupIdSet = new Set();
-      // this.updatedConfigGlobalData?.forEach((obj) => {
-      //   if (
-      //     !obj['kpiDetail']?.kanban &&
-      //     obj['kpiDetail']?.kpiSource === 'Jira'
-      //   ) {
       groupIdSet.add(gID);
-      //   }
-      // });
 
       // sending requests after grouping the the KPIs according to group Id
       groupIdSet.forEach((groupId) => {
@@ -5223,23 +5202,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.updatedConfigGlobalData,
             this.filterApplyData,
             this.filterData,
-            kpi193Payload,
+            kpi171Payload,
             groupId,
             '',
           );
-          const kpi193 = this.kpiJira.kpiList.filter(
-            (kpi) => kpi.kpiId === 'kpi193',
+          const kpi171 = this.kpiJira.kpiList.filter(
+            (kpi) => kpi.kpiId === 'kpi171',
           )[0];
-          if (kpi193) {
-            kpi193['filterDuration'] = this.appendFilterDuratioKpi193();
-            this.kpiJira.kpiList = [kpi193];
-            this.kpiLoader.add('kpi193');
+          if (kpi171) {
+            kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+            this.kpiJira.kpiList = [kpi171];
+            this.kpiLoader.add('kpi171');
 
             this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
-              const kpi193Data = data.find((kpi) => kpi.kpiId === kpiId);
-              this.allKpiArray.push(kpi193Data);
+              const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
+              this.allKpiArray.push(kpi171Data);
               this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
-              this.kpiLoader.delete('kpi193');
+              this.kpiLoader.delete('kpi171');
             });
           }
         }
@@ -5249,7 +5228,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  appendFilterDuratioKpi193(): any {
+  appendFilterDuratioKpi171(): any {
     return {
       duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
       value: !isNaN(+this.durationFilter.split(' ')[1])
