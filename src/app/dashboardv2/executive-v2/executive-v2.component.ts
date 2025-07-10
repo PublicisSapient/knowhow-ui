@@ -1332,6 +1332,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
+      const kpi193 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi193');
+      if (kpi193) kpi193['filterDuration'] = this.appendFilterDuratioKpi193();
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -5229,14 +5231,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi) => kpi.kpiId === 'kpi193',
           )[0];
           if (kpi193) {
-            kpi193['filterDuration'] = {
-              duration: this.durationFilter.includes('Week')
-                ? 'WEEKS'
-                : 'MONTHS',
-              value: !isNaN(+this.durationFilter.split(' ')[1])
-                ? +this.durationFilter.split(' ')[1]
-                : 1,
-            };
+            kpi193['filterDuration'] = this.appendFilterDuratioKpi193();
             this.kpiJira.kpiList = [kpi193];
             this.kpiLoader.add('kpi193');
 
@@ -5252,5 +5247,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
     }
+  }
+
+  appendFilterDuratioKpi193(): any {
+    return {
+      duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+      value: !isNaN(+this.durationFilter.split(' ')[1])
+        ? +this.durationFilter.split(' ')[1]
+        : 1,
+    };
   }
 }
