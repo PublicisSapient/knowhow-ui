@@ -433,12 +433,12 @@ export class RecommendationsComponent implements OnInit {
         if (response && response['success']) {
           this.messageService.add({
             severity: 'success',
-            summary: response.message,
+            summary: 'Email sent successfully.',
           });
         } else {
           this.messageService.add({
             severity: 'error',
-            summary: response.message,
+            summary: 'Error sending email.',
           });
         }
       },
@@ -447,7 +447,7 @@ export class RecommendationsComponent implements OnInit {
         console.error('Error uploading PDF:', error);
         this.messageService.add({
           severity: 'error',
-          summary: error.message,
+          summary: 'Error sending email.',
         });
       },
     });
@@ -494,8 +494,6 @@ export class RecommendationsComponent implements OnInit {
         );
       },
     );
-
-    console.log('scrollableElements', scrollableElements);
 
     // Store original styles and modify for capture
     scrollableElements.forEach((el: HTMLElement) => {
