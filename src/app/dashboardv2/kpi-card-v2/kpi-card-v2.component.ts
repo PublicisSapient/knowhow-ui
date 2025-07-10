@@ -757,6 +757,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       } else {
         return false;
       }
+    } else if (
+      (data === '200' || data === '201' || data === '203') &&
+      this.kpiData?.kpiId === 'kpi193'
+    ) {
+      return (
+        this.trendValueList &&
+        this.trendValueList?.data?.length &&
+        this.trendValueList?.data?.length
+      );
     } else {
       return (
         (data === '200' || data === '201' || data === '203') &&
@@ -1438,5 +1447,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+  }
+
+  checkFilterType(filter) {
+    if (Array.isArray(filter)) {
+      return filter[0];
+    } else {
+      return filter;
+    }
   }
 }
