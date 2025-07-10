@@ -1355,6 +1355,191 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 );
               }
 
+              // const cycleTime = getData.findIndex(
+              //   (details) => details.kpiId === 'kpi193',
+              // );
+
+              // if (cycleTime !== -1) {
+              //   const mockData = [
+              //     {
+              //       filter1: 'Past 6 Months',
+              //       filter2: 'Overall',
+              //       value: [
+              //         {
+              //           data: 'KnowHOW',
+              //           value: [
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 10 },
+              //                 { name: 'days', value: 5 },
+              //               ],
+              //               subFilter: 'DOD - Live',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 20 },
+              //                 { name: 'days', value: 25 },
+              //               ],
+              //               subFilter: 'DOR - DOD',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 30 },
+              //                 { name: 'days', value: 35 },
+              //               ],
+              //               subFilter: 'Intake - DOR',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //           ],
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       filter1: 'Past 6 Months',
+              //       filter2: 'Bug',
+              //       value: [
+              //         {
+              //           data: 'KnowHOW',
+              //           value: [
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 10 },
+              //                 { name: 'days', value: 5 },
+              //               ],
+              //               subFilter: 'DOD - Live',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 20 },
+              //                 { name: 'days', value: 25 },
+              //               ],
+              //               subFilter: 'DOR - DOD',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 30 },
+              //                 { name: 'days', value: 35 },
+              //               ],
+              //               subFilter: 'Intake - DOR',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //           ],
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       filter1: 'Past 6 Months',
+              //       filter2: 'Story',
+              //       value: [
+              //         {
+              //           data: 'KnowHOW',
+              //           value: [
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 10 },
+              //                 { name: 'days', value: 5 },
+              //               ],
+              //               subFilter: 'DOD - Live',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 20 },
+              //                 { name: 'days', value: 25 },
+              //               ],
+              //               subFilter: 'DOR - DOD',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 30 },
+              //                 { name: 'days', value: 35 },
+              //               ],
+              //               subFilter: 'Intake - DOR',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //           ],
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       filter1: 'Past 3 Months',
+              //       filter2: 'Overall',
+              //       value: [
+              //         {
+              //           data: 'KnowHOW',
+              //           value: [
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 103 },
+              //                 { name: 'days', value: 53 },
+              //               ],
+              //               subFilter: 'DOD - Live',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 203 },
+              //                 { name: 'days', value: 253 },
+              //               ],
+              //               subFilter: 'DOR - DOD',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 303 },
+              //                 { name: 'days', value: 353 },
+              //               ],
+              //               subFilter: 'Intake - DOR',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //           ],
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       filter1: 'Past 2 Weeks',
+              //       filter2: 'Overall',
+              //       value: [
+              //         {
+              //           data: 'KnowHOW',
+              //           value: [
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 102 },
+              //                 { name: 'days', value: 52 },
+              //               ],
+              //               subFilter: 'DOD - Live',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 202 },
+              //                 { name: 'days', value: 252 },
+              //               ],
+              //               subFilter: 'DOR - DOD',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //             {
+              //               dataValue: [
+              //                 { name: 'issues', value: 302 },
+              //                 { name: 'days', value: 352 },
+              //               ],
+              //               subFilter: 'Intake - DOR',
+              //               sprojectName: 'KnowHOW',
+              //             },
+              //           ],
+              //         },
+              //       ],
+              //     },
+              //   ];
+              //   getData[cycleTime].trendValueList = mockData;
+              // }
+
               const releaseFrequencyInd = getData.findIndex(
                 (de) => de.kpiId === 'kpi73',
               );
@@ -1848,6 +2033,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             tempArr = this.createCombinations(
               this.kpiSelectedFilterObj[kpiId]['filter1'],
               this.kpiSelectedFilterObj[kpiId]['filter2'],
+              kpiId,
             );
             const preAggregatedValues = [];
             for (let i = 0; i < tempArr?.length; i++) {
@@ -1862,16 +2048,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               );
             }
             if (preAggregatedValues && preAggregatedValues.length > 1) {
-              const transformFilter = {};
-              preAggregatedValues.forEach((obj) => {
-                transformFilter[obj.filter1 + 'and' + obj.filter2] = obj.value;
-              });
-              this.kpiChartData[kpiId] =
-                this.helperService.applyAggregationLogic(
-                  transformFilter,
-                  aggregationType,
-                  this.tooltip.percentile,
-                );
+              if (kpiId === 'kpi193') {
+                this.kpiChartData[kpiId] =
+                  this.helperService.kpiCycleTime193Aggregration(
+                    preAggregatedValues,
+                  );
+              } else {
+                const transformFilter = {};
+                preAggregatedValues.forEach((obj) => {
+                  transformFilter[obj.filter1 + 'and' + obj.filter2] =
+                    obj.value;
+                });
+                this.kpiChartData[kpiId] =
+                  this.helperService.applyAggregationLogic(
+                    transformFilter,
+                    aggregationType,
+                    this.tooltip.percentile,
+                  );
+              }
             } else {
               this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
                 ? preAggregatedValues[0]?.value
@@ -1972,6 +2166,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.showKpiTrendIndicator[kpiId] = false;
     }
 
+    if (kpiId === 'kpi193') {
+      this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
+        this.kpiChartData[kpiId],
+      );
+    }
+
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
   }
@@ -2026,9 +2226,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
               }
             } else {
-              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
-                this.kpiDropdowns[kpiId][i].options[0],
-              ];
+              if (kpiId === 'kpi193') {
+                this.kpiSelectedFilterObj[kpiId] = {
+                  filter1: ['Past 6 Months'],
+                  filter2: ['Overall'],
+                };
+              } else {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
+                  this.kpiDropdowns[kpiId][i].options[0],
+                ];
+              }
             }
           }
         }
@@ -2694,12 +2901,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpiTableDataObj[hierarchyName]?.sort((a, b) => a.order - b.order);
   }
 
-  createCombinations(arr1, arr2) {
+  createCombinations(arr1, arr2, kpiId) {
     let arr = [];
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
-          arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          if (kpiId === 'kpi193') {
+            arr.push({ filter1: [arr1[i]], filter2: [arr2[j]] });
+          } else {
+            arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          }
         }
       }
     } else {
@@ -2724,6 +2935,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // data = this.appendParentName(data);
 
     for (const key in data) {
+      if (key === 'kpi193') {
+        const y = 5;
+        console.log('came here', data[key]);
+      }
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
@@ -3999,7 +4214,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (this.kpiDropdowns[kpiId]?.length > 1) {
+    if (kpiId === 'kpi193') {
+      this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
+      this.kpiSelectedFilterObj[kpiId] = {
+        filter1: ['Past 6 Months'],
+        filter2: ['Overall'],
+      };
+    }
+
+    if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi193') {
       this.kpiSelectedFilterObj[kpiId] = {};
       for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
         this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
@@ -4106,7 +4329,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleSelectedOptionForCard(event, kpi);
       }
     } else {
-      if (kpi.kpiId === 'kpi72') {
+      if (kpi.kpiId === 'kpi72' || kpi.kpiId === 'kpi193') {
         if (
           event.hasOwnProperty('filter1') ||
           event.hasOwnProperty('filter2')
@@ -4125,8 +4348,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           typeof event === 'object'
         ) {
           for (const key in event) {
-            if (event[key]?.length == 0) {
+            if (event[key]?.length == 0 && kpi.kpiId !== 'kpi193') {
               delete event[key];
+            } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi193') {
+              event[key] = ['Overall'];
             }
           }
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
@@ -4198,12 +4423,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
-      this.getChartData(
-        kpi?.kpiId,
-        this.ifKpiExist(kpi?.kpiId),
-        kpi?.kpiDetail?.aggregationCriteria,
-        true,
-      );
+      if (kpi?.kpiId === 'kpi193') {
+        this.getkpi193Data(kpi?.kpiId);
+      } else {
+        this.getChartData(
+          kpi?.kpiId,
+          this.ifKpiExist(kpi?.kpiId),
+          kpi?.kpiDetail?.aggregationCriteria,
+          true,
+        );
+      }
     }
   }
 
@@ -4920,6 +5149,108 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const userDetails = JSON.parse(currentUserDetails);
       this.floatingRecommendation =
         userDetails.authorities?.includes('ROLE_SUPERADMIN');
+    }
+  }
+
+  transformJSONForSQVTable(data) {
+    // Prepare columns and rows
+    const cols: { header: string; field: string }[] = [];
+    const rows: any[] = [];
+
+    data?.forEach((projectEntry) => {
+      const row: any = {};
+
+      projectEntry.value.forEach((metric) => {
+        const key = metric.subFilter;
+        row[key] = metric.dataValue;
+        row['sprojectName'] = metric.sprojectName;
+
+        if (!cols.find((col) => col.field === key)) {
+          cols.push({
+            header: key,
+            field: key,
+          });
+        }
+      });
+
+      rows.push(row);
+    });
+
+    return { data: rows, columnHeaders: cols };
+  }
+
+  getkpi193Data(kpiId) {
+    let durationChanged = false;
+    if (
+      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
+      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== this.durationFilter
+    ) {
+      durationChanged = true;
+      this.kpiChartData[kpiId] = [];
+      this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'][0];
+    }
+
+    // if duration filter (filter1) changes,  make an api call to fetch data
+    if (durationChanged) {
+      this.kpiSelectedFilterObj[kpiId]['filter2'] = ['Overall'];
+      const idx = this.ifKpiExist(kpiId);
+      // if (idx !== -1) {
+      //   this.allKpiArray.splice(idx, 1);
+      // }
+
+      const gID = this.allKpiArray[idx].groupId;
+      const kpi193Payload = this.updatedConfigGlobalData
+        ?.filter((kpiDetails) => kpiDetails.kpiDetail.groupId === gID)
+        .map((d) => d.kpiId);
+      const groupIdSet = new Set();
+      // this.updatedConfigGlobalData?.forEach((obj) => {
+      //   if (
+      //     !obj['kpiDetail']?.kanban &&
+      //     obj['kpiDetail']?.kpiSource === 'Jira'
+      //   ) {
+      groupIdSet.add(gID);
+      //   }
+      // });
+
+      // sending requests after grouping the the KPIs according to group Id
+      groupIdSet.forEach((groupId) => {
+        if (groupId) {
+          this.kpiJira = this.helperService.groupKpiFromMaster(
+            'Jira',
+            false,
+            this.updatedConfigGlobalData,
+            this.filterApplyData,
+            this.filterData,
+            kpi193Payload,
+            groupId,
+            '',
+          );
+          const kpi193 = this.kpiJira.kpiList.filter(
+            (kpi) => kpi.kpiId === 'kpi193',
+          )[0];
+          if (kpi193) {
+            kpi193['filterDuration'] = {
+              duration: this.durationFilter.includes('Week')
+                ? 'WEEKS'
+                : 'MONTHS',
+              value: !isNaN(+this.durationFilter.split(' ')[1])
+                ? +this.durationFilter.split(' ')[1]
+                : 1,
+            };
+            this.kpiJira.kpiList = [kpi193];
+            this.kpiLoader.add('kpi193');
+
+            this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
+              const kpi193Data = data.find((kpi) => kpi.kpiId === kpiId);
+              this.allKpiArray.push(kpi193Data);
+              this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+              this.kpiLoader.delete('kpi193');
+            });
+          }
+        }
+      });
+    } else {
+      this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
     }
   }
 }
