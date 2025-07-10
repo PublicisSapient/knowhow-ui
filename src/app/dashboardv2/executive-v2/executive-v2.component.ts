@@ -1357,190 +1357,190 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 );
               }
 
-              // const cycleTime = getData.findIndex(
-              //   (details) => details.kpiId === 'kpi171',
-              // );
+              const cycleTime = getData.findIndex(
+                (details) => details.kpiId === 'kpi171',
+              );
 
-              // if (cycleTime !== -1) {
-              //   const mockData = [
-              //     {
-              //       filter1: 'Past 6 Months',
-              //       filter2: 'Overall',
-              //       value: [
-              //         {
-              //           data: 'KnowHOW',
-              //           value: [
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 10 },
-              //                 { name: 'days', value: 5 },
-              //               ],
-              //               subFilter: 'DOD - Live',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 20 },
-              //                 { name: 'days', value: 25 },
-              //               ],
-              //               subFilter: 'DOR - DOD',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 30 },
-              //                 { name: 'days', value: 35 },
-              //               ],
-              //               subFilter: 'Intake - DOR',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //           ],
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       filter1: 'Past 6 Months',
-              //       filter2: 'Bug',
-              //       value: [
-              //         {
-              //           data: 'KnowHOW',
-              //           value: [
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 10 },
-              //                 { name: 'days', value: 5 },
-              //               ],
-              //               subFilter: 'DOD - Live',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 20 },
-              //                 { name: 'days', value: 25 },
-              //               ],
-              //               subFilter: 'DOR - DOD',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 30 },
-              //                 { name: 'days', value: 35 },
-              //               ],
-              //               subFilter: 'Intake - DOR',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //           ],
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       filter1: 'Past 6 Months',
-              //       filter2: 'Story',
-              //       value: [
-              //         {
-              //           data: 'KnowHOW',
-              //           value: [
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 10 },
-              //                 { name: 'days', value: 5 },
-              //               ],
-              //               subFilter: 'DOD - Live',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 20 },
-              //                 { name: 'days', value: 25 },
-              //               ],
-              //               subFilter: 'DOR - DOD',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 30 },
-              //                 { name: 'days', value: 35 },
-              //               ],
-              //               subFilter: 'Intake - DOR',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //           ],
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       filter1: 'Past 3 Months',
-              //       filter2: 'Overall',
-              //       value: [
-              //         {
-              //           data: 'KnowHOW',
-              //           value: [
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 103 },
-              //                 { name: 'days', value: 53 },
-              //               ],
-              //               subFilter: 'DOD - Live',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 203 },
-              //                 { name: 'days', value: 253 },
-              //               ],
-              //               subFilter: 'DOR - DOD',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 303 },
-              //                 { name: 'days', value: 353 },
-              //               ],
-              //               subFilter: 'Intake - DOR',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //           ],
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       filter1: 'Past 2 Weeks',
-              //       filter2: 'Overall',
-              //       value: [
-              //         {
-              //           data: 'KnowHOW',
-              //           value: [
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 102 },
-              //                 { name: 'days', value: 52 },
-              //               ],
-              //               subFilter: 'DOD - Live',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 202 },
-              //                 { name: 'days', value: 252 },
-              //               ],
-              //               subFilter: 'DOR - DOD',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //             {
-              //               dataValue: [
-              //                 { name: 'issues', value: 302 },
-              //                 { name: 'days', value: 352 },
-              //               ],
-              //               subFilter: 'Intake - DOR',
-              //               sprojectName: 'KnowHOW',
-              //             },
-              //           ],
-              //         },
-              //       ],
-              //     },
-              //   ];
-              //   getData[cycleTime].trendValueList = mockData;
-              // }
+              if (cycleTime !== -1) {
+                const mockData = [
+                  {
+                    filter1: 'Past 6 Months',
+                    filter2: 'Overall',
+                    value: [
+                      {
+                        data: 'KnowHOW',
+                        value: [
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 10 },
+                              { name: 'days', value: 5 },
+                            ],
+                            subFilter: 'DOD - Live',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 20 },
+                              { name: 'days', value: 25 },
+                            ],
+                            subFilter: 'DOR - DOD',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 30 },
+                              { name: 'days', value: 35 },
+                            ],
+                            subFilter: 'Intake - DOR',
+                            sprojectName: 'KnowHOW',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    filter1: 'Past 6 Months',
+                    filter2: 'Bug',
+                    value: [
+                      {
+                        data: 'KnowHOW',
+                        value: [
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 10 },
+                              { name: 'days', value: 5 },
+                            ],
+                            subFilter: 'DOD - Live',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 20 },
+                              { name: 'days', value: 25 },
+                            ],
+                            subFilter: 'DOR - DOD',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 30 },
+                              { name: 'days', value: 35 },
+                            ],
+                            subFilter: 'Intake - DOR',
+                            sprojectName: 'KnowHOW',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    filter1: 'Past 6 Months',
+                    filter2: 'Story',
+                    value: [
+                      {
+                        data: 'KnowHOW',
+                        value: [
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 10 },
+                              { name: 'days', value: 5 },
+                            ],
+                            subFilter: 'DOD - Live',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 20 },
+                              { name: 'days', value: 25 },
+                            ],
+                            subFilter: 'DOR - DOD',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 30 },
+                              { name: 'days', value: 35 },
+                            ],
+                            subFilter: 'Intake - DOR',
+                            sprojectName: 'KnowHOW',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    filter1: 'Past 3 Months',
+                    filter2: 'Overall',
+                    value: [
+                      {
+                        data: 'KnowHOW',
+                        value: [
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 103 },
+                              { name: 'days', value: 53 },
+                            ],
+                            subFilter: 'DOD - Live',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 203 },
+                              { name: 'days', value: 253 },
+                            ],
+                            subFilter: 'DOR - DOD',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 303 },
+                              { name: 'days', value: 353 },
+                            ],
+                            subFilter: 'Intake - DOR',
+                            sprojectName: 'KnowHOW',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    filter1: 'Past 2 Weeks',
+                    filter2: 'Overall',
+                    value: [
+                      {
+                        data: 'KnowHOW',
+                        value: [
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 102 },
+                              { name: 'days', value: 52 },
+                            ],
+                            subFilter: 'DOD - Live',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 202 },
+                              { name: 'days', value: 252 },
+                            ],
+                            subFilter: 'DOR - DOD',
+                            sprojectName: 'KnowHOW',
+                          },
+                          {
+                            dataValue: [
+                              { name: 'issues', value: 302 },
+                              { name: 'days', value: 352 },
+                            ],
+                            subFilter: 'Intake - DOR',
+                            sprojectName: 'KnowHOW',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ];
+                // getData[cycleTime].trendValueList = mockData;
+              }
 
               const releaseFrequencyInd = getData.findIndex(
                 (de) => de.kpiId === 'kpi73',
@@ -5216,6 +5216,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
             this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
               const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
+              if (idx !== -1) {
+                this.allKpiArray.splice(idx, 1);
+              }
               this.allKpiArray.push(kpi171Data);
               this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
               this.kpiLoader.delete('kpi171');
