@@ -8,10 +8,10 @@
         <ng-template pTemplate="body" let-row>
             <tr>
                 <ng-container *ngFor="let col of cols;let i=index">
-                    <td [ngStyle]="{'color': getColorForRow(row.name || row.hierarchyName)}"><span>
+                    <td [ngStyle]="{'color': getColorForRow(row.name || row.hierarchyName || row.sprojectName)}"><span>
                             <i class='fas fa-square show-marker'
                                 *ngIf="showMarker && showMarkerColumnNumber===i"></i>{{row[col.field]?.length > 40 ?
-                            (row[col.field]?.slice(0,40)+'...' ): row[col.field]}}</span>
+                            (renderObj(row[col.field]?.slice(0,40)+'...') ): renderObj(row[col.field])}}</span>
                     </td>
                 </ng-container>
             </tr>
