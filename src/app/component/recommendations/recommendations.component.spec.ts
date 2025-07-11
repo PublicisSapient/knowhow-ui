@@ -367,7 +367,7 @@ describe('RecommendationsComponent', () => {
     expect(httpService.shareViaEmail).toHaveBeenCalled();
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'success',
-      summary: 'PDF uploaded successfully.',
+      summary: 'Email sent successfully.',
     });
   });
 
@@ -378,7 +378,7 @@ describe('RecommendationsComponent', () => {
     expect(httpService.shareViaEmail).toHaveBeenCalled();
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'error',
-      summary: 'Error',
+      summary: 'Error sending email.',
     });
   });
 
