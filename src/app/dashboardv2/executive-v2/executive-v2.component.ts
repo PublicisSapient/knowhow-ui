@@ -345,11 +345,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             )
               return this.service.passDataToDashboard;
             for (const key in this.kpiChartData) {
-              // this.kpiChartData[key] = this.generateColorObj(
-              //   key,
-              //   this.kpiChartData[key],
-              // );
-              // this.createTrendsData(key);
               this.handleMaturityTableLoader();
             }
             return this.service.passDataToDashboard;
@@ -1355,191 +1350,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.sprintGoalData = JSON.parse(
                   JSON.stringify(kpi187Data['trendValueList']),
                 );
-              }
-
-              const cycleTime = getData.findIndex(
-                (details) => details.kpiId === 'kpi171',
-              );
-
-              if (cycleTime !== -1) {
-                const mockData = [
-                  {
-                    filter1: 'Past 6 Months',
-                    filter2: 'Overall',
-                    value: [
-                      {
-                        data: 'KnowHOW',
-                        value: [
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 10 },
-                              { name: 'days', value: 5 },
-                            ],
-                            subFilter: 'DOD - Live',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 20 },
-                              { name: 'days', value: 25 },
-                            ],
-                            subFilter: 'DOR - DOD',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 30 },
-                              { name: 'days', value: 35 },
-                            ],
-                            subFilter: 'Intake - DOR',
-                            sprojectName: 'KnowHOW',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    filter1: 'Past 6 Months',
-                    filter2: 'Bug',
-                    value: [
-                      {
-                        data: 'KnowHOW',
-                        value: [
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 10 },
-                              { name: 'days', value: 5 },
-                            ],
-                            subFilter: 'DOD - Live',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 20 },
-                              { name: 'days', value: 25 },
-                            ],
-                            subFilter: 'DOR - DOD',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 30 },
-                              { name: 'days', value: 35 },
-                            ],
-                            subFilter: 'Intake - DOR',
-                            sprojectName: 'KnowHOW',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    filter1: 'Past 6 Months',
-                    filter2: 'Story',
-                    value: [
-                      {
-                        data: 'KnowHOW',
-                        value: [
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 10 },
-                              { name: 'days', value: 5 },
-                            ],
-                            subFilter: 'DOD - Live',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 20 },
-                              { name: 'days', value: 25 },
-                            ],
-                            subFilter: 'DOR - DOD',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 30 },
-                              { name: 'days', value: 35 },
-                            ],
-                            subFilter: 'Intake - DOR',
-                            sprojectName: 'KnowHOW',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    filter1: 'Past 3 Months',
-                    filter2: 'Overall',
-                    value: [
-                      {
-                        data: 'KnowHOW',
-                        value: [
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 103 },
-                              { name: 'days', value: 53 },
-                            ],
-                            subFilter: 'DOD - Live',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 203 },
-                              { name: 'days', value: 253 },
-                            ],
-                            subFilter: 'DOR - DOD',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 303 },
-                              { name: 'days', value: 353 },
-                            ],
-                            subFilter: 'Intake - DOR',
-                            sprojectName: 'KnowHOW',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    filter1: 'Past 2 Weeks',
-                    filter2: 'Overall',
-                    value: [
-                      {
-                        data: 'KnowHOW',
-                        value: [
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 102 },
-                              { name: 'days', value: 52 },
-                            ],
-                            subFilter: 'DOD - Live',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 202 },
-                              { name: 'days', value: 252 },
-                            ],
-                            subFilter: 'DOR - DOD',
-                            sprojectName: 'KnowHOW',
-                          },
-                          {
-                            dataValue: [
-                              { name: 'issues', value: 302 },
-                              { name: 'days', value: 352 },
-                            ],
-                            subFilter: 'Intake - DOR',
-                            sprojectName: 'KnowHOW',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ];
-                // getData[cycleTime].trendValueList = mockData;
               }
 
               const releaseFrequencyInd = getData.findIndex(
@@ -2939,13 +2749,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
-    // data = this.appendParentName(data);
-
     for (const key in data) {
-      if (key === 'kpi171') {
-        const y = 5;
-        console.log('came here', data[key]);
-      }
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
@@ -2993,7 +2797,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
       }
     }
-    // console.log(this.allKpiArray);
   }
 
   appendParentName(data) {
@@ -3183,11 +2986,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (Array.isArray(dataItem.value) && anyProjectNodeArr[subIndex]) {
             anyProjectNode = anyProjectNodeArr[subIndex];
             dataItem.value?.forEach((element) => {
-              // if (element.hasOwnProperty('data')) {
-              //   element.data =
-              //     element.data + ' (' + anyProjectNode['nodeName'] + ')';
-              // }
-
               if (element.hasOwnProperty('sprojectName')) {
                 element.sprojectName =
                   element.sprojectName +
@@ -3195,12 +2993,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   anyProjectNode['nodeName'] +
                   ')';
               }
-              // else if (element.value && Array.isArray(element.value)) {
-              //   element = this.appendParentNameInActualData(
-              //     element,
-              //     anyProjectNode,
-              //   );
-              // }
             });
           } else if (anyProjectNode) {
             if (dataItem.hasOwnProperty('sprojectName')) {
@@ -3274,7 +3066,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
       }
     } else {
-      // console.log(anyProject);
       anyProjectNode = this.findHigherLevelParentForOtherNode(
         anyProject,
         completeHierarchyData,
@@ -3476,14 +3267,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiChartData[kpiId] =
               this.applyAggregationLogicForkpi138(preAggregatedValues);
           } else {
-            // if (kpiId === 'kpi171') {
-            //   this.kpiChartData[kpiId] = [
-            //     this.helperService.aggregationCycleTime(preAggregatedValues),
-            //   ];
-            // } else {
             this.kpiChartData[kpiId] =
               this.applyAggregationLogic(preAggregatedValues);
-            // }
           }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
@@ -3724,31 +3509,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  // generateExcel() {
-  //   const kpiData = {
-  //     headerNames: [],
-  //     excelData: [],
-  //   };
-  //   this.modalDetails['tableHeadings'].forEach((colHeader) => {
-  //     kpiData.headerNames.push({
-  //       header: colHeader,
-  //       key: colHeader,
-  //       width: 25,
-  //     });
-  //   });
-  //   this.modalDetails['tableValues'].forEach((colData) => {
-  //     kpiData.excelData.push({
-  //       ...colData,
-  //       ['Issue Id']: {
-  //         text: colData['Issue Id'],
-  //         hyperlink: colData['Issue URL'],
-  //       },
-  //     });
-  //   });
-
-  //   // this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-  // }
-
   /**
    * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
    * @param {Object} kpi - The KPI object containing details and ID to evaluate.
@@ -3849,21 +3609,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  // /**
-  //  * Determines if the execution of a specified processor was successful based on its trace log.
-  //  * @param processorName - The name of the processor to check, case insensitive.
-  //  * @returns A boolean indicating whether the execution was successful.
-  //  * @throws No exceptions are thrown by this function.
-  //  */
-  // showExecutionDate(processorName) {
-  //   const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
-  //   if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
-  //     return false;
-  //   } else {
-  //     return traceLog?.executionSuccess === true ? true : false;
-  //   }
-  // }
-
   /**
    * Retrieves the trace log for a specified processor by its name.
    * @param processorName - The name of the processor, which may include a path.
@@ -3952,9 +3697,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiData && filters && kpi.kpiId !== 'kpi171') {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
-      // if (kpi.kpiId === 'kpi171') {
-      //   return this.checkIfPartialDataForKpi171(kpiData);
-      // }
       return false;
     }
   }
