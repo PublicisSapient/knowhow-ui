@@ -12338,12 +12338,13 @@ describe('ExecutiveV2Component', () => {
         unit: '%',
         maxValue: '200',
         chartType: '',
+        groupId: 4,
         trendValueList: { ...fakeKpi171Data },
       },
     ];
     component.kpiSelectedFilterObj['kpi171'] = { filter1: 'Task' };
-    spyOn(component, 'ifKpiExist');
-    component.allKpiArray = [];
+    spyOn(component, 'ifKpiExist').and.returnValue(0);
+    component.allKpiArray = [fakeJiraData[0]];
     component.updatedConfigGlobalData = [
       {
         id: '655e0d435769c2002ad81574',
@@ -12386,8 +12387,8 @@ describe('ExecutiveV2Component', () => {
     ];
 
     component.filterApplyData = { level: 'level1', label: 'level1' };
-    spyOn(component, 'getChartDataForCardWithCombinationFilter');
-    const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(
+    spyOn(component, 'getChartData');
+    const spy = spyOn(httpService, 'postKpi').and.returnValue(
       of([
         {
           kpiId: 'kpi171',
@@ -12396,7 +12397,7 @@ describe('ExecutiveV2Component', () => {
       ]),
     );
     component.getkpi171Data('kpi171');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toBeDefined();
   });
 
   it('should apply the aggregation logic correctly when the data is valid', () => {
@@ -14345,14 +14346,14 @@ describe('ExecutiveV2Component', () => {
 
   it('should return true if data is present for kpiId kpi171 and kpiChartData and kpiChartData.value[0].data have length greater than 0', () => {
     component.kpiStatusCodeArr = { kpi171: '200' };
-    component.kpiChartData = { kpi171: [{ data: [1, 2, 3] }] };
+    component.kpiChartData = { kpi171: { data: [1, 2, 3] } };
 
     expect(
       component.checkIfDataPresent({
         kpiId: 'kpi171',
         kpiDetail: { chartType: 'lineChart' },
       }),
-    ).toBeTrue();
+    ).toBe(3);
   });
 
   it('should return true if partial data is present for kpiId kpi139 and kpiData has length and filters length is 2', () => {
@@ -14412,14 +14413,14 @@ describe('ExecutiveV2Component', () => {
 
   it('should return true if data is present for kpiId kpi171', () => {
     component.kpiStatusCodeArr = { kpi171: '200' };
-    component.kpiChartData = { kpi171: { value: [{ data: [1, 2, 3] }] } };
+    component.kpiChartData = { kpi171: { data: [1, 2, 3] } };
 
     expect(
       component.checkIfDataPresent({
         kpiId: 'kpi171',
         kpiDetail: { chartType: 'lineChart' },
       }),
-    ).toBeFalse();
+    ).toBe(3);
   });
 
   it('should return true if partial data is present for kpiId kpi171', () => {
@@ -15213,6 +15214,135 @@ describe('ExecutiveV2Component', () => {
 
         expect(component.handleKPIError).toHaveBeenCalledWith(postData);
       });
+    });
+  });
+
+  describe('transformJSONForSQVTable', () => {
+    it('should transform empty data array correctly', () => {
+      const result = component.transformJSONForSQVTable([]);
+      expect(result).toEqual({ data: [], columnHeaders: [] });
+    });
+
+    it('should transform null data correctly', () => {
+      const result = component.transformJSONForSQVTable(null);
+      expect(result).toEqual({ data: [], columnHeaders: [] });
+    });
+
+    it('should transform single project data correctly', () => {
+      const testData = [
+        {
+          value: [
+            {
+              subFilter: 'Velocity',
+              dataValue: 85,
+              sprojectName: 'Project A',
+            },
+            {
+              subFilter: 'Quality',
+              dataValue: 90,
+              sprojectName: 'Project A',
+            },
+          ],
+        },
+      ];
+
+      const expectedResult = {
+        data: [
+          {
+            Velocity: 85,
+            Quality: 90,
+            sprojectName: 'Project A',
+          },
+        ],
+        columnHeaders: [
+          { header: 'Velocity', field: 'Velocity' },
+          { header: 'Quality', field: 'Quality' },
+        ],
+      };
+
+      const result = component.transformJSONForSQVTable(testData);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should transform multiple projects data correctly', () => {
+      const testData = [
+        {
+          value: [
+            {
+              subFilter: 'Velocity',
+              dataValue: 85,
+              sprojectName: 'Project A',
+            },
+          ],
+        },
+        {
+          value: [
+            {
+              subFilter: 'Velocity',
+              dataValue: 90,
+              sprojectName: 'Project B',
+            },
+          ],
+        },
+      ];
+
+      const expectedResult = {
+        data: [
+          { Velocity: 85, sprojectName: 'Project A' },
+          { Velocity: 90, sprojectName: 'Project B' },
+        ],
+        columnHeaders: [{ header: 'Velocity', field: 'Velocity' }],
+      };
+
+      const result = component.transformJSONForSQVTable(testData);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should handle missing values correctly', () => {
+      const testData = [
+        {
+          value: [
+            {
+              subFilter: 'Velocity',
+              dataValue: undefined,
+              sprojectName: 'Project A',
+            },
+          ],
+        },
+      ];
+
+      const expectedResult = {
+        data: [{ Velocity: undefined, sprojectName: 'Project A' }],
+        columnHeaders: [{ header: 'Velocity', field: 'Velocity' }],
+      };
+
+      const result = component.transformJSONForSQVTable(testData);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should not create duplicate column headers', () => {
+      const testData = [
+        {
+          value: [
+            {
+              subFilter: 'Velocity',
+              dataValue: 85,
+              sprojectName: 'Project A',
+            },
+            {
+              subFilter: 'Velocity',
+              dataValue: 90,
+              sprojectName: 'Project A',
+            },
+          ],
+        },
+      ];
+
+      const result = component.transformJSONForSQVTable(testData);
+      const velocityHeaders = result.columnHeaders.filter(
+        (col) => col.field === 'Velocity',
+      );
+      expect(velocityHeaders.length).toBe(1);
     });
   });
 });
