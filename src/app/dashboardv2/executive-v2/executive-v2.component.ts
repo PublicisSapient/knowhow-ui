@@ -2038,7 +2038,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                     k['filter1'] ==
                       (tempArr[i]?.filter1.length
                         ? tempArr[i]?.filter1
-                        : 'Overall') && k['filter2'] == tempArr[i]?.filter2,
+                        : 'Overall') &&
+                    k['filter2'] ==
+                      (tempArr[i]?.filter2 ? tempArr[i]?.filter2 : 'Overall'),
                 ),
               );
             }
@@ -2224,8 +2226,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               if (kpiId === 'kpi171') {
                 this.kpiSelectedFilterObj[kpiId] = {
                   filter1: ['Past 6 Months'],
-                  filter2: ['Overall'],
+                  filter2: null,
                 };
+                this.durationFilter = 'Past 6 Months';
               } else {
                 this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
                   this.kpiDropdowns[kpiId][i].options[0],
@@ -2918,6 +2921,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       ];
     }
 
+    if (kpiId === 'kpi171' && (arr2 == null || arr2.length === 0)) {
+      return [
+        {
+          filter1: arr1,
+          filter2: null,
+        },
+      ];
+    }
+
     return arr;
   }
 
@@ -3509,22 +3521,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    this.kpi171RoundOff();
+    // this.kpi171RoundOff();
   }
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
     let filters = this.kpiSelectedFilterObj[kpiId];
-    // if (kpiId === 'kpi171') {
-    //   const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty(
-    //     'filter2',
-    //   )
-    //     ? this.kpiSelectedFilterObj[kpiId]['filter2']
-    //     : ['Overall'];
-    //   filters = {
-    //     filter1: issueFilter,
-    //   };
-    // }
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -3551,25 +3553,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
-    this.kpi171RoundOff();
+    // this.kpi171RoundOff();
   }
 
-  kpi171RoundOff() {
-    if (
-      this.kpiChartData.hasOwnProperty('kpi171') &&
-      this.kpiChartData['kpi171'].length
-    ) {
-      const roundOffData = [...this.kpiChartData['kpi171']];
-      if (roundOffData && roundOffData?.length) {
-        roundOffData[0]['data'] = roundOffData[0]?.data?.map((item) => ({
-          ...item,
-          value: Math.round(item.value), // Round off `value`
-          value1: Math.round(item.value1), // Round off `value1`
-        }));
-        this.kpiChartData['kpi171'] = roundOffData;
-      }
-    }
-  }
+  // kpi171RoundOff() {
+  //   if (
+  //     this.kpiChartData.hasOwnProperty('kpi171') &&
+  //     this.kpiChartData['kpi171'].length
+  //   ) {
+  //     const roundOffData = [...this.kpiChartData['kpi171']];
+  //     if (roundOffData && roundOffData?.length) {
+  //       roundOffData[0]['data'] = roundOffData[0]?.data?.map((item) => ({
+  //         ...item,
+  //         value: Math.round(item.value), // Round off `value`
+  //         value1: Math.round(item.value1), // Round off `value1`
+  //       }));
+  //       this.kpiChartData['kpi171'] = roundOffData;
+  //     }
+  //   }
+  // }
 
   kpi171Check(kpiId, preAggregatedValues) {
     if (kpiId === 'kpi171') {
@@ -3586,85 +3588,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.applyAggregationLogic(preAggregatedValues);
     }
   }
-
-  // getkpi171Data(kpiId, trendValueList) {
-  //   let durationChanged = false;
-  //   if (
-  //     this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
-  //     this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter
-  //   ) {
-  //     durationChanged = true;
-  //     this.kpiChartData[kpiId] = [];
-  //     this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'];
-  //   }
-
-  //   // if duration filter (filter1) changes,  make an api call to fetch data
-  //   if (durationChanged) {
-  //     delete this.kpiSelectedFilterObj[kpiId]['filter2'];
-  //     const idx = this.ifKpiExist(kpiId);
-  //     if (idx !== -1) {
-  //       this.allKpiArray.splice(idx, 1);
-  //     }
-
-  //     const kpi171Payload = this.updatedConfigGlobalData?.map(
-  //       (kpiDetails) => kpiDetails.kpiId,
-  //     );
-  //     const groupIdSet = new Set();
-  //     this.updatedConfigGlobalData?.forEach((obj) => {
-  //       if (
-  //         !obj['kpiDetail']?.kanban &&
-  //         obj['kpiDetail']?.kpiSource === 'Jira'
-  //       ) {
-  //         groupIdSet.add(obj['kpiDetail']?.groupId);
-  //       }
-  //     });
-
-  //     // sending requests after grouping the the KPIs according to group Id
-  //     groupIdSet.forEach((groupId) => {
-  //       if (groupId) {
-  //         this.kpiJira = this.helperService.groupKpiFromMaster(
-  //           'Jira',
-  //           false,
-  //           this.updatedConfigGlobalData,
-  //           this.filterApplyData,
-  //           this.filterData,
-  //           kpi171Payload,
-  //           groupId,
-  //           'backlog',
-  //         );
-  //         const kpi171 = this.kpiJira.kpiList.filter(
-  //           (kpi) => kpi.kpiId === 'kpi171',
-  //         )[0];
-  //         if (kpi171) {
-  //           kpi171['filterDuration'] = {
-  //             duration: this.durationFilter.includes('Week')
-  //               ? 'WEEKS'
-  //               : 'MONTHS',
-  //             value: !isNaN(+this.durationFilter.split(' ')[1])
-  //               ? +this.durationFilter.split(' ')[1]
-  //               : 1,
-  //           };
-  //           this.kpiJira.kpiList = [kpi171];
-  //           this.kpiLoader.add('kpi171');
-
-  //           this.httpService
-  //             .postKpiNonTrend(this.kpiJira, 'jira')
-  //             .subscribe((data) => {
-  //               const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
-  //               this.allKpiArray.push(kpi171Data);
-  //               this.getChartDataForCardWithCombinationFilter(
-  //                 kpiId,
-  //                 JSON.parse(JSON.stringify(kpi171Data.trendValueList)),
-  //               );
-  //               this.kpiLoader.delete('kpi171');
-  //             });
-  //         }
-  //       }
-  //     });
-  //   } else {
-  //     this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
-  //   }
-  // }
 
   applyAggregationLogicForkpi138(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr));
@@ -4209,8 +4132,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
       this.kpiSelectedFilterObj[kpiId] = {
         filter1: ['Past 6 Months'],
-        filter2: ['Overall'],
+        filter2: null,
       };
+      this.durationFilter = 'Past 6 Months';
     }
 
     if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi171') {
@@ -4328,7 +4252,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
             const outputObject = {};
             for (const key in event) {
-              outputObject[key] = [event[key]];
+              outputObject[key] =
+                kpi.kpiId === 'kpi171' ? event[key] : [event[key]];
             }
             event = outputObject;
           }
@@ -4342,7 +4267,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             if (event[key]?.length == 0 && kpi.kpiId !== 'kpi171') {
               delete event[key];
             } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi171') {
-              event[key] = ['Overall'];
+              event[key] = null;
             }
           }
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
@@ -4374,7 +4299,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 ];
               }
             } else {
-              if (kpi.kpiDetail.kpiFilter !== 'dropDown') {
+              if (kpi.kpiDetail.kpiFilter?.toLowerCase() !== 'dropdown') {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(
                   event[key],
                 )
@@ -4413,7 +4338,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-
       if (kpi?.kpiId === 'kpi171') {
         this.getkpi171Data(kpi?.kpiId);
       } else {
@@ -5183,7 +5107,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // if duration filter (filter1) changes,  make an api call to fetch data
     if (durationChanged) {
-      this.kpiSelectedFilterObj[kpiId]['filter2'] = ['Overall'];
+      this.kpiSelectedFilterObj[kpiId]['filter2'] = null;
       const idx = this.ifKpiExist(kpiId);
 
       const gID = this.allKpiArray[idx].groupId;
@@ -5232,10 +5156,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   appendFilterDuratioKpi171(): any {
+    const durationFilter = Array.isArray(this.durationFilter)
+      ? this.durationFilter[0]
+      : this.durationFilter;
     return {
-      duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
-      value: !isNaN(+this.durationFilter.split(' ')[1])
-        ? +this.durationFilter.split(' ')[1]
+      duration: durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+      value: !isNaN(+durationFilter.split(' ')[1])
+        ? +durationFilter.split(' ')[1]
         : 1,
     };
   }

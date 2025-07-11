@@ -1469,13 +1469,7 @@ export class HelperService {
     });
 
     // Build final output
-    const finalOutput = [
-      {
-        filter1: commonFilter1,
-        filter2: Array.from(filter2Set).join(' + '),
-        value: [],
-      },
-    ];
+    const finalOutput = [];
 
     aggMap.forEach((subFilterMap, projectKey) => {
       const projectObj: any = {
@@ -1487,7 +1481,7 @@ export class HelperService {
         projectObj.value.push(entry);
       });
 
-      finalOutput[0].value.push(projectObj);
+      finalOutput.push(projectObj);
     });
 
     return finalOutput;

@@ -117,7 +117,7 @@
       </div>
       <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr;let k = index">
-          <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
+          <ng-select *ngIf="filter?.options?.length && filterOptions['filter'+(k+1)]?.[0] && filter.filterType === 'Duration'"
             [(ngModel)]="filterOptions['filter'+(k+1)][0]" [dropdownPosition]="'bottom'" [filter]="false"
             [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
             class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
