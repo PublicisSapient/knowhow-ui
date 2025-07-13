@@ -71,7 +71,6 @@ export class DashboardV2Component implements AfterContentInit {
       }
     });
 
-    // this.service.setSelectedBoard('iteration');
     this.httpService.getAllProjects().subscribe((projectsData) => {
       if (
         projectsData[0] !== 'error' &&
