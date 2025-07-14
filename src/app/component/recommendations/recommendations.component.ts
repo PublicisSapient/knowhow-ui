@@ -360,6 +360,7 @@ export class RecommendationsComponent implements OnInit {
     this.isError = false;
     this.toShareViaEmail = false;
     this.initializeEmailIds();
+    this.invalidEmails = [];
   }
 
   closeCancelLabel() {
@@ -444,7 +445,7 @@ export class RecommendationsComponent implements OnInit {
       },
       error: (error) => {
         this.isTemplateLoading = false;
-        console.error('Error uploading PDF:', error);
+        console.error('Error sending email:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error sending email.',
