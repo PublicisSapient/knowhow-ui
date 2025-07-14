@@ -3876,7 +3876,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         filter1: ['Past 6 Months'],
         filter2: null,
       };
-      this.durationFilter = 'Past 6 Months';
+      this.durationFilter = this.durationFilter || 'Past 6 Months';
     }
 
     if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi171') {
