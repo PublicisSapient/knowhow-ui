@@ -31,15 +31,24 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   sortAlphabetically(objArray) {
-    objArray?.sort((a, b) => a.name.localeCompare(b.name));
+    objArray?.sort((a, b) => a.name?.localeCompare(b.name));
     return objArray;
   }
 
   getColorForRow(rowName: string): string {
     if (!this.trendBoxColorObj) return '';
-    const matchingKey = Object.keys(this.trendBoxColorObj).find(
-      (key) => this.trendBoxColorObj[key].nodeName === rowName,
+    const matchingKey: any = Object.values(this.trendBoxColorObj).find(
+      (key: any) => key.nodeDisplayName === rowName,
     );
-    return matchingKey ? this.trendBoxColorObj[matchingKey].color : '';
+    return matchingKey ? matchingKey?.color : '';
+  }
+
+  renderObj(data) {
+    // console.log('kpi_table', data);
+    if (typeof data === 'object') {
+      return `${data[0].value} ${data[0].name}/${data[1].value} ${data[1].name}`;
+    } else {
+      return data;
+    }
   }
 }

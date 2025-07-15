@@ -171,11 +171,6 @@
   object-fit: contain;
 }
 
-.priority-chip {
-  border: 1px solid #d5dbe1;
-  border-radius: 5px;
-}
-
 .severity {
   width: 8px;
   height: 8px;
@@ -254,6 +249,8 @@
   flex: 0 0 95px;
   display: flex;
   align-items: center;
+  border: 1px solid #d5dbe1;
+  border-radius: 5px;
 }
 
 .details-column {
