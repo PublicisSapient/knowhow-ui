@@ -1420,4 +1420,70 @@ export class HelperService {
       timeout = setTimeout(() => func.apply(context, args), wait);
     };
   }
+
+  kpiCycleTime193Aggregration(data) {
+    // Aggregation map structure
+    const aggMap = new Map();
+    const filter2Set = new Set();
+    let commonFilter1 = '';
+
+    data.forEach((entry) => {
+      commonFilter1 = entry.filter1;
+      filter2Set.add(entry.filter2);
+
+      entry.value.forEach((project) => {
+        const projectKey = project.data;
+
+        if (!aggMap.has(projectKey)) {
+          aggMap.set(projectKey, new Map());
+        }
+
+        const subFilterMap = aggMap.get(projectKey);
+
+        project.value.forEach((metric) => {
+          const subFilter = metric.subFilter;
+          const sprojectName = metric.sprojectName;
+
+          if (!subFilterMap.has(subFilter)) {
+            subFilterMap.set(subFilter, {
+              subFilter,
+              sprojectName,
+              dataValue: [],
+            });
+          }
+
+          const existingEntry = subFilterMap.get(subFilter);
+
+          metric.dataValue.forEach((val) => {
+            const existing = existingEntry.dataValue.find(
+              (d) => d.name === val.name,
+            );
+            if (existing) {
+              existing.value += val.value;
+            } else {
+              existingEntry.dataValue.push({ ...val });
+            }
+          });
+        });
+      });
+    });
+
+    // Build final output
+    const finalOutput = [];
+
+    aggMap.forEach((subFilterMap, projectKey) => {
+      const projectObj: any = {
+        data: projectKey,
+        value: [],
+      };
+
+      subFilterMap.forEach((entry) => {
+        projectObj.value.push(entry);
+      });
+
+      finalOutput.push(projectObj);
+    });
+
+    return finalOutput;
+  }
 }

@@ -47,7 +47,7 @@
                 <div class="table-head" >
                   <span [ngStyle]="{'width':'max-content'}">{{item}}</span>
                   <div class="p-d-flex">
-                    <p-columnFilter [field]="item" matchMode="in"
+                    <p-columnFilter [field]="item" matchMode="in" *ngIf="item!=='Linked Defect'"
                       [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                       [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                       <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
@@ -58,13 +58,6 @@
                           <ng-template pTemplate="selectedItems">
                             <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                           </ng-template>
-                          <!-- <ng-template let-option pTemplate="item">
-                            <div class="filter-item">
-                                <div>
-                                 {{utcToLocalUser(option.name,item)}}
-                                </div>
-                            </div>
-                        </ng-template> -->
                         </p-multiSelect>
                       </ng-template>
                     </p-columnFilter>
