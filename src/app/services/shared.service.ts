@@ -881,12 +881,9 @@ export class SharedService {
 
   navigateToLastVisitedURL(fallbackURL) {
     const lastURL = localStorage.getItem('last_link');
-    console.log('-navigateToLastVisitedURL- : ');
     if (lastURL) {
-      console.log('last url : ', lastURL);
       this.router.navigateByUrl(lastURL);
     } else {
-      console.log('fallback : ', fallbackURL);
       this.router.navigateByUrl(fallbackURL);
     }
   }
