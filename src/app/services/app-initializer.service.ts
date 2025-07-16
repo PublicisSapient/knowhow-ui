@@ -168,6 +168,7 @@ export class AppInitializerService {
       loc.indexOf('Error') === -1 &&
       loc.indexOf('Config') === -1
     ) {
+      debugger;
       localStorage.setItem('shared_link', loc);
     }
     return new Promise<void>(async (resolve, reject) => {
@@ -258,7 +259,10 @@ export class AppInitializerService {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
               } else {
-                this.router.navigate(['/dashboard/iteration']);
+                // this.router.navigate(['/dashboard/iteration']);
+                this.sharedService.navigateToLastVisitedURL(
+                  '/dashboard/iteration',
+                );
               }
             }
           },
