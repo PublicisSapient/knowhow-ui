@@ -104,8 +104,6 @@ export class AppComponent implements OnInit {
           loc.indexOf('Error') === -1 &&
           loc.indexOf('Config') === -1
         ) {
-          console.log('--last link updating--', loc);
-
           localStorage.setItem('last_link', loc);
         }
       }
@@ -172,6 +170,7 @@ export class AppComponent implements OnInit {
       }
     } else {
       // this.router.navigate(['./dashboard/']);
+      console.log('sfjksj');
       this.service.navigateToLastVisitedURL('./dashboard/');
     }
   }
