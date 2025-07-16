@@ -168,7 +168,6 @@ export class AppInitializerService {
       loc.indexOf('Error') === -1 &&
       loc.indexOf('Config') === -1
     ) {
-      debugger;
       localStorage.setItem('shared_link', loc);
     }
     return new Promise<void>(async (resolve, reject) => {

@@ -169,8 +169,6 @@ export class AppComponent implements OnInit {
         }
       }
     } else {
-      // this.router.navigate(['./dashboard/']);
-      console.log('sfjksj');
       this.service.navigateToLastVisitedURL('./dashboard/');
     }
   }
