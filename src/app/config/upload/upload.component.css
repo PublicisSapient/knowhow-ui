@@ -418,12 +418,6 @@ button.btn:enabled:focus-visible {
   padding: 0px;
 }
 
-:host ::ng-deep .p-button.p-button-text:enabled:focus,
-:host ::ng-deep .p-button.p-button-text:enabled:active,
-:host ::ng-deep .p-button.p-button-text:enabled:enabled {
-  /* background-color: transparent; */
-}
-
 :host ::ng-deep .custom-grid .p-datatable {
   display: block;
 }
@@ -600,6 +594,9 @@ button.btn:enabled:focus-visible {
 :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead > tr > th {
   text-align: center;
   vertical-align: text-top;
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 2.5rem;
 }
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
