@@ -3870,7 +3870,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (kpiId === 'kpi171') {
+    if (kpiId === 'kpi171' && this.allKpiArray[idx]?.filters) {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
       this.kpiSelectedFilterObj[kpiId] = {
         filter1: ['Past 6 Months'],

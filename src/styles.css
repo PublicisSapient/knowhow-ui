@@ -1698,7 +1698,7 @@ a:hover {
   min-width: 200px;
   max-width: 450px;
   width: auto;
-  right: 0;
+  right: auto;
   left: auto !important;
   background: #fff;
 }
