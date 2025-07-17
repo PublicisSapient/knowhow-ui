@@ -39,6 +39,7 @@ describe('AppComponent', () => {
       'setSelectedBoard',
       'raiseError',
       'setBackupOfFilterSelectionState',
+      'navigateToLastVisitedURL',
     ]);
 
     getAuthMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
@@ -97,6 +98,7 @@ describe('AppComponent', () => {
       'raiseError',
       'getKpiSubFilterObj',
       'getSelectedType',
+      'navigateToLastVisitedURL',
     ]);
     sharedServiceMock.getSelectedType.and.returnValue('Scrum');
 
@@ -227,14 +229,7 @@ describe('AppComponent', () => {
     });
 
     component.ngOnInit();
-    expect(routerMock.navigate).toHaveBeenCalledWith([
-      'https://mock.url?stateFilters=' +
-        btoa(
-          JSON.stringify({
-            parent_level: { basicProjectConfigId: 123, labelName: 'project' },
-          }),
-        ),
-    ]);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
   });
 
   it('should add "scrolled" class when window scrollY > 200', () => {
@@ -274,7 +269,7 @@ describe('AppComponent', () => {
       primary_level: [],
     });
     const currentUserProjectAccess = [{ projectId: 'project1' }];
-    const url = 'http://example.com';
+    const url = './dashboard/';
 
     spyOn(component, 'urlRedirection').and.callThrough();
 

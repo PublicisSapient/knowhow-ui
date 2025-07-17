@@ -253,7 +253,8 @@ export class PrimaryFilterComponent implements OnChanges {
     this.selectedFilters = [];
     this.selectedFilters.push(this.selectCurrentProject());
     this.service.setBackupOfFilterSelectionState({
-      parent_level: null,
+      parent_level:
+        this.service.getBackupOfFilterSelectionState('parent_level') || null,
       primary_level: null,
     });
     this.applyPrimaryFilters({});

@@ -203,9 +203,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     const longStateFiltersString =
                       response.data['longStateFiltersString'];
                     stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
-                    // const kpiFiltersParam = params['kpiFilters'];
                     if (longKPIFiltersString) {
                       const kpiFilterParamDecoded = atob(longKPIFiltersString);
 
@@ -216,8 +214,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                           : this.service.getKpiSubFilterObj();
                       this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                     }
-
-                    // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
 
                     this.urlRedirection(stateFiltersParam);
                     this.refreshCounter++;
@@ -234,7 +230,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                       : this.service.getKpiSubFilterObj();
                   this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                 }
-                // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+
                 this.urlRedirection(stateFiltersParam);
                 this.refreshCounter++;
               } catch (error) {
