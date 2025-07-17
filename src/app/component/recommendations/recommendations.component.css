@@ -154,16 +154,21 @@
 :host ::ng-deep .p-button:enabled:focus,
 :host ::ng-deep .p-button-outlined:enabled:focus {
   outline: 3px solid #0b4bc8;
-  background: #0b4bc8;
 }
 
 .loading-screen {
-  text-align: center;
+  height: 530px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
-.priority-chip {
-  border: 1px solid #d5dbe1;
-  border-radius: 5px;
+.loading-screen img {
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .severity {
@@ -244,6 +249,8 @@
   flex: 0 0 95px;
   display: flex;
   align-items: center;
+  border: 1px solid #d5dbe1;
+  border-radius: 5px;
 }
 
 .details-column {

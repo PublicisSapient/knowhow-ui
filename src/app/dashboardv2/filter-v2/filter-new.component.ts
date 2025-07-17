@@ -100,6 +100,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSearchingKPI: boolean = false;
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
+  // Add this property to your component class
+  private readonly inputValidationRegex = {
+    // Allows only alphanumeric characters and spaces
+    basic: /^[a-zA-Z0-9\s]*$/,
+
+    // Allows alphanumeric with limited special characters (. - _)
+    moderate: /^[a-zA-Z0-9\s._-]*$/,
+
+    // Allows alphanumeric with common word characters but no special chars at start
+    strict: /^[a-zA-Z0-9][a-zA-Z0-9\s._-]*$/,
+
+    // Allows alphanumeric with extended characters but validates structure
+    advanced:
+      /^(?!.*[!@#$%^&*()+={}\[\]|\\:;"'<>,?/~`])(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s._-]*$/,
+  };
+
+  isValidInput: boolean = true;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -2426,6 +2444,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
     console.log('groupedKpiOptions ', this.groupedKpiOptions);
     const query = event.query.toLowerCase();
+
     this.filteredKpis = this.groupedKpiOptions
       .map((group) => ({
         ...group,
@@ -2478,7 +2497,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         }
       }
     }
-  }, 300);
+  }, 2000);
 
   onKpiSearch(event) {
     const selectedSource = event.value.source;
@@ -2486,7 +2505,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (this.selectedType !== selectedSource) {
       setTimeout(() => {
         this.setSelectedType(selectedSource);
-      }, 500);
+      }, 1000);
     }
   }
 
@@ -2509,5 +2528,41 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.isSearchingKPI = false;
       }
     }, 10);
+  }
+
+  validateInput(event) {
+    const input = (event.target as HTMLInputElement).value;
+    this.isValidInput = this.inputValidationRegex.basic.test(input);
+
+    if (!this.isValidInput) {
+      event.preventDefault();
+
+      // Show validation message
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Character',
+        detail: 'Special characters are not allowed',
+      });
+
+      // Clear invalid input
+      if (this.autoComplete.inputEL) {
+        this.autoComplete.inputEL.nativeElement.value = input.replace(
+          /[^a-zA-Z0-9\s._-]/g,
+          '',
+        );
+      }
+    }
+  }
+
+  handleInputChange(event) {
+    const input = (event.target as HTMLInputElement).value;
+    const sanitizedInput = input.replace(/[^a-zA-Z0-9\s._-]/g, '');
+
+    if (sanitizedInput !== input) {
+      (event.target as HTMLInputElement).value = sanitizedInput;
+      this.selectedKPI = sanitizedInput;
+    }
+
+    this.debouncedFilterKpis(event);
   }
 }

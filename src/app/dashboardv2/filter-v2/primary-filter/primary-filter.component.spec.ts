@@ -919,7 +919,9 @@ describe('PrimaryFilterComponent', () => {
 
     expect(component.selectedFilters).toEqual(['filter1']);
     expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
-      parent_level: null,
+      parent_level:
+        component.service.getBackupOfFilterSelectionState('parent_level') ||
+        null,
       primary_level: null,
     });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});

@@ -879,5 +879,14 @@ export class SharedService {
     return this.searchQueryBSubject.value;
   }
 
+  navigateToLastVisitedURL(fallbackURL) {
+    const lastURL = localStorage.getItem('last_link');
+    if (lastURL) {
+      this.router.navigateByUrl(lastURL);
+    } else {
+      this.router.navigateByUrl(fallbackURL);
+    }
+  }
+
   //#endregion
 }

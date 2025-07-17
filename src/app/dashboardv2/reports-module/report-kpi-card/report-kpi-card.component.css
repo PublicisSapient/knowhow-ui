@@ -142,33 +142,39 @@
 }
 
 ::ng-deep .sprint-hover-project1 [aria-selected='true'] {
-  background-color: #6079c5 !important;
-  color: black !important;
+  background-color: #0b4bc8 !important;
+  color: #fff !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project2 [aria-selected='true'] {
   background-color: #ffb587 !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project3 [aria-selected='true'] {
   background-color: #d48def !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project4 [aria-selected='true'] {
   background-color: #a4f6a5 !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project5 [aria-selected='true'] {
   background-color: #fbcf5f !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .sprint-hover-project6 [aria-selected='true'] {
   background-color: #9fecff !important;
   color: black !important;
+  border-radius: 0.5rem !important;
 }
 
 .sprint-hover-icon {

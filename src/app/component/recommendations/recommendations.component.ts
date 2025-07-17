@@ -358,6 +358,9 @@ export class RecommendationsComponent implements OnInit {
     this.isRoleSelected = false;
     this.isSprintSelected = false;
     this.isError = false;
+    this.toShareViaEmail = false;
+    this.initializeEmailIds();
+    this.invalidEmails = [];
   }
 
   closeCancelLabel() {
@@ -431,62 +434,178 @@ export class RecommendationsComponent implements OnInit {
         if (response && response['success']) {
           this.messageService.add({
             severity: 'success',
-            summary: 'PDF uploaded successfully.',
+            summary: 'Email sent successfully.',
           });
         } else {
           this.messageService.add({
             severity: 'error',
-            summary: 'Error uploading PDF.',
+            summary: 'Error sending email.',
           });
         }
       },
       error: (error) => {
         this.isTemplateLoading = false;
-        console.error('Error uploading PDF:', error);
+        console.error('Error sending email:', error);
         this.messageService.add({
           severity: 'error',
-          summary: error.message,
+          summary: 'Error sending email.',
         });
       },
     });
   }
 
-  exportAsPDF(toDownload: boolean = true): void {
-    this.isTemplateLoading = true;
-    const element = document.getElementById('generatedReport');
-    const shareDiv = document.getElementById('shareViaEmail');
+  private async prepareElementForCapture(element: HTMLElement): Promise<
+    Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >
+  > {
+    // Store original styles
+    const originalStyles = new Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >();
 
-    if (!element) throw new Error('Report element not found');
+    // Find all scrollable containers within the element
+    const scrollableElements = Array.from(element.querySelectorAll('*')).filter(
+      (el: HTMLElement) => {
+        const computedStyle = window.getComputedStyle(el);
+        const overflow = computedStyle.overflow;
+        const overflowX = computedStyle.overflowX;
+        const overflowY = computedStyle.overflowY;
+        return (
+          overflow === 'auto' ||
+          overflow === 'scroll' ||
+          overflowX === 'auto' ||
+          overflowX === 'scroll' ||
+          overflowY === 'auto' ||
+          overflowY === 'scroll'
+        );
+      },
+    );
 
-    // Hide the share div before capturing
-    let originalDisplay = null;
-    if (shareDiv) {
-      originalDisplay = shareDiv.style.display;
-      shareDiv.style.display = 'none';
-    }
+    // Store original styles and modify for capture
+    scrollableElements.forEach((el: HTMLElement) => {
+      originalStyles.set(el, {
+        height: el.style.height,
+        maxHeight: el.style.maxHeight,
+        overflow: el.style.overflow,
+        overflowX: el.style.overflowX,
+        overflowY: el.style.overflowY,
+      });
+      // Modify styles for capture
+      el.style.height = 'auto';
+      el.style.maxHeight = 'none';
+      el.style.overflow = 'visible';
+      el.style.overflowX = 'visible';
+      el.style.overflowY = 'visible';
+    });
 
-    // --- Generate canvas with optimized settings
-    html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      removeContainer: true,
-    })
-      .then((canvas) => {
-        // Restore the share div visibility
-        if (shareDiv && originalDisplay !== null) {
-          shareDiv.style.display = originalDisplay;
-        }
-        const imgData = canvas.toDataURL('image/png', 0.95);
+    return originalStyles;
+  }
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
+  private restoreElementStyles(
+    originalStyles: Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >,
+  ): void {
+    originalStyles.forEach((styles, element) => {
+      element.style.height = styles.height;
+      element.style.maxHeight = styles.maxHeight;
+      element.style.overflow = styles.overflow;
+      element.style.overflowX = styles.overflowX;
+      element.style.overflowY = styles.overflowY;
+    });
+  }
+
+  async exportAsPDF(toDownload: boolean = true): Promise<void> {
+    try {
+      this.isTemplateLoading = true;
+      const element = document.getElementById('generatedReport');
+      const shareDiv = document.getElementById('shareViaEmail');
+      const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+      let pdfInstance: jsPDF | null = null;
+
+      if (!element) throw new Error('Report element not found');
+
+      // Hide the share div before capturing
+      let originalDisplay = null;
+      if (shareDiv) {
+        originalDisplay = shareDiv.style.display;
+        shareDiv.style.display = 'none';
+      }
+
+      // Prepare element for full capture
+      const originalStyles = await this.prepareElementForCapture(element);
+
+      // Generate canvas with optimized settings
+      const canvas = await html2canvas(element, {
+        scale: 1.2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        removeContainer: true,
+        logging: false,
+        imageTimeout: 0,
+        height: element.scrollHeight, // Capture full height
+        windowHeight: element.scrollHeight, // Set window height to full content
+        onclone: (doc) => {
+          // Optimize images before capture
+          Array.from(doc.getElementsByTagName('img')).forEach((img) => {
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+          });
+        },
+      });
+
+      // Restore original styles
+      this.restoreElementStyles(originalStyles);
+
+      // Restore share div visibility
+      if (shareDiv && originalDisplay !== null) {
+        shareDiv.style.display = originalDisplay;
+      }
+
+      // Start with high quality and reduce if needed
+      let quality = 0.9;
+      let imgData: string;
+      let pdfSize: number;
+
+      do {
+        imgData = canvas.toDataURL('image/jpeg', quality);
+        pdfInstance = new jsPDF({
+          orientation: 'p',
+          unit: 'mm',
+          format: 'a4',
+          compress: true,
+          precision: 2,
+          filters: ['ASCIIHexEncode'],
+        });
 
         const padding = 20;
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
+        const pageWidth = pdfInstance.internal.pageSize.getWidth();
+        const pageHeight = pdfInstance.internal.pageSize.getHeight();
 
-        const imgProps = pdf.getImageProperties(imgData);
+        const imgProps = pdfInstance.getImageProperties(imgData);
         const aspectRatio = imgProps.height / imgProps.width;
 
         const pdfWidth = pageWidth - 2 * padding;
@@ -495,46 +614,72 @@ export class RecommendationsComponent implements OnInit {
         const centeredX = (pageWidth - pdfWidth) / 2;
         const startY = padding;
 
-        // Adjust image if it's longer than one page
-        let position = padding;
+        // Handle multi-page content
         if (pdfHeight < pageHeight) {
-          pdf.addImage(imgData, 'PNG', centeredX, startY, pdfWidth, pdfHeight);
+          pdfInstance.addImage(
+            imgData,
+            'JPEG',
+            centeredX,
+            startY,
+            pdfWidth,
+            pdfHeight,
+            undefined,
+            'FAST',
+          );
         } else {
-          // Multi-page logic
           let heightLeft = pdfHeight;
+          let position = startY;
+
           while (heightLeft > 0) {
-            pdf.addImage(
+            pdfInstance.addImage(
               imgData,
-              'PNG',
+              'JPEG',
               centeredX,
-              startY,
+              position,
               pdfWidth,
               pdfHeight,
+              undefined,
+              'FAST',
             );
             heightLeft -= pageHeight;
+
             if (heightLeft > 0) {
-              pdf.addPage();
+              pdfInstance.addPage();
               position = -heightLeft;
             }
           }
         }
 
-        if (toDownload) {
-          pdf.save('project-summary.pdf');
-          this.isTemplateLoading = false;
-        } else {
-          // Get PDF as base64encoded for sending as payload
-          const base64StringPDF = pdf.output('datauristring');
-          const base64data = base64StringPDF.split(',')[1];
-          this.shareRecommendationViaEmail(base64data);
+        const pdfOutput = pdfInstance.output('arraybuffer');
+        pdfSize = pdfOutput.byteLength;
+        quality -= 0.1;
+
+        if (quality < 0.3) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'PDF quality reduced to meet size limit',
+            detail: 'The generated PDF might have lower image quality',
+          });
+          break;
         }
-      })
-      .catch((error) => {
-        console.error('Error generating PDF:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: error.message,
-        });
+      } while (pdfSize > MAX_FILE_SIZE);
+
+      if (toDownload) {
+        await pdfInstance.save('project-summary.pdf');
+        this.isTemplateLoading = false;
+      } else {
+        const base64StringPDF = pdfInstance.output('datauristring');
+        const base64data = base64StringPDF.split(',')[1];
+        await this.shareRecommendationViaEmail(base64data);
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.isTemplateLoading = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'PDF Generation Failed',
+        detail: error.message,
       });
+    }
   }
 }

@@ -41,7 +41,7 @@
 
         <div class="p-d-flex p-justify-end p-align-center">
           <button
-            class="p-element p-ripple p-button-sm p-button-secondary p-button"
+            class="p-element p-ripple p-button-sm p-button-secondary p-button cancel-btn"
             (click)="commentText = ''; commentError = false"
             aria-label="Cancel Comment"
             role="button">
@@ -50,6 +50,7 @@
 
           <button
             class="p-element p-ripple p-button-sm p-button-success p-button"
+            [ngClass]="{'submit-btn' :commentText.trim() !== '','submit-btn-before':commentText.trim() === ''}"
             (click)="submitComment(filter)"
             [disabled]="commentText.trim() === ''"
             aria-label="Submit Comment"

@@ -5,9 +5,8 @@
 }
 
 :host::ng-deep th {
-  color: var(--color-cyan-blue) !important;
-  font-size: 1.25rem;
-  font-weight: bold !important;
+  color: #202429 !important;
+  font-size: 1rem;
   text-align: center !important;
 }
 
