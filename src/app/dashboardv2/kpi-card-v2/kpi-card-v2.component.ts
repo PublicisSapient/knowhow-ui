@@ -1446,6 +1446,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   twickFilterForMultiSelectOverall(filterOptions) {
+    if (!filterOptions || typeof filterOptions !== 'object') {
+      return filterOptions; // Safely return empty object if input is null/undefined
+    }
+
     const copyFilters = JSON.parse(JSON.stringify(filterOptions));
     Object.keys(copyFilters).forEach((keys: string) => {
       if (!copyFilters[keys] || !copyFilters[keys].length) {
