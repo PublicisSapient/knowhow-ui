@@ -42,7 +42,7 @@
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                            [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpiTrendsObj[kpi?.kpiId]"
+                                            [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpi?.kpiId !== 'kpi171' ? kpiTrendsObj[kpi?.kpiId] : kpiChartData[kpi?.kpiId]?.data"
                                             [kpiDataStatusCode]="kpiStatusCodeArr[kpi.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                             [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
