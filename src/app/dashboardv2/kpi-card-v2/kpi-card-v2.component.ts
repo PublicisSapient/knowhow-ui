@@ -1111,6 +1111,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     additional_filters = this.setAdditionalFilterLevels(additional_filters);
 
     this.getExistingReports();
+    const selectedKPIFilters =
+      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton'
+        ? this.radioOption
+        : this.twickFilterForMultiSelectOverall(this.filterOptions);
     let metaDataObj = {
       kpiName: this.kpiData.kpiName,
       kpiId: this.kpiData.kpiId,
@@ -1123,10 +1127,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       radioOption: this.radioOption,
       trend: this.trendData,
       trendColors: this.trendBoxColorObj,
-      selectedKPIFilters:
-        this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton'
-          ? this.radioOption
-          : this.filterOptions,
+      selectedKPIFilters: selectedKPIFilters,
       selectedTab: this.selectedTab,
       selectedType: this.service.getSelectedType()?.toLowerCase(),
       filterApplyData: this.filterApplyData,
@@ -1442,5 +1443,20 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     } else {
       return filter;
     }
+  }
+
+  twickFilterForMultiSelectOverall(filterOptions) {
+    if (!filterOptions || typeof filterOptions !== 'object') {
+      return filterOptions; // Safely return empty object if input is null/undefined
+    }
+
+    const copyFilters = JSON.parse(JSON.stringify(filterOptions));
+    Object.keys(copyFilters).forEach((keys: string) => {
+      if (!copyFilters[keys] || !copyFilters[keys].length) {
+        //Addting overall option for multiselect filters for reports
+        copyFilters[keys] = ['Overall'];
+      }
+    });
+    return copyFilters;
   }
 }
