@@ -2542,7 +2542,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
 
       // Clear invalid input
-      if (this.autoComplete) {
+      if (this.autoComplete.inputEL) {
         this.autoComplete.inputEL.nativeElement.value = input.replace(
           /[^a-zA-Z0-9\s._-]/g,
           '',
