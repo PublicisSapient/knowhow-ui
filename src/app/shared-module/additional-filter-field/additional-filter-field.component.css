@@ -152,7 +152,7 @@ label.btn-import-label {
 }
 
 ::ng-deep .configure-btn .p-disabled {
-  background-color: #06a0ff !important;
+  background-color: #0b4bc8 !important;
   color: white !important;
   opacity: 0.6;
 }

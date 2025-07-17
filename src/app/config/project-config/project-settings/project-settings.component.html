@@ -152,8 +152,8 @@
 <p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
   <p-footer>
     <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel"
-      class="enable-dialog-btn" tabindex="0"></button>
-    <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Accept" tabindex="0"></button>
+      class="p-button p-button-secondary" tabindex="0"></button>
+    <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Accept" tabindex="0" class="p-button p-button-primary"></button>
   </p-footer>
 </p-confirmDialog>
 

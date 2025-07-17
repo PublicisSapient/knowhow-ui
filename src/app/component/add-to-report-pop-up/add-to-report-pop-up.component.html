@@ -8,7 +8,7 @@
 
     <!-- Scrollable container for report buttons -->
     <div class="slider-container" #sliderContainer role="list" aria-label="Available Reports">
-        <p-button *ngFor="let report of existingReportData" class="slider-item"
+        <p-button *ngFor="let report of existingReportData" class="slider-item add-to-reportbtns"
             [ngClass]="{active: reportName === report.name}" (onClick)="reportName = report.name; emitReportName(report);" (keydown.enter)="reportName = report.name; emitReportName(report)"
             role="listitem"
             [attr.aria-label]="'Select Report: ' + report.name"
