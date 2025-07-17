@@ -152,16 +152,25 @@ label.btn-import-label {
 }
 
 ::ng-deep .configure-btn .p-disabled {
-  background-color: #06a0ff !important;
+  background-color: #0b4bc8 !important;
   color: white !important;
   opacity: 0.6;
 }
 
 .btn-export {
   color: #ffffff;
-  background: #06a0ff;
+  background: #0b4bc8 !important;
   padding: 0.8rem 1.25rem;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   cursor: pointer;
   border: none;
+}
+
+.btn-export:hover {
+  background: #083896;
+}
+
+.back-button {
+  background-color: #0b4bc8 !important;
+  color: #fff;
 }
