@@ -257,7 +257,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (searchQuery) {
           setTimeout(
             () => this.handlePageScrollOnSearch(searchQuery.value),
-            1000,
+            1500,
           );
         }
       });
@@ -3870,7 +3870,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (kpiId === 'kpi171') {
+    if (kpiId === 'kpi171' && this.allKpiArray[idx]?.filters) {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
       this.kpiSelectedFilterObj[kpiId] = {
         filter1: ['Past 6 Months'],
@@ -4778,7 +4778,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       setTimeout(() => {
         this.renderer2.removeClass(element, 'highlighted');
-      }, 1000);
+      }, 1500);
     }
   }
 
