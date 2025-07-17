@@ -257,7 +257,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (searchQuery) {
           setTimeout(
             () => this.handlePageScrollOnSearch(searchQuery.value),
-            1000,
+            1500,
           );
         }
       });
@@ -4778,7 +4778,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       setTimeout(() => {
         this.renderer2.removeClass(element, 'highlighted');
-      }, 1000);
+      }, 1500);
     }
   }
 
