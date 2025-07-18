@@ -151,6 +151,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
               if (environment?.['SSO_LOGIN']) {
                 this.httpService.setCurrentUserDetails({});
                 console.log('SSO_LOGIN', true);
+                let redirect_uri = window.location.href;
+                window.location.href =
+                  environment.CENTRAL_LOGIN_URL +
+                  '?redirect_uri=' +
+                  redirect_uri;
               } else {
                 if (environment.AUTHENTICATION_SERVICE) {
                   this.redirectToLogin();
