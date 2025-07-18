@@ -2529,7 +2529,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   validateInput(event) {
     const input = (event.target as HTMLInputElement).value;
-    this.isValidInput = this.inputValidationRegex.basic.test(input);
+    this.isValidInput = this.inputValidationRegex.strict.test(input);
 
     if (!this.isValidInput) {
       event.preventDefault();
@@ -2537,14 +2537,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Show validation message
       this.messageService.add({
         severity: 'warn',
-        summary: 'Invalid Character',
+        summary: 'Invalid Character is present in input',
         detail: 'Special characters are not allowed',
       });
 
       // Clear invalid input
       if (this.autoComplete.inputEL) {
         this.autoComplete.inputEL.nativeElement.value = input.replace(
-          /[^a-zA-Z0-9\s._-]/g,
+          /^[a-zA-Z0-9][a-zA-Z0-9\s._-]*$/g,
           '',
         );
       }
@@ -2553,13 +2553,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
-    const sanitizedInput = input.replace(/[^a-zA-Z0-9\s._-]/g, '');
+    const sanitizedInput = input.replace(/^[a-zA-Z0-9][a-zA-Z0-9\s._-]*$/g, '');
 
     if (sanitizedInput !== input) {
       (event.target as HTMLInputElement).value = sanitizedInput;
       this.selectedKPI = sanitizedInput;
+      this.debouncedFilterKpis(event);
     }
-
-    this.debouncedFilterKpis(event);
   }
 }
