@@ -54,10 +54,11 @@
       [optionGroupChildren]="'items'"
       (completeMethod)="debouncedFilterKpis($event)"
       [completeOnFocus]="true"
-      [placeholder]="'Search for KPI'"
+      [placeholder]="'Search for KPI (special characters %, ., -, _ are allowed)'"
       (onSelect)="onKpiSearch($event)"
       (onKeyUp)="validateInput($event)"
-      (input)="handleInputChange($event)">
+      (input)="handleInputChange($event)"
+      [class.ng-invalid]="!isValidInput">
     </p-autoComplete>
   </div>
   <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->

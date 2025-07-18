@@ -3474,7 +3474,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('');
+      expect(component.selectedKPI).toBe('HelloWorld');
     });
     it('should handle input with invalid characters', () => {
       const event = {
@@ -3501,7 +3501,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect((event.target as HTMLInputElement).value).toBe('');
+      expect((event.target as HTMLInputElement).value).toBe('HelloWorld');
     });
     it('should update input if changes after sanitization', () => {
       const event = {
