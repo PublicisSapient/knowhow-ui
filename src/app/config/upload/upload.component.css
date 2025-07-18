@@ -124,21 +124,25 @@
   margin: 0.5rem 0.5rem 1rem 0.5rem;
   clear: both;
   font-family: inherit;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   text-decoration: none;
   text-transform: initial;
   border: none;
-  border-radius: 0.2rem;
+  border-radius: 0.5rem;
   padding: 0 1rem;
   height: 36px;
   line-height: 36px;
   color: var(--color-white);
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
-  background: #06a0ff;
-  border-color: #06a0ff;
+  background: #0b4bc8;
+  border-color: #0b4bc8;
   cursor: pointer;
+}
+
+.uploader .btn:hover {
+  background-color: #083896;
 }
 
 .uploadtext {
@@ -414,12 +418,6 @@ button.btn:enabled:focus-visible {
   padding: 0px;
 }
 
-:host ::ng-deep .p-button.p-button-text:enabled:focus,
-:host ::ng-deep .p-button.p-button-text:enabled:active,
-:host ::ng-deep .p-button.p-button-text:enabled:enabled {
-  background-color: transparent;
-}
-
 :host ::ng-deep .custom-grid .p-datatable {
   display: block;
 }
@@ -431,7 +429,7 @@ button.btn:enabled:focus-visible {
 :host ::ng-deep .custom-grid .p-datatable thead.sprint,
 :host ::ng-deep .p-datatable thead tr {
   display: block;
-  background: #0175be;
+  background: #0b4bc8;
   color: #fff;
 }
 
@@ -596,6 +594,9 @@ button.btn:enabled:focus-visible {
 :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead > tr > th {
   text-align: center;
   vertical-align: text-top;
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 2.5rem;
 }
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
