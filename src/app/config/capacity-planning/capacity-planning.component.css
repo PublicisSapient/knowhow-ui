@@ -105,8 +105,12 @@ div.main {
 }
 
 :host ::ng-deep .p-button.p-button-secondary.edit-button {
-  background: #6b6b6b;
+  background: #0b4bc8;
   color: white;
+}
+
+:host ::ng-deep .p-button.p-button-secondary.edit-button:hover {
+  background-color: #083896;
 }
 
 .expand-btn {
@@ -114,11 +118,11 @@ div.main {
   padding: 0px;
 }
 
-:host ::ng-deep .p-button.p-button-text:enabled:focus,
+/* :host ::ng-deep .p-button.p-button-text:enabled:focus,
 :host ::ng-deep .p-button.p-button-text:enabled:active,
 :host ::ng-deep .p-button.p-button-text:enabled:enabled {
   background-color: transparent;
-}
+} */
 
 :host ::ng-deep .custom-grid .p-datatable {
   display: block;

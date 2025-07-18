@@ -87,7 +87,7 @@
 }
 
 :host ::ng-deep.column-filter.p-multiselect {
-  border: none;
+  border: none !important;
   background-color: transparent;
 }
 
