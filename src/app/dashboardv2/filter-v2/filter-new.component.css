@@ -350,7 +350,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .refresh-state {
   color: var(--color-white);
   background: #0b4bc8;
-  border-radius: 3px;
+  border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
 }
