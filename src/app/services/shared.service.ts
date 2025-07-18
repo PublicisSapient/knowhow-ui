@@ -881,11 +881,23 @@ export class SharedService {
 
   navigateToLastVisitedURL(fallbackURL) {
     const lastURL = localStorage.getItem('last_link');
-    if (lastURL) {
+    if (lastURL && !this.checkStateFilterLength(lastURL)) {
       this.router.navigateByUrl(lastURL);
     } else {
       this.router.navigateByUrl(fallbackURL);
     }
+  }
+
+  checkStateFilterLength(url: string): boolean {
+    const parsedUrl = new URL(url, window.location.origin);
+    const stateFilters = parsedUrl.searchParams.get('stateFilters');
+
+    if (!stateFilters) {
+      console.warn('stateFilters param not found.');
+      return false; // or true, depending on your use case when param is missing
+    }
+
+    return stateFilters.length <= 8;
   }
 
   //#endregion

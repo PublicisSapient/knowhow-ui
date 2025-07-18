@@ -1031,7 +1031,6 @@ export class HelperService {
         });
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
-        localStorage.removeItem('last_link');
         localStorage.removeItem('shared_link');
         let redirect_uri = window.location.href;
         window.location.href =
@@ -1291,6 +1290,7 @@ export class HelperService {
               }),
             )
             .subscribe((response: any) => {
+              localStorage.removeItem('last_link');
               if (response.success) {
                 const longStateFiltersString =
                   response.data['longStateFiltersString'];
