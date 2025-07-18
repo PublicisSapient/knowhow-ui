@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
   
-<div class="p-mb-3">
+<div class="p-mb-3 p-pt-2">
     <input type="text" pInputText placeholder="Search UserName" [style]="{'width':'100%'}"
         (input)="dt.filter($event?.target?.value, 'displayName', 'contains')" [formControl]="searchText"/>
     <p-table #dt [value]="assigneeList" [globalFilterFields]="['displayName']" class="p-mb-3">

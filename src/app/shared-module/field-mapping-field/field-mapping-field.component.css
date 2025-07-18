@@ -175,7 +175,7 @@ label.btn-import-label {
 
 :host ::ng-deep.p-chips .p-chips-multiple-container:not(.p-disabled).p-focus {
   border: 1px solid #3b82f6;
-  box-shadow: none;
+  box-shadow: 0 0 0 0.2rem #bfdbfe;
 }
 
 :host ::ng-deep.p-chips ul.p-inputtext.p-chips-multiple-container:hover {
@@ -185,7 +185,6 @@ label.btn-import-label {
 :host ::ng-deep.p-inputtext:enabled:hover {
   border: 1px solid #3b82f6 !important;
 }
-
-:host ::ng-deep.p-inputtext:enabled:focus {
-  box-shadow: none;
+:host ::ng-deep.p-button:enabled:hover {
+  background: #083896 !important;
 }
