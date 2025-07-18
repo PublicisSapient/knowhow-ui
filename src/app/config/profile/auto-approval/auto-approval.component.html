@@ -22,7 +22,7 @@
         <hr />
         <div class="p-text-center">
             <button type="button" pButton pRipple icon="pi pi-save" (click)="onSubmit()" (keydown.enter)="onSubmit()" aria-label="Save" label="Save"
-                class="p-button p-button-success p-button-raised group p-mt-3"
+                class="p-button  p-button-raised group p-mt-3" [ngClass]="{'p-button-success' :!shouldBeDisabled()}"
                 [disabled]="shouldBeDisabled()"></button>
         </div>
     </form>
