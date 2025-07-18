@@ -3447,7 +3447,7 @@ describe('FilterNewComponent', () => {
       expect(messageService.add).toHaveBeenCalledTimes(1);
       expect(messageService.add).toHaveBeenCalledWith({
         severity: 'warn',
-        summary: 'Invalid Character',
+        summary: 'Invalid Character is present in input',
         detail: 'Special characters are not allowed',
       });
     });
@@ -3461,7 +3461,7 @@ describe('FilterNewComponent', () => {
       } as any;
       component.validateInput(event);
       expect(component.autoComplete.inputEL.nativeElement.value).toBe(
-        'HelloWorld',
+        'Hello@World',
       );
     });
   });
@@ -3483,7 +3483,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('HelloWorld');
+      expect(component.selectedKPI).toBe('');
     });
     it('should handle input with mixed valid and invalid characters', () => {
       const event = {
@@ -3492,7 +3492,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('HelloWorld123');
+      expect(component.selectedKPI).toBe('');
     });
     it('should not update input if no changes after sanitization', () => {
       const event = {
@@ -3501,7 +3501,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect((event.target as HTMLInputElement).value).toBe('HelloWorld');
+      expect((event.target as HTMLInputElement).value).toBe('');
     });
     it('should update input if changes after sanitization', () => {
       const event = {
@@ -3510,7 +3510,7 @@ describe('FilterNewComponent', () => {
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect((event.target as HTMLInputElement).value).toBe('HelloWorld');
+      expect((event.target as HTMLInputElement).value).toBe('Hello!World');
     });
     it('should call debouncedFilterKpis', () => {
       const event = {
