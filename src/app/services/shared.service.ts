@@ -883,8 +883,10 @@ export class SharedService {
     const lastURL = localStorage.getItem('last_link');
     if (lastURL && !this.checkStateFilterLength(lastURL)) {
       this.router.navigateByUrl(lastURL);
-    } else {
+    } else if (fallbackURL && !this.checkStateFilterLength(fallbackURL)) {
       this.router.navigateByUrl(fallbackURL);
+    } else {
+      this.router.navigateByUrl('/dashboard/iteration');
     }
   }
 

@@ -1032,6 +1032,7 @@ export class HelperService {
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
         localStorage.removeItem('shared_link');
+        localStorage.removeItem('last_link');
         let redirect_uri = window.location.href;
         window.location.href =
           environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
