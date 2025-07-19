@@ -228,7 +228,7 @@ describe('AppComponent', () => {
 
     component.ngOnInit();
     expect(sharedServiceMock.navigateToLastVisitedURL).toHaveBeenCalledWith(
-      './dashboard/',
+      '/dashboard/iteration',
     );
   });
 
@@ -255,7 +255,7 @@ describe('AppComponent', () => {
   });
 
   it('should called to navigateToLastVisitedURL', () => {
-    const last_link = './dashboard/';
+    const last_link = '/dashboard/iteration';
     localStorage.removeItem('shared_link');
     localStorage.setItem('last_link', last_link);
 

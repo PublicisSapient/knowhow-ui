@@ -172,7 +172,7 @@ export class AppComponent implements OnInit {
         }
       }
     } else {
-      this.service.navigateToLastVisitedURL('./dashboard/');
+      this.service.navigateToLastVisitedURL('/dashboard/iteration');
     }
   }
 
