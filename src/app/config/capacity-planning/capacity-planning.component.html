@@ -503,15 +503,16 @@
                             pRipple
                             label="Cancel"
                             icon="pi pi-times"
-                            class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
-                            (click)="onSprintCapacityCancel(item)"></button>
+                            class="p-button-cancel  p-button-secondary p-button-text p-mr-2 p-button-sm"
+                            (click)="onSprintCapacityCancel(item)"
+                          ></button>
 
                           <button
                             pButton
                             pRipple
                             label="Save"
                             icon="pi pi-save"
-                            class="p-button-secondary p-button-sm"
+                            class="p-button-primary p-button-sm"
                             (click)="onSprintCapacitySave(item)"
                             [disabled]="
                               !isAdminForSelectedProject ||
@@ -1060,14 +1061,15 @@
                               pRipple
                               label="Cancel"
                               icon="pi pi-times"
-                              class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
-                              (click)="onSprintCapacityCancel(item)"></button>
+                              class="p-button-cancel  p-button-secondary p-button-text p-mr-2 p-button-sm"
+                              (click)="onSprintCapacityCancel(item)"
+                            ></button>
                             <button
                               pButton
                               pRipple
                               label="Save"
                               icon="pi pi-save"
-                              class="p-button-secondary p-button-sm"
+                              class="p-button-primary p-button-sm"
                               (click)="onSprintCapacitySave(item)"
                               [disabled]="
                                 !isAdminForSelectedProject ||
@@ -1138,7 +1140,7 @@
       pRipple
       label="Save"
       icon="pi pi-save"
-      class="p-button-secondary p-button-sm"
+      class="p-button-primary p-button-sm"
       [disabled]="!isAdminForSelectedProject"
       (click)="addRemoveAssignees()"></button>
   </ng-template>
@@ -1297,7 +1299,7 @@
         pRipple
         label="Save"
         icon="pi pi-save"
-        class="p-button-secondary p-button-sm"
+        class="p-button-primary p-button-sm"
         (click)="submitTestExecution()"
         [disabled]="isTestExecutionSaveDisabled"
         *ngIf="selectedView === 'upload_tep'; else capacitySubmitTemp"></button>

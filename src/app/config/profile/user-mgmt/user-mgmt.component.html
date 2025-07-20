@@ -128,15 +128,8 @@
     </div>
   </div>
   <div class="group p-xl-6 p-text-right">
-    <button
-      type="button"
-      pButton
-      pRipple
-      icon="fa fa-check"
-      (click)="onSubmit()"
-      label="Submit"
-      class="p-button p-button-success p-button-raised mar-l-15"
-      [disabled]="!changePasswordForm.valid"></button>
+  <button type="button" pButton pRipple icon="fa fa-check" (click)="onSubmit()" label="Submit" [ngClass]="{'p-button-success' :changePasswordForm.valid}"
+    class="p-button  p-button-raised mar-l-15" [disabled]="!changePasswordForm.valid"></button>
   </div>
 </form>
 <div *ngIf="error" class="alert alert-danger">{{ error }}</div>

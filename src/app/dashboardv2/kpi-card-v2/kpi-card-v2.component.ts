@@ -261,7 +261,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.prepareData();
         },
         disabled:
-          this.selectedTab === 'release' || this.selectedTab === 'backlog',
+          this.selectedTab === 'release' ||
+          this.selectedTab === 'backlog' ||
+          this.kpiData?.kpiId === 'kpi171',
       },
       {
         label: 'Explore',
