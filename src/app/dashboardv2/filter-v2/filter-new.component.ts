@@ -2500,7 +2500,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }, 2000);
 
   onKpiSearch(event) {
-    const selectedSource = event.value.source;
+    const selectedSource = event.value.value.source;
     this.onKPISearch.emit(event);
     if (this.selectedType !== selectedSource) {
       setTimeout(() => {

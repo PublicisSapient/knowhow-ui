@@ -13,7 +13,7 @@
       [selectedItemsLabel]="'{0} selected'"
       defaultLabel="Select"
       [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
-      [appendTo]="filterDiv"
+      appendTo="body"
       [resetFilterOnHide]="true"
       (onChange)="onSelectionChange($event)"
       (onPanelShow)="moveSelectedOptionToTop()"
@@ -66,7 +66,7 @@
       [style]="{ width: '300px', 'max-width': '100%', height: '40px' }"
       (onChange)="onDropdownChange($event)"
       [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }"
-      [appendTo]="filterDiv"
+      appendTo="body"
       [filter]="true"
       [hidden]="isFilterHidden(filters)">
       <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">

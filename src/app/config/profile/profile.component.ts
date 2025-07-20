@@ -20,6 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
+import { MenuItem } from 'primeng/api';
 
 declare let $: any;
 
@@ -33,64 +34,7 @@ export class ProfileComponent implements OnInit {
   isProjectAdmin = false;
   changePswdDisabled = false;
   loginType = '';
-  menuItems = [
-    {
-      label: 'My Profile',
-      icon: 'fas fa-user-circle',
-      routerLink: ['/dashboard/Config/Profile/MyProfile'],
-      routerLinkActiveOptions: { exact: true },
-    },
-    {
-      label: 'Grant Project Access',
-      icon: 'fa fa-user-plus',
-      routerLink: ['/dashboard/Config/Profile/GrantRequests'],
-      routerLinkActiveOptions: { exact: true },
-      visible: this.isSuperAdmin || this.isProjectAdmin,
-    },
-    {
-      label: 'Grant User Access',
-      icon: 'fa fa-unlock-alt',
-      routerLink: ['/dashboard/Config/Profile/GrantNewUserAuthRequests'],
-      routerLinkActiveOptions: { exact: true },
-      visible: this.isSuperAdmin,
-    },
-    {
-      label: 'Manage Access',
-      icon: 'fa fa-universal-access',
-      routerLink: ['/dashboard/Config/Profile/AccessMgmt'],
-      routerLinkActiveOptions: { exact: true },
-      visible: this.isSuperAdmin,
-    },
-    {
-      label: 'Raise Request',
-      icon: 'fa fa-unlock-alt',
-      routerLink: ['/dashboard/Config/Profile/RaiseRequest'],
-      routerLinkActiveOptions: { exact: true },
-      visible: !this.isSuperAdmin,
-    },
-    {
-      label: 'My Requests',
-      icon: 'fa fa-address-card',
-      routerLink: ['/dashboard/Config/Profile/RequestStatus'],
-      routerLinkActiveOptions: { exact: true },
-      visible: !this.isSuperAdmin,
-    },
-    {
-      label: 'Change Password',
-      icon: 'fa fa-key',
-      routerLink: ['/dashboard/Config/Profile/UserSettings'],
-      routerLinkActiveOptions: { exact: true },
-      visible: this.loginType?.toLowerCase() === 'standard',
-      disabled: this.changePswdDisabled,
-    },
-    {
-      label: 'Auto Approve',
-      icon: 'fas fa-check-circle',
-      routerLink: ['/dashboard/Config/Profile/AutoApprove'],
-      routerLinkActiveOptions: { exact: true },
-      visible: this.isSuperAdmin,
-    },
-  ];
+  menuItems: MenuItem[] = [];
 
   constructor(
     private getAuthorizationService: GetAuthorizationService,
@@ -101,6 +45,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       // logged in as SuperAdmin
+      console.log('is superadmin');
       this.isSuperAdmin = true;
     }
 
@@ -117,5 +62,64 @@ export class ProfileComponent implements OnInit {
     //   })
 
     this.loginType = this.sharedService.getCurrentUserDetails('authType');
+
+    this.menuItems = [
+      {
+        label: 'My Profile',
+        icon: 'fas fa-user-circle',
+        routerLink: ['/dashboard/Config/Profile/MyProfile'],
+        routerLinkActiveOptions: { exact: true },
+      },
+      {
+        label: 'Grant Project Access',
+        icon: 'fa fa-user-plus',
+        routerLink: ['/dashboard/Config/Profile/GrantRequests'],
+        routerLinkActiveOptions: { exact: true },
+        visible: this.isSuperAdmin || this.isProjectAdmin,
+      },
+      {
+        label: 'Grant User Access',
+        icon: 'fa fa-unlock-alt',
+        routerLink: ['/dashboard/Config/Profile/GrantNewUserAuthRequests'],
+        routerLinkActiveOptions: { exact: true },
+        visible: this.isSuperAdmin,
+      },
+      {
+        label: 'Manage Access',
+        icon: 'fa fa-universal-access',
+        routerLink: ['/dashboard/Config/Profile/AccessMgmt'],
+        routerLinkActiveOptions: { exact: true },
+        visible: this.isSuperAdmin,
+      },
+      {
+        label: 'Raise Request',
+        icon: 'fa fa-unlock-alt',
+        routerLink: ['/dashboard/Config/Profile/RaiseRequest'],
+        routerLinkActiveOptions: { exact: true },
+        visible: !this.isSuperAdmin,
+      },
+      {
+        label: 'My Requests',
+        icon: 'fa fa-address-card',
+        routerLink: ['/dashboard/Config/Profile/RequestStatus'],
+        routerLinkActiveOptions: { exact: true },
+        visible: !this.isSuperAdmin,
+      },
+      {
+        label: 'Change Password',
+        icon: 'fa fa-key',
+        routerLink: ['/dashboard/Config/Profile/UserSettings'],
+        routerLinkActiveOptions: { exact: true },
+        visible: this.loginType?.toLowerCase() === 'standard',
+        disabled: this.changePswdDisabled,
+      },
+      {
+        label: 'Auto Approve',
+        icon: 'fas fa-check-circle',
+        routerLink: ['/dashboard/Config/Profile/AutoApprove'],
+        routerLinkActiveOptions: { exact: true },
+        visible: this.isSuperAdmin,
+      },
+    ];
   }
 }
