@@ -45,7 +45,6 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       // logged in as SuperAdmin
-      console.log('is superadmin');
       this.isSuperAdmin = true;
     }
 
@@ -61,7 +60,7 @@ export class ProfileComponent implements OnInit {
     }
     //   })
 
-    this.loginType = this.sharedService.getCurrentUserDetails('authType');
+    this.loginType = this.sharedService.getCurrentUserDetails('authType') || '';
 
     this.menuItems = [
       {
