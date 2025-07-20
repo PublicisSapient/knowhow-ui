@@ -33,7 +33,7 @@
 
 :host ::ng-deep .p-datatable .p-datatable-thead > tr,
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  background: #0175be;
+  background: #0b4bc8;
   color: #fff;
 }
 
@@ -92,4 +92,8 @@
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
+}
+
+:host ::ng-deep input[type='checkbox']:checked {
+  accent-color: #0b4bc8;
 }

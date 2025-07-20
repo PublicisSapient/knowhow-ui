@@ -156,7 +156,7 @@
 }
 
 .dashboard-config-block .save-kpi {
-  background-color: #079fff;
+  background-color: #0b4bc8;
   color: #ffffff;
   border-radius: 5px;
   border: 0;
@@ -168,6 +168,9 @@
   cursor: pointer;
 }
 
+.dashboard-config-block .save-kpi:hover {
+  background-color: #083896;
+}
 .dashboard-config-block .show-kpisList {
   display: block;
 }

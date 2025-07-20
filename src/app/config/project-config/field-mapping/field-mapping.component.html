@@ -24,9 +24,9 @@
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">Field Mappings ({{(selectedConfig?.type?.toLowerCase() || selectedConfig?.Type?.toLowerCase()) === 'kanban' ? 'Kanban' : 'Scrum'}})</h5>
         </div>
-        <div>
-            <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />
-            <label for="file-upload" class="btn-import-label" tabindex="0" role="button" (keydown.enter)="triggerFileInput()">Import</label>
+        <div class="p-d-flex">
+            <input type="button" class="btn-export p-mr-3 p-button" value="Export" (click)="export()" />
+            <label for="file-upload" class="btn-export" tabindex="0" role="button" (keydown.enter)="triggerFileInput()">Import</label>
             <input style="width:0" id="file-upload" type="file" class="btn-import" name="fileUpload" accept=".json"
                 (change)="onUpload($event)" #fileInput />
             <span class="p-pl-3">{{uploadedFileName}}</span>
