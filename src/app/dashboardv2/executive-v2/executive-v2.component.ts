@@ -34,7 +34,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   catchError,
   distinctUntilChanged,
-  first,
   mergeMap,
   takeUntil,
 } from 'rxjs/operators';
