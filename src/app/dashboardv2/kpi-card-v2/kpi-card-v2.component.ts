@@ -25,7 +25,6 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
-import { borderTopLeftRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
 
 @Component({
   selector: 'app-kpi-card-v2',
