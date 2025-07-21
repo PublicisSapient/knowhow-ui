@@ -52,6 +52,14 @@
   align-items: initial;
 }
 
+:host::ng-deep.p-datatable-scrollable .p-datatable-thead > tr,
+:host::ng-deep.p-datatable-scrollable .p-datatable-tbody > tr,
+:host::ng-deep.p-datatable-scrollable .p-datatable-tfoot > tr {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
 .table-head {
   display: flex;
   justify-content: space-between;
