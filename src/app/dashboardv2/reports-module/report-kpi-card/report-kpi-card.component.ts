@@ -78,7 +78,7 @@ export class ReportKpiCardComponent {
 
     this.trendColors = result;
     this.colors = Object.keys(this.trendColors).map(
-      (key) => this.trendColors[key].color,
+      (key) => this.trendColors[key]?.color,
     );
     if (this.kpiData?.kpiId === 'kpi17') {
       this.colors = this.chartColorList;

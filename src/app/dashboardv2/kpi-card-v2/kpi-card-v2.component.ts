@@ -25,6 +25,7 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
+import { borderTopLeftRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -260,7 +261,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.prepareData();
         },
         disabled:
-          this.selectedTab === 'release' || this.selectedTab === 'backlog',
+          this.selectedTab === 'release' ||
+          this.selectedTab === 'backlog' ||
+          this.kpiData?.kpiId === 'kpi171',
       },
       {
         label: 'Explore',
@@ -429,6 +432,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         kpiName: this.kpiData?.kpiName,
         selectedTab: this.selectedTab,
       },
+      styleClass: 'custom-dialog-class',
     });
 
     this.commentDialogRef.onClose.subscribe(() => {
@@ -751,15 +755,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       (data === '200' || data === '201' || data === '203') &&
       this.kpiData?.kpiId === 'kpi171'
     ) {
-      if (
+      return (
         this.trendValueList &&
-        this.trendValueList[0] &&
-        this.trendValueList[0]?.data?.length > 0
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+        this.trendValueList?.data &&
+        this.trendValueList?.data?.length
+      );
     } else {
       return (
         (data === '200' || data === '201' || data === '203') &&
@@ -1118,7 +1118,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     additional_filters = this.setAdditionalFilterLevels(additional_filters);
 
     this.getExistingReports();
-    const metaDataObj = {
+    const selectedKPIFilters =
+      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton'
+        ? this.radioOption
+        : this.twickFilterForMultiSelectOverall(this.filterOptions);
+    let metaDataObj = {
       kpiName: this.kpiData.kpiName,
       kpiId: this.kpiData.kpiId,
       kpiSource: this.kpiData.kpiDetail.kpiSource,
@@ -1130,10 +1134,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       radioOption: this.radioOption,
       trend: this.trendData,
       trendColors: this.trendBoxColorObj,
-      selectedKPIFilters:
-        this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton'
-          ? this.radioOption
-          : this.filterOptions,
+      selectedKPIFilters: selectedKPIFilters,
       selectedTab: this.selectedTab,
       selectedType: this.service.getSelectedType()?.toLowerCase(),
       filterApplyData: this.filterApplyData,
@@ -1441,5 +1442,28 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   utcToLocalUser(data, xAxis) {
     return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+  }
+
+  checkFilterType(filter) {
+    if (Array.isArray(filter)) {
+      return filter[0];
+    } else {
+      return filter;
+    }
+  }
+
+  twickFilterForMultiSelectOverall(filterOptions) {
+    if (!filterOptions || typeof filterOptions !== 'object') {
+      return filterOptions; // Safely return empty object if input is null/undefined
+    }
+
+    const copyFilters = JSON.parse(JSON.stringify(filterOptions));
+    Object.keys(copyFilters).forEach((keys: string) => {
+      if (!copyFilters[keys] || !copyFilters[keys].length) {
+        //Addting overall option for multiselect filters for reports
+        copyFilters[keys] = ['Overall'];
+      }
+    });
+    return copyFilters;
   }
 }
