@@ -868,7 +868,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          let d = event.currentTarget.__data__;
+          const d = event.currentTarget.__data__;
           let data = `<p>Dev Completed</p><p>Date: ${self.formatDate(
             d['Dev-Completion-Date'],
           )}</>`;

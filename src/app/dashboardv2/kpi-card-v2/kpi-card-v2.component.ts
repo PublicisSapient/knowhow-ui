@@ -25,7 +25,6 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
-import { borderTopLeftRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -288,8 +287,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * Handles various actions based on the event type.
    * Prepares data, opens dialogs, exports data, or shows comments as needed.
    *
-   * @param event - The event object containing action indicators.
-   * @returns
+   * @param {any} event - The event object containing action indicators.
+   * @returns {void}
    */
   handleAction(event: any) {
     if (event.listView) {
@@ -1122,7 +1121,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton'
         ? this.radioOption
         : this.twickFilterForMultiSelectOverall(this.filterOptions);
-    let metaDataObj = {
+    const metaDataObj = {
       kpiName: this.kpiData.kpiName,
       kpiId: this.kpiData.kpiId,
       kpiSource: this.kpiData.kpiDetail.kpiSource,
@@ -1146,7 +1145,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       capturedAt: formattedDate,
       kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy,
-      additional_filters,
+      additional_filters: additional_filters,
     };
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
