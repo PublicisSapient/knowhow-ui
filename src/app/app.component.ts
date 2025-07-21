@@ -102,7 +102,9 @@ export class AppComponent implements OnInit {
           loc &&
           loc.indexOf('authentication') === -1 &&
           loc.indexOf('Error') === -1 &&
-          loc.indexOf('Config') === -1
+          loc.indexOf('Config') === -1 &&
+          !this.service.checkStateFilterLength(loc) &&
+          loc.indexOf('pageNotFound') === -1
         ) {
           localStorage.setItem('last_link', loc);
         }
@@ -147,6 +149,7 @@ export class AppComponent implements OnInit {
             )
             .subscribe((response: any) => {
               if (response.success) {
+                localStorage.removeItem('last_link');
                 const longStateFiltersString =
                   response.data['longStateFiltersString'];
                 decodedStateFilters = atob(longStateFiltersString);
@@ -169,7 +172,7 @@ export class AppComponent implements OnInit {
         }
       }
     } else {
-      this.router.navigate(['./dashboard/']);
+      this.service.navigateToLastVisitedURL('/dashboard/iteration');
     }
   }
 

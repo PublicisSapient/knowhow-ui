@@ -258,7 +258,10 @@ export class AppInitializerService {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
               } else {
-                this.router.navigate(['/dashboard/iteration']);
+                // this.router.navigate(['/dashboard/iteration']);
+                this.sharedService.navigateToLastVisitedURL(
+                  '/dashboard/iteration',
+                );
               }
             }
           },
