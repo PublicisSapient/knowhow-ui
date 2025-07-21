@@ -101,20 +101,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   // Add this property to your component class
-  private readonly inputValidationRegex = {
-    // Allows only alphanumeric characters and spaces
-    basic: /^[a-zA-Z0-9\s]*$/,
-
-    // Allows alphanumeric with limited special characters (. - _)
-    moderate: /^[a-zA-Z0-9\s._-]*$/,
-
-    // Allows alphanumeric with common word characters but no special chars at start
-    strict: /^[a-zA-Z0-9][a-zA-Z0-9\s._-]*$/,
-
-    // Allows alphanumeric with extended characters but validates structure
-    advanced:
-      /^(?!.*[!@#$%^&*()+={}\[\]|\\:;"'<>,?/~`])(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s._-]*$/,
-  };
+  private readonly inputValidationRegex = /[^a-zA-Z0-9\s%._-]/;
 
   isValidInput: boolean = true;
 
@@ -2529,7 +2516,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   validateInput(event) {
     const input = (event.target as HTMLInputElement).value;
-    this.isValidInput = this.inputValidationRegex.basic.test(input);
+    this.isValidInput = !this.inputValidationRegex.test(input);
 
     if (!this.isValidInput) {
       event.preventDefault();
@@ -2537,29 +2524,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Show validation message
       this.messageService.add({
         severity: 'warn',
-        summary: 'Invalid Character',
+        summary: 'Invalid Character is present in input',
         detail: 'Special characters are not allowed',
       });
-
-      // Clear invalid input
-      if (this.autoComplete.inputEL) {
-        this.autoComplete.inputEL.nativeElement.value = input.replace(
-          /[^a-zA-Z0-9\s._-]/g,
-          '',
-        );
-      }
     }
   }
 
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
-    const sanitizedInput = input.replace(/[^a-zA-Z0-9\s._-]/g, '');
+    const hasSpecialChars = /[^a-zA-Z0-9\s%._-]/.test(input);
 
-    if (sanitizedInput !== input) {
-      (event.target as HTMLInputElement).value = sanitizedInput;
-      this.selectedKPI = sanitizedInput;
+    if (hasSpecialChars) {
+      this.isValidInput = false;
+    } else {
+      this.isValidInput = true;
+      this.selectedKPI = input;
+      this.debouncedFilterKpis(event);
     }
-
-    this.debouncedFilterKpis(event);
   }
 }

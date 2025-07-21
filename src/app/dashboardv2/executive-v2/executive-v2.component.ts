@@ -279,7 +279,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.initializeUserDetails();
-    this.setupSearchQuerySubscription();
     this.setupScrumKanbanSwitchSubscription();
 
     this.subscriptions.push(
@@ -1192,6 +1191,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.sonarKpiRequest = this.httpService.postKpi(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         this.afterSonarKpiResponseReceived(getData, postData);
       },
       (error) => {
@@ -1209,6 +1209,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterSonarKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1228,6 +1229,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.loaderJenkins = false;
           if (getData !== null) {
             this.jenkinsKpiData = getData;
@@ -1262,6 +1264,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.loaderJenkins = false;
           // move Overall to top of trendValueList
           if (getData !== null) {
@@ -1291,6 +1294,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterZypherKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1311,6 +1315,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterZypherKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1333,6 +1338,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         .postKpi(postData, source)
         .subscribe(
           (getData) => {
+            this.setupSearchQuerySubscription();
             if (
               getData !== null &&
               getData[0] !== 'error' &&
@@ -1421,6 +1427,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKPIForIteration(postData, source): void {
     this.httpService.postKpiNonTrend(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
@@ -1466,6 +1473,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiNonTrend(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             let localVariable = this.helperService.createKpiWiseId(getData);
@@ -1524,6 +1532,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiNonTrend(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             /** creating array into object where key is kpi id */
             const localVariable = this.helperService.createKpiWiseId(getData);
@@ -1555,6 +1564,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -1581,6 +1591,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -1602,6 +1613,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKanbanKpi(postData, source): void {
     this.httpService.postKpiKanban(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
@@ -4380,7 +4392,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       completeHierarchyData.find((x) => x.level === node.level - 1)
         .hierarchyLevelName
     ].filter((x) => {
-      // console.log(x);
       return x.nodeId === node['parentId'];
     })[0];
 
@@ -4881,6 +4892,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiLoader.add('kpi171');
 
             this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
+              this.setupSearchQuerySubscription();
               const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
               if (idx !== -1) {
                 this.allKpiArray.splice(idx, 1);
