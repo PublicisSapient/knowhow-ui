@@ -194,6 +194,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
         }
 
         if (this.dashConfigData[this.selectedType]?.length) {
+          if (this.selectedType === 'scrum') {
+            this.dashConfigData[this.selectedType].forEach((board) => {
+              if (board.boardSlug === 'iteration') {
+                board.kpis = board.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
+              }
+            });
+          }
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],

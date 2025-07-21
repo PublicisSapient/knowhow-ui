@@ -350,7 +350,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .refresh-state {
   color: var(--color-white);
   background: #0b4bc8;
-  border-radius: 3px;
+  border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
 }
@@ -420,8 +420,13 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   height: 40px;
   line-height: 40px;
   font-size: 14px;
-  padding: 1rem 4rem 1rem 3rem;
+  padding: 1rem 4rem 1rem 2.25rem;
   border-color: #d5dbe1;
+}
+
+:host ::ng-deep .kpi-search-icon {
+  font-size: 1rem;
+  margin-top: 3px;
 }
 
 :host ::ng-deep .p-fluid .p-button {

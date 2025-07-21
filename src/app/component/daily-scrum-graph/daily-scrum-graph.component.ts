@@ -868,8 +868,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         )
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
-          const d = event.currentTarget.__data__;
-          console.log(d);
+          let d = event.currentTarget.__data__;
           let data = `<p>Dev Completed</p><p>Date: ${self.formatDate(
             d['Dev-Completion-Date'],
           )}</>`;
@@ -885,7 +884,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               statusOnDate = d['statusLogGroup'][date];
             }
           });
-          console.log(statusOnDate);
           if (statusOnDate && statusOnDate.length) {
             data += `<br/><p>${statusOnDate.join(' &#8594; ')}</p>`;
           }

@@ -879,5 +879,28 @@ export class SharedService {
     return this.searchQueryBSubject.value;
   }
 
+  navigateToLastVisitedURL(fallbackURL) {
+    const lastURL = localStorage.getItem('last_link');
+    if (lastURL && !this.checkStateFilterLength(lastURL)) {
+      this.router.navigateByUrl(lastURL);
+    } else if (fallbackURL && !this.checkStateFilterLength(fallbackURL)) {
+      this.router.navigateByUrl(fallbackURL);
+    } else {
+      this.router.navigateByUrl('/dashboard/iteration');
+    }
+  }
+
+  checkStateFilterLength(url: string): boolean {
+    const parsedUrl = new URL(url, window.location.origin);
+    const stateFilters = parsedUrl.searchParams.get('stateFilters');
+
+    if (!stateFilters) {
+      console.warn('stateFilters param not found.');
+      return false; // or true, depending on your use case when param is missing
+    }
+
+    return stateFilters.length <= 8;
+  }
+
   //#endregion
 }

@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 .main {
   min-height: calc(100vh - 188px);
   position: relative;
@@ -98,6 +97,7 @@ label.btn-import-label {
 
 ::ng-deep .field-mapping .p-inputtext {
   width: 100%;
+  border-radius: 0.5rem !important;
 }
 
 ::ng-deep .field-mapping .p-inputtext.w-80 {
@@ -171,4 +171,20 @@ label.btn-import-label {
   color: var(--color-secondary-blue);
   cursor: pointer;
   text-decoration: underline;
+}
+
+:host ::ng-deep.p-chips .p-chips-multiple-container:not(.p-disabled).p-focus {
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 0 0.2rem #bfdbfe;
+}
+
+:host ::ng-deep.p-chips ul.p-inputtext.p-chips-multiple-container:hover {
+  border: 1px solid #3b82f6;
+}
+
+:host ::ng-deep.p-inputtext:enabled:hover {
+  border: 1px solid #3b82f6 !important;
+}
+:host ::ng-deep.p-button:enabled:hover {
+  background: #083896 !important;
 }
