@@ -54,13 +54,10 @@
       [optionGroupChildren]="'items'"
       (completeMethod)="debouncedFilterKpis($event)"
       [completeOnFocus]="true"
-      [placeholder]="'Search for KPI'"
+      [placeholder]="'Search for KPI (special characters %, ., -, _ are allowed)'"
       (onSelect)="onKpiSearch($event)"
       (onKeyUp)="validateInput($event)"
       (input)="handleInputChange($event)"
-      [pTooltip]="'Special characters not allowed'"
-      tooltipPosition="top"
-      [tooltipDisabled]="isValidInput"
       [class.ng-invalid]="!isValidInput">
     </p-autoComplete>
   </div>
