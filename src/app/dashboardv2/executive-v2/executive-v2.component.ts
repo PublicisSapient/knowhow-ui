@@ -2011,7 +2011,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       this.kpiSelectedFilterObj[kpiId] =
         this.service.getKpiSubFilterObj()[kpiId];
-      this.durationFilter = this.kpiSelectedFilterObj[kpiId].filter1;
+      this.durationFilter = JSON.parse(
+        JSON.stringify(this.kpiSelectedFilterObj[kpiId].filter1),
+      );
       this.service.getKpiSubFilterObj()['durationFilter'] = this.durationFilter;
     } else {
       this.getDefaultKPIFilters(kpiId, filterPropArr, filterType);
@@ -4106,9 +4108,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       if (kpi?.kpiId === 'kpi171') {
-        this.durationFilter = this.kpiSelectedFilterObj[kpi?.kpiId]?.filter1;
-        this.kpiSelectedFilterObj['durationFilter'] = this.durationFilter;
-        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
         this.getkpi171Data(kpi?.kpiId);
       } else {
         this.getChartData(
@@ -4865,13 +4864,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getkpi171Data(kpiId) {
     let durationChanged = false;
+    const duration = Array.isArray(this.durationFilter)
+      ? this.durationFilter[0]
+      : this.durationFilter;
     if (
       this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
-      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== this.durationFilter
+      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== duration
     ) {
       durationChanged = true;
       this.kpiChartData[kpiId] = [];
-      this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'][0];
+      this.durationFilter = JSON.parse(
+        JSON.stringify(this.kpiSelectedFilterObj[kpiId]['filter1'][0]),
+      );
+      this.kpiSelectedFilterObj['durationFilter'] = this.durationFilter;
+      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
     }
 
     // if duration filter (filter1) changes,  make an api call to fetch data
