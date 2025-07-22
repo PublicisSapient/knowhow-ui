@@ -25,10 +25,11 @@ export class HeaderComponent implements OnInit {
   backToDashboardLoader = false;
   kpiListDataProjectLevel: any = {};
   kpiListData: any = {};
-  lastVisitedFromUrl = '';
-  ifSuperUser = false;
-  ifProjectAdmin = false;
-  isGuest = false;
+  lastVisitedFromUrl: string = '';
+  lastVisitedReportsUrl: string = '';
+  ifSuperUser: boolean = false;
+  ifProjectAdmin: boolean = false;
+  isGuest: boolean = false;
   appList: MenuItem[] | undefined;
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
@@ -37,7 +38,9 @@ export class HeaderComponent implements OnInit {
     : false;
   userRole = '';
   noToolsConfigured: boolean;
-  isNotConfigPage = false;
+  isNotConfigPage: boolean = false;
+  saveReportsUrl: string = '';
+  saveDashboardUrl: string = '';
 
   constructor(
     private httpService: HttpService,
@@ -88,8 +91,15 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
-          if (!window.location.hash.split('?')[0].includes('Config')) {
+          const hashWithoutQuery = window.location.hash.split('?')[0];
+          const urlWithoutHash = window.location.hash.substring(1);
+          if (!hashWithoutQuery.includes('Config')) {
             this.lastVisitedFromUrl = window.location.hash.substring(1);
+            if (hashWithoutQuery.includes('Report')) {
+              this.saveReportsUrl = urlWithoutHash;
+            } else {
+              this.saveDashboardUrl = urlWithoutHash;
+            }
           }
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
@@ -154,9 +164,20 @@ export class HeaderComponent implements OnInit {
   }
 
   /** when user clicks on Back to dashboard */
-  navigateToDashboard() {
+  navigateToDashboard(flag?: boolean) {
     this.backToDashboardLoader = true;
-    this.router.navigateByUrl(this.lastVisitedFromUrl);
+
+    let targetUrl: string = '';
+
+    const isReport = this.lastVisitedFromUrl.includes('Report');
+
+    if (flag) {
+      targetUrl = isReport ? this.saveDashboardUrl : this.saveReportsUrl;
+    } else {
+      targetUrl = isReport ? this.saveReportsUrl : this.saveDashboardUrl;
+    }
+
+    this.router.navigateByUrl(targetUrl);
     this.backToDashboardLoader = false;
     this.sharedService.switchBoard.next(true);
   }

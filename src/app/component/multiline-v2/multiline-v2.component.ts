@@ -87,7 +87,7 @@ export class MultilineV2Component implements OnChanges {
     });
     this.hierarchyLevel = JSON.parse(
       localStorage.getItem('selectedTrend'),
-    )[0].labelName;
+    )[0]?.labelName;
   }
 
   ngAfterViewInit(): void {
