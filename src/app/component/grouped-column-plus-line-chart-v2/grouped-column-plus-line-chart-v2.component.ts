@@ -84,7 +84,7 @@ export class GroupedColumnPlusLineChartV2Component
     });
     this.hierarchyLevel = JSON.parse(
       localStorage.getItem('selectedTrend'),
-    )[0].labelName;
+    )[0]?.labelName;
   }
 
   ngOnChanges(changes: SimpleChanges) {
