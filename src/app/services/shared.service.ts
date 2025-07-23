@@ -882,12 +882,16 @@ export class SharedService {
   navigateToLastVisitedURL(fallbackURL) {
     const lastURL = localStorage.getItem('last_link');
     if (lastURL && !this.checkStateFilterLength(lastURL)) {
+      console.log('navigateToLastVisitedURL, last link');
       this.router.navigateByUrl(lastURL);
     } else if (fallbackURL && !this.checkStateFilterLength(fallbackURL)) {
+      console.log('navigateToLastVisitedURL, shared  link');
       this.router.navigateByUrl(fallbackURL);
     } else {
+      console.log('navigateToLastVisitedURL ');
       this.router.navigateByUrl('/dashboard/iteration');
     }
+    localStorage.removeItem('shared_link');
   }
 
   checkStateFilterLength(url: string): boolean {

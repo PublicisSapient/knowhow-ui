@@ -253,12 +253,13 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
+              console.log('app-init, have location');
               this.sharedService.navigateToLastVisitedURL(location);
             } else {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
               } else {
-                // this.router.navigate(['/dashboard/iteration']);
+                console.log('app-init, no location and no shared link');
                 this.sharedService.navigateToLastVisitedURL(
                   '/dashboard/iteration',
                 );
