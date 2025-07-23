@@ -1312,11 +1312,20 @@ export class HelperService {
           );
         }
       } else {
+        console.log(
+          'helper service, no state filters =>  ./dashboard/iteration',
+        );
         this.router.navigate(['./dashboard/iteration']);
       }
     } else if (window.location.hash.indexOf('selectedTab') !== -1) {
+      console.log(
+        'helper service no share url but have selectedTab => ./dashboard/',
+      );
       this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
     } else {
+      console.log(
+        'helper service no sharenurl and no selected tab => ./dashboard/iteration',
+      );
       this.router.navigate(['./dashboard/iteration']);
     }
   }
@@ -1354,6 +1363,7 @@ export class HelperService {
 
     if (hasAccessToAll) {
       this.router.navigate([url]);
+      localStorage.removeItem('shared_link');
     } else {
       this.router.navigate(['/dashboard/Error']);
       setTimeout(() => {

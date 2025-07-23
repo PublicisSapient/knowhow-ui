@@ -172,6 +172,7 @@ export class AppComponent implements OnInit {
         }
       }
     } else {
+      console.log('app.component.ts , no share url ');
       this.service.navigateToLastVisitedURL('/dashboard/iteration');
     }
   }
@@ -212,7 +213,9 @@ export class AppComponent implements OnInit {
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
+        console.log('app.component , have share link and all project access');
         this.service.navigateToLastVisitedURL(url);
+        localStorage.removeItem('shared_link');
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({
