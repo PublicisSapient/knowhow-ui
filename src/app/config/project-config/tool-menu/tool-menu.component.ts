@@ -433,6 +433,7 @@ export class ToolMenuComponent implements OnInit {
     } else {
       this.tools.unshift(jiraType);
     }
+    console.log(this.tools);
   }
 
   isProjectConfigured(toolName) {
