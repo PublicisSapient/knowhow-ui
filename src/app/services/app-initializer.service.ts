@@ -170,6 +170,14 @@ export class AppInitializerService {
     ) {
       localStorage.setItem('shared_link', loc);
     }
+    if (
+      !this.sharedService.checkStateFilterLength(
+        localStorage.getItem('shared_link'),
+      )
+    ) {
+      localStorage.removeItem('shared_link');
+    }
+
     return new Promise<void>(async (resolve, reject) => {
       if (!environment['production']) {
         this.featureToggleService.config = this.featureToggleService
@@ -254,6 +262,9 @@ export class AppInitializerService {
                 localStorage.removeItem('redirect_uri');
               }
               console.log('app-init, have location');
+              if (this.sharedService.checkStateFilterLength(location)) {
+                localStorage.removeItem('last_link');
+              }
               this.sharedService.navigateToLastVisitedURL(location);
             } else {
               if (localStorage.getItem('shared_link')) {

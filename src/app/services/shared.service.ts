@@ -16,9 +16,10 @@
  *
  ******************************************************************************/
 
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HelperService } from './helper.service';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -153,7 +154,11 @@ export class SharedService {
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private injector: Injector,
+  ) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -884,9 +889,15 @@ export class SharedService {
     if (lastURL && !this.checkStateFilterLength(lastURL)) {
       console.log('navigateToLastVisitedURL, last link');
       this.router.navigateByUrl(lastURL);
-    } else if (fallbackURL && !this.checkStateFilterLength(fallbackURL)) {
+    } else if (fallbackURL) {
       console.log('navigateToLastVisitedURL, shared  link');
-      this.router.navigateByUrl(fallbackURL);
+      if (!this.checkStateFilterLength(fallbackURL)) {
+        this.router.navigateByUrl(fallbackURL);
+      } else {
+        const helper = this.injector.get(HelperService);
+        helper.urlShorteningRedirection();
+      }
+      // this.router.navigateByUrl(fallbackURL);
     } else {
       console.log('navigateToLastVisitedURL ');
       this.router.navigateByUrl('/dashboard/iteration');
