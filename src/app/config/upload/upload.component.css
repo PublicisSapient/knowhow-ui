@@ -598,5 +598,17 @@ button.btn:enabled:focus-visible {
 :host ::ng-deep .p-dialog .p-dialog-header {
   padding: 2.5rem;
 }
+:host ::ng-deep a .p-menuitem-text {
+  font-weight: 400;
+}
+
+:host
+  ::ng-deep.p-panelmenu
+  .p-panelmenu-header.p-highlight
+  > a.p-panelmenu-header-link,
+.p-panelmenu .p-panelmenu-header.p-highlight > a.p-panelmenu-header-link:hover {
+  background-color: #083896 !important;
+  color: var(--color-white);
+}
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
