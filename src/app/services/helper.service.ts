@@ -1432,7 +1432,8 @@ export class HelperService {
     };
   }
 
-  kpiCycleTime193Aggregration(data) {
+  kpiCycleTime193Aggregration2(data) {
+    // Not in use since cycle time moved in SQV
     // Aggregation map structure
     const aggMap = new Map();
     const filter2Set = new Set();
@@ -1495,6 +1496,90 @@ export class HelperService {
       finalOutput.push(projectObj);
     });
 
+    return finalOutput;
+  }
+
+  kpiCycleTime193Aggregration(data) {
+    const aggMap = new Map();
+
+    data.forEach((entry) => {
+      entry.value.forEach((project) => {
+        const projectKey = project.data;
+
+        if (!aggMap.has(projectKey)) {
+          aggMap.set(projectKey, new Map());
+        }
+
+        const subFilterMap = aggMap.get(projectKey);
+
+        project.value.forEach((metric) => {
+          const subFilter = metric.subFilter;
+          const sprojectName = metric.sprojectName;
+
+          if (!subFilterMap.has(subFilter)) {
+            subFilterMap.set(subFilter, {
+              subFilter,
+              sprojectName,
+              weightedSum: 0,
+              totalIssues: 0,
+            });
+          }
+
+          const existingEntry = subFilterMap.get(subFilter);
+
+          const dObj = metric.dataValue.find((d) => d.name === 'd');
+          const issuesObj = metric.dataValue.find((d) => d.name === 'issues');
+
+          const dValue = dObj ? dObj.value : 0;
+          const issuesValue = issuesObj ? issuesObj.value : 0;
+
+          // Weighted sum for d: sum of (d * issues)
+          existingEntry.weightedSum += dValue * issuesValue;
+
+          // Total issues sum
+          existingEntry.totalIssues += issuesValue;
+        });
+      });
+    });
+
+    // Build final output
+    const finalOutput = [];
+
+    aggMap.forEach((subFilterMap, projectKey) => {
+      const projectObj = {
+        data: projectKey,
+        value: [],
+      };
+
+      subFilterMap.forEach((entry) => {
+        const { subFilter, sprojectName, weightedSum, totalIssues } = entry;
+
+        const dValue =
+          totalIssues === 0 ? 0 : Math.round(weightedSum / totalIssues);
+        const issuesValue = totalIssues;
+
+        projectObj.value.push({
+          subFilter,
+          sprojectName,
+          dataValue: [
+            {
+              name: 'd',
+              lineType: 'd',
+              data: dValue.toString(),
+              value: dValue,
+            },
+            {
+              name: 'issues',
+              lineType: 'issues',
+              data: issuesValue.toString(),
+              value: issuesValue,
+            },
+          ],
+        });
+      });
+
+      finalOutput.push(projectObj);
+    });
     return finalOutput;
   }
 }
