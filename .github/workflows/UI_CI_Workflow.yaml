@@ -43,7 +43,9 @@ jobs:
       #    sudo npm cache clean --force
       #    sudo npm install
       #    npx prettier "**/*.{ts,css}" --check
-
+      - name: Install correct stylus version
+        run: npm install stylus@0.55.0 --save-dev
+        
       - name: Install Dependencies & Build UI
         run: |
           sudo chown -R $(whoami) /usr/local/lib/node_modules
