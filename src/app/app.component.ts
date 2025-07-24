@@ -213,6 +213,7 @@ export class AppComponent implements OnInit {
     if (projectLevelSelected) {
       if (hasAccessToAll) {
         this.service.navigateToLastVisitedURL(url);
+        localStorage.removeItem('shared_link');
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({

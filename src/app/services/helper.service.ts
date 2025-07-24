@@ -1324,10 +1324,12 @@ export class HelperService {
       } else {
         this.router.navigate(['./dashboard/iteration']);
       }
-    } else if (window.location.hash.indexOf('selectedTab') !== -1) {
-      this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
-    } else {
-      this.router.navigate(['./dashboard/iteration']);
+    }
+    // else if (window.location.hash.indexOf('selectedTab') !== -1) {
+    //   this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
+    // }
+    else {
+      this.sharedService.navigateToLastVisitedURL('/dashboard/iteration');
     }
   }
 
@@ -1364,6 +1366,7 @@ export class HelperService {
 
     if (hasAccessToAll) {
       this.router.navigate([url]);
+      localStorage.removeItem('shared_link');
     } else {
       this.router.navigate(['/dashboard/Error']);
       setTimeout(() => {

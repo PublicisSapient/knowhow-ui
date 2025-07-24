@@ -26,12 +26,14 @@ export class DecodeUrlGuard implements CanActivate {
       state.url.indexOf('?stateFilters=') == -1
     ) {
       // If the decoded URL differs, navigate to the decoded URL
+      console.log('came decode url => correct statefilters present');
       this.router.navigateByUrl(decodedUrl, { replaceUrl: true });
       return false; // Prevent further navigation until the URL is corrected
     }
 
     // hack
     if (state.url.indexOf('undefined') !== -1) {
+      console.log('came decode url => should not undefined');
       return false;
     }
 
