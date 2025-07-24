@@ -254,6 +254,7 @@ export class HeaderComponent implements OnInit {
           queryParams: {},
         })
         .then(() => {
+          // Use router events to capture after navigation
           this.lastVisitedFromUrl = this.router.url;
         });
     }
