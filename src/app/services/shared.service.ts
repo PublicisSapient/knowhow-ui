@@ -20,6 +20,7 @@ import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HelperService } from './helper.service';
+import { SharelinkService } from './share-link.service';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -88,8 +89,7 @@ export class SharedService {
   selectedTrends = [];
   public isSideNav;
   currentUserDetails = null;
-  currentUserDetailsSubject = new BehaviorSubject<any>(null);
-  currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
+
   public onTypeOrTabRefresh = new Subject<{
     selectedTab: string;
     selectedType: string;
@@ -887,19 +887,15 @@ export class SharedService {
   navigateToLastVisitedURL(fallbackURL) {
     const lastURL = localStorage.getItem('last_link');
     if (lastURL && !this.checkStateFilterLength(lastURL)) {
-      console.log('navigateToLastVisitedURL, last link');
       this.router.navigateByUrl(lastURL);
     } else if (fallbackURL) {
-      console.log('navigateToLastVisitedURL, shared  link');
       if (!this.checkStateFilterLength(fallbackURL)) {
         this.router.navigateByUrl(fallbackURL);
       } else {
-        const helper = this.injector.get(HelperService);
-        helper.urlShorteningRedirection();
+        const shareLink = this.injector.get(SharelinkService);
+        shareLink.urlShorteningRedirection();
       }
-      // this.router.navigateByUrl(fallbackURL);
     } else {
-      console.log('navigateToLastVisitedURL ');
       this.router.navigateByUrl('/dashboard/iteration');
     }
     localStorage.removeItem('shared_link');
