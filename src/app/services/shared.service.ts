@@ -892,7 +892,6 @@ export class SharedService {
       if (!this.checkStateFilterLength(fallbackURL)) {
         this.router.navigateByUrl(fallbackURL);
       } else {
-        console.log('---- test -------');
         const shareLink = this.injector.get(SharelinkService);
         shareLink.urlShorteningRedirection();
       }
