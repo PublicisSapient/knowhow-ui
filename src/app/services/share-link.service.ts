@@ -127,7 +127,7 @@ export class SharelinkService {
   }
 
   handleRestoreUrl(stateFilterData, kpiFilterData) {
-    return this.http.get<any>(
+    return this.http?.get<any>(
       `${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`,
     );
   }
