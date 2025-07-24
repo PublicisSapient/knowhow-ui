@@ -345,14 +345,6 @@ describe('MyprofileComponent', () => {
         },
       },
     };
-    shared.currentUserDetailsSubject.next({
-      user_name: 'dummyUser',
-      user_email: 'someemail@abc.com',
-      notificationEmail: {
-        accessAlertNotification: true,
-        errorAlertNotification: false,
-      },
-    });
     spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(
       of(successResponse),
     );
