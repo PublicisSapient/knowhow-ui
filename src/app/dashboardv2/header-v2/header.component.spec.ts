@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { HeaderComponent } from './header.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -11,7 +16,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { Router, Routes } from '@angular/router';
 import { LoginComponent } from 'src/app/authentication/login/login.component';
 import { RequestStatusComponent } from 'src/app/config/profile/request-status/request-status.component';
@@ -32,6 +37,7 @@ describe('HeaderComponent', () => {
   let mockGetAuthorizationService;
   let mockRouter;
   let messageService: jasmine.SpyObj<MessageService>;
+  let router: any;
 
   const routes: Routes = [
     { path: 'authentication/login', component: LoginComponent },
@@ -49,6 +55,8 @@ describe('HeaderComponent', () => {
       component: ViewRequestsComponent,
     },
   ];
+
+  const messageServiceSpy = jasmine.createSpyObj('MessageService', ['add']);
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -69,7 +77,7 @@ describe('HeaderComponent', () => {
         CommonModule,
         DatePipe,
         GetAuthorizationService,
-        MessageService,
+        { provide: MessageService, useValue: messageServiceSpy },
         { provide: APP_CONFIG, useValue: AppConfig },
       ],
     }).compileComponents();
@@ -80,6 +88,7 @@ describe('HeaderComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
+    messageService = messageServiceSpy;
     mockGetAuthorizationService = jasmine.createSpyObj(
       GetAuthorizationService,
       ['checkIfSuperUser', 'checkIfProjectAdmin'],
@@ -270,6 +279,7 @@ describe('HeaderComponent', () => {
       notificationEmail: null,
       authorities: ['ROLE_PROJECT_ADMIN'],
     });
+    router = TestBed.inject(RouterTestingModule);
     fixture.detectChanges();
   });
 
@@ -379,5 +389,56 @@ describe('HeaderComponent', () => {
     component.ngOnInit();
     sharedService.passEventToNav.subscribe();
     expect(getNotificationSpy).toHaveBeenCalled();
+  });
+
+  // --- go to reports
+  it('should navigate to reports when reports are available', () => {
+    const routerInstance = TestBed.inject(Router);
+    spyOn(sharedService, 'getNoReports').and.returnValue(false);
+    spyOn(routerInstance, 'navigate').and.returnValue(
+      Promise.resolve(true) as Promise<boolean>,
+    );
+
+    component.goToReports();
+
+    expect(routerInstance.navigate).toHaveBeenCalledWith(
+      ['/dashboard/Report/default-report'],
+      { queryParams: {} },
+    );
+  });
+
+  it('should not navigate to reports when no reports are available', () => {
+    const routerInstance = TestBed.inject(Router);
+    spyOn(sharedService, 'getNoReports').and.returnValue(true);
+    spyOn(routerInstance, 'navigate');
+
+    component.goToReports();
+
+    expect(routerInstance.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should call message service when no reports are available', fakeAsync(() => {
+    spyOn(sharedService, 'getNoReports').and.returnValue(true);
+
+    component.goToReports();
+    tick(100);
+
+    expect(messageServiceSpy.add).toHaveBeenCalledWith({
+      severity: 'info',
+      summary: 'No Reports Available',
+      detail: '',
+    });
+  }));
+
+  it('should update lastVisitedFromUrl after navigation', () => {
+    const routerInstance = TestBed.inject(Router);
+    spyOn(sharedService, 'getNoReports').and.returnValue(false);
+    spyOn(routerInstance, 'navigate').and.returnValue(
+      Promise.resolve(true) as Promise<boolean>,
+    );
+
+    component.goToReports();
+
+    expect(component.lastVisitedFromUrl).toBe('');
   });
 });
