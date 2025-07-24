@@ -1312,24 +1312,13 @@ export class HelperService {
           );
         }
       } else {
-        console.log(
-          'helper service, no state filters =>  ./dashboard/iteration',
-        );
         this.router.navigate(['./dashboard/iteration']);
       }
     }
     // else if (window.location.hash.indexOf('selectedTab') !== -1) {
-    //   console.log(
-    //     'helper service no share url but have selectedTab => ./dashboard/',
-    //   );
     //   this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
     // }
     else {
-      console.log(
-        'helper service no sharenurl and no selected tab => ./dashboard/iteration',
-      );
-      // this.router.navigate(['./dashboard/iteration']);
-      console.log('url sorten redirect , iteration');
       this.sharedService.navigateToLastVisitedURL('/dashboard/iteration');
     }
   }
