@@ -235,6 +235,9 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.router.resetConfig([...this.routes]);
+        if (this.sharedService.checkStateFilterLength(location)) {
+          localStorage.removeItem('last_link');
+        }
         this.sharedService.navigateToLastVisitedURL(location);
       } else {
         // Make API call or initialization logic here...
@@ -261,7 +264,6 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
-              console.log('app-init, have location');
               if (this.sharedService.checkStateFilterLength(location)) {
                 localStorage.removeItem('last_link');
               }
@@ -270,7 +272,6 @@ export class AppInitializerService {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
               } else {
-                console.log('app-init, no location and no shared link');
                 this.sharedService.navigateToLastVisitedURL(
                   '/dashboard/iteration',
                 );
