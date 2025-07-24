@@ -131,6 +131,7 @@ import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-
 import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { SharelinkService } from './services/share-link.service';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -235,6 +236,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
   providers: [
     ExcelService,
     SharedService,
+    SharelinkService,
     GetAuthService,
     HelperService,
     GetAuthorizationService,
