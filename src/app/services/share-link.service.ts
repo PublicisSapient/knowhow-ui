@@ -11,11 +11,10 @@ import { HttpClient } from '@angular/common/http';
 export class SharelinkService {
   private baseUrl = environment.baseUrl; // Servers Env
   private urlRestore = this.baseUrl + '/api/stringShortener/longString';
-  private http: HttpClient;
   currentUserDetails = null;
   public passErrorToErrorPage;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private http: HttpClient) {
     this.passErrorToErrorPage = new EventEmitter();
   }
 
@@ -43,7 +42,7 @@ export class SharelinkService {
         if (stateFilters?.length <= 8) {
           console.log('share link seevice - it is shared url');
           this.handleRestoreUrl(stateFilters, kpiFilters)
-            ?.pipe(
+            .pipe(
               catchError((error) => {
                 this.router.navigate(['/dashboard/Error']); // Redirect to the error page
                 setTimeout(() => {
@@ -55,7 +54,7 @@ export class SharelinkService {
                 return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
               }),
             )
-            ?.subscribe((response: any) => {
+            .subscribe((response: any) => {
               localStorage.removeItem('last_link');
               if (response.success) {
                 const longStateFiltersString =
@@ -130,7 +129,7 @@ export class SharelinkService {
 
   handleRestoreUrl(stateFilterData, kpiFilterData) {
     console.log('---------------sharelink--------');
-    return this.http?.get<any>(
+    return this.http.get<any>(
       `${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`,
     );
   }
