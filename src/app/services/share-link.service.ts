@@ -11,11 +11,10 @@ import { HttpClient } from '@angular/common/http';
 export class SharelinkService {
   private baseUrl = environment.baseUrl; // Servers Env
   private urlRestore = this.baseUrl + '/api/stringShortener/longString';
-  private http: HttpClient;
   currentUserDetails = null;
   public passErrorToErrorPage;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private http: HttpClient) {
     this.passErrorToErrorPage = new EventEmitter();
   }
 
