@@ -20,7 +20,6 @@ export class SharelinkService {
 
   // url shortening redirection logic
   urlShorteningRedirection() {
-    console.log('hare link seevice - urlShorteningRedirection');
     const shared_link = localStorage.getItem('shared_link');
     let currentUserProjectAccess = JSON.parse(
       localStorage.getItem('currentUserDetails'),
@@ -40,7 +39,6 @@ export class SharelinkService {
         let decodedStateFilters: string = '';
 
         if (stateFilters?.length <= 8) {
-          console.log('share link seevice - it is shared url');
           this.handleRestoreUrl(stateFilters, kpiFilters)
             .pipe(
               catchError((error) => {
@@ -128,7 +126,6 @@ export class SharelinkService {
   }
 
   handleRestoreUrl(stateFilterData, kpiFilterData) {
-    console.log('---------------sharelink--------');
     return this.http.get<any>(
       `${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`,
     );
