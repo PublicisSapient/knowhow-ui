@@ -166,18 +166,22 @@ export class HeaderComponent implements OnInit {
   /** when user clicks on Back to dashboard */
   navigateToDashboard(flag?: boolean) {
     this.backToDashboardLoader = true;
-
-    let targetUrl: string = '';
-
-    const isReport = this.lastVisitedFromUrl.includes('Report');
-
     if (flag) {
-      targetUrl = isReport ? this.saveDashboardUrl : this.saveReportsUrl;
+      if (
+        this.lastVisitedFromUrl.includes('Report') &&
+        this.saveReportsUrl !== ''
+      ) {
+        this.router.navigateByUrl(this.saveDashboardUrl);
+      } else {
+        this.router.navigateByUrl(this.saveReportsUrl);
+      }
     } else {
-      targetUrl = isReport ? this.saveReportsUrl : this.saveDashboardUrl;
+      if (this.lastVisitedFromUrl.includes('Report')) {
+        this.router.navigateByUrl(this.saveReportsUrl);
+      } else {
+        this.router.navigateByUrl(this.saveDashboardUrl);
+      }
     }
-
-    this.router.navigateByUrl(targetUrl);
     this.backToDashboardLoader = false;
     this.sharedService.switchBoard.next(true);
   }
@@ -245,8 +249,14 @@ export class HeaderComponent implements OnInit {
         detail: '',
       });
     } else {
-      this.lastVisitedFromUrl = window.location.hash.substring(1);
-      this.router.navigate(['/dashboard/Report/default-report']);
+      this.router
+        .navigate(['/dashboard/Report/default-report'], {
+          queryParams: {},
+        })
+        .then(() => {
+          // Use router events to capture after navigation
+          this.lastVisitedFromUrl = this.router.url;
+        });
     }
   }
 }
