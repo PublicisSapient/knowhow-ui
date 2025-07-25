@@ -185,6 +185,3 @@ label.btn-import-label {
 :host ::ng-deep.p-inputtext:enabled:hover {
   border: 1px solid #3b82f6 !important;
 }
-:host ::ng-deep.p-button:enabled:hover {
-  background: #083896 !important;
-}
