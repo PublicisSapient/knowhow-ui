@@ -489,3 +489,7 @@ small {
   border-radius: 5px;
   box-shadow: 1px 1px #ced9d7;
 }
+
+.back-button {
+  background-color: #0b4bc8;
+}

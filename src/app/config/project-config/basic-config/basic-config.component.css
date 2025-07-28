@@ -131,3 +131,6 @@ button {
 :host ::ng-deep .p-autocomplete-loader {
   display: none;
 }
+:host::ng-deep .p-button-icon-only {
+  background-color: #0b4bc8 !important;
+}
