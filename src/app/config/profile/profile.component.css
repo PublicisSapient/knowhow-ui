@@ -65,7 +65,7 @@ div.main {
 }
 
 ::ng-deep .custom-panelmenu .p-menuitem-link-active {
-  background-color: #06a0ff;
+  background-color: #083896 !important;
   color: #fff !important;
   font-weight: bold;
 }

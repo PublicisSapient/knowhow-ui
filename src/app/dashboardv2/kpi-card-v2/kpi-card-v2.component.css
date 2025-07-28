@@ -503,3 +503,11 @@
   background: #ccd0d5 !important;
   color: #fff !important;
 }
+:host::ng-deep.p-menu .p-menuitem > .p-menuitem-content {
+  padding: 1rem;
+  color: #000000de;
+  border-radius: 0;
+  transition: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

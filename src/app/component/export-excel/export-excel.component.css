@@ -243,3 +243,6 @@
   opacity: 0.6;
   color: #fff !important;
 }
+:host::ng-deep.p-multiselect.p-inputwrapper.p-component.p-focus {
+  box-shadow: none !important;
+}
