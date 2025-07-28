@@ -551,6 +551,11 @@ export class ExportExcelComponent implements OnInit {
     if (!att) {
       return;
     }
+
+    if (typeof att === 'number') {
+      return false;
+    }
+
     return att.startsWith('http://') || att.startsWith('https://');
   }
 
