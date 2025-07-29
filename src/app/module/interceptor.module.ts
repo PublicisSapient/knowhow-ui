@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Injectable, NgModule } from '@angular/core';
-import { throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import {
   HttpInterceptor,
   HttpHandler,
@@ -25,6 +25,7 @@ import {
   HttpErrorResponse,
   HttpResponse,
   HTTP_INTERCEPTORS,
+  HttpEvent,
 } from '@angular/common/http';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
@@ -45,7 +46,10 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     private httpService: HttpService,
   ) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
     const requestArea = req.headers.get('requestArea') || 'internal';
 
@@ -84,6 +88,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       });
     }
     const requestId = uuid.v4();
+    const reqUrl = req.url;
     req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
     const redirectExceptions = [
@@ -121,12 +126,36 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         }
       }),
       catchError((err) => {
+        if (
+          reqUrl.indexOf('kpiRecommendation') !== -1 ||
+          reqUrl.indexOf('notifications') !== -1 ||
+          reqUrl.indexOf('kpisearch') !== -1
+        ) {
+          // Return error as successful response instead of throwing
+          return of(
+            new HttpResponse({
+              body: {
+                error: true,
+                message: err.error.message,
+                status: err.error.status,
+                originalError: err.error,
+              },
+              status: 200, // Return as successful response
+              url: req.url,
+            }),
+          );
+        }
         if (err instanceof HttpErrorResponse) {
           if (err.status === 401) {
             if (requestArea === 'internal') {
               if (environment?.['SSO_LOGIN']) {
                 this.httpService.setCurrentUserDetails({});
                 console.log('SSO_LOGIN', true);
+                let redirect_uri = window.location.href;
+                window.location.href =
+                  environment.CENTRAL_LOGIN_URL +
+                  '?redirect_uri=' +
+                  redirect_uri;
               } else {
                 if (environment.AUTHENTICATION_SERVICE) {
                   this.redirectToLogin();

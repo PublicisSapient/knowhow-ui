@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -20,6 +20,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedBasicConfigIds: any[] = [];
   previousSelectedTrend: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
+
+  @Input() kpiSearchQuery!: string;
 
   constructor(
     public httpService: HttpService,
@@ -188,6 +190,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
         }
 
         if (this.dashConfigData[this.selectedType]?.length) {
+          if (this.selectedType === 'scrum') {
+            this.dashConfigData[this.selectedType].forEach((board) => {
+              if (board.boardSlug === 'iteration') {
+                board.kpis = board.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
+              }
+            });
+          }
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
@@ -246,5 +255,11 @@ export class NavNewComponent implements OnInit, OnDestroy {
       selected_tab: obj['boardSlug'],
     });
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+  }
+
+  updateDataDirectly(searchQuery) {
+    setTimeout(() => {
+      this.handleMenuTabFunctionality(searchQuery.value);
+    }, 300);
   }
 }

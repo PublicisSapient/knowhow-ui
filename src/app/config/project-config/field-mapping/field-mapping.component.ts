@@ -83,7 +83,10 @@ export class FieldMappingComponent implements OnInit {
       this.selectedToolConfig = this.sharedService
         .getSelectedToolConfig()
         .filter(
-          (tool) => tool.toolName === 'Jira' || tool.toolName === 'Azure',
+          (tool) =>
+            tool.toolName === 'Jira' ||
+            tool.toolName === 'Azure' ||
+            tool.toolName === 'Rally',
         );
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
         this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -154,7 +157,7 @@ export class FieldMappingComponent implements OnInit {
   }
 
   onUpload(event) {
-    this.uploadedFileName = event.target.files[0].name;
+    this.uploadedFileName = event.target.files[0]?.name;
     const fileReader = new FileReader();
     fileReader.readAsText(event.target.files[0], 'UTF-8');
     fileReader.onload = () => {

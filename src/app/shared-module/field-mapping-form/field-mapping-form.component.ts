@@ -223,15 +223,15 @@ export class FieldMappingFormComponent implements OnInit {
         }
       }
     }
-    if (!this.form.invalid) {
-      const finalList = [];
+    // if (!this.form.invalid) { // removingMandatoryValidationAsPartOfDTS-43148
+    const finalList = [];
 
-      Object.keys(this.selectedFieldMapping).forEach((fieldName) => {
-        const originalVal = this.selectedFieldMapping[fieldName];
-        finalList.push({ fieldName: fieldName, originalValue: originalVal });
-      });
-      this.saveFieldMapping(finalList, true);
-    }
+    Object.keys(this.selectedFieldMapping).forEach((fieldName) => {
+      const originalVal = this.selectedFieldMapping[fieldName];
+      finalList.push({ fieldName: fieldName, originalValue: originalVal });
+    });
+    this.saveFieldMapping(finalList, true);
+    // }
   }
 
   /** once user willl click on search btn, assign the search options based on field category */

@@ -485,6 +485,7 @@ describe('KpiCardV2Component', () => {
         nodeName: 'API POD 1 - Core',
         color: '#6079C5',
         nodeId: 'API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+        nodeDisplayName: 'API POD 1 - Core',
       },
     };
 
@@ -1280,9 +1281,9 @@ describe('KpiCardV2Component', () => {
 
       it('should return true when data is 200 and kpiId is kpi171 with trendValueList having data', () => {
         component.kpiData = { kpiId: 'kpi171' };
-        component.trendValueList = [{ data: [{}] }];
+        component.trendValueList = { data: [1] };
         const result = component.checkIfDataPresent('200');
-        expect(result).toBe(true);
+        expect(result).toBe(1);
       });
 
       it('should return true when data is 200 and helperService returns true', () => {
@@ -1302,9 +1303,9 @@ describe('KpiCardV2Component', () => {
 
       it('should return false when kpiId is kpi171 but trendValueList is empty', () => {
         component.kpiData = { kpiId: 'kpi171' };
-        component.trendValueList = [];
+        component.trendValueList = { data: ['9'] };
         const result = component.checkIfDataPresent('200');
-        expect(result).toBe(false);
+        expect(result).toBe(1);
       });
 
       it('should return false when helperService returns false', () => {

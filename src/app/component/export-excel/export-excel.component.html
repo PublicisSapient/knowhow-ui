@@ -6,12 +6,12 @@
           {{modalDetails['header']}}
         </div>
         <div class="export-button">
-          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "isDisableSaveCOnfigurationBtn"
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [ngClass]="{'save-btn' :!isDisableSaveCOnfigurationBtn,'save-btn-before' :isDisableSaveCOnfigurationBtn }" [disabled] = "isDisableSaveCOnfigurationBtn"
             (click)="saveTableColumnOrder()" aria-label="Save the current table configuration"></button>
           <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.4" pButton pRipple label="Export View"
-            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')" aria-label="Export the current table view"></button>
+            class="export-btn p-p-2 p-mr-2" (click)="generateExcel('filtered')" aria-label="Export the current table view"></button>
           <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.4" pButton pRipple label="Export All"
-            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')" aria-label="Export all data"></button>
+            class="export-btn p-p-2 p-mr-2" (click)="generateExcel('all')" aria-label="Export all data"></button>
         </div>
       </div>
       <div *ngIf="markerInfo?.length > 0" class="p-d-flex  p-flex-wrap">
@@ -29,12 +29,11 @@
             selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
             optionDisabled="isDefault" placeholder="Choose Columns">
             <ng-template pTemplate="selectedItems">
-              <p-button styleClass="p-button-text column-btn" aria-label="Selected columns filter" tabindex="-1">Column &nbsp; <img
-                  src="../../../assets/img/column-triple-svgrepo-com.svg" alt="Column filter icon" /></p-button>
+              <p-button styleClass="p-button-text column-btn" aria-label="Selected columns filter" tabindex="-1">Column &nbsp;</p-button>
             </ng-template>
             <ng-template pTemplate="footer">
               <hr>
-              <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn" (click)="applyColumnFilter()" aria-label="Apply the selected columns"></p-button>
+              <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn primary-selector-btn" (click)="applyColumnFilter()" aria-label="Apply the selected columns"></p-button>
             </ng-template>
 
           </p-multiSelect>
@@ -48,7 +47,7 @@
                 <div class="table-head" >
                   <span [ngStyle]="{'width':'max-content'}">{{item}}</span>
                   <div class="p-d-flex">
-                    <p-columnFilter [field]="item" matchMode="in"
+                    <p-columnFilter [field]="item" matchMode="in" *ngIf="item!=='Linked Defect'"
                       [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                       [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                       <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
@@ -84,12 +83,13 @@
              </ng-container>
              <ng-container *ngIf="column?.toLowerCase() !== 'issue id'">
               <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())" [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4  ? '380px' : '190px'}" tabindex="0" (keydown.enter)="openOnEnter($event)">
-                <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
+                <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date') || column.toLowerCase().includes('month') || column.toLowerCase().includes('time') || column.toLowerCase().includes('day') || column.toLowerCase().includes('week'))?'date': 'other'))">
                   <ng-container *ngSwitchCase="'array'">
                     <ng-container *ngFor="let data of rowData[column]">
                       <a *ngIf="data?.hasOwnProperty('hyperlink') else dataWithOutHyperlink" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data['text']}}">{{data['text']}}</a>
                       <ng-template #dataWithOutHyperlink>
-                         {{data}}
+                         <span *ngIf="!checkIsItHyperlink(data)">{{data}}</span>
+                         <span><a [href]="data" *ngIf="checkIsItHyperlink(data)" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data}}">{{getHyperlinkDefectId(data)}}</a></span>
                       </ng-template>
                       <ng-template #displayData>
                         <p class="column-content-spacing">{{data}}</p>
@@ -103,10 +103,11 @@
                     <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
                   </ng-container>
                   <ng-container *ngSwitchCase="'other'">
-                    {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}
+                    <span *ngIf="!checkIsItHyperlink(rowData[column])">{{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}</span>
+                    <span><a [href]="rowData[column]" *ngIf="checkIsItHyperlink(rowData[column])" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{rowData[column]}}">{{getHyperlinkDefectId(rowData[column])}}</a></span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'date'">
-                    {{rowData[column] | isoDateFormat}}
+                    {{utcToLocalUser(rowData[column],(iskanban ? xCaption : column))}}
                   </ng-container>
                 </ng-container>
               </td>

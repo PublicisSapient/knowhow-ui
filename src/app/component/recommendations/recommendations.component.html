@@ -1,90 +1,421 @@
 <div class="container-recommendations">
-    <div class="img-container" (click)="handleClick()">
-        <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
-    </div>
+  <div
+    class="img-container"
+    (click)="handleClick()"
+    (keydown.enter)="handleClick()"
+    tabindex="0"
+    aria-label="Recommendations icon, on click will open the dialog to generate recommendations"
+  >
+    <img
+      src="../../../assets/img/ico-recommendations.svg"
+      alt="Recommendations icon"
+    />
+  </div>
 </div>
-<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
+<p-dialog
+  [(visible)]="displayModal"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  aria-labelledby="dialogTitle"
+  (onShow)="focusDialogHeader()"
+  (onHide)="onDialogClose()"
+  [header]="getDialogHeader()"
+>
+  <div class="p-d-flex p-ai-center p-jc-center loader-bg" *ngIf="isTemplateLoading">
+    <div class="loading-container">
+      <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+    </div>
+  </div>
+
+  <div *ngIf="!aiRecommendations">
     <p-header>
-        <div>
-            Recommendations for Optimising KPIs
-        </div>
-        <h5 class="p-m-0" *ngIf="selectedSprint">
-            Sprint: {{selectedSprint?.nodeName}}
-        </h5>
-        <h5 class="p-m-0 red" *ngIf="!selectedSprint">
-            No Sprint Available
-        </h5>
+      <div id="dialogTitle">Recommendations for Optimising KPIs</div>
+      <h5 class="p-m-0" *ngIf="selectedSprint">
+        Sprint: {{ selectedSprint?.nodeName }}
+      </h5>
+      <h5 class="p-m-0 red" *ngIf="!selectedSprint">No Sprint Available</h5>
     </p-header>
     <div class="dialog-body p-mb-4">
-        <p-tabView *ngIf="!noRecommendations">
-            <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
-                [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
-
-                <p-table #dt1 [value]="tabsContent[tab]" dataKey="tab" [loading]="loading"
-                    [tableStyle]="{ 'min-width': '70rem'}"
-                    [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
-                    <ng-template pTemplate="header">
-                        <tr class="table-heading">
-                            <th id="kpiName">KPI Name</th>
-                            <th id="maturity">Maturity Level</th>
-                            <th id="recommendation">Recommendation</th>
-                            <th id="details">Details</th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input pInputText [id]="kpiName" type="text" class="p-column-filter"
-                                    (input)="dt1.filter($event.target.value, 'kpiName', 'contains')"
-                                    [style]="{'width':'100%'}" placeholder="Search" />
-                            </th>
-                            <th>
-                                <p-columnFilter field="maturity" matchMode="in" [showMenu]="false">
-                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-multiSelect [ngModel]="value" [options]="maturities"
-                                            placeholder="Select maturity" (onChange)="filter($event.value)" optionLabel="name" optionValue="value">
-                                            <ng-template let-option pTemplate="item">
-                                                <div class="inline-block vertical-align-middle">
-                                                    <span class="ml-1 mt-1">{{option.name }}</span>
-                                                </div>
-                                            </ng-template>
-                                        </p-multiSelect>
-                                    </ng-template>
-                                </p-columnFilter>
-                            </th>
-                            <th>
-
-                            </th>
-                            <th>
-
-                            </th>
-                        </tr>
+      <p-tabView *ngIf="!noRecommendations">
+        <p-tabPanel
+          *ngFor="let tab of tabs"
+          [header]="tab"
+          [headerStyleClass]="'tab-' + tab.split(' ').join('-')?.toLowerCase()"
+        >
+          <p-table
+            #dt1
+            [value]="tabsContent[tab]"
+            dataKey="tab"
+            [loading]="loading"
+            [tableStyle]="{ 'min-width': '70rem' }"
+            [globalFilterFields]="['kpiName', 'maturity']"
+            class="p-mt-3"
+          >
+            <ng-template pTemplate="header">
+              <tr class="table-heading">
+                <th id="kpiName">KPI Name</th>
+                <th id="maturity">Maturity Level</th>
+                <th id="recommendation">Recommendation</th>
+                <th id="details">Details</th>
+              </tr>
+              <tr>
+                <th>
+                  <input
+                    pInputText
+                    [id]="kpiName"
+                    type="text"
+                    class="p-column-filter"
+                    (input)="
+                      dt1.filter($event.target.value, 'kpiName', 'contains')
+                    "
+                    [style]="{ width: '100%' }"
+                    placeholder="Search"
+                  />
+                </th>
+                <th>
+                  <p-columnFilter
+                    field="maturity"
+                    matchMode="in"
+                    [showMenu]="false"
+                  >
+                    <ng-template
+                      pTemplate="filter"
+                      let-value
+                      let-filter="filterCallback"
+                    >
+                      <p-multiSelect
+                        [ngModel]="value"
+                        [options]="maturities"
+                        placeholder="Select maturity"
+                        (onChange)="filter($event.value)"
+                        optionLabel="name"
+                        optionValue="value"
+                      >
+                        <ng-template let-option pTemplate="item">
+                          <div class="inline-block vertical-align-middle">
+                            <span class="ml-1 mt-1">{{ option.name }}</span>
+                          </div>
+                        </ng-template>
+                      </p-multiSelect>
                     </ng-template>
-                    <ng-template pTemplate="body" let-item>
-                        <tr>
-                            <td>{{ item.kpiName }}</td>
-                            <td
-                                [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
-                                <span class="maturity-level">
-                                    {{ item.maturity ? "M"+item.maturity : 'NA' }}
-                                </span>
-                            </td>
-                            <td><span [innerHTML]="item.recommendationSummary"></span></td>
-                            <td><span [innerHTML]="item.recommendationDetails"></span></td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td [attr.colspan]="4">
-                                No records found
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-
-            </p-tabPanel>
-        </p-tabView>
-        <div *ngIf="noRecommendations" class="p-pt-4">
-            There are no recommendations available for the selected sprint.
-        </div>
+                  </p-columnFilter>
+                </th>
+                <th></th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+              <tr>
+                <td>{{ item.kpiName }}</td>
+                <td
+                  [ngClass]="{
+                    m1: item.maturity == 1,
+                    m2: item.maturity == 2,
+                    m3: item.maturity == 3,
+                    m4: item.maturity == 4,
+                    m5: item.maturity == 5
+                  }"
+                >
+                  <span class="maturity-level">
+                    {{ item.maturity ? 'M' + item.maturity : 'NA' }}
+                  </span>
+                </td>
+                <td><span [innerHTML]="item.recommendationSummary"></span></td>
+                <td><span [innerHTML]="item.recommendationDetails"></span></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="4">No records found</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+      </p-tabView>
+      <div *ngIf="noRecommendations" class="p-pt-4">
+        There are no recommendations available for the selected sprint.
+      </div>
     </div>
-    
+  </div>
+
+  <section
+    *ngIf="aiRecommendations"
+    tabindex="0"
+    aria-label="AI Recommendations Section"
+    aria-describedby="aiRecommendationsDescription"
+  >
+    <div id="aiRecommendationsDescription" style="display: none">
+      Section displaying AI-generated recommendations for optimizing KPIs
+    </div>
+    <article
+      class="p-fluid p-mb-6"
+      *ngIf="!isLoading && !isReportGenerated && !isError && !isTemplateLoading"
+      style="min-height: 450px;"
+    >
+      <h4
+        id="pageTitle"
+        class="p-text-center p-mt-6 p-mb-4"
+        tabindex="0"
+        style="font-size: 1.1rem"
+      >
+        Generate AI recommendations based on KPIs and other data points
+      </h4>
+      <h3
+        class="p-text-center p-mb-8"
+        style="font-size: 1.5rem"
+        tabindex="0"
+        aria-label="Project name"
+      >
+        <strong>{{ currentProjectName }}</strong>
+      </h3>
+
+      <div
+        class="p-field p-my-3 p-pb-3"
+        role="group"
+        aria-labelledby="roleLabel"
+        aria-describedby="roleDesc"
+        style="width: 450px; margin-left: auto; margin-right: auto;"
+      >
+        <label
+          id="roleLabel"
+          for="roleDropdown"
+          class="p-d-block p-mb-4"
+          style="background-color: transparent"
+        >
+          <strong>Report tailored for:</strong>
+        </label>
+        <p id="roleDesc" class="p-d-block p-mb-4" style="color: #202429">
+          We will customise the report so it’s useful for your analysis
+          <span class="asterisk">*</span>
+        </p>
+        <p-dropdown
+          inputId="roleDropdown"
+          [options]="roleOptions"
+          placeholder="Please select your role"
+          aria-labelledby="roleLabel"
+          aria-describedby="roleDesc"
+          [showClear]="true"
+          appendTo="body"
+          styleClass="p-inputtext p-p-0"
+          (onChange)="onRoleChange($event)"
+          [(ngModel)]="selectedRole"
+        ></p-dropdown>
+      </div>
+
+      <div
+        class="p-field"
+        role="group"
+        aria-labelledby="sprintLabel"
+        aria-describedby="sprintDesc"
+        style="width: 450px; margin: 2.5rem auto"
+      >
+        <label
+          id="sprintLabel"
+          for="sprintDropdown"
+          class="p-d-block p-mb-4"
+          style="background-color: transparent"
+        >
+          <strong>Sprints:</strong>
+        </label>
+        <p id="sprintDesc" class="p-d-block p-mb-4" style="color: #202429">
+          Select sprints for analysis <span class="asterisk">*</span>
+        </p>
+        <p-multiSelect
+          inputId="sprintDropdown"
+          [options]="sprintOptions"
+          dataKey="code"
+          [(ngModel)]="selectedSprints"
+          defaultLabel="Select Sprints"
+          optionLabel="name"
+          selectedItemsLabel="{0} items selected"
+          placeholder="Select sprint"
+          aria-labelledby="sprintLabel"
+          aria-describedby="sprintDesc"
+          [showClear]="true"
+          appendTo="body"
+          styleClass="p-inputtext p-p-0"
+          [showToggleAll]="true"
+          (onChange)="onSprintsSelection($event.value)"
+        ></p-multiSelect>
+      </div>
+    </article>
+
+    <article
+      #loadingScreen
+      class="generating-recommendations"
+      *ngIf="isLoading"
+      tabindex="0"
+    >
+      <div class="loading-screen">
+        <img
+          src="../../../assets/img/generated-ai.png"
+          alt="loading"
+          [style]="{ width: '25%' }"
+          class="fade-animation"
+        />
+        <h3 class="p-mt-0 p-mb-6">
+          Witty Wait in Progress...Crunching your KPIs
+        </h3>
+      </div>
+    </article>
+
+    <article
+      #generatedReport
+      class="p-fluid generated-report-container"
+      id="generatedReport" *ngIf="isReportGenerated"
+      aria-label="Generated Report Section"
+      aria-describedby="generatedReportDescription"
+      tabindex="0"
+    >
+      <div id="generatedReportDescription" style="display: none;">
+        Section displaying the generated report for the selected sprint
+      </div>
+      <h3 class="p-text-center p-mb-5" style="font-size: 1.6rem" tabindex="0" aria-label="Project name">
+        <strong>{{ currentProjectName }}</strong>
+      </h3>
+      <section class="p-my-5 p-d-flex p-jc-between">
+        <div tabindex="0">
+          <strong>Customised for:</strong> {{ formattedPersona[0]['label'] }}
+        </div>
+        <div tabindex="0"><strong>Date generated:</strong> {{ currentDate }}</div>
+        <div tabindex="0"><strong>Considered data interval: </strong> Last {{selectedSprintsLength}} sprints</div>
+      </section>
+
+      <section class="p-my-4 p-p-6 summary-section">
+        <h2 class="p-mt-0" tabindex="0">Overall Summary</h2>
+        <article class="generated-report-container">
+          <div class="p-d-flex p-ai-center p-jc-between p-mb-2" tabindex="0">
+            <strong>Project Health</strong>
+            <strong>{{ projectScore }}%</strong>
+          </div>
+          <p-progressBar
+            [value]="projectScore"
+            [style]="{ height: '10px', borderRadius: '5px' }"
+            aria-label="Project Health Progress Bar"
+            aria-valuenow="{{ projectScore }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></p-progressBar>
+        </article>
+      </section>
+
+      <article class="p-p-6 p-mb-4 ai-nudges" aria-label="AI Nudges: Suggested Improvements" tabindex="0">
+        <h2 class="p-mt-0">
+          AI Nudges
+          <img
+            src="../../../assets/img/ico-recommendations.svg"
+            alt="Recommendations"
+            style="width: 30px"
+            tabindex="-1"
+          />
+        </h2>
+        <ol
+          class="p-pb-2 p-mb-2 p-pr-4 p-pl-0"
+          style="max-height: 300px; overflow-y: auto; list-style-type: none"
+        >
+          <li
+            class="p-mb-2 ai-nudges-list"
+            *ngFor="let recommendation of recommendationsList"
+            tabindex="0"
+          >
+            <p class="recommendation-row">
+              <span class="p-px-2 p-py-1 p-mr-2 priority-chip">
+                <span
+                  class="severity rounded p-mr-2"
+                  [ngClass]="
+                    getCleanRecommendationType(
+                      recommendation.recommendationType
+                    )
+                  "
+                ></span>
+                {{
+                  getCleanRecommendationType(recommendation.recommendationType)
+                    | uppercase
+                }}
+              </span>
+              <span class="details-column">{{
+                getCleanRecommendationType(recommendation.recommendationDetails)
+              }}</span>
+            </p>
+          </li>
+        </ol>
+      </article>
+
+      <article class="p-p-6 share-email-container p-mb-4" id="shareViaEmail" *ngIf="toShareViaEmail">
+        <h2 class="p-mt-0">Enter Email IDs</h2>
+        <div class="p-d-flex p-ai-center p-jc-center">
+          <p-card header="Simple Card" [style]="{'width': '100%'}">
+            <div class="p-d-flex p-ai-center p-jc-between p-gap-3">
+              <div class="p-fluid" [style]="{'flex': '1'}">
+                <p-chips
+                  [(ngModel)]="emailIds"
+                  separator=","
+                  placeholder="Use comma or hit enter to add multiple email ids"
+                  [addOnBlur]="true"
+                  [addOnTab]="true"
+                  (onAdd)="validateEmail($event)"
+                  (onRemove)="onEmailRemove($event)"
+                  [allowDuplicate]="false">
+                </p-chips>
+              </div>
+              <div class="p-d-flex p-ai-center p-ml-3">
+                <p-button
+                  label="Send"
+                  icon="pi pi-external-link"
+                  styleClass="p-button"
+                  [style]="{'white-space': 'nowrap'}"
+                  (click)="exportAsPDF(false)"
+                  [disabled]="emailIds.length < 1">
+                </p-button>
+              </div>
+            </div>
+            <div *ngIf="invalidEmails.length > 0" class="error-message p-mt-2">
+              <small class="p-error">Invalid email(s): {{ invalidEmails.join(', ') }}</small>
+            </div>
+          </p-card>
+        </div>
+      </article>
+    </article>
+
+    <article class="p-fluid" *ngIf="isError">
+      <div class="p-d-flex p-ai-center p-jc-center p-m-6 p-p-6">
+        <i
+          class="pi pi-exclamation-circle"
+          style="font-size: 2rem; margin-right: 15px; color: #fe414d"
+        ></i>
+        <div>{{errorMessage}}. </div>
+        <span> Please try again, something went wrong!</span>
+      </div>
+    </article>
+
+    <article class="dialog-footer p-py-5">
+      <p-button
+        (click)="displayModal = false; resetSelections()"
+        [label]="closeCancelLabel()"
+        styleClass="p-button-outlined p-button-text"
+      ></p-button>
+      <p-button
+        label="Generate Report"
+        styleClass="p-button p-ml-4"
+        [disabled]="!(isRoleSelected && isSprintSelected)"
+        (click)="generateSprintReport()"
+        *ngIf="!isLoading && !isReportGenerated && !isError"
+      ></p-button>
+      <p-button
+        label="Share via Email"
+        icon="pi pi-share-alt"
+        [styleClass]="getShareButtonClasses()"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="openShareEmailField()"
+      ></p-button>
+      <p-button
+        label="Export as PDF"
+        styleClass="p-button p-ml-4"
+        icon="pi pi-file-export"
+        *ngIf="!isLoading && isReportGenerated"
+        (click)="exportAsPDF(true)"
+      ></p-button>
+    </article>
+  </section>
 </p-dialog>

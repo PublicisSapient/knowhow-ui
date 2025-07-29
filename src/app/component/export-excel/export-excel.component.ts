@@ -44,6 +44,8 @@ export class ExportExcelComponent implements OnInit {
   exportExcelRawVariable;
   // Define blank values to handle
   blankValues = ['', null, undefined, '-', 'NA', 'N/A', 'Undefined'];
+  iskanban = false; // to check if kpi is kanban or not
+  xCaption = '';
 
   constructor(
     private excelService: ExcelService,
@@ -76,6 +78,9 @@ export class ExportExcelComponent implements OnInit {
     chartType?,
     testKpi?,
   ) {
+    this.iskanban = isKanban;
+    this.xCaption = filterApplyData?.selectedMap?.date?.[0];
+
     const sprintIncluded =
       filterApplyData.sprintIncluded.length > 0
         ? filterApplyData.sprintIncluded
@@ -134,6 +139,7 @@ export class ExportExcelComponent implements OnInit {
     kpiName,
     kpiId,
   ) {
+    this.iskanban = false;
     rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
@@ -244,11 +250,12 @@ export class ExportExcelComponent implements OnInit {
       (item) => {
         const formattedItem = { ...item };
         for (const key in formattedItem) {
-          if (key.toLowerCase().includes('date') && formattedItem[key]) {
-            formattedItem[key] = this.helperService.transformDateToISO(
-              formattedItem[key],
-            );
-          }
+          // if (key.toLowerCase().includes('date') && formattedItem[key]) {
+          formattedItem[key] = this.utcToLocalUser(
+            formattedItem[key],
+            key?.toLowerCase() === 'day/week/month' ? this.xCaption : key,
+          );
+          // }
         }
         return formattedItem;
       },
@@ -256,7 +263,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   exportExcel(kpiName) {
-    this.excelService.generateExcel(this.kpiExcelData, kpiName);
+    this.excelService.generateExcel(this.kpiExcelData, kpiName, this.xCaption);
   }
 
   clearModalDataOnClose() {
@@ -294,6 +301,14 @@ export class ExportExcelComponent implements OnInit {
     // this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(
+        (row) => {
+          if (Array.isArray(row['Linked Defect'])) {
+            row['Linked Defect'] = [...new Set(row['Linked Defect'])];
+          }
+          return row;
+        },
+      );
+      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(
         (row) => this.refinedGridData(row),
       );
 
@@ -318,6 +333,7 @@ export class ExportExcelComponent implements OnInit {
       this.excelService.generateExcel(
         this.kpiExcelData,
         this.modalDetails['header'],
+        this.xCaption,
       );
     } else {
       let filteredData = this.tableComponent?.filteredValue
@@ -333,7 +349,11 @@ export class ExportExcelComponent implements OnInit {
       tableData['headerNames'] = headerNames;
       tableData['excelData'] = filteredData;
 
-      this.excelService.generateExcel(tableData, this.modalDetails['header']);
+      this.excelService.generateExcel(
+        tableData,
+        this.modalDetails['header'],
+        this.xCaption,
+      );
     }
   }
 
@@ -521,6 +541,33 @@ export class ExportExcelComponent implements OnInit {
     const link = target.querySelector('a');
     if (link) {
       link.click();
+    }
+  }
+
+  utcToLocalUser(data, xAxis) {
+    return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+  }
+  checkIsItHyperlink(att) {
+    if (!att) {
+      return;
+    }
+
+    if (typeof att === 'number') {
+      return false;
+    }
+
+    return att.startsWith('http://') || att.startsWith('https://');
+  }
+
+  getHyperlinkDefectId(att) {
+    if (!att) {
+      return;
+    }
+    let matchDefectId = att.split('/');
+    let matchLength = matchDefectId.length;
+
+    if (matchDefectId) {
+      return matchDefectId[matchLength - 1];
     }
   }
 }

@@ -32,20 +32,23 @@
   border: 1px solid #ccc;
   background-color: #f5f5f5;
   color: rgb(107, 115, 124);
-  border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.3s;
+  border-radius: 0.5rem;
 }
 
 :host ::ng-deep .slider-item.active .p-button {
-  border: 1px solid #06a0ff;
-  background-color: #06a0ff;
+  border: 1px solid #0b4bc8;
+  background-color: #0b4bc8;
   color: #fff;
+}
+:host ::ng-deep .slider-item.active .p-button:hover {
+  background-color: #083896;
 }
 
 :host ::ng-deep .slider-item:hover {
-  background: #e0e0e0;
+  /* background: #e0e0e0; */
 }
 
 /* Optional styling for navigation buttons */
@@ -72,12 +75,16 @@
 }
 
 :host ::ng-deep .delete-kpi-btn {
-  border: 1px solid red;
+  border: 1px solid #d32f2f;
   color: #fff;
-  background-color: red;
+  background-color: #d32f2f;
   border-radius: 5px;
   font-size: 12px;
   margin-bottom: 10px;
+}
+
+:host ::ng-deep .delete-kpi-btn:hover {
+  background-color: red;
 }
 
 .slider-div {
@@ -144,6 +151,14 @@
   font-size: 12px;
   z-index: 1;
   /* box-shadow: 0 0 2px rgba(0,0,0,0.2); */
+}
+
+:host
+  ::ng-deep
+  .slider-item
+  .p-button:enabled:not(.slider-item.active .p-button):hover {
+  background-color: transparent !important;
+  color: rgb(107, 115, 124) !important;
 }
 
 @media print {

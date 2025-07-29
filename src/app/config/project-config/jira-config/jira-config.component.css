@@ -62,7 +62,7 @@ textarea:disabled {
 width: 450px;
 } */
 
-/* ::ng-deep .ui-float-label textarea:focus ~ label,
+/* ::ng-deep .ui-float-label textarea:focus-visible ~ label,
 ::ng-deep .ui-float-label textarea.ui-state-filled ~ label {
 top: -.75em;
 font-size: 12px
@@ -74,6 +74,9 @@ font-size: 12px
 ::ng-deep .field-mapping .p-autocomplete-dd > .p-inputtext {
   width: 100%;
 }
+::ng-deep .field-mapping .p-autocomplete-dd > .p-inputtext.p-focus {
+  box-shadow: 0 0 0 0.2rem #bfdbfe !important;
+}
 ::ng-deep .field-mapping .p-autocomplete {
   width: 100%;
 }
@@ -83,6 +86,6 @@ font-size: 12px
   cursor: pointer;
 }
 
-.p-button:enabled:focus {
-  outline: 3px solid #000;
+.p-button:enabled:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
