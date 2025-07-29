@@ -73,7 +73,7 @@
               </p-dropdown>
           </div>
           <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
-              <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown" [style]="{'width':'436px', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues" defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip" optionDisabled="disabled" aria-label="Multiple Values Selection" tabindex="0">
+              <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown" [style]="{'width':'436px', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues" placeholder="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip" optionDisabled="disabled" aria-label="Multiple Values Selection" tabindex="0">
               </p-multiSelect>
           </div>
       </div>

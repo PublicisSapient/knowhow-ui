@@ -106,7 +106,7 @@
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr;let k = index">
           <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
-            [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
+            [(ngModel)]="filterOptions['filter'+(k+1)]"
             [style]="{'margin-left': '5px', 'height': '32px'}" (onChange)="handleChange('single',k)"
             [virtualScroll]="true" [virtualScrollItemSize]="30"
             [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"
@@ -134,7 +134,7 @@
             [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
             (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
             [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
-            defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+            placeholder="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
           </p-multiSelect>
         </ng-container>
       </div>
@@ -160,7 +160,7 @@
                   [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]" [maxSelectedLabels]="3"
                   selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
                   (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
-                  [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
+                  [style]="{'height': '32px', 'margin-left': '5px'}" placeholder="{{filter?.filterType}}"
                   [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
                 </p-multiSelect>
               </div>

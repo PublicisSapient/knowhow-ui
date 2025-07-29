@@ -77,7 +77,7 @@
         [options]="filteredSuggestions[field.hierarchyLevelId] || field.list"
         [(ngModel)]="selectedItems[field.hierarchyLevelId]"
         filter="true"
-        defaultLabel="Select {{ field.hierarchyLevelName }}"
+        placeholder="Select {{ field.hierarchyLevelName }}"
         optionLabel="nodeDisplayName"
         class="multiselect-custom"
         [showToggleAll]="false"
