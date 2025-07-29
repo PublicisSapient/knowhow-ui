@@ -132,6 +132,7 @@ import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
+import { HomeComponent } from './dashboard/home/home.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -192,6 +193,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     RecommendationsComponent,
     StickyHeaderV2Component,
     AddToReportPopUpComponent,
+    HomeComponent,
   ],
   imports: [
     SharedModuleModule,
