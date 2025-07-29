@@ -215,6 +215,24 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
+
+        if (Array.isArray(this.dropdownArr) && this.dropdownArr.length) {
+          this.dropdownArr.forEach((filter, index) => {
+            const key = 'filter' + (index + 1);
+            let val = this.filterOptions[key];
+
+            if (Array.isArray(val)) {
+              val = val[0];
+            }
+
+            if (val === null || val === undefined) {
+              val = filter.options[0];
+            }
+
+            this.filterOptions[key] = val;
+          });
+        }
+
         this.selectedTab = this.service.getSelectedTab()
           ? this.service.getSelectedTab().toLowerCase()
           : '';
