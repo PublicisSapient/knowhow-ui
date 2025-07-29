@@ -222,3 +222,7 @@ label.btn-import-label {
 .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
+:host::ng-deep.p-multiselect.p-multiselect-chip .p-multiselect-token {
+  background-color: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}

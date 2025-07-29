@@ -123,20 +123,30 @@ a {
 .p-button:not(.p-dialog-header-close) {
   border-radius: 0.5rem;
 }
-.p-button.p-button-text:enabled:focus:not(.p-button-danger):not(
+/* .p-button.p-button-text:enabled:focus:not(.p-button-danger):not(
     .p-button-icon-only
   ),
 .p-button:enabled:focus:not(.p-button-danger):not(.p-button-icon-only):not(
     .cancel-btn
+  ):not(.add-to-reports-btn):not(.p-button-secondary):not(
+    .p-dialog-header-icon.p-dialog-header-close
+  ) */
+.p-button.p-button-text:enabled:focus:not(.p-button-danger):not(
+    .p-button-icon-only
   ),
+.p-button:enabled:has(.p-button-secondary):focus,
 .p-button.p-button-text:enabled:hover:not(.p-button-danger) {
   background: rgba(63, 81, 181, 0.04);
   color: #3f51b5;
   border-color: transparent;
 }
+.p-button.p-button-primary,
 .p-button:enabled:focus:not(.p-dialog-header-close):not(.p-button-danger):not(
     .p-button.p-button-icon-only
-  ):not(.p-button.column-btn):not(.cancel-btn) {
+  ):not(.p-button.column-btn):not(.cancel-btn):not(.p-button-secondary):not(
+    .p-dialog-header-icon.p-dialog-header-close
+  ),
+.p-radiobutton .p-radiobutton-box.p-highlight {
   background-color: #0b4bc8;
 }
 
@@ -2485,4 +2495,15 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .p-multiselect-item:has(.filter-item[aria-checked='true']):hover {
   color: #3f51b5 !important;
   background: rgba(63, 81, 181, 0.12) !important;
+}
+.p-datatable .p-sortable-column.p-highlight {
+  background: #f3f4f6;
+  color: rgba(0, 0, 0, 0.87);
+}
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+  color: rgba(0, 0, 0, 0.87);
+}
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  color: #3f51b5;
+  border-color: transparent;
 }
