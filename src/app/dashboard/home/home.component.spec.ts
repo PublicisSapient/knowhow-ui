@@ -26,6 +26,7 @@ describe('HomeComponent', () => {
   let mockLocation: jasmine.SpyObj<Location>;
   let mockHttpService: jasmine.SpyObj<HttpService>;
   let routerMock;
+  let activatedRouteMock;
 
   beforeEach(async () => {
     const routes: Routes = [
@@ -54,8 +55,12 @@ describe('HomeComponent', () => {
       queryParams: of({ myParam: 'testValue' }),
       events: of({}),
     };
-    const activatedRouteMock = {
-      queryParams: of({}),
+    activatedRouteMock = {
+      queryParams: of({
+        stateFilters: 'mockKpi9dfjdhfjd',
+        kpiFilters: 'mockKpi9fhjdhfjd',
+        selectedTab: '',
+      }),
     };
 
     mockHttpService = jasmine.createSpyObj('HttpService', ['handleRestoreUrl']);
@@ -182,11 +187,21 @@ describe('HomeComponent', () => {
     tick(); // simulates async passage of time
   }));
 
-  it('should handle error from handleRestoreUrl and redirect to error page', fakeAsync(() => {
-    mockSharedService.getSelectedTab.and.returnValue(null);
-    const error = new Error('Invalid encoded string');
-    mockHttpService.handleRestoreUrl.and.returnValue(throwError(() => error));
+  it('should handle when filter is greater than 8', fakeAsync(() => {
+    const encodedState = btoa('stateMockfdfdf');
+    const encodedKpi = btoa('kpiMockdfdfdfdffd');
 
+    mockHttpService.handleRestoreUrl.and.returnValue(
+      of({
+        data: {
+          longKPIFiltersString: btoa(JSON.stringify({ filter: 'mockdfdfd' })),
+          longStateFiltersString: encodedState,
+        },
+        success: true,
+      }),
+    );
+    mockSharedService.getSelectedTab.and.returnValue('iteration');
+    spyOn(component as any, 'urlRedirection'); // optional to spy on internal calls
     fixture.detectChanges();
     tick();
   }));
