@@ -106,7 +106,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
             board?.boardName.toLowerCase() !== 'developer' &&
             board?.boardName.toLowerCase() !== 'dora' &&
             board?.boardName.toLowerCase() !== 'release' &&
-            board?.boardName.toLowerCase() !== 'backlog',
+            board?.boardName.toLowerCase() !== 'backlog' &&
+            board?.boardName.toLowerCase() !== 'home',
         );
         this.checkShownTabs();
         this.selectedTabKpis = this.tabs[0].kpis.filter(
@@ -309,7 +310,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.loader = true;
     this.jiraGroups = 0;
     this.showNoDataMsg = false;
-    if (this.service.getSelectedTab() === 'kpi-maturity') {
+    if (
+      this.service.getSelectedTab() === 'kpi-maturity' ||
+      this.service.getSelectedTab() === 'home'
+    ) {
       this.masterData = $event?.masterData;
 
       this.configGlobalData = $event.dashConfigData;

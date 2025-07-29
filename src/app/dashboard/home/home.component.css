@@ -1,0 +1,166 @@
+/* Maturity tabluar Styles start */
+
+:host .data-item {
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #d5dbe1;
+}
+
+.maturity-tablur-view {
+  padding: 1rem;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.icon {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color: #f5f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data {
+  text-align: left;
+  align-content: center;
+}
+
+.tabularKPI-column-header {
+  margin-top: 15px;
+}
+
+.tabularKPI-column-value {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Maturity tablur Styles End  */
+
+:host .kpi-card-container {
+  background: #fff;
+  border: 1px solid #d5dbe1;
+  border-radius: 10px;
+  opacity: 1;
+  position: relative;
+  /* max-height: 500px;
+    height: 400px; */
+}
+
+/* :host .kpi-card-container-v2 {
+  background: #fff;
+  border: 1px solid #d5dbe1;
+  border-radius: 10px;
+  opacity: 1;
+  position: relative;
+  max-height: 500px;
+  height: 100%;
+} */
+
+:host .kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #c0c0c0;
+  padding: 8px 10px;
+  letter-spacing: 0px;
+  align-items: center;
+  font-size: 20px;
+  color: #202429;
+  overflow: visible;
+}
+
+.kpi-card-icons {
+  display: flex;
+}
+
+.kpi-card-icons i,
+.kpi-card-icons fa-icon {
+  border: 1px solid #707070;
+  color: #707070;
+  border-radius: 5px;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
+.kpi-card-name-placeholder {
+  display: flex;
+  align-items: center;
+}
+
+.kpi-card-name-placeholder h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+:host .kpi-card-title-container {
+  display: flex;
+  align-items: center;
+}
+
+:host .kpi-card-title-container h3 {
+  margin-bottom: auto;
+  line-height: 32px;
+  margin-top: 0;
+  display: inline;
+}
+
+:host .kpi-menu-container {
+  position: absolute;
+  right: 20px;
+}
+
+.info-icon {
+  height: 20px;
+  margin-left: 20px;
+}
+
+.info-icon img {
+  height: 20px;
+}
+
+.m1 {
+  background: #88f99c;
+  color: white;
+}
+
+.m2 {
+  background: #8acfa6;
+  color: white;
+}
+
+.m3 {
+  background: #ffcd44;
+  color: white;
+}
+
+.m4 {
+  background: #ffb27f;
+  color: white;
+}
+
+.m5 {
+  background: #fd8185;
+  color: white;
+}
+
+.healthy {
+  background: #00bd24;
+  color: white;
+}
+
+.critical {
+  background: #ff1f44;
+  color: white;
+}
+
+.styled-cell {
+  width: fit-content;
+  border-radius: 10px;
+  height: fit-content;
+}

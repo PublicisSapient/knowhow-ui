@@ -21,6 +21,7 @@ import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.c
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
+import { HomeComponent } from '../dashboard/home/home.component';
 
 @Injectable({
   providedIn: 'root',
@@ -52,6 +53,15 @@ export class AppInitializerService {
       canActivate: [AccessGuard],
       data: {
         feature: 'Maturity',
+      },
+    },
+    {
+      path: 'home',
+      component: HomeComponent,
+      pathMatch: 'full',
+      canActivate: [AccessGuard],
+      data: {
+        feature: 'Home',
       },
     },
   ];

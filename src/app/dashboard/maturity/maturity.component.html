@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <ng-container *ngIf="!noProjects else noProjectsTemplate">
   <div class="maturity-container">
-    <ng-container *ngIf="!showNoDataMsg">
+    <!-- <ng-container *ngIf="showNoDataMsg"> -->
       <div class="tabs-container">
         <div class="tab" *ngFor="let board of tabs; let i=index"
           [ngClass]="{
@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-    </ng-container>
+    <!-- </ng-container> -->
     <div *ngIf="showNoDataMsg && !loader && noDataForFilter">
       <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
         <h2 class="msg" tabindex="0">The selected organization level need to have atleast one value available for the KPI's to show
