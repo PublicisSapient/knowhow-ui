@@ -92,7 +92,7 @@
       </p-footer>
   </p-confirmDialog>
 
-  <p-overlayPanel #hitoryPopup styleClass="hiatoryOverlayWrapper" [showCloseIcon]="true" role="dialog" aria-label="Field Change History" tabindex="0">
+  <p-overlayPanel #hitoryPopup styleClass="hiatoryOverlayWrapper" [showCloseIcon]="true">
       <div class="comment-inner-section">
           <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner" aria-hidden="true"></i>
           <ng-container *ngIf="individualFieldHistory?.length > 0 && !showSpinner; else noComments">

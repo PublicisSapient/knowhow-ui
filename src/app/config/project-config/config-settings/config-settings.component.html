@@ -20,7 +20,7 @@
   <p-selectButton
     [options]="configOptions"
     [(ngModel)]="selectedTab"
-    (onChange)="onTabChange()"
+    (onChange)="onTabChange($event)"
     optionLabel="tab"
     optionValue="tabValue"
     styleClass="p-mb-5"

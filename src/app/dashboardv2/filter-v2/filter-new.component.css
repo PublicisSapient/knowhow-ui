@@ -426,6 +426,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 :host ::ng-deep .p-fluid .p-button {
   background: #0b4bc8;
 }
+:host::ng-deep.p-button.p-button-primary {
+  background: #0b4bc8;
+}
 
 :host ::ng-deep .p-button.p-button-icon-only {
   border-top-left-radius: 0;

@@ -43,11 +43,13 @@
       <p-button
         pRipple
         label="Add"
-        class="p-button-raised configure-btn p-mt-1"
+        class="p-button-raised configure-btn p-button-primary p-mt-1"
         [style]="{
           padding: '15px',
           'border-top-left-radius': '0px',
-          'border-bottom-left-radius': '0px'
+          'border-bottom-left-radius': '0px',
+          'height':'43px',
+          'background-color':'#0b4bc8'
         }"
         (click)="addAdditionalFilterMappings()"
         (keydown.enter)="addAdditionalFilterMappings()"
@@ -80,7 +82,12 @@
                 pRipple
                 type="button"
                 icon="pi pi-times"
-                class="p-button p-button-secondary p-button-close"
+                class="p-button  p-button-close"
+                 [style]="{
+                  'color':'#000',
+          'border':'none',
+          'background-color':'transparent !important'
+        }"
                 (click)="removeAdditionFilterMapping(filter)"
                 (keydown.enter)="removeAdditionFilterMapping(filter)"
                 aria-label="Remove Filter"
@@ -121,7 +128,7 @@
               pRipple
               type="button"
               label="Reset"
-              class="p-button-raised"
+              class="p-button-raised p-button-primary"
               (click)="resetRadioButton(filter.code + 'Identifier')"
               (keydown.enter)="resetRadioButton(filter.code + 'Identifier')"
               aria-label="Reset Radio Button Selection"
