@@ -130,17 +130,17 @@
 }
 
 :host ::ng-deep.p-dialog-header-icons {
-  top: -8px;
+  /* top: -8px;
   right: -8px;
-  border-radius: 2px;
-  background-color: black;
+  border-radius: 2px; */
+  /* background-color: black; */
   border: none;
-  padding: 5px;
+  /* padding: 5px; */
 }
 
-:host ::ng-deep .p-dialog-header-close-icon {
+/* :host ::ng-deep .p-dialog-header-close-icon {
   color: white;
-}
+} */
 
 .export-button {
   position: absolute;
@@ -148,6 +148,13 @@
   top: 14px;
 }
 
-:host .p-button:enabled:focus {
-  outline: 3px solid #000;
+:host .p-button:enabled:focus-visible {
+  outline: 3px solid #0b4bc8;
+}
+
+.highlighted {
+  border: 3px solid #0b4bc8 !important;
+  border-radius: 10px;
+  transition: border 2s ease;
+  box-shadow: 0 0 10px rgba(11, 75, 200, 0.35);
 }

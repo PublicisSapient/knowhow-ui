@@ -1,5 +1,5 @@
 
-<div class="filter-container p-m-0 p-fluid">
+<div class="filter-container p-m-0 p-fluid p-jc-space-between p-ai-center">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
@@ -38,6 +38,30 @@
         (onAdditionalFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
     </ng-container>
   </div>
+</div>
+<div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
+  <div class="p-d-flex p-ai-center kpi-search">
+    <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
+    <span class="search-icon"><i class="pi pi-search kpi-search-icon"></i></span>
+    <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem;" (click)="selectedKPI = ''" (keydown.enter)="selectedKPI = null"></i></span>
+    <p-autoComplete
+      #autoComplete
+      [suggestions]="filteredKpis"
+      [(ngModel)]="selectedKPI"
+      [group]="true"
+      [field]="'label'"
+      [optionGroupLabel]="'label'"
+      [optionGroupChildren]="'items'"
+      (completeMethod)="debouncedFilterKpis($event)"
+      [completeOnFocus]="true"
+      [placeholder]="'Search for KPI (special characters %, ., -, _ are allowed)'"
+      (onSelect)="onKpiSearch($event)"
+      (onKeyUp)="validateInput($event)"
+      (input)="handleInputChange($event)"
+      [class.ng-invalid]="!isValidInput">
+    </p-autoComplete>
+  </div>
+  <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
@@ -204,9 +228,9 @@
                 [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)" aria-label="Select Date Range Type"></p-dropdown>
             </div>
             <div class="p-d-flex p-justify-end p-align-center btn-container">
-              <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
+              <button pButton pRipple label="Apply" class="p-button-primary p-button-sm  p-mr-1"
                 (click)="applyDateFilter()" tabindex="0" aria-label="Apply Date Filter"></button>
-              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply" tabindex="0"
+              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm " tabindex="0"
                 (click)="closeDateFilterModel()" aria-label="Close Date Filter"></button>
             </div>
           </div>

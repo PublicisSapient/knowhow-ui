@@ -23,6 +23,8 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectorRef,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -34,10 +36,11 @@ import {
   distinctUntilChanged,
   first,
   mergeMap,
+  takeUntil,
 } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -129,7 +132,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   additionalFiltersArr = {};
   isRecommendationsEnabled: boolean = false;
   kpiList: Array<string> = [];
-  releaseEndDate: string = '';
+  releaseEndDate;
   timeRemaining = 0;
   immediateLoader = true;
   projectCount: number = 0;
@@ -146,6 +149,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
 
+  private destroy$ = new Subject<void>();
+  @ViewChild('recommendationsComponent', { read: ElementRef })
+  recommendationsComponent: ElementRef;
+  floatingRecommendation: boolean = false;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -155,6 +163,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private location: Location,
+    private renderer2: Renderer2,
   ) {}
 
   arrayDeepCompare(a1, a2) {
@@ -241,10 +250,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    // const selectedTab = window.location.hash.substring(1);
-    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+  private setupSearchQuerySubscription(): void {
+    this.service.searchQuery$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((searchQuery) => {
+        if (searchQuery) {
+          setTimeout(
+            () => this.handlePageScrollOnSearch(searchQuery.value),
+            1500,
+          );
+        }
+      });
+  }
 
+  private setupScrumKanbanSwitchSubscription(): void {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch.subscribe((data) => {
         this.resetToDefaults();
@@ -253,6 +272,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noProjects = this.service.noProjectsObj;
       }),
     );
+  }
+
+  ngOnInit() {
+    // const selectedTab = window.location.hash.substring(1);
+    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    this.initializeUserDetails();
+    this.setupScrumKanbanSwitchSubscription();
 
     this.subscriptions.push(
       this.service.onTabSwitch.subscribe((data) => {
@@ -317,11 +344,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             )
               return this.service.passDataToDashboard;
             for (const key in this.kpiChartData) {
-              // this.kpiChartData[key] = this.generateColorObj(
-              //   key,
-              //   this.kpiChartData[key],
-              // );
-              // this.createTrendsData(key);
               this.handleMaturityTableLoader();
             }
             return this.service.passDataToDashboard;
@@ -408,109 +430,104 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (!this.refreshCounter) {
-          let stateFiltersParam = params['stateFilters'];
-          let kpiFiltersParam = params['kpiFilters'];
-          let tabParam = params['selectedTab'];
-          if (!tabParam) {
-            if (!this.service.getSelectedTab()) {
-              let selectedTab = decodeURIComponent(this.location.path());
-              selectedTab = selectedTab?.split('/')[2]
-                ? selectedTab?.split('/')[2]
-                : 'iteration';
-              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-              this.selectedTab = selectedTab.split('?statefilters=')[0];
-              this.service.setSelectedBoard(this.selectedTab);
-            } else {
-              this.selectedTab = this.service.getSelectedTab();
-              this.service.setSelectedBoard(this.selectedTab);
-            }
+        if (this.refreshCounter) return;
+        let stateFiltersParam = params['stateFilters'];
+        let kpiFiltersParam = params['kpiFilters'];
+        let tabParam = params['selectedTab'];
+        if (!tabParam) {
+          if (!this.service.getSelectedTab()) {
+            let selectedTab = decodeURIComponent(this.location.path());
+            selectedTab = selectedTab?.split('/')[2]
+              ? selectedTab?.split('/')[2]
+              : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.service.setSelectedBoard(this.selectedTab);
           } else {
-            this.selectedTab = tabParam;
+            this.selectedTab = this.service.getSelectedTab();
             this.service.setSelectedBoard(this.selectedTab);
           }
+        } else {
+          this.selectedTab = tabParam;
+          this.service.setSelectedBoard(this.selectedTab);
+        }
 
-          if (this.selectedTab === 'kpi-maturity') {
-            setTimeout(() => {
-              this.router.navigate([`dashboard/${this.selectedTab}`], {
-                queryParams: {
-                  stateFilters: stateFiltersParam,
-                  kpiFilters: kpiFiltersParam,
-                  selectedTab: this.selectedTab,
-                }, // Pass the object here
-              });
+        if (this.selectedTab === 'kpi-maturity') {
+          setTimeout(() => {
+            this.router.navigate([`dashboard/${this.selectedTab}`], {
+              queryParams: {
+                stateFilters: stateFiltersParam,
+                kpiFilters: kpiFiltersParam,
+                selectedTab: this.selectedTab,
+              }, // Pass the object here
             });
-          }
-          if (stateFiltersParam?.length) {
-            if (
-              stateFiltersParam?.length <= 8 &&
-              kpiFiltersParam?.length <= 8
-            ) {
-              this.httpService
-                .handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
-                .pipe(
-                  catchError((error) => {
-                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                    setTimeout(() => {
-                      this.service.raiseError({
-                        status: 900,
-                        message: error.message || 'Invalid URL.',
-                      });
+          });
+        }
+        if (stateFiltersParam?.length) {
+          if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+            this.httpService
+              .handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+              .pipe(
+                catchError((error) => {
+                  this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                  setTimeout(() => {
+                    this.service.raiseError({
+                      status: 900,
+                      message: error.message || 'Invalid URL.',
                     });
-
-                    return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
-                  }),
-                )
-                .subscribe((response: any) => {
-                  if (response.success) {
-                    const longKPIFiltersString =
-                      response.data['longKPIFiltersString'];
-                    const longStateFiltersString =
-                      response.data['longStateFiltersString'];
-                    stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
-
-                    // const kpiFiltersParam = params['kpiFilters'];
-                    if (longKPIFiltersString) {
-                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
-
-                      const kpiFilterValFromUrl =
-                        kpiFilterParamDecoded &&
-                        JSON.parse(kpiFilterParamDecoded)
-                          ? JSON.parse(kpiFilterParamDecoded)
-                          : this.service.getKpiSubFilterObj();
-                      this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                    }
-
-                    // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-
-                    this.urlRedirection(stateFiltersParam);
-                    this.refreshCounter++;
-                  }
-                });
-            } else {
-              try {
-                stateFiltersParam = atob(stateFiltersParam);
-                if (kpiFiltersParam) {
-                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
-                  const kpiFilterValFromUrl =
-                    kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
-                      ? JSON.parse(kpiFilterParamDecoded)
-                      : this.service.getKpiSubFilterObj();
-                  this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                }
-                // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-                this.urlRedirection(stateFiltersParam);
-                this.refreshCounter++;
-              } catch (error) {
-                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                setTimeout(() => {
-                  this.service.raiseError({
-                    status: 900,
-                    message: 'Invalid URL.',
                   });
-                }, 100);
+
+                  return throwError(error); // Re-throw the error so it can be caught by a global error handler if needed
+                }),
+              )
+              .subscribe((response: any) => {
+                if (response.success) {
+                  const longKPIFiltersString =
+                    response.data['longKPIFiltersString'];
+                  const longStateFiltersString =
+                    response.data['longStateFiltersString'];
+                  stateFiltersParam = atob(longStateFiltersString);
+                  // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                  // const kpiFiltersParam = params['kpiFilters'];
+                  if (longKPIFiltersString) {
+                    const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                    const kpiFilterValFromUrl =
+                      kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
+                        ? JSON.parse(kpiFilterParamDecoded)
+                        : this.service.getKpiSubFilterObj();
+                    this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                  }
+
+                  // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+
+                  this.urlRedirection(stateFiltersParam);
+                  this.refreshCounter++;
+                }
+              });
+          } else {
+            try {
+              stateFiltersParam = atob(stateFiltersParam);
+              if (kpiFiltersParam) {
+                const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                const kpiFilterValFromUrl =
+                  kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)
+                    ? JSON.parse(kpiFilterParamDecoded)
+                    : this.service.getKpiSubFilterObj();
+                this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
               }
+              // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+              this.urlRedirection(stateFiltersParam);
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: 'Invalid URL.',
+                });
+              }, 100);
             }
           }
         }
@@ -580,6 +597,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -627,11 +646,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         )[0];
         const endDate =
           selectedRelease !== undefined
-            ? new Date(selectedRelease?.releaseEndDate)
-                .toISOString()
-                .split('T')[0]
+            ? selectedRelease?.releaseEndDate
             : undefined;
-        this.releaseEndDate = endDate;
+        this.releaseEndDate = new Date(endDate).toISOString().split('T')[0];
         const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
@@ -641,10 +658,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           (x) => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0],
         )[0];
         if (selectedSprint) {
-          const today = new Date().toISOString().split('T')[0];
-          const endDate = new Date(selectedSprint?.sprintEndDate)
-            .toISOString()
-            .split('T')[0];
+          const today = this.stripTime(new Date());
+          const endDate = this.stripTime(
+            new Date(selectedSprint?.sprintEndDate),
+          );
           this.timeRemaining = this.calcBusinessDays(today, endDate);
           this.service.iterationConfigData.next({
             daysLeft: this.timeRemaining,
@@ -1174,6 +1191,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.sonarKpiRequest = this.httpService.postKpi(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         this.afterSonarKpiResponseReceived(getData, postData);
       },
       (error) => {
@@ -1191,6 +1209,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterSonarKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1210,6 +1229,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.loaderJenkins = false;
           if (getData !== null) {
             this.jenkinsKpiData = getData;
@@ -1244,6 +1264,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.loaderJenkins = false;
           // move Overall to top of trendValueList
           if (getData !== null) {
@@ -1273,6 +1294,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterZypherKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1293,6 +1315,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           this.afterZypherKpiResponseReceived(getData, postData);
         },
         (error) => {
@@ -1309,10 +1332,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
+      const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
+      if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
           (getData) => {
+            this.setupSearchQuerySubscription();
             if (
               getData !== null &&
               getData[0] !== 'error' &&
@@ -1401,6 +1427,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKPIForIteration(postData, source): void {
     this.httpService.postKpiNonTrend(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
@@ -1442,17 +1469,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForBacklog(postData, source) {
-    const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
-    if (kpi171)
-      kpi171['filterDuration'] = {
-        duration: 'MONTHS',
-        value: 6,
-      };
-
     this.jiraKpiRequest = this.httpService
       .postKpiNonTrend(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             let localVariable = this.helperService.createKpiWiseId(getData);
@@ -1511,6 +1532,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiNonTrend(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             /** creating array into object where key is kpi id */
             const localVariable = this.helperService.createKpiWiseId(getData);
@@ -1542,6 +1564,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -1568,6 +1591,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpiKanban(postData, source)
       .subscribe(
         (getData) => {
+          this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
             this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -1589,6 +1613,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKanbanKpi(postData, source): void {
     this.httpService.postKpiKanban(postData, source).subscribe(
       (getData) => {
+        this.setupSearchQuerySubscription();
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
@@ -1825,6 +1850,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             tempArr = this.createCombinations(
               this.kpiSelectedFilterObj[kpiId]['filter1'],
               this.kpiSelectedFilterObj[kpiId]['filter2'],
+              kpiId,
             );
             const preAggregatedValues = [];
             for (let i = 0; i < tempArr?.length; i++) {
@@ -1834,21 +1860,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                     k['filter1'] ==
                       (tempArr[i]?.filter1.length
                         ? tempArr[i]?.filter1
-                        : 'Overall') && k['filter2'] == tempArr[i]?.filter2,
+                        : 'Overall') &&
+                    k['filter2'] ==
+                      (tempArr[i]?.filter2 ? tempArr[i]?.filter2 : 'Overall'),
                 ),
               );
             }
             if (preAggregatedValues && preAggregatedValues.length > 1) {
-              const transformFilter = {};
-              preAggregatedValues.forEach((obj) => {
-                transformFilter[obj.filter1 + 'and' + obj.filter2] = obj.value;
-              });
-              this.kpiChartData[kpiId] =
-                this.helperService.applyAggregationLogic(
-                  transformFilter,
-                  aggregationType,
-                  this.tooltip.percentile,
-                );
+              if (kpiId === 'kpi171') {
+                this.kpiChartData[kpiId] =
+                  this.helperService.kpiCycleTime193Aggregration(
+                    preAggregatedValues,
+                  );
+              } else {
+                const transformFilter = {};
+                preAggregatedValues.forEach((obj) => {
+                  transformFilter[obj.filter1 + 'and' + obj.filter2] =
+                    obj.value;
+                });
+                this.kpiChartData[kpiId] =
+                  this.helperService.applyAggregationLogic(
+                    transformFilter,
+                    aggregationType,
+                    this.tooltip.percentile,
+                  );
+              }
             } else {
               this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
                 ? preAggregatedValues[0]?.value
@@ -1949,6 +1985,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.showKpiTrendIndicator[kpiId] = false;
     }
 
+    if (kpiId === 'kpi171') {
+      this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
+        this.kpiChartData[kpiId],
+      );
+    }
+
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
   }
@@ -1957,9 +1999,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const filterType = this.updatedConfigGlobalData
       .find((kpi) => kpi?.kpiId === kpiId)
       ?.kpiDetail?.kpiFilter?.toLowerCase();
-    if (Object.keys(this.service.getKpiSubFilterObj()).includes(kpiId)) {
+    if (
+      kpiId !== 'kpi171' &&
+      Object.keys(this.service.getKpiSubFilterObj()).includes(kpiId)
+    ) {
       this.kpiSelectedFilterObj[kpiId] =
         this.service.getKpiSubFilterObj()[kpiId];
+    } else if (
+      kpiId === 'kpi171' &&
+      Object.keys(this.service.getKpiSubFilterObj()).includes(kpiId)
+    ) {
+      this.kpiSelectedFilterObj[kpiId] =
+        this.service.getKpiSubFilterObj()[kpiId];
+      this.durationFilter = JSON.parse(
+        JSON.stringify(this.kpiSelectedFilterObj[kpiId].filter1),
+      );
+      this.service.getKpiSubFilterObj()['durationFilter'] = this.durationFilter;
     } else {
       this.getDefaultKPIFilters(kpiId, filterPropArr, filterType);
     }
@@ -2003,9 +2058,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
               }
             } else {
-              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
-                this.kpiDropdowns[kpiId][i].options[0],
-              ];
+              if (kpiId === 'kpi171') {
+                this.kpiSelectedFilterObj[kpiId] = {
+                  filter1: ['Past 6 Months'],
+                  filter2: null,
+                };
+                this.durationFilter = 'Past 6 Months';
+                this.kpiSelectedFilterObj['durationFilter'] =
+                  this.durationFilter;
+              } else {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
+                  this.kpiDropdowns[kpiId][i].options[0],
+                ];
+              }
             }
           }
         }
@@ -2590,11 +2655,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               i +
                 1 +
                 ' - ' +
-                (item?.['sprintNames']?.length > 0
-                  ? item['sprintNames'].join(',')
-                  : item?.['sSprintName']
-                  ? item['sSprintName']
-                  : item?.['date']),
+                this.utcToLocalUser(
+                  item?.['sprintNames']?.length > 0
+                    ? item['sprintNames'].join(',')
+                    : item?.['sSprintName']
+                    ? item['sSprintName']
+                    : item?.['date'],
+                  obj['frequency'],
+                ),
             );
             let val = item?.lineValue >= 0 ? item?.lineValue : item?.value;
             obj[i + 1] =
@@ -2668,12 +2736,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpiTableDataObj[hierarchyName]?.sort((a, b) => a.order - b.order);
   }
 
-  createCombinations(arr1, arr2) {
+  createCombinations(arr1, arr2, kpiId) {
     let arr = [];
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
-          arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          if (kpiId === 'kpi171') {
+            arr.push({ filter1: [arr1[i]], filter2: [arr2[j]] });
+          } else {
+            arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          }
         }
       }
     } else {
@@ -2682,6 +2754,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         {
           filter1: [],
           filter2: arr2,
+        },
+      ];
+    }
+
+    if (kpiId === 'kpi171' && (arr2 == null || arr2.length === 0)) {
+      return [
+        {
+          filter1: arr1,
+          filter2: null,
         },
       ];
     }
@@ -2695,8 +2776,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
-    // data = this.appendParentName(data);
-
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -2745,7 +2824,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
       }
     }
-    // console.log(this.allKpiArray);
   }
 
   appendParentName(data) {
@@ -2935,11 +3013,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (Array.isArray(dataItem.value) && anyProjectNodeArr[subIndex]) {
             anyProjectNode = anyProjectNodeArr[subIndex];
             dataItem.value?.forEach((element) => {
-              // if (element.hasOwnProperty('data')) {
-              //   element.data =
-              //     element.data + ' (' + anyProjectNode['nodeName'] + ')';
-              // }
-
               if (element.hasOwnProperty('sprojectName')) {
                 element.sprojectName =
                   element.sprojectName +
@@ -2947,12 +3020,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   anyProjectNode['nodeName'] +
                   ')';
               }
-              // else if (element.value && Array.isArray(element.value)) {
-              //   element = this.appendParentNameInActualData(
-              //     element,
-              //     anyProjectNode,
-              //   );
-              // }
             });
           } else if (anyProjectNode) {
             if (dataItem.hasOwnProperty('sprojectName')) {
@@ -3026,7 +3093,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
       }
     } else {
-      // console.log(anyProject);
       anyProjectNode = this.findHigherLevelParentForOtherNode(
         anyProject,
         completeHierarchyData,
@@ -3228,14 +3294,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiChartData[kpiId] =
               this.applyAggregationLogicForkpi138(preAggregatedValues);
           } else {
-            if (kpiId === 'kpi171') {
-              this.kpiChartData[kpiId] = [
-                this.helperService.aggregationCycleTime(preAggregatedValues),
-              ];
-            } else {
-              this.kpiChartData[kpiId] =
-                this.applyAggregationLogic(preAggregatedValues);
-            }
+            this.kpiChartData[kpiId] =
+              this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
@@ -3246,11 +3306,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           (!Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) ||
             !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])))
       ) {
-        if (kpiId === 'kpi171') {
-          this.getkpi171Data(kpiId, trendValueList);
-        } else {
-          this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
-        }
+        // if (kpiId === 'kpi171') {
+        //   // this.getkpi171Data(kpiId, trendValueList);
+        // } else {
+        this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
+        // }
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
@@ -3273,22 +3333,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    this.kpi171RoundOff();
+    // this.kpi171RoundOff();
   }
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
     let filters = this.kpiSelectedFilterObj[kpiId];
-    if (kpiId === 'kpi171') {
-      const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty(
-        'filter2',
-      )
-        ? this.kpiSelectedFilterObj[kpiId]['filter2']
-        : ['Overall'];
-      filters = {
-        filter1: issueFilter,
-      };
-    }
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -3315,25 +3365,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
-    this.kpi171RoundOff();
+    // this.kpi171RoundOff();
   }
 
-  kpi171RoundOff() {
-    if (
-      this.kpiChartData.hasOwnProperty('kpi171') &&
-      this.kpiChartData['kpi171'].length
-    ) {
-      const roundOffData = [...this.kpiChartData['kpi171']];
-      if (roundOffData && roundOffData?.length) {
-        roundOffData[0]['data'] = roundOffData[0]?.data?.map((item) => ({
-          ...item,
-          value: Math.round(item.value), // Round off `value`
-          value1: Math.round(item.value1), // Round off `value1`
-        }));
-        this.kpiChartData['kpi171'] = roundOffData;
-      }
-    }
-  }
+  // kpi171RoundOff() {
+  //   if (
+  //     this.kpiChartData.hasOwnProperty('kpi171') &&
+  //     this.kpiChartData['kpi171'].length
+  //   ) {
+  //     const roundOffData = [...this.kpiChartData['kpi171']];
+  //     if (roundOffData && roundOffData?.length) {
+  //       roundOffData[0]['data'] = roundOffData[0]?.data?.map((item) => ({
+  //         ...item,
+  //         value: Math.round(item.value), // Round off `value`
+  //         value1: Math.round(item.value1), // Round off `value1`
+  //       }));
+  //       this.kpiChartData['kpi171'] = roundOffData;
+  //     }
+  //   }
+  // }
 
   kpi171Check(kpiId, preAggregatedValues) {
     if (kpiId === 'kpi171') {
@@ -3348,85 +3398,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] =
         this.applyAggregationLogic(preAggregatedValues);
-    }
-  }
-
-  getkpi171Data(kpiId, trendValueList) {
-    let durationChanged = false;
-    if (
-      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
-      this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter
-    ) {
-      durationChanged = true;
-      this.kpiChartData[kpiId] = [];
-      this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'];
-    }
-
-    // if duration filter (filter1) changes,  make an api call to fetch data
-    if (durationChanged) {
-      delete this.kpiSelectedFilterObj[kpiId]['filter2'];
-      const idx = this.ifKpiExist(kpiId);
-      if (idx !== -1) {
-        this.allKpiArray.splice(idx, 1);
-      }
-
-      const kpi171Payload = this.updatedConfigGlobalData?.map(
-        (kpiDetails) => kpiDetails.kpiId,
-      );
-      const groupIdSet = new Set();
-      this.updatedConfigGlobalData?.forEach((obj) => {
-        if (
-          !obj['kpiDetail']?.kanban &&
-          obj['kpiDetail']?.kpiSource === 'Jira'
-        ) {
-          groupIdSet.add(obj['kpiDetail']?.groupId);
-        }
-      });
-
-      // sending requests after grouping the the KPIs according to group Id
-      groupIdSet.forEach((groupId) => {
-        if (groupId) {
-          this.kpiJira = this.helperService.groupKpiFromMaster(
-            'Jira',
-            false,
-            this.updatedConfigGlobalData,
-            this.filterApplyData,
-            this.filterData,
-            kpi171Payload,
-            groupId,
-            'backlog',
-          );
-          const kpi171 = this.kpiJira.kpiList.filter(
-            (kpi) => kpi.kpiId === 'kpi171',
-          )[0];
-          if (kpi171) {
-            kpi171['filterDuration'] = {
-              duration: this.durationFilter.includes('Week')
-                ? 'WEEKS'
-                : 'MONTHS',
-              value: !isNaN(+this.durationFilter.split(' ')[1])
-                ? +this.durationFilter.split(' ')[1]
-                : 1,
-            };
-            this.kpiJira.kpiList = [kpi171];
-            this.kpiLoader.add('kpi171');
-
-            this.httpService
-              .postKpiNonTrend(this.kpiJira, 'jira')
-              .subscribe((data) => {
-                const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
-                this.allKpiArray.push(kpi171Data);
-                this.getChartDataForCardWithCombinationFilter(
-                  kpiId,
-                  JSON.parse(JSON.stringify(kpi171Data.trendValueList)),
-                );
-                this.kpiLoader.delete('kpi171');
-              });
-          }
-        }
-      });
-    } else {
-      this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
     }
   }
 
@@ -3565,31 +3536,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  generateExcel() {
-    const kpiData = {
-      headerNames: [],
-      excelData: [],
-    };
-    this.modalDetails['tableHeadings'].forEach((colHeader) => {
-      kpiData.headerNames.push({
-        header: colHeader,
-        key: colHeader,
-        width: 25,
-      });
-    });
-    this.modalDetails['tableValues'].forEach((colData) => {
-      kpiData.excelData.push({
-        ...colData,
-        ['Issue Id']: {
-          text: colData['Issue Id'],
-          hyperlink: colData['Issue URL'],
-        },
-      });
-    });
-
-    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-  }
-
   /**
    * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
    * @param {Object} kpi - The KPI object containing details and ID to evaluate.
@@ -3690,21 +3636,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  // /**
-  //  * Determines if the execution of a specified processor was successful based on its trace log.
-  //  * @param processorName - The name of the processor to check, case insensitive.
-  //  * @returns A boolean indicating whether the execution was successful.
-  //  * @throws No exceptions are thrown by this function.
-  //  */
-  // showExecutionDate(processorName) {
-  //   const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
-  //   if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
-  //     return false;
-  //   } else {
-  //     return traceLog?.executionSuccess === true ? true : false;
-  //   }
-  // }
-
   /**
    * Retrieves the trace log for a specified processor by its name.
    * @param processorName - The name of the processor, which may include a path.
@@ -3763,15 +3694,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiStatusCodeArr[kpi.kpiId] === '203') &&
         kpi.kpiId === 'kpi171'
       ) {
-        if (
+        return (
           this.kpiChartData[kpi.kpiId] &&
-          this.kpiChartData[kpi.kpiId][0] &&
-          this.kpiChartData[kpi.kpiId][0]?.data?.length > 0
-        ) {
-          return true;
-        } else {
-          return false;
-        }
+          this.kpiChartData[kpi.kpiId]?.data?.length &&
+          this.kpiChartData[kpi.kpiId]?.data?.length
+        );
       } else {
         return (
           (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
@@ -3797,9 +3724,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiData && filters && kpi.kpiId !== 'kpi171') {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
-      if (kpi.kpiId === 'kpi171') {
-        return this.checkIfPartialDataForKpi171(kpiData);
-      }
       return false;
     }
   }
@@ -3837,16 +3761,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  checkIfPartialDataForKpi171(kpiData) {
-    kpiData = kpiData?.value;
-    let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
-    for (let i = 0; i < filters?.length; i++) {
-      let partialKpiData = kpiData.filter((x) => x.filter1 === filters[i])[0];
-      if (partialKpiData && partialKpiData.data?.length) {
-        return true;
-      }
-    }
-  }
+  // checkIfPartialDataForKpi171(kpiData) {
+  //   kpiData = kpiData?.value;
+  //   let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+  //   for (let i = 0; i < filters?.length; i++) {
+  //     let partialKpiData = kpiData.filter((x) => x.filter1 === filters[i])[0];
+  //     if (partialKpiData && partialKpiData.data?.length) {
+  //       return true;
+  //     }
+  //   }
+  // }
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
     if (!arr?.length) return [];
@@ -3973,7 +3897,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (this.kpiDropdowns[kpiId]?.length > 1) {
+    if (kpiId === 'kpi171' && this.allKpiArray[idx]?.filters) {
+      this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
+      this.kpiSelectedFilterObj[kpiId] = {
+        filter1: ['Past 6 Months'],
+        filter2: null,
+      };
+      this.durationFilter = this.durationFilter || 'Past 6 Months';
+    }
+
+    if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi171') {
       this.kpiSelectedFilterObj[kpiId] = {};
       for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
         this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
@@ -4080,7 +4013,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleSelectedOptionForCard(event, kpi);
       }
     } else {
-      if (kpi.kpiId === 'kpi72') {
+      if (kpi.kpiId === 'kpi72' || kpi.kpiId === 'kpi171') {
         if (
           event.hasOwnProperty('filter1') ||
           event.hasOwnProperty('filter2')
@@ -4088,7 +4021,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
             const outputObject = {};
             for (const key in event) {
-              outputObject[key] = [event[key]];
+              outputObject[key] =
+                kpi.kpiId === 'kpi171' ? event[key] : [event[key]];
             }
             event = outputObject;
           }
@@ -4099,8 +4033,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           typeof event === 'object'
         ) {
           for (const key in event) {
-            if (event[key]?.length == 0) {
+            if (event[key]?.length == 0 && kpi.kpiId !== 'kpi171') {
               delete event[key];
+            } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi171') {
+              event[key] = null;
             }
           }
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
@@ -4132,7 +4068,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 ];
               }
             } else {
-              if (kpi.kpiDetail.kpiFilter !== 'dropDown') {
+              if (kpi.kpiDetail.kpiFilter?.toLowerCase() !== 'dropdown') {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(
                   event[key],
                 )
@@ -4171,13 +4107,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-
-      this.getChartData(
-        kpi?.kpiId,
-        this.ifKpiExist(kpi?.kpiId),
-        kpi?.kpiDetail?.aggregationCriteria,
-        true,
-      );
+      if (kpi?.kpiId === 'kpi171') {
+        this.getkpi171Data(kpi?.kpiId);
+      } else {
+        this.getChartData(
+          kpi?.kpiId,
+          this.ifKpiExist(kpi?.kpiId),
+          kpi?.kpiDetail?.aggregationCriteria,
+          true,
+        );
+      }
     }
   }
 
@@ -4468,7 +4407,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       completeHierarchyData.find((x) => x.level === node.level - 1)
         .hierarchyLevelName
     ].filter((x) => {
-      // console.log(x);
       return x.nodeId === node['parentId'];
     })[0];
 
@@ -4703,7 +4641,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     iDateDiff -= iAdjust; // take into account both days on weekend
-    return iDateDiff + 1; // add 1 because dates are inclusive
+    const total = iDateDiff + 1; // add 1 because dates are inclusive (counting today date)
+    return Math.max(0, total - 2); // need to exlcude today date and last date
   }
 
   /**
@@ -4834,5 +4773,177 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       this.postJiraKpi(kpiJiraTest, 'jira');
     }
+  }
+
+  stripTime(date) {
+    if (date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    } else {
+      return date;
+    }
+  }
+
+  utcToLocalUser(data, xAxis) {
+    if (data && data?.length) {
+      return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+    }
+    return data;
+  }
+
+  private handlePageScrollOnSearch(searchValue) {
+    if (searchValue) {
+      this.scrollToHighlightedKpi(searchValue.kpiId);
+    }
+  }
+
+  scrollToHighlightedKpi(kpiId) {
+    const element = document.getElementById(kpiId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      this.renderer2.addClass(element, 'highlighted');
+
+      setTimeout(() => {
+        this.renderer2.removeClass(element, 'highlighted');
+      }, 1500);
+    }
+  }
+
+  goToRecommendation() {
+    if (this.recommendationsComponent) {
+      this.recommendationsComponent.nativeElement.children[0].firstChild.focus();
+      // this.recommendationsComponent.nativeElement.scrollIntoView({
+      //   behaviour: 'smooth',
+      //   block: 'start',
+      // });
+    }
+  }
+
+  onFocusGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.remove('sr-only');
+  }
+
+  onBlurGoToRecommendation(event) {
+    (event.target as HTMLElement).classList.add('sr-only');
+  }
+
+  private initializeUserDetails(): void {
+    const currentUserDetails = localStorage.getItem('currentUserDetails');
+    if (currentUserDetails) {
+      const userDetails = JSON.parse(currentUserDetails);
+      this.floatingRecommendation =
+        userDetails.authorities?.includes('ROLE_SUPERADMIN');
+    }
+  }
+
+  transformJSONForSQVTable(data) {
+    // Prepare columns and rows
+    const cols: { header: string; field: string }[] = [];
+    const rows: any[] = [];
+
+    data?.forEach((projectEntry) => {
+      const row: any = {};
+
+      projectEntry.value.forEach((metric) => {
+        const key = metric.subFilter;
+        row[key] = metric.dataValue;
+        row['sprojectName'] = metric.sprojectName;
+
+        if (!cols.find((col) => col.field === key)) {
+          cols.push({
+            header: key,
+            field: key,
+          });
+        }
+      });
+
+      rows.push(row);
+    });
+
+    return { data: rows, columnHeaders: cols };
+  }
+
+  getkpi171Data(kpiId) {
+    let durationChanged = false;
+    const duration = Array.isArray(this.durationFilter)
+      ? this.durationFilter[0]
+      : this.durationFilter;
+    if (
+      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
+      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== duration
+    ) {
+      durationChanged = true;
+      this.kpiChartData[kpiId] = [];
+      this.durationFilter = JSON.parse(
+        JSON.stringify(this.kpiSelectedFilterObj[kpiId]['filter1'][0]),
+      );
+      this.kpiSelectedFilterObj['durationFilter'] = this.durationFilter;
+      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+    }
+
+    // if duration filter (filter1) changes,  make an api call to fetch data
+    if (durationChanged) {
+      this.kpiSelectedFilterObj[kpiId]['filter2'] = null;
+      const idx = this.ifKpiExist(kpiId);
+
+      const gID = this.allKpiArray[idx].groupId;
+      const kpi171Payload = this.updatedConfigGlobalData
+        ?.filter((kpiDetails) => kpiDetails.kpiDetail.groupId === gID)
+        .map((d) => d.kpiId);
+      const groupIdSet = new Set();
+      groupIdSet.add(gID);
+
+      // sending requests after grouping the the KPIs according to group Id
+      groupIdSet.forEach((groupId) => {
+        if (groupId) {
+          this.kpiJira = this.helperService.groupKpiFromMaster(
+            'Jira',
+            false,
+            this.updatedConfigGlobalData,
+            this.filterApplyData,
+            this.filterData,
+            kpi171Payload,
+            groupId,
+            '',
+          );
+          const kpi171 = this.kpiJira.kpiList.filter(
+            (kpi) => kpi.kpiId === 'kpi171',
+          )[0];
+          if (kpi171) {
+            kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+            this.kpiJira.kpiList = [kpi171];
+            this.kpiLoader.add('kpi171');
+
+            this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
+              this.setupSearchQuerySubscription();
+              const kpi171Data = data.find((kpi) => kpi.kpiId === kpiId);
+              if (idx !== -1) {
+                this.allKpiArray.splice(idx, 1);
+              }
+              this.allKpiArray.push(kpi171Data);
+              this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+              this.kpiLoader.delete('kpi171');
+            });
+          }
+        }
+      });
+    } else {
+      this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+    }
+  }
+
+  appendFilterDuratioKpi171(): any {
+    this.durationFilter =
+      this.service.getKpiSubFilterObj()?.['durationFilter'] ||
+      this.kpiSelectedFilterObj?.['kpi171']?.filter1 ||
+      'Past 6 Months';
+    const durationFilter = Array.isArray(this.durationFilter)
+      ? this.durationFilter[0]
+      : this.durationFilter;
+    return {
+      duration: durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+      value: !isNaN(+durationFilter.split(' ')[1])
+        ? +durationFilter.split(' ')[1]
+        : 1,
+    };
   }
 }

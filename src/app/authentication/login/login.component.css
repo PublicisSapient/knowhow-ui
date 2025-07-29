@@ -227,8 +227,8 @@ input[type='password'],
 }
 
 .login-form form input:focus,
-.login-form form textarea:focus {
-  outline: none;
+.login-form form textarea:focus-visible {
+  outline: 3px solid #0b4bc8;
 }
 
 /* .login-form input:focus~label,
@@ -240,8 +240,8 @@ input[type='password'],
     color: var(--color-gray-c6);
 } */
 
-.login-form input:focus ~ .bar::before,
-.login-form textarea:focus ~ .bar::before {
+.login-form input:focus-visible ~ .bar::before,
+.login-form textarea:focus-visible ~ .bar::before {
   width: 100%;
 }
 
@@ -292,7 +292,7 @@ input[type='password'],
   width: 100%;
   margin: 20px auto;
   display: block;
-  background-color: #079fff;
+  background-color: #0b4bc8;
   border: none;
   box-shadow: none;
   color: #fff;

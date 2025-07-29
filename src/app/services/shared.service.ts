@@ -16,9 +16,11 @@
  *
  ******************************************************************************/
 
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HelperService } from './helper.service';
+import { SharelinkService } from './share-link.service';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -87,8 +89,7 @@ export class SharedService {
   selectedTrends = [];
   public isSideNav;
   currentUserDetails = null;
-  currentUserDetailsSubject = new BehaviorSubject<any>(null);
-  currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
+
   public onTypeOrTabRefresh = new Subject<{
     selectedTab: string;
     selectedType: string;
@@ -146,8 +147,18 @@ export class SharedService {
   selectedReport: any = {};
   onSelectedReportChange = new Subject<any>();
   onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
+  currentProjectSprints: any;
+  sprintGoalSUmmerizeData: any = {};
+  CACHE_KEY = 'sprintGoalSummaryCache';
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  private searchQueryBSubject = new BehaviorSubject<any>(null);
+  public searchQuery$ = this.searchQueryBSubject.asObservable();
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private injector: Injector,
+  ) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -836,6 +847,70 @@ export class SharedService {
 
   getDataForSprintGoal() {
     return this.sprintGoalData;
+  }
+
+  setCurrentProjectSprints(sprints) {
+    this.currentProjectSprints = sprints;
+  }
+
+  getCurrentProjectSprints() {
+    return this.currentProjectSprints;
+  }
+
+  getSprintGoalSUmmerizeData(array) {
+    const summaryCache = localStorage.getItem(this.CACHE_KEY);
+    this.sprintGoalSUmmerizeData = summaryCache ? JSON.parse(summaryCache) : {};
+    if (this.sprintGoalSUmmerizeData.hasOwnProperty(array)) {
+      return this.sprintGoalSUmmerizeData[array];
+    }
+    return '';
+  }
+
+  setSprintGoalSUmmerizeData(data) {
+    this.sprintGoalSUmmerizeData = {
+      ...this.sprintGoalSUmmerizeData,
+      ...data,
+    };
+    localStorage.setItem(
+      this.CACHE_KEY,
+      JSON.stringify(this.sprintGoalSUmmerizeData),
+    );
+  }
+  updateValue(value: any) {
+    this.searchQueryBSubject.next(value);
+  }
+
+  getCurrentValue() {
+    return this.searchQueryBSubject.value;
+  }
+
+  navigateToLastVisitedURL(fallbackURL) {
+    const lastURL = localStorage.getItem('last_link');
+    if (lastURL && !this.checkStateFilterLength(lastURL)) {
+      this.router.navigateByUrl(lastURL);
+    } else if (fallbackURL) {
+      if (!this.checkStateFilterLength(fallbackURL)) {
+        this.router.navigateByUrl(fallbackURL);
+      } else {
+        const shareLink = this.injector.get(SharelinkService);
+        shareLink.urlShorteningRedirection();
+      }
+    } else {
+      this.router.navigateByUrl('/dashboard/iteration');
+    }
+    localStorage.removeItem('shared_link');
+  }
+
+  checkStateFilterLength(url: string): boolean {
+    const parsedUrl = new URL(url, window.location.origin);
+    const stateFilters = parsedUrl.searchParams.get('stateFilters');
+
+    if (!stateFilters) {
+      console.warn('stateFilters param not found.');
+      return false; // or true, depending on your use case when param is missing
+    }
+
+    return stateFilters.length <= 8;
   }
 
   //#endregion

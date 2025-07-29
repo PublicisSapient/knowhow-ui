@@ -4,6 +4,8 @@ import {
   ChangeDetectorRef,
   OnDestroy,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
@@ -14,6 +16,7 @@ import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-filter-new',
@@ -88,6 +91,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dashConfigDataDeepCopyBackup: any;
   refreshCounter: number = 0;
   showSprintGoalsPanel: boolean = false;
+  selectedKPI: string = '';
+  groupedKpiOptions: any[] = [];
+  filteredKpis: any[];
+
+  @Output() onKPISearch = new EventEmitter<string>();
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
+  isSearchingKPI: boolean = false;
+  private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
+
+  // Add this property to your component class
+  private readonly inputValidationRegex = /[^a-zA-Z0-9\s%._-]/;
+
+  isValidInput: boolean = true;
 
   constructor(
     private httpService: HttpService,
@@ -577,6 +593,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           (response) => {
             if (response.success === true) {
               let data = response.data.userBoardConfigDTO;
+              this.extractUserConfig(data);
               // let data = this.dummyData.data.userBoardConfigDTO;
               data = this.setLevelNames(data);
               data['configDetails'] = response.data.configDetails;
@@ -830,7 +847,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let stateFilters = this.service.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      console.log(Object.values(this.colorObj).map((m) => m['nodeId']));
       if (!stateFilters['additional_level']) {
         let selectedFilters = this.filterDataArr[this.selectedType][
           this.selectedLevel
@@ -1041,6 +1057,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           x['parentId']?.includes(event[0].nodeId) &&
           x['sprintState']?.toLowerCase() == 'closed',
       );
+      this.service.setCurrentProjectSprints(currentProjectSprints);
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort(
           (a, b) =>
@@ -1189,7 +1206,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.setSelectedMapLevels();
     if (this.filterType === 'Sprint:' || this.filterType === 'Release:') {
-      console.log(this.filterDataArr[this.selectedType]);
       let filterType = '';
       if (
         typeof this.selectedLevel === 'object' &&
@@ -1450,10 +1466,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   formatDate(dateString) {
     if (dateString !== '') {
       const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = date.toLocaleString('default', { month: 'short' });
-      const year = String(date.getFullYear()).slice(-2);
-      return `${day} ${month}'${year}`;
+      if (this.selectedTab?.toLowerCase() === 'iteration') {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = String(date.getFullYear()).slice(-2);
+        return `${day} ${month}'${year}`;
+      } else {
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-US', {
+          month: 'short',
+          timeZone: 'UTC',
+        });
+        const year = String(date.getUTCFullYear()).slice(-2);
+        return `${day} ${month}'${year}`;
+      }
     } else {
       return 'N/A';
     }
@@ -2200,7 +2226,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       longKPIFiltersString: kpiFilters || '',
     };
     this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
-      console.log(response);
       const shortStateFilterString = response.data.shortStateFiltersString;
       const shortKPIFilterString = response.data.shortKPIFilterString;
       const shortUrl = `${
@@ -2387,6 +2412,134 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       return true;
     } else {
       return false;
+    }
+  }
+
+  extractUserConfig(data: any) {
+    const allGroupKpiOptions = this.helperService.getGroupedKpiOptions(data);
+    this.groupedKpiOptions = allGroupKpiOptions.map((group) => ({
+      ...group,
+      items: group.items.filter(
+        (item) => item.value.boardSlug !== 'my-knowhow',
+      ),
+    }));
+  }
+
+  debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
+    console.log('groupedKpiOptions ', this.groupedKpiOptions);
+    const query = event.query.toLowerCase();
+
+    this.filteredKpis = this.groupedKpiOptions
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          item.label.toLowerCase().includes(query),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+
+    if (this.filteredKpis.length === 0) {
+      if (this.kpiSearchCache[query]) {
+        // Use cached results if available
+        this.filteredKpis = this.kpiSearchCache[query];
+        this.cdr.detectChanges();
+        this.showAutoCompleteDropdown();
+      } else {
+        this.isSearchingKPI = true;
+        try {
+          const res = await this.httpService.aiKpiSearch(query).toPromise();
+          if (res['kpis'].length !== 0) {
+            this.filteredKpis = this.groupedKpiOptions
+              .map((group) => ({
+                ...group,
+                items: group.items.filter((item) =>
+                  res['kpis'].includes(item.value.kpiId),
+                ),
+              }))
+              .filter((group) => group.items.length > 0);
+
+            // Cache the results
+            this.kpiSearchCache[query] = this.filteredKpis;
+
+            // Force change detection and show dropdown
+            this.cdr.detectChanges();
+            this.showAutoCompleteDropdown();
+          } else {
+            this.isSearchingKPI = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: res.message,
+            });
+          }
+        } catch (error) {
+          console.error('AI search failed:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: error.message,
+          });
+          this.isSearchingKPI = false;
+        }
+      }
+    }
+  }, 2000);
+
+  onKpiSearch(event) {
+    const selectedSource = event.value.source;
+    this.onKPISearch.emit(event);
+    if (this.selectedType !== selectedSource) {
+      setTimeout(() => {
+        this.setSelectedType(selectedSource);
+      }, 1000);
+    }
+  }
+
+  showAutoCompleteDropdown() {
+    setTimeout(() => {
+      if (this.autoComplete && this.filteredKpis.length > 0) {
+        // --- Remove focus after HTTP response
+        const inputEl =
+          this.autoComplete.el.nativeElement.querySelector('input');
+        if (inputEl) {
+          inputEl.blur();
+        }
+
+        this.autoComplete.show();
+        // --- Fallback if autoComplete.show() do not work
+        if (!this.autoComplete.overlayVisible) {
+          this.autoComplete.overlayVisible = true;
+          this.autoComplete.onShow.emit();
+        }
+        this.isSearchingKPI = false;
+      }
+    }, 10);
+  }
+
+  validateInput(event) {
+    const input = (event.target as HTMLInputElement).value;
+    this.isValidInput = !this.inputValidationRegex.test(input);
+
+    if (!this.isValidInput) {
+      event.preventDefault();
+
+      // Show validation message
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Character is present in input',
+        detail: 'Special characters are not allowed',
+      });
+    }
+  }
+
+  handleInputChange(event) {
+    const input = (event.target as HTMLInputElement).value;
+    const hasSpecialChars = /[^a-zA-Z0-9\s%._-]/.test(input);
+
+    if (hasSpecialChars) {
+      this.isValidInput = false;
+    } else {
+      this.isValidInput = true;
+      this.selectedKPI = input;
+      this.debouncedFilterKpis(event);
     }
   }
 }

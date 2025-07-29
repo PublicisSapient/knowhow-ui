@@ -70,6 +70,8 @@ export class AccessMgmtComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   isSuperAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
+  llidInput = '';
+  isOpenSource: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -80,6 +82,7 @@ export class AccessMgmtComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isOpenSource = this.service.getGlobalConfigData()?.openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
     this.getRolesList();
     this.getUsers();
@@ -539,5 +542,31 @@ export class AccessMgmtComponent implements OnInit {
         headerEl.focus();
       }
     }, 0);
+  }
+
+  addLLIDUser() {
+    this.httpService.addLLIDUser(this.llidInput).subscribe((response) => {
+      if (response.success) {
+        this.messageService.add({
+          severity: 'success',
+          summary: response.message || 'User added successfully.',
+        });
+        this.llidInput = '';
+        this.getUsers();
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            response.message || 'Error in adding user. Please try again.',
+        });
+      }
+    });
+  }
+
+  isDisabledLLIDSaveBtn(errObj, isDirty) {
+    if (errObj == null && isDirty && this.llidInput) {
+      return false;
+    }
+    return true;
   }
 }

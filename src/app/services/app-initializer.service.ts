@@ -170,6 +170,14 @@ export class AppInitializerService {
     ) {
       localStorage.setItem('shared_link', loc);
     }
+    if (
+      !this.sharedService.checkStateFilterLength(
+        localStorage.getItem('shared_link'),
+      )
+    ) {
+      localStorage.removeItem('shared_link');
+    }
+
     return new Promise<void>(async (resolve, reject) => {
       if (!environment['production']) {
         this.featureToggleService.config = this.featureToggleService
@@ -227,7 +235,10 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.router.resetConfig([...this.routes]);
-        this.router.navigate([location]);
+        if (this.sharedService.checkStateFilterLength(location)) {
+          localStorage.removeItem('last_link');
+        }
+        this.sharedService.navigateToLastVisitedURL(location);
       } else {
         // Make API call or initialization logic here...
         this.httpService.getUserDetailsForCentral().subscribe(
@@ -253,12 +264,17 @@ export class AppInitializerService {
               if (redirect_uri) {
                 localStorage.removeItem('redirect_uri');
               }
-              this.router.navigateByUrl(location);
+              if (this.sharedService.checkStateFilterLength(location)) {
+                localStorage.removeItem('last_link');
+              }
+              this.sharedService.navigateToLastVisitedURL(location);
             } else {
               if (localStorage.getItem('shared_link')) {
                 this.helperService.urlShorteningRedirection();
               } else {
-                this.router.navigate(['/dashboard/iteration']);
+                this.sharedService.navigateToLastVisitedURL(
+                  '/dashboard/iteration',
+                );
               }
             }
           },

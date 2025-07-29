@@ -66,6 +66,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BlockUIModule } from 'primeng/blockui';
+import { ChipsModule } from 'primeng/chips';
 /******************************************************/
 
 /******************* Services   ***********************/
@@ -87,6 +88,7 @@ import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indic
 import { NoAccessComponent } from './component/no-access/no-access.component';
 import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
@@ -127,6 +129,9 @@ import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
+
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { SharelinkService } from './services/share-link.service';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -224,10 +229,14 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     InputTextModule,
     ScrollTopModule,
     SelectButtonModule,
+    ProgressBarModule,
+    AutoCompleteModule,
+    ChipsModule,
   ],
   providers: [
     ExcelService,
     SharedService,
+    SharelinkService,
     GetAuthService,
     HelperService,
     GetAuthorizationService,

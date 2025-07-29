@@ -53,7 +53,7 @@ header {
   .p-tabmenu
   .p-tabmenu-nav
   li.p-highlight
-  .p-menuitem-link:focus {
+  .p-menuitem-link:focus-visible {
   background-color: none;
 }
 
@@ -106,7 +106,6 @@ header {
 
 .back-btn {
   padding: 0.75rem;
-  border-radius: 0.25rem;
   font-size: 12px;
   font-family: inherit;
 }
@@ -155,6 +154,9 @@ header {
 
 .tab-button button:hover {
   color: #0056b3;
+}
+.disablePointer {
+  pointer-events: none;
 }
 
 @media print {
