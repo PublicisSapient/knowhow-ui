@@ -1,7 +1,7 @@
 {
     "name": "dashboard",
-    "version": "13.2.0",
-    "scripts": {
+    "version": "13.3.0",
+    "scripts":     {
         "ng": "ng",
         "start": "concurrently \"node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange \"src/**/*.{ts,css}\" -- prettier --write --ignore-unknown {{changed}}\"",
         "build": "ng build --configuration=docker --aot --output-hashing=all",
@@ -15,26 +15,20 @@
         "postinstall": "ngcc",
         "prettier": "prettier src/**/*.{ts,css} --write"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "linters": {
-            "src/**/*.{ts,css}": [
-                "prettier --write",
-                "git add"
-            ]
-        },
-        "ignore": [
+    "husky": {"hooks": {"pre-commit": "lint-staged"}},
+    "lint-staged":     {
+        "linters": {"src/**/*.{ts,css}":         [
+            "prettier --write",
+            "git add"
+        ]},
+        "ignore":         [
             "node_modules",
             "dist",
             "package-lock.json"
         ]
     },
     "private": true,
-    "dependencies": {
+    "dependencies":     {
         "@angular/animations": "^14.2.7",
         "@angular/cdk": "^14.2.5",
         "@angular/common": "^14.2.7",
@@ -67,7 +61,7 @@
         "uuid": "^9.0.0",
         "zone.js": "^0.11.2"
     },
-    "devDependencies": {
+    "devDependencies":     {
         "@angular-devkit/build-angular": "^14.2.6",
         "@angular-eslint/builder": "14.1.2",
         "@angular-eslint/eslint-plugin": "14.1.2",
@@ -106,7 +100,5 @@
         "ts-node": "~10.4.0",
         "typescript": "4.6.4"
     },
-    "overrides": {
-      "stylus": "github:stylus/stylus#0.59.0"
-    }
+    "overrides": {"stylus": "github:stylus/stylus#0.59.0"}
 }
