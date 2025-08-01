@@ -72,6 +72,7 @@ export class AccessMgmtComponent implements OnInit {
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
   isOpenSource: boolean = false;
+  uniqueArrUserData = <any>[];
 
   constructor(
     private service: SharedService,
@@ -98,6 +99,7 @@ export class AccessMgmtComponent implements OnInit {
     this.httpService.getAllUsers().subscribe((userData) => {
       if (userData[0] !== 'error' && !userData.error) {
         this.users = userData.data;
+        this.uniqueArrUserData = JSON.parse(JSON.stringify(this.users));
         this.allUsers = this.users;
       } else {
         // show error message
@@ -315,6 +317,7 @@ export class AccessMgmtComponent implements OnInit {
 
   saveAccessChange(userData) {
     // clean userdata, remove empty access-nodes
+    this.submitValidationMessage = '';
     if (userData['projectsAccess']?.length) {
       userData['projectsAccess'].forEach((element) => {
         if (element.role !== 'ROLE_SUPERADMIN') {
@@ -329,6 +332,11 @@ export class AccessMgmtComponent implements OnInit {
 
     const uniqueProjectArr = [];
     const uniqueRoleArr = [];
+    const projectItem = this.uniqueArrUserData.find(
+      (projectItem) => projectItem.id === userData.id,
+    );
+
+    const areEqual = JSON.stringify(userData) === JSON.stringify(projectItem);
     if (userData?.projectsAccess?.length) {
       userData.projectsAccess.forEach((obj) => {
         if (!uniqueRoleArr.includes(obj.role)) {
@@ -355,33 +363,41 @@ export class AccessMgmtComponent implements OnInit {
         }
       });
     }
-
-    if (!this.displayDuplicateProject) {
-      this.httpService.updateAccess(userData).subscribe((response) => {
-        if (response['success']) {
-          if (this.showAddUserForm) {
-            this.showAddUserForm = false;
-            this.messageService.add({
-              severity: 'success',
-              summary: 'User added.',
-              detail: '',
-            });
-            this.resetAddDataForm();
+    if (this.submitValidationMessage.length === 0) {
+      if (!areEqual) {
+        this.httpService.updateAccess(userData).subscribe((response) => {
+          if (response['success']) {
+            this.getUsers();
+            if (this.showAddUserForm) {
+              this.showAddUserForm = false;
+              this.messageService.add({
+                severity: 'success',
+                summary: 'User added.',
+                detail: '',
+              });
+              this.resetAddDataForm();
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Access updated.',
+                detail: '',
+              });
+            }
           } else {
             this.messageService.add({
-              severity: 'success',
-              summary: 'Access updated.',
-              detail: '',
+              severity: 'error',
+              summary:
+                'Error in updating project access. Please try after some time.',
             });
           }
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary:
-              'Error in updating project access. Please try after some time.',
-          });
-        }
-      });
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Access already exists.',
+          detail: '',
+        });
+      }
     }
   }
 
