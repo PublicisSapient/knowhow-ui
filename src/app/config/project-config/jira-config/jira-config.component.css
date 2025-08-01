@@ -89,3 +89,11 @@ font-size: 12px
 .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
+
+:host::ng-deep.p-autocomplete:not(.p-disabled).p-focus
+  .p-autocomplete-multiple-container:hover {
+  box-shadow: 0 0 0 0.2rem #bfdbfe;
+}
+:host::ng-deep.p-button {
+  background-color: #0b4bc8;
+}

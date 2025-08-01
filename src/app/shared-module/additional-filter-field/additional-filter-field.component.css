@@ -151,8 +151,11 @@ label.btn-import-label {
   border-bottom-right-radius: 0px;
 }
 
-::ng-deep .configure-btn .p-disabled {
+:host::ng-deep .configure-btn .p-disabled {
   background-color: #0b4bc8 !important;
   color: white !important;
   opacity: 0.6;
+}
+:host::ng-deep .configure-btn .p-disabled:hover {
+  background-color: #083896;
 }

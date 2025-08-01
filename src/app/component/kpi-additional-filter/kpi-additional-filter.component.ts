@@ -26,7 +26,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
           );
         } else {
           this.dataCopy = this.dataCopy.filter((d) => {
-            let dataProperty = new Set(d[element.filterKey]);
+            const dataProperty = new Set(d[element.filterKey]);
             return (
               element.selectedValue.filter((item) => dataProperty.has(item))
                 .length > 0
@@ -39,7 +39,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
       this.dataCopy,
       this.selectedMainFilter.filterKey,
     );
-    let resultObj = {};
+    const resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
     resultObj['selectedFilter2'] = this.selectedFilter2;
@@ -86,7 +86,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
       filter.selectedValue = null;
     });
     this.selectedFilter2 = null;
-    let resultObj = {};
+    const resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
     resultObj['selectedFilter2'] = this.selectedFilter2;

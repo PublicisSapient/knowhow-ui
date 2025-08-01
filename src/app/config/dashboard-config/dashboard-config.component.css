@@ -189,3 +189,6 @@
   min-width: inherit;
   max-width: inherit;
 }
+:host::ng-deep.p-overlay.p-component {
+  width: -webkit-fill-available;
+}

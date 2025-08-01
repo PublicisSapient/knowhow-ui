@@ -21,9 +21,9 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin, interval, Subscription } from 'rxjs';
+import { forkJoin, interval, of, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { switchMap, takeWhile } from 'rxjs/operators';
+import { catchError, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -44,7 +44,7 @@ export class AdvancedSettingsComponent implements OnInit {
   processorsTracelogs = [];
   toolConfigsDetails = [];
   ssoLogin = environment.SSO_LOGIN;
-  jirsStepsPopup: boolean = false;
+  jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
   subscription: Subscription;
@@ -286,7 +286,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    let runProcessorInput = {
+    const runProcessorInput = {
       processor: processorName,
       projects: [],
     };
@@ -386,31 +386,34 @@ export class AdvancedSettingsComponent implements OnInit {
           ),
         );
       });
-      forkJoin(toolDetailSubscription).subscribe(
-        (response) => {
-          if (response.find((res) => !res['success'])) {
+      forkJoin(toolDetailSubscription)
+        .pipe(
+          tap((response) => {
+            if (response.find((res) => !res['success'])) {
+              this.messageService.add({
+                severity: 'error',
+                summary:
+                  'Error in deleting project data. Please try after some time.',
+              });
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Data deleted Successfully.',
+                detail: '',
+              });
+              this.getAllToolConfigs(selectedProject?.id);
+              this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
+            }
+          }),
+          catchError((error) => {
             this.messageService.add({
               severity: 'error',
-              summary:
-                'Error in deleting project data. Please try after some time.',
+              summary: 'Something went wrong. Please try again after sometime.',
             });
-          } else {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Data deleted Successfully.',
-              detail: '',
-            });
-            this.getAllToolConfigs(selectedProject?.id);
-            this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
-          }
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Something went wrong. Please try again after sometime.',
-          });
-        },
-      );
+            return of();
+          }),
+        )
+        .subscribe();
     } else {
       this.messageService.add({
         severity: 'error',
@@ -491,7 +494,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length - 1].endTime;
       const currentTime = new Date().getTime();
-      let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      const differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if (differenceInMilliseconds > 600000) {
         return false;
       } else {

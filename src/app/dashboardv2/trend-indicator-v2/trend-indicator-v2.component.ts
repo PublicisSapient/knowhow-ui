@@ -51,9 +51,9 @@ export class TrendIndicatorV2Component implements OnChanges {
   }
 
   generateFlatArray(dataSet) {
-    let result = [];
+    const result = [];
     Object.keys(dataSet[0]).forEach((key) => {
-      let val = dataSet.map((dataObj) => {
+      const val = dataSet.map((dataObj) => {
         if (dataObj[key]) {
           return dataObj[key];
         }

@@ -15,7 +15,7 @@
             <span class="p-float-label">
                 <p-multiSelect [options]="filters" [(ngModel)]="selectedFilters" optionLabel="nodeDisplayName"
                     [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" [selectionLimit]="6"
-                    [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
+                    [selectedItemsLabel]="'{0} selected'" placeholder="Select"
                     (onChange)="onSelectionChange($event)"
                     aria-label="Select Project Filters"
                     id="projectFiltersMultiSelect"

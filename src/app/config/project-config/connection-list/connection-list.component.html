@@ -253,7 +253,7 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-secondary p-button-text p-mr-2"
+    <button pButton  label="Cancel" class="p-button-secondary p-mr-2"
       (click)="hideDialog()" tabindex="0" aria-label="Cancel Connection form"></button>
     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-success p-mr-2" (click)="saveConnection()"
       [disabled]="!basicConnectionForm.valid || !emptyUrlInZephyr()" tabindex="0" aria-label="Save Connection form"></button>
@@ -353,7 +353,7 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-secondary p-button-text p-mr-2"
+    <button pButton  label="Cancel"  class="p-button-secondary  p-mr-2"
       (click)="hideDialog()"></button>
     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-success p-mr-2" (click)="saveConnection()"
       [disabled]="!jiraForm.valid"></button>

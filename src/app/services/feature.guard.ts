@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
-  CanActivateChild,
-  CanLoad,
   Route,
   Router,
   RouterStateSnapshot,
   UrlSegment,
   UrlTree,
+  CanLoad,
+  CanActivateChild,
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { FeatureFlagsService } from './feature-toggle.service';
 
 @Injectable({

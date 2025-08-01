@@ -90,3 +90,6 @@ div.main {
 .p-invalid {
   color: red;
 }
+:host::ng-deep .p-confirm-dialog .p-dialog-footer .p-button {
+  background-color: #0b4bc8;
+}

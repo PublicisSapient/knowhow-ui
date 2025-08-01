@@ -51,7 +51,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   maxValue = 1000;
   unmodifiedData: any = [];
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart';
+  @Input() viewType = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() kpiId: string;
@@ -163,7 +163,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       'check-ins': 'CI',
       tickets: 'T',
     };
-    let sprintList = [];
+    const sprintList = [];
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
     const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
@@ -705,7 +705,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               const tooltipDivWidth = document
                 .getElementById(`hoverToolTip${this.kpiId}${tooltipDivCounter}`)
                 .getBoundingClientRect().width;
-              let newLeft = xPosition - tooltipDivWidth / 2;
+              const newLeft = xPosition - tooltipDivWidth / 2;
 
               div
                 .style('left', newLeft + 'px')
@@ -768,7 +768,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .join('div')
             .attr('class', (d) => {
               let cssClass = 'tooltip2';
-              let value = d.lineValue;
+              const value = d.lineValue;
               if (
                 this.thresholdValue &&
                 this.thresholdValue !== 0 &&
@@ -785,16 +785,14 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               return cssClass;
             })
             .style('left', (d, i) => {
-              let left = d.date || d.sortSprint;
+              const left = d.date || d.sortSprint;
               if (viewType === 'large') {
                 return x0(left) + x0.bandwidth() / 2 + 'px';
               } else {
                 return x0(i + 1) + x0.bandwidth() / 2 + 'px';
               }
             })
-            .style('top', (d) => {
-              return yScale(d.lineValue) + 'px';
-            })
+            .style('top', (d) => yScale(d.lineValue) + 'px')
             .text(
               (d) =>
                 d.lineValue +
@@ -908,7 +906,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         .style('font-weight', 'bold')
         .style('text-transform', 'uppercase');
 
-      var colorCounter = 1;
+      let colorCounter = 1;
 
       //Table body
       legendTableLayout
@@ -996,20 +994,20 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));

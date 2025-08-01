@@ -196,10 +196,10 @@ div.main {
   word-break: break-all;
 }
 
-::ng-deep .p-button:focus,
+:host::ng-deep .p-button:focus,
 button.btn:enabled:focus-visible {
   box-shadow: none;
-  outline: 3px solid #0b4bc8;
+  /* outline: 3px solid #0b4bc8; */
 }
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
@@ -598,5 +598,31 @@ button.btn:enabled:focus-visible {
 :host ::ng-deep .p-dialog .p-dialog-header {
   padding: 2.5rem;
 }
+:host ::ng-deep a .p-menuitem-text {
+  font-weight: 400;
+}
 
+:host
+  ::ng-deep.p-panelmenu
+  .p-panelmenu-header.p-highlight
+  > a.p-panelmenu-header-link,
+.p-panelmenu .p-panelmenu-header.p-highlight > a.p-panelmenu-header-link:hover {
+  background-color: #083896 !important;
+  color: var(--color-white);
+}
+
+:host::ng-deep.p-panelmenu
+  .p-panelmenu-header:not(.p-disabled).p-highlight
+  .p-panelmenu-header-content,
+.p-panelmenu
+  .p-panelmenu-header:not(.p-highlight):not(.p-disabled):hover
+  .p-panelmenu-header-content {
+  background-color: #083896;
+}
+:host::ng-deep.p-panelmenu
+  .p-panelmenu-header:not(.p-disabled).p-highlight
+  .p-panelmenu-header-content
+  a {
+  color: #fff;
+}
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/

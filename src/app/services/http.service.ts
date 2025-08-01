@@ -1252,7 +1252,7 @@ export class HttpService {
   }
 
   fetchReports(): Observable<object> {
-    let userId = this.currentUserDetails['user_name'];
+    const userId = this.currentUserDetails['user_name'];
     //Pagination to be handled
     return this.http.get<object>(
       this.fetchReportsUrl + userId + '&page=0&limit=9999',

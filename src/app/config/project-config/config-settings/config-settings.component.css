@@ -101,3 +101,13 @@ input[type='password']:disabled {
   padding: 0.7rem;
   width: 150px;
 }
+:host::ng-deep.p-selectbutton .p-button {
+  border-radius: 0rem !important;
+}
+
+:host::ng-deep.p-selectbutton .p-button:last-child {
+  border-radius: 0rem 0.5rem 0.5rem 0rem !important;
+}
+:host::ng-deep.p-selectbutton .p-button:first-child {
+  border-radius: 0.5rem 0rem 0rem 0.5rem !important;
+}

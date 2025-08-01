@@ -14,15 +14,15 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  notificationCount: number = 0;
+  notificationCount = 0;
   notificationList: Array<object> = [];
-  commentCount: number = 0;
+  commentCount = 0;
   commentList: Array<object> = [];
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
   userDetails: object = {};
   userMenuItems: MenuItem[] | undefined;
-  backToDashboardLoader: boolean = false;
+  backToDashboardLoader = false;
   kpiListDataProjectLevel: any = {};
   kpiListData: any = {};
   lastVisitedFromUrl: string = '';
@@ -36,7 +36,7 @@ export class HeaderComponent implements OnInit {
   isSpeedSuite = environment?.['SPEED_SUITE']
     ? environment?.['SPEED_SUITE']
     : false;
-  userRole: string = '';
+  userRole = '';
   noToolsConfigured: boolean;
   isNotConfigPage: boolean = false;
   saveReportsUrl: string = '';

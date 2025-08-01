@@ -1,7 +1,11 @@
 <div class="p-d-inline-block position-relative">
-    <img class="kpi-info-icon cursor-pointer" src="../../../assets/img/comment-icon.svg" alt="comment icon"
-    aria-hidden="true" (click)="op1.toggle($event); openComments()" />
-    <div class="comment-count" *ngIf="commentCount">{{commentCount}}</div>
+  <img
+    class="kpi-info-icon cursor-pointer"
+    src="../../../assets/img/comment-icon.svg"
+    alt="comment icon"
+    aria-hidden="true"
+    (click)="op1.toggle($event); openComments()" />
+  <div class="comment-count" *ngIf="commentCount">{{ commentCount }}</div>
 </div>
 <p-overlayPanel #op1 [showCloseIcon]="true" styleClass="comments-overlay">
     <div class="p-d-flex p-justify-between p-align-center">
@@ -28,7 +32,7 @@
             <div *ngIf="dataLoaded; else loader" class="comment-list-container">
                 <ng-container *ngIf="commentCount>0 && commentsList?.length>0; else noComments">
                     <div *ngFor="let comment of commentsList" class="comment-combo p-mr-1">
-                        <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy hh:mm'}}
+                        <div class="commented-by">&#64;{{comment?.commentBy}} commented - {{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy hh:mm'}}
                             <span class="icon-delete">
                                 <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt" (click)="handleConfirmDelete(comment.commentId)"></i>
                                 <span *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="btn-confirm-delete" (click)="deleteComment(comment.commentId)">Confirm Delete</span>

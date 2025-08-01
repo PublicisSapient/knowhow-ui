@@ -123,7 +123,7 @@ describe('ConfigSettingsComponent', () => {
     component.selectedTab = 'projectConfig';
     const navigateSpy = spyOn(router, 'navigate');
 
-    component.onTabChange();
+    component.onTabChange(event);
 
     expect(navigateSpy).toHaveBeenCalledWith(['.'], {
       queryParams: { type: 'agile', tab: 2 },
@@ -135,7 +135,7 @@ describe('ConfigSettingsComponent', () => {
     component.selectedTab = 'availableConnections';
     const navigateSpy = spyOn(router, 'navigate');
 
-    component.onTabChange();
+    component.onTabChange(event);
 
     expect(navigateSpy).toHaveBeenCalledWith(['.'], {
       queryParams: { tab: 1 },
@@ -147,7 +147,7 @@ describe('ConfigSettingsComponent', () => {
     component.selectedTab = 'projectSettings';
     const navigateSpy = spyOn(router, 'navigate');
 
-    component.onTabChange();
+    component.onTabChange(event);
 
     expect(navigateSpy).toHaveBeenCalledWith(['.'], {
       queryParams: { type: 'agile', tab: 0 },

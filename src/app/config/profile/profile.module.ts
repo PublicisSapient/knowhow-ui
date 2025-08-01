@@ -43,6 +43,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AutoApprovalComponent } from './auto-approval/auto-approval.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { PanelMenuModule } from 'primeng/panelmenu';
 
 @NgModule({
   imports: [
@@ -64,6 +65,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     TooltipModule,
     CheckboxModule,
     ConfirmDialogModule,
+    PanelMenuModule,
   ],
   declarations: [
     RaiseAccessRequestComponent,

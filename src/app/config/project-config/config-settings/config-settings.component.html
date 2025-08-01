@@ -17,13 +17,21 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <div class="selectbtn-container">
-    <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="tab" optionValue="tabValue" styleClass="p-mb-5" ngDefaultControl></p-selectButton>
+  <p-selectButton
+    [options]="configOptions"
+    [(ngModel)]="selectedTab"
+    (onChange)="onTabChange($event)"
+    optionLabel="tab"
+    optionValue="tabValue"
+    styleClass="p-mb-5"
+    ngDefaultControl></p-selectButton>
 </div>
 <ng-container *ngIf="selectedTab === 'projectSettings'">
   <app-project-settings></app-project-settings>
 </ng-container>
 <ng-container *ngIf="selectedTab === 'availableConnections'">
-  <app-connection-list [selectedToolName]="selectedToolName"></app-connection-list>
+  <app-connection-list
+    [selectedToolName]="selectedToolName"></app-connection-list>
 </ng-container>
 <ng-container *ngIf="selectedTab === 'projectConfig'">
   <app-tool-menu></app-tool-menu>
