@@ -146,7 +146,7 @@
       </div>
 
       <div class="view-tabs p-pl-2 p-pr-2"
-        *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
+        *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity' && this.selectedTab?.toLowerCase()  !== 'home' ">
         <div role="radiogroup" aria-label="View Type Selection" class="p-d-flex">
           <div pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
             tooltipStyleClass="tooltiptext">
@@ -167,7 +167,7 @@
       </div>
       </div>
       <div pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default'">
+        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default' && this.selectedTab?.toLowerCase()  !== 'home' ">
         <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)" (keydown.enter)="copyUrlToClipboard($event)" [ngClass]="buttonStyleClass" aria-label="Copy URL" tabindex="0">
           <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-default" />
@@ -179,7 +179,7 @@
       <!-- NOTE: Multiselect Dropdown limitation same as Multiselect Filter dropdowns which is currently ON HOLD due NGPrime default behavior -->
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="bottom" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext" role="region" aria-label="KPI Visibility Control"
-        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData && this.selectedTab?.toLowerCase()  !== 'home'">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)" role="button" tabindex="0" aria-label="Toggle Show/Hide KPI Menu"
         (keydown.enter)="toggleShowHideMenu($event)" (keydown.space)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem" aria-hidden="true"></i>

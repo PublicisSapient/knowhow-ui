@@ -4,6 +4,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
 @Component({
   selector: 'app-nav-new',
@@ -29,6 +30,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     public router: Router,
     public helperService: HelperService,
+    private authorizationService: GetAuthorizationService,
   ) {}
 
   ngOnInit(): void {
@@ -215,6 +217,15 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 },
               };
             });
+
+          // Home tab will visible for superadmin only
+          this.items = this.items.filter((board: any) => {
+            if (!this.authorizationService.checkIfSuperUser()) {
+              return board.slug !== 'home';
+            }
+            return true;
+          });
+
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];
