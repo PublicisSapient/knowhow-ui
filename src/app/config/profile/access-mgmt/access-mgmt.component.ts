@@ -96,6 +96,7 @@ export class AccessMgmtComponent implements OnInit {
 
   // fetches all users
   getUsers() {
+    this.uniqueArrUserData = [];
     this.httpService.getAllUsers().subscribe((userData) => {
       if (userData[0] !== 'error' && !userData.error) {
         this.users = userData.data;
@@ -341,7 +342,7 @@ export class AccessMgmtComponent implements OnInit {
       userData.projectsAccess.forEach((obj) => {
         if (!uniqueRoleArr.includes(obj.role)) {
           uniqueRoleArr.push(obj.role);
-          if (obj.accessNodes.length) {
+          if (obj.accessNodes?.length) {
             obj.accessNodes.forEach((node) => {
               node.accessItems.forEach((item) => {
                 if (!uniqueProjectArr.includes(item.itemId)) {
@@ -363,41 +364,41 @@ export class AccessMgmtComponent implements OnInit {
         }
       });
     }
-    if (this.submitValidationMessage.length === 0) {
-      if (!areEqual) {
-        this.httpService.updateAccess(userData).subscribe((response) => {
-          if (response['success']) {
-            this.getUsers();
-            if (this.showAddUserForm) {
-              this.showAddUserForm = false;
-              this.messageService.add({
-                severity: 'success',
-                summary: 'User added.',
-                detail: '',
-              });
-              this.resetAddDataForm();
-            } else {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Access updated.',
-                detail: '',
-              });
-            }
+    if (areEqual) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Access already exists.',
+        detail: '',
+      });
+      return;
+    }
+    if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
+      this.httpService.updateAccess(userData).subscribe((response) => {
+        if (response['success']) {
+          this.getUsers();
+          if (this.showAddUserForm) {
+            this.showAddUserForm = false;
+            this.messageService.add({
+              severity: 'success',
+              summary: 'User added.',
+              detail: '',
+            });
+            this.resetAddDataForm();
           } else {
             this.messageService.add({
-              severity: 'error',
-              summary:
-                'Error in updating project access. Please try after some time.',
+              severity: 'success',
+              summary: 'Access updated.',
+              detail: '',
             });
           }
-        });
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Access already exists.',
-          detail: '',
-        });
-      }
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              'Error in updating project access. Please try after some time.',
+          });
+        }
+      });
     }
   }
 
