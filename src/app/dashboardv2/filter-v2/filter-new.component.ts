@@ -101,7 +101,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   // Add this property to your component class
-  private readonly inputValidationRegex = /[^a-zA-Z0-9\s%._-]/;
+  private readonly inputValidationRegex = /[^a-zA-Z0-9]/;
 
   isValidInput: boolean = true;
 
@@ -2516,26 +2516,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   validateInput(event) {
     let input = (event.target as HTMLInputElement).value;
-    input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
     this.isValidInput = !this.inputValidationRegex.test(input);
 
     if (!this.isValidInput) {
       event.preventDefault();
+      input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
+      (event.target as HTMLInputElement).value = input;
 
       // Show validation message
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Invalid Character is present in input',
-        detail: 'Special characters are not allowed',
-      });
+      // this.messageService.add({
+      //   // severity: 'warn',
+      //   // summary: 'Invalid Character is present in input',
+      //   // detail: 'Special characters are not allowed',
+      // });
     }
   }
 
   handleInputChange(event) {
-    let input = (event.target as HTMLInputElement).value;
-    const hasSpecialChars = /[^a-zA-Z0-9\s%._-]/.test(input);
-    input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
-    (event.target as HTMLInputElement).value = input;
+    const input = (event.target as HTMLInputElement).value;
+    const hasSpecialChars = /[^a-zA-Z0-9]/.test(input);
 
     if (hasSpecialChars) {
       this.isValidInput = false;
