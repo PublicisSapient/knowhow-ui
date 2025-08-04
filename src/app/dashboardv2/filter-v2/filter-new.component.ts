@@ -2515,7 +2515,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   validateInput(event) {
-    const input = (event.target as HTMLInputElement).value;
+    let input = (event.target as HTMLInputElement).value;
+    input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
     this.isValidInput = !this.inputValidationRegex.test(input);
 
     if (!this.isValidInput) {
@@ -2531,8 +2532,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleInputChange(event) {
-    const input = (event.target as HTMLInputElement).value;
+    let input = (event.target as HTMLInputElement).value;
     const hasSpecialChars = /[^a-zA-Z0-9\s%._-]/.test(input);
+    input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
+    (event.target as HTMLInputElement).value = input;
 
     if (hasSpecialChars) {
       this.isValidInput = false;
