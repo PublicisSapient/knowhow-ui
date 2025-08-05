@@ -2300,6 +2300,10 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .p-dropdown-panel .p-dropdown-header .p-dropdown-filter:focus {
   box-shadow: 0 0 0 0.2rem #bfdbfe;
 }
+.p-multiselect-footer {
+  height: 55px;
+}
+
 .p-dropdown,
 .p-dropdown-panel .p-dropdown-header .p-dropdown-filter:not(.p-inputtext) {
   border: 1px solid #ced4da;
@@ -2506,4 +2510,8 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
   color: #3f51b5;
   border-color: transparent;
+}
+
+*:focus-visible {
+  outline-color: #3f51b5;
 }
