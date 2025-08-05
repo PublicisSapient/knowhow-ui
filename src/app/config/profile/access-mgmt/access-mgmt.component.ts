@@ -336,8 +336,8 @@ export class AccessMgmtComponent implements OnInit {
     const projectItem = this.uniqueArrUserData.find(
       (projectItem) => projectItem.id === userData.id,
     );
-
-    const areEqual = JSON.stringify(userData) === JSON.stringify(projectItem);
+    let areEqual = false;
+    areEqual = JSON.stringify(userData) === JSON.stringify(projectItem);
     if (userData?.projectsAccess?.length) {
       userData.projectsAccess.forEach((obj) => {
         if (!uniqueRoleArr.includes(obj.role)) {
@@ -373,9 +373,10 @@ export class AccessMgmtComponent implements OnInit {
       return;
     }
     if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
+      this.uniqueArrUserData = [];
+      console.log(this.uniqueArrUserData, 'this.uniqueArrUserData');
       this.httpService.updateAccess(userData).subscribe((response) => {
         if (response['success']) {
-          this.uniqueArrUserData.length = 0;
           this.getUsers();
           if (this.showAddUserForm) {
             this.showAddUserForm = false;
