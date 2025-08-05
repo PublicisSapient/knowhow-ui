@@ -2427,6 +2427,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
     console.log('groupedKpiOptions ', this.groupedKpiOptions);
+    event.query = event.query.replace(/[^a-zA-Z0-9\s]/g, '');
+    // (event.target as HTMLInputElement).value = event.query;
+
     const query = event.query.toLowerCase();
 
     this.filteredKpis = this.groupedKpiOptions
@@ -2516,33 +2519,33 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   validateInput(event) {
     let input = (event.target as HTMLInputElement).value;
-    this.isValidInput = !this.inputValidationRegex.test(input);
+    // this.isValidInput = !this.inputValidationRegex.test(input);
 
-    if (!this.isValidInput) {
-      event.preventDefault();
-      input = input.replace(/[^a-zA-Z0-9\s]/g, '');
-      (event.target as HTMLInputElement).value = input;
+    // if (!this.isValidInput) {
+    //   event.preventDefault();
+    //   // input = input.replace(/[^a-zA-Z0-9\s]/g, '');
+    //   // (event.target as HTMLInputElement).value = input;
 
-      // Show validation message
-      // this.messageService.add({
-      //   // severity: 'warn',
-      //   // summary: 'Invalid Character is present in input',
-      //   // detail: 'Special characters are not allowed',
-      // });
-    }
+    //   // Show validation message
+    //   // this.messageService.add({
+    //   //   // severity: 'warn',
+    //   //   // summary: 'Invalid Character is present in input',
+    //   //   // detail: 'Special characters are not allowed',
+    //   // });
+    // }
   }
 
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
     const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(input);
 
-    if (hasSpecialChars) {
-      this.isValidInput = false;
-    } else {
-      this.isValidInput = true;
-      this.selectedKPI = input;
-      this.debouncedFilterKpis(event);
-    }
+    // if (hasSpecialChars) {
+    //   this.isValidInput = false;
+    // } else {
+    //   this.isValidInput = true;
+    this.selectedKPI = input;
+    this.debouncedFilterKpis(event);
+    // }
   }
 
   removeSearchQuery() {
