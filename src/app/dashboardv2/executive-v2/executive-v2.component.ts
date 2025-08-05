@@ -174,10 +174,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   resetToDefaults() {
+    console.log('resetToDefaults');
     this.noFilterApplyData = false;
     this.kpiLoader = new Set();
-    this.kpiStatusCodeArr = {};
-    this.immediateLoader = true;
+    // this.kpiStatusCodeArr = {};
+    // this.immediateLoader = true;
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
