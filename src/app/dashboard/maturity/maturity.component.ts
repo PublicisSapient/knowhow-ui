@@ -288,7 +288,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
-        this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
+        // this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
       } else {
         this.service.setBackupOfFilterSelectionState(null);
         this.queryParamsSubscription?.unsubscribe();
