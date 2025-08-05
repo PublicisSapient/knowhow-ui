@@ -101,7 +101,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   // Add this property to your component class
-  private readonly inputValidationRegex = /[^a-zA-Z0-9]/;
+  private readonly inputValidationRegex = /[^a-zA-Z0-9\s]/;
 
   isValidInput: boolean = true;
 
@@ -2520,7 +2520,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     if (!this.isValidInput) {
       event.preventDefault();
-      input = input.replace(/[^a-zA-Z0-9\s%._-]/g, '');
+      input = input.replace(/[^a-zA-Z0-9\s]/g, '');
       (event.target as HTMLInputElement).value = input;
 
       // Show validation message
@@ -2534,7 +2534,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
-    const hasSpecialChars = /[^a-zA-Z0-9]/.test(input);
+    const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(input);
 
     if (hasSpecialChars) {
       this.isValidInput = false;
