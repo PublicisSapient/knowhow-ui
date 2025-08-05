@@ -2545,4 +2545,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.debouncedFilterKpis(event);
     }
   }
+
+  removeSearchQuery() {
+    this.selectedKPI = '';
+    this.service.updateValue('');
+  }
 }
