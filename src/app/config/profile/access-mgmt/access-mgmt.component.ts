@@ -374,7 +374,6 @@ export class AccessMgmtComponent implements OnInit {
     }
     if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
       this.uniqueArrUserData = [];
-      console.log(this.uniqueArrUserData, 'this.uniqueArrUserData');
       this.httpService.updateAccess(userData).subscribe((response) => {
         if (response['success']) {
           this.getUsers();
