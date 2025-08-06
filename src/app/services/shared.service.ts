@@ -912,6 +912,5 @@ export class SharedService {
 
     return stateFilters.length <= 8;
   }
-
   //#endregion
 }

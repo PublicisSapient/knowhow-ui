@@ -26,6 +26,8 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { Dialog } from 'primeng/dialog';
 import { borderTopLeftRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
 
+import * as LZString from 'lz-string';
+
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',
@@ -420,8 +422,27 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           : '',
       );
     }
-
     //#endregion
+
+    // -- export widget to confluence
+    if (
+      this.selectedTab === 'my-knowhow' ||
+      this.selectedTab === 'speed' ||
+      this.selectedTab === 'quality' ||
+      this.selectedTab === 'value'
+    ) {
+      this.menuItems = this.menuItems.filter(
+        (item) => item.label !== 'Export to Confluence',
+      );
+      this.menuItems.push({
+        label: 'Embed KPI',
+        icon: 'pi pi-external-link',
+        command: ($event) => {
+          this.exportDataToConfluence($event);
+        },
+        disabled: false,
+      });
+    }
   }
 
   openCommentModal = () => {
@@ -1460,5 +1481,59 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     });
     return copyFilters;
+  }
+
+  exportDataToConfluence(event) {
+    // console.log('kpiData > ', this.kpiData);
+    const shared_link = window.location.href,
+      queryParams = new URLSearchParams(shared_link.split('?')[1]),
+      stateFilters = JSON.stringify(queryParams.get('stateFilters')),
+      kpiFilters = JSON.stringify(queryParams.get('kpiFilters'));
+
+    // APPROACH 1
+    const payload = {
+      longStateFiltersString: stateFilters || '',
+      longKPIFiltersString: kpiFilters || '',
+    };
+    /* this.http.handleUrlShortener(payload).subscribe((response: any) => {
+      const shortStateFilterString = response.data.shortStateFiltersString;
+      const shortKPIFilterString = response.data.shortKPIFilterString;
+      const shortUrl = `stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}&kpiName=${this.kpiData.kpiId}`;
+      navigator.clipboard
+        .writeText(shortUrl)
+        .then(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary:
+              'Embed link copied. Paste the link in the confluence page.',
+          });
+        })
+        .catch((err) => {
+          console.error('Failed to copy URL: ', err);
+        });
+    }); */
+
+    // APPROACH 2
+    const infoLink = `{
+      'kpiId': '${this.kpiData.kpiId}',
+      'kpiData': '${JSON.stringify(this.kpiData)}',
+      'stateFilters': '${stateFilters}',
+      'kpiFilters': '${kpiFilters}',
+    }`;
+    const compressedInfo = btoa(
+      LZString.compressToEncodedURIComponent(JSON.stringify(infoLink)),
+    );
+    console.log(compressedInfo);
+    navigator.clipboard
+      .writeText(compressedInfo)
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Embed link copied. Paste the link in the confluence page.',
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to copy URL: ', err);
+      });
   }
 }
