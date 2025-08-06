@@ -56,8 +56,8 @@
       [completeOnFocus]="true"
       [placeholder]="'Search KPI'"
       (onSelect)="onKpiSearch($event)"
-      (input)="handleInputChange($event)"
-      [class.ng-invalid]="!isValidInput">
+      (onKeyUp)="validateInput($event)"
+      (input)="handleInputChange($event)">
     </p-autoComplete>
   </div>
   <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
