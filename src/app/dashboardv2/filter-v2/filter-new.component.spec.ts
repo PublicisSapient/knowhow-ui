@@ -2442,6 +2442,28 @@ describe('FilterNewComponent', () => {
     });
   });
 
+  describe('FilterNewComponent.onSelectAllToggle()', () => {
+    it('should call showHideSelectAllApply and set disableShowHideApply to false', () => {
+      // Arrange
+      const fakeEvent = {
+        originalEvent: {
+          stopPropagation: jasmine.createSpy('stopPropagation'),
+        },
+      };
+      const applySpy = spyOn(component, 'showHideSelectAllApply');
+
+      component.disableShowHideApply = true;
+
+      // Act
+      component.onSelectAllToggle(fakeEvent);
+
+      // Assert
+      expect(fakeEvent.originalEvent.stopPropagation).toHaveBeenCalled();
+      expect(applySpy).toHaveBeenCalled();
+      expect(component.disableShowHideApply).toBe(false);
+    });
+  });
+
   describe('FilterNewComponent.showChartToggle() showChartToggle method', () => {
     describe('Happy Path', () => {
       it('should set showChart to the provided value and call setShowTableView', () => {
