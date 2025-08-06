@@ -72,6 +72,7 @@ export class AccessMgmtComponent implements OnInit {
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
   isOpenSource: boolean = false;
+  uniqueArrUserData = <any>[];
 
   constructor(
     private service: SharedService,
@@ -95,9 +96,11 @@ export class AccessMgmtComponent implements OnInit {
 
   // fetches all users
   getUsers() {
+    this.uniqueArrUserData = [];
     this.httpService.getAllUsers().subscribe((userData) => {
       if (userData[0] !== 'error' && !userData.error) {
         this.users = userData.data;
+        this.uniqueArrUserData = JSON.parse(JSON.stringify(this.users));
         this.allUsers = this.users;
       } else {
         // show error message
@@ -315,6 +318,7 @@ export class AccessMgmtComponent implements OnInit {
 
   saveAccessChange(userData) {
     // clean userdata, remove empty access-nodes
+    this.submitValidationMessage = '';
     if (userData['projectsAccess']?.length) {
       userData['projectsAccess'].forEach((element) => {
         if (element.role !== 'ROLE_SUPERADMIN') {
@@ -329,11 +333,16 @@ export class AccessMgmtComponent implements OnInit {
 
     const uniqueProjectArr = [];
     const uniqueRoleArr = [];
+    const projectItem = this.uniqueArrUserData.find(
+      (projectItem) => projectItem.id === userData.id,
+    );
+    let areEqual = false;
+    areEqual = JSON.stringify(userData) === JSON.stringify(projectItem);
     if (userData?.projectsAccess?.length) {
       userData.projectsAccess.forEach((obj) => {
         if (!uniqueRoleArr.includes(obj.role)) {
           uniqueRoleArr.push(obj.role);
-          if (obj.accessNodes.length) {
+          if (obj.accessNodes?.length) {
             obj.accessNodes.forEach((node) => {
               node.accessItems.forEach((item) => {
                 if (!uniqueProjectArr.includes(item.itemId)) {
@@ -355,10 +364,19 @@ export class AccessMgmtComponent implements OnInit {
         }
       });
     }
-
-    if (!this.displayDuplicateProject) {
+    if (areEqual) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Access already exists.',
+        detail: '',
+      });
+      return;
+    }
+    if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
+      this.uniqueArrUserData = [];
       this.httpService.updateAccess(userData).subscribe((response) => {
         if (response['success']) {
+          this.getUsers();
           if (this.showAddUserForm) {
             this.showAddUserForm = false;
             this.messageService.add({
