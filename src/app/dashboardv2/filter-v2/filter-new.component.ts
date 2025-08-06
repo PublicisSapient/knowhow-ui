@@ -2517,24 +2517,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }, 10);
   }
 
-  validateInput(event) {
-    let input = (event.target as HTMLInputElement).value;
-    // this.isValidInput = !this.inputValidationRegex.test(input);
-
-    // if (!this.isValidInput) {
-    //   event.preventDefault();
-    //   // input = input.replace(/[^a-zA-Z0-9\s]/g, '');
-    //   // (event.target as HTMLInputElement).value = input;
-
-    //   // Show validation message
-    //   // this.messageService.add({
-    //   //   // severity: 'warn',
-    //   //   // summary: 'Invalid Character is present in input',
-    //   //   // detail: 'Special characters are not allowed',
-    //   // });
-    // }
-  }
-
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
     const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(input);

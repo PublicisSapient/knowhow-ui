@@ -3412,60 +3412,6 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  describe('validateInput', () => {
-    // fit('should validate valid input', () => {
-    //   const event = {
-    //     target: { value: 'HelloWorld' },
-    //     preventDefault: jasmine.createSpy('preventDefault'),
-    //   } as any;
-    //   component.validateInput(event);
-    //   // expect(component.isValidInput).toBe(true);
-    // });
-    it('should validate invalid input with special characters', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      // component.validateInput(event);
-      // expect(component.isValidInput).toBe(false);
-    });
-    it('should call preventDefault on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      // component.validateInput(event);
-      // expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    });
-    it('should add validation message on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      spyOn(messageService, 'add');
-      // component.validateInput(event);
-      // expect(messageService.add).toHaveBeenCalledTimes(1);
-      // expect(messageService.add).toHaveBeenCalledWith({
-      //   severity: 'warn',
-      //   summary: 'Invalid Character is present in input',
-      //   detail: 'Special characters are not allowed',
-      // });
-    });
-    it('should clear invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.autoComplete = {
-        inputEL: { nativeElement: { value: 'Hello@World' } },
-      } as any;
-      // component.validateInput(event);
-      expect(component.autoComplete.inputEL.nativeElement.value).toBe(
-        'Hello@World',
-      );
-    });
-  });
-
   describe('handleInputChange', () => {
     it('should handle input with valid characters', () => {
       const event = {
