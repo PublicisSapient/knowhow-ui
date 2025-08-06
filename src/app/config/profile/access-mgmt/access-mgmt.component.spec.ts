@@ -529,6 +529,39 @@ describe('AccessMgmtComponent', () => {
     const response = {
       success: true,
     };
+    component.uniqueArrUserData = [
+      {
+        id: '601d3d2630c49e000148b749',
+        username: 'test',
+        authorities: ['ROLE_PROJECT_VIEWER'],
+        authType: 'STANDARD',
+        emailAddress: 'aadil.mohan@publicssapient.com',
+        projectsAccess: [
+          {
+            role: 'ROLE_PROJECT_VIEWER',
+            accessNodes: [
+              {
+                accessLevel: 'project',
+                accessItems: [
+                  {
+                    itemId: '6449103b3be37902a3f1ba70',
+                    itemName: 'GearBox Squad 1',
+                  },
+                  {
+                    itemId: '64ab97327d51263c17602b58',
+                    itemName: "Unified Commerce - Dan's MVP",
+                  },
+                  {
+                    itemId: '655ef009d08ea076bfb2c9ae',
+                    itemName: 'REDCLIFF',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
     component.displayDuplicateProject = false;
     component.showAddUserForm = true;
     spyOn(httpService, 'updateAccess').and.returnValue(of(response));
@@ -578,6 +611,35 @@ describe('AccessMgmtComponent', () => {
     const response = {
       success: true,
     };
+    component.uniqueArrUserData = [
+      {
+        id: '601d3d2630c49e000148b749',
+        username: 'Aadil',
+        authorities: ['ROLE_PROJECT_VIEWER'],
+        authType: 'STANDARD',
+        emailAddress: 'aadil.mohan@publicssapient.com',
+        projectsAccess: [
+          {
+            role: 'ROLE_PROJECT_VIEWER',
+            accessNodes: [
+              {
+                accessLevel: 'project',
+                accessItems: [
+                  {
+                    itemId: '6449103b3be37902a3f1ba70',
+                    itemName: 'GearBox Squad 1',
+                  },
+                  {
+                    itemId: '64ab97327d51263c17602b58',
+                    itemName: "Unified Commerce - Dan's MVP",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
     component.displayDuplicateProject = false;
     component.showAddUserForm = false;
     spyOn(httpService, 'updateAccess').and.returnValue(of(response));
@@ -624,6 +686,39 @@ describe('AccessMgmtComponent', () => {
         },
       ],
     };
+    component.uniqueArrUserData = [
+      {
+        id: '601d3d2630c49e000148b749',
+        username: 'test',
+        authorities: ['ROLE_PROJECT_VIEWER'],
+        authType: 'STANDARD',
+        emailAddress: 'aadil.mohan@publicssapient.com',
+        projectsAccess: [
+          {
+            role: 'ROLE_PROJECT_VIEWER',
+            accessNodes: [
+              {
+                accessLevel: 'project',
+                accessItems: [
+                  {
+                    itemId: '6449103b3be37902a3f1ba70',
+                    itemName: 'GearBox Squad 1',
+                  },
+                  {
+                    itemId: '64ab97327d51263c17602b58',
+                    itemName: "Unified Commerce - Dan's MVP",
+                  },
+                  {
+                    itemId: '655ef009d08ea076bfb2c9ae',
+                    itemName: 'REDCLIFF',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
     const response = {
       success: false,
     };
