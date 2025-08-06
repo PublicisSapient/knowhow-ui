@@ -251,11 +251,11 @@ export class BasicConfigComponent implements OnInit {
   }
 
   onSelectOfDropdown(event: any, currentLevel: any) {
-    const selectedItem = event;
+    const selectedItem = event.value;
     const selectedNodeId = selectedItem.nodeId;
     const selectedParentId = selectedItem.parentId;
     const currentIndex = this.formData.findIndex(
-      (level) => level === currentLevel,
+      (level) => level.level == selectedItem.level,
     );
 
     // Step 1: Filter current level based on selected item
@@ -281,7 +281,7 @@ export class BasicConfigComponent implements OnInit {
         this.formData[i].filteredSuggestions = this.formData[i]?.list.filter(
           (item) => item.nodeId === selectParentId,
         );
-        selectParentId = this.formData[i]?.filteredSuggestions[0].parentId;
+        selectParentId = this.formData[i]?.filteredSuggestions[0]?.parentId;
 
         if (
           this.formData[i].filteredSuggestions &&

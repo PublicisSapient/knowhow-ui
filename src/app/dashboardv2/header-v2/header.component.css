@@ -167,6 +167,9 @@ header {
   -webkit-user-select: none;
   user-select: none;
 }
+:host::ng-deep.p-menu-list .p-element.p-menuitem {
+  cursor: pointer;
+}
 @media print {
   :host ::ng-deep header nav .tab-container {
     display: none;

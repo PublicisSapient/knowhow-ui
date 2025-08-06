@@ -874,9 +874,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
       return count;
     };
 
-    d3.select('svg').remove();
-    d3.select('.tooltip_').remove();
-    d3.select('.tooltipForCategory').remove();
+    d3.select('.chart123').select('svg').remove();
+    d3.select('.chart123').select('.tooltip_').remove();
+    d3.select('.chart123').select('.tooltipForCategory').remove();
     const self = this;
 
     const startRotation = this.loaderMaturity;
