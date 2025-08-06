@@ -236,17 +236,23 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   handleMenuTabFunctionality(obj) {
-    this.selectedTab = obj['boardSlug'];
-    if (this.selectedTab !== 'unauthorized access') {
+    const selectedTab = obj?.value?.boardSlug || obj?.boardSlug;
+
+    if (!selectedTab) {
+      console.warn('❌ selectedTab (boardSlug) is missing in object:', obj);
+      return;
+    }
+
+    this.selectedTab = selectedTab;
+
+    if (selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab) {
       if (
-        this.selectedTab === 'iteration' ||
-        this.selectedTab === 'release' ||
-        this.selectedTab === 'backlog' ||
-        this.selectedTab === 'dora' ||
-        this.selectedTab === 'kpi-maturity'
+        ['iteration', 'release', 'backlog', 'dora', 'kpi-maturity'].includes(
+          selectedTab,
+        )
       ) {
         this.sharedService.setBackupOfFilterSelectionState({
           additional_level: null,
@@ -254,9 +260,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
       }
     }
     this.sharedService.setBackupOfFilterSelectionState({
-      selected_tab: obj['boardSlug'],
+      selected_tab: selectedTab,
     });
-    this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+    this.router.navigate(['/dashboard/' + selectedTab]);
   }
 
   updateDataDirectly(searchQuery) {
