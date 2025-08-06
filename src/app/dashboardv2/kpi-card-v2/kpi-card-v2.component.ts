@@ -152,66 +152,49 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
+
         if (x && Object.keys(x)?.length) {
           this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
-          for (const key in x[this.kpiData?.kpiId]) {
+          const selectedKpiId = this.kpiData?.kpiId;
+          const selectedKpiFilters = x[selectedKpiId];
+
+          for (const key in selectedKpiFilters) {
+            const value = selectedKpiFilters[key];
+
             if (
-              Array.isArray(x[this.kpiData?.kpiId][key]) &&
-              x[this.kpiData?.kpiId][key]?.includes('Overall')
+              selectedKpiId === 'kpi72' &&
+              (key === 'filter1' || key === 'filter2')
             ) {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1') {
-                  this.filterOptions['filter1'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter1'
-                    ][0];
-                } else if (key === 'filter2') {
-                  this.filterOptions['filter2'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter2'
-                    ][0];
-                } else {
-                  this.filterOptions = { ...this.filterOptions };
-                }
-              } else {
-                this.filterOptions = { ...this.filterOptions };
-              }
+              this.filterOptions[key] = [
+                Array.isArray(value) ? value[0] : value,
+              ];
             } else {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1') {
-                  this.filterOptions['filter1'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter1'
-                    ][0];
-                } else if (key === 'filter2') {
-                  this.filterOptions['filter2'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter2'
-                    ][0];
-                }
-              } else {
-                this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
-                  ? { filter1: x[this.kpiData?.kpiId] }
-                  : { ...x[this.kpiData?.kpiId] };
-              }
+              this.filterOptions[key] = Array.isArray(value)
+                ? [...value]
+                : [value];
             }
           }
+
+          Object.keys(this.filterOptions).forEach((key) => {
+            const val = this.filterOptions[key];
+            if (!Array.isArray(val)) {
+              this.filterOptions[key] =
+                val !== undefined && val !== null ? [val] : [];
+            }
+          });
+
+          const filterType = this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase();
           if (
-            this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
-            (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-              'radiobutton' ||
-              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-                'multitypefilters')
+            filterType === 'radiobutton' ||
+            filterType === 'multitypefilters'
           ) {
-            if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-              this.radioOption = this.kpiSelectedFilterObj[
-                this.kpiData?.kpiId
-              ]?.hasOwnProperty('filter1')
-                ? this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-                  'multitypefilters'
-                  ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0]
-                  : this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]
-                : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            const filters = this.kpiSelectedFilterObj[selectedKpiId];
+            if (filters) {
+              this.radioOption = filters.hasOwnProperty('filter1')
+                ? filterType === 'multitypefilters'
+                  ? filters['filter2']?.[0]
+                  : filters['filter1']?.[0]
+                : filters?.[0];
             }
           }
         }
@@ -221,32 +204,39 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             const key = 'filter' + (index + 1);
             let val = this.filterOptions[key];
 
-            if (Array.isArray(val)) {
-              val = val[0];
-            }
+            const isMultiSelect =
+              this.kpiData.kpiDetail.kpiFilter === 'multiSelectDropDown';
+            const firstOption = filter?.options?.[0];
 
-            if (val === null || val === undefined) {
-              val = filter.options[0];
+            if (isMultiSelect) {
+              if (!Array.isArray(val)) {
+                val = val !== undefined && val !== null ? [val] : [];
+              }
+              this.filterOptions[key] = val.length
+                ? val
+                : firstOption
+                ? [firstOption]
+                : [];
+            } else {
+              if (Array.isArray(val)) {
+                val = val[0];
+              }
+              this.filterOptions[key] = val ?? firstOption ?? null;
             }
-
-            this.filterOptions[key] = val;
           });
         }
 
-        this.selectedTab = this.service.getSelectedTab()
-          ? this.service.getSelectedTab().toLowerCase()
-          : '';
+        this.selectedTab = this.service.getSelectedTab()?.toLowerCase() || '';
       }),
     );
-    /** assign 1st value to radio button by default */
 
     this.subscriptions.push(
       this.service.onChartChangeObs.subscribe((stringifiedData) => {
         if (stringifiedData) {
-          stringifiedData = JSON.parse(stringifiedData);
-          this.selectedMainCategory = stringifiedData['selectedMainCategory'];
-          this.selectedMainFilter = stringifiedData['selectedMainFilter'];
-          this.selectedFilter2 = stringifiedData['selectedFilter2'];
+          const parsed = JSON.parse(stringifiedData);
+          this.selectedMainCategory = parsed['selectedMainCategory'];
+          this.selectedMainFilter = parsed['selectedMainFilter'];
+          this.selectedFilter2 = parsed['selectedFilter2'];
         }
       }),
     );
