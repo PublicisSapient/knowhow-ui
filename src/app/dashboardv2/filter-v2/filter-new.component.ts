@@ -2187,12 +2187,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideSelectAllApply() {
     this.masterDataCopy['kpiList'].forEach((element) => {
-      if (this.showHideSelectAll) {
-        element.isEnabled = true;
-      } else {
-        element.isEnabled = false;
-      }
+      element.isEnabled = this.showHideSelectAll;
     });
+
+    this.masterDataCopy['kpiList'] = [...this.masterDataCopy['kpiList']];
+  }
+
+  onSelectAllToggle(event: any): void {
+    event.originalEvent.stopPropagation();
+    this.showHideSelectAllApply();
+    this.disableShowHideApply = false;
   }
 
   /**
