@@ -2315,6 +2315,10 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
   background-color: rgba(63, 81, 181, 0.12);
 }
+.p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
 .p-autocomplete .p-autocomplete-multiple-container:not(.p-disabled).p-focus,
 .p-autocomplete .p-autocomplete-multiple-container:not(.p-disabled):hover {
   box-shadow: none;
