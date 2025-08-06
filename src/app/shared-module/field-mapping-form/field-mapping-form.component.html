@@ -29,10 +29,8 @@
                                   {{field['fieldLabel']}}
                                   <span class="p-mr-1" style="color: red;" *ngIf="field?.mandatory" aria-hidden="true">*</span>
                                   <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tabindex="0"></span>
-                                  <span>
-                                      <img #commentSummary class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" src="../../../assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + field['fieldLabel']" tabindex="0" />
-                                  </span>
                               </label>
+                            <img #commentSummary class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" src="../../../assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + field['fieldLabel']" tabindex="0" />
                           </div>
                       </div>
                       <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
