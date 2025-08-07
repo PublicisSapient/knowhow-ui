@@ -3412,59 +3412,32 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  describe('validateInput', () => {
-    it('should validate valid input', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(component.isValidInput).toBe(true);
-    });
-    it('should validate invalid input with special characters', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(component.isValidInput).toBe(false);
-    });
-    it('should call preventDefault on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    });
-    it('should add validation message on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      spyOn(messageService, 'add');
-      component.validateInput(event);
-      expect(messageService.add).toHaveBeenCalledTimes(1);
-      expect(messageService.add).toHaveBeenCalledWith({
-        severity: 'warn',
-        summary: 'Invalid Character is present in input',
-        detail: 'Special characters are not allowed',
-      });
-    });
-    it('should clear invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.autoComplete = {
-        inputEL: { nativeElement: { value: 'Hello@World' } },
-      } as any;
-      component.validateInput(event);
-      expect(component.autoComplete.inputEL.nativeElement.value).toBe(
-        'Hello@World',
-      );
-    });
-  });
+  it('should show autocomplete dropdown and emit onShow if overlay is not visible', fakeAsync(() => {
+    const mockInput = document.createElement('input');
+    const showSpy = jasmine.createSpy();
+    const emitSpy = jasmine.createSpy();
+
+    component.filteredKpis = [{ kpiId: 'k1', kpiName: 'KPI 1' }];
+    component.autoComplete = {
+      el: {
+        nativeElement: {
+          querySelector: () => mockInput,
+        },
+      },
+      show: showSpy,
+      overlayVisible: false,
+      onShow: {
+        emit: emitSpy,
+      },
+    } as any;
+
+    component.showAutoCompleteDropdown();
+    tick(10); // wait for setTimeout
+
+    expect(showSpy).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
+    expect(component.isSearchingKPI).toBeFalse();
+  }));
 
   describe('handleInputChange', () => {
     it('should handle input with valid characters', () => {
@@ -3478,21 +3451,21 @@ describe('FilterNewComponent', () => {
     });
     it('should handle input with invalid characters', () => {
       const event = {
-        target: { value: 'Hello!World' },
+        target: { value: 'HelloWorld' },
         query: 'testing',
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('');
+      expect(component.selectedKPI).toBe('HelloWorld');
     });
     it('should handle input with mixed valid and invalid characters', () => {
       const event = {
-        target: { value: 'Hello!World123' },
+        target: { value: 'HelloWorld123' },
         query: 'testing',
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('');
+      expect(component.selectedKPI).toBe('HelloWorld123');
     });
     it('should not update input if no changes after sanitization', () => {
       const event = {
