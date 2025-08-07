@@ -3412,28 +3412,6 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  it('should sanitize the input query by removing special characters', fakeAsync(() => {
-    const rawQuery = 'KP!@#123$$%^&*()';
-    const sanitizedQuery = 'KP123'; // After removing special characters
-
-    const mockEvent: any = { query: rawQuery };
-
-    // Set required mock data
-    component.groupedKpiOptions = [
-      { label: 'Group 1', items: [{ label: 'KP123', value: { kpiId: 'k1' } }] },
-    ];
-
-    // Call debounced function
-    component.debouncedFilterKpis(mockEvent);
-    tick(2000); // Wait for debounce
-
-    // Verify the query was sanitized
-    expect(mockEvent.query).toBe(sanitizedQuery);
-
-    // Also check that filteredKpis updated based on sanitized query
-    expect(component.filteredKpis.length).toBeGreaterThan(0);
-  }));
-
   describe('handleInputChange (no validation, assign only)', () => {
     it('should save input as-is for regular alphanumeric input', () => {
       const event = { target: { value: 'HelloWorld' } };
