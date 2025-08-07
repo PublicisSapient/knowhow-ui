@@ -251,7 +251,7 @@ export class BasicConfigComponent implements OnInit {
   }
 
   onSelectOfDropdown(event: any, currentLevel: any) {
-    const selectedItem = event;
+    const selectedItem = event.value;
     const selectedNodeId = selectedItem.nodeId;
     const selectedParentId = selectedItem.parentId;
     const currentIndex = this.formData.findIndex(

@@ -2165,7 +2165,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.service.getCurrentUserDetails('user_name');
   }
 
-  setSelectAll() {
+  setSelectAll(bool?, option?) {
+    if (option) {
+      const optionIndex = this.masterDataCopy['kpiList'].findIndex(
+        (kpi) => kpi.kpiId === option.kpiId,
+      );
+      this.masterDataCopy['kpiList'][optionIndex].isEnabled = bool;
+    }
     const visibleKPIs = this.masterDataCopy['kpiList'].filter(
       (kpi) => kpi.isEnabled,
     );
