@@ -3413,60 +3413,55 @@ describe('FilterNewComponent', () => {
   });
 
   describe('handleInputChange', () => {
-    it('should handle input with valid characters', () => {
+    it('should assign input with only valid characters', () => {
       const event = {
         target: { value: 'HelloWorld' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
-      };
-      component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('HelloWorld');
-    });
-    it('should handle input with invalid characters', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
-      };
-      component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('HelloWorld');
-    });
-    it('should handle input with mixed valid and invalid characters', () => {
-      const event = {
-        target: { value: 'HelloWorld123' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
-      };
-      component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('HelloWorld123');
-    });
-    it('should not update input if no changes after sanitization', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
-      };
-      component.handleInputChange(event);
-      expect((event.target as HTMLInputElement).value).toBe('HelloWorld');
-    });
-    it('should update input if changes after sanitization', () => {
-      const event = {
-        target: { value: 'Hello!World' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
-      };
-      component.handleInputChange(event);
-      expect((event.target as HTMLInputElement).value).toBe('Hello!World');
-    });
-    it('should call debouncedFilterKpis', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-        query: 'testing',
-        preventDefault: jasmine.createSpy('preventDefault'),
       };
       spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event);
-      expect(component.debouncedFilterKpis).toHaveBeenCalledTimes(1);
+
+      component.handleInputChange(event as any);
+
+      expect(component.selectedKPI).toBe('HelloWorld');
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
+
+    it('should assign input including special characters without sanitization', () => {
+      const event = {
+        target: { value: 'Hello!World@123' },
+      };
+      spyOn(component, 'debouncedFilterKpis');
+
+      component.handleInputChange(event as any);
+
+      expect(component.selectedKPI).toBe('Hello!World@123');
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
+
+    it('should assign empty string when input is empty', () => {
+      const event = {
+        target: { value: '' },
+      };
+      spyOn(component, 'debouncedFilterKpis');
+
+      component.handleInputChange(event as any);
+
+      expect(component.selectedKPI).toBe('');
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
+
+    it('should update selectedKPI on every input change', () => {
+      const inputs = ['abc', 'abc123', 'abc@123!', '   '];
+      spyOn(component, 'debouncedFilterKpis');
+
+      inputs.forEach((inputValue) => {
+        const event = { target: { value: inputValue } };
+        component.handleInputChange(event as any);
+        expect(component.selectedKPI).toBe(inputValue);
+      });
+
+      expect(component.debouncedFilterKpis).toHaveBeenCalledTimes(
+        inputs.length,
+      );
     });
   });
 });
