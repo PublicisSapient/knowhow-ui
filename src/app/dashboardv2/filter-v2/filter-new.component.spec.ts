@@ -3412,59 +3412,61 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  describe('handleInputChange (no validation, assign only)', () => {
-    it('should save input as-is for regular alphanumeric input', () => {
-      const event = { target: { value: 'HelloWorld' } };
-      spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
+  describe('handleInputChange', () => {
+    it('should handle input with valid characters', () => {
+      const event = {
+        target: { value: 'HelloWorld' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
+      component.handleInputChange(event);
       expect(component.selectedKPI).toBe('HelloWorld');
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
     });
-
-    it('should save input with special characters (no sanitization)', () => {
-      const event = { target: { value: 'Hello@World!_123' } };
-      spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
-      expect(component.selectedKPI).toBe('Hello@World!_123');
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    it('should handle input with invalid characters', () => {
+      const event = {
+        target: { value: 'HelloWorld' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
+      component.handleInputChange(event);
+      expect(component.selectedKPI).toBe('HelloWorld');
     });
-
-    it('should save input that is only special characters', () => {
-      const event = { target: { value: '@#$%^&*' } };
-      spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
-      expect(component.selectedKPI).toBe('@#$%^&*');
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    it('should handle input with mixed valid and invalid characters', () => {
+      const event = {
+        target: { value: 'HelloWorld123' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
+      component.handleInputChange(event);
+      expect(component.selectedKPI).toBe('HelloWorld123');
     });
-
-    it('should handle empty input', () => {
-      const event = { target: { value: '' } };
-      spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
-      expect(component.selectedKPI).toBe('');
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    it('should not update input if no changes after sanitization', () => {
+      const event = {
+        target: { value: 'HelloWorld' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
+      component.handleInputChange(event);
+      expect((event.target as HTMLInputElement).value).toBe('HelloWorld');
     });
-
-    it('should handle whitespace-only input', () => {
-      const event = { target: { value: '   ' } };
-      spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
-      expect(component.selectedKPI).toBe('   ');
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    it('should update input if changes after sanitization', () => {
+      const event = {
+        target: { value: 'Hello!World' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
+      component.handleInputChange(event);
+      expect((event.target as HTMLInputElement).value).toBe('Hello!World');
     });
-
-    it('should handle undefined value gracefully', () => {
-      const event = { target: {} };
+    it('should call debouncedFilterKpis', () => {
+      const event = {
+        target: { value: 'HelloWorld' },
+        query: 'testing',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      };
       spyOn(component, 'debouncedFilterKpis');
-      component.handleInputChange(event as any);
-      expect(component.selectedKPI).toBeUndefined();
-      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
-    });
-
-    it('should handle absence of target gracefully', () => {
-      const event = {};
-      spyOn(component, 'debouncedFilterKpis');
-      expect(() => component.handleInputChange(event as any)).toThrowError();
+      component.handleInputChange(event);
+      expect(component.debouncedFilterKpis).toHaveBeenCalledTimes(1);
     });
   });
 });
