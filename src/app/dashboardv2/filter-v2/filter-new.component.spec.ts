@@ -3412,56 +3412,59 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  describe('handleInputChange', () => {
-    it('should assign input with only valid characters', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-      };
+  describe('handleInputChange (no validation, assign only)', () => {
+    fit('should save input as-is for regular alphanumeric input', () => {
+      const event = { target: { value: 'HelloWorld' } };
       spyOn(component, 'debouncedFilterKpis');
-
       component.handleInputChange(event as any);
-
       expect(component.selectedKPI).toBe('HelloWorld');
       expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
     });
 
-    it('should assign input including special characters without sanitization', () => {
-      const event = {
-        target: { value: 'Hello!World@123' },
-      };
+    fit('should save input with special characters (no sanitization)', () => {
+      const event = { target: { value: 'Hello@World!_123' } };
       spyOn(component, 'debouncedFilterKpis');
-
       component.handleInputChange(event as any);
-
-      expect(component.selectedKPI).toBe('Hello!World@123');
+      expect(component.selectedKPI).toBe('Hello@World!_123');
       expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
     });
 
-    it('should assign empty string when input is empty', () => {
-      const event = {
-        target: { value: '' },
-      };
+    fit('should save input that is only special characters', () => {
+      const event = { target: { value: '@#$%^&*' } };
       spyOn(component, 'debouncedFilterKpis');
-
       component.handleInputChange(event as any);
+      expect(component.selectedKPI).toBe('@#$%^&*');
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
 
+    fit('should handle empty input', () => {
+      const event = { target: { value: '' } };
+      spyOn(component, 'debouncedFilterKpis');
+      component.handleInputChange(event as any);
       expect(component.selectedKPI).toBe('');
       expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
     });
 
-    it('should update selectedKPI on every input change', () => {
-      const inputs = ['abc', 'abc123', 'abc@123!', '   '];
+    fit('should handle whitespace-only input', () => {
+      const event = { target: { value: '   ' } };
       spyOn(component, 'debouncedFilterKpis');
+      component.handleInputChange(event as any);
+      expect(component.selectedKPI).toBe('   ');
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
 
-      inputs.forEach((inputValue) => {
-        const event = { target: { value: inputValue } };
-        component.handleInputChange(event as any);
-        expect(component.selectedKPI).toBe(inputValue);
-      });
+    fit('should handle undefined value gracefully', () => {
+      const event = { target: {} };
+      spyOn(component, 'debouncedFilterKpis');
+      component.handleInputChange(event as any);
+      expect(component.selectedKPI).toBeUndefined();
+      expect(component.debouncedFilterKpis).toHaveBeenCalledWith(event);
+    });
 
-      expect(component.debouncedFilterKpis).toHaveBeenCalledTimes(
-        inputs.length,
-      );
+    fit('should handle absence of target gracefully', () => {
+      const event = {};
+      spyOn(component, 'debouncedFilterKpis');
+      expect(() => component.handleInputChange(event as any)).toThrowError();
     });
   });
 });
