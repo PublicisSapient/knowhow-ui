@@ -191,7 +191,7 @@
           <ng-template let-option pTemplate="item">
             <div class="filter-item" role="checkbox" [attr.aria-checked]="option.isEnabled">
               <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-                (onChange)="setSelectAll(); disableShowHideApply = false;" [attr.aria-label]="'Toggle visibility for ' + option.kpiName" tabindex="0"></p-checkbox>
+                (onChange)="setSelectAll(option.isEnabled,option); disableShowHideApply = false;" [attr.aria-label]="'Toggle visibility for ' + option.kpiName" tabindex="0"></p-checkbox>
               <span>{{option.kpiName}}</span>
             </div>
           </ng-template>
