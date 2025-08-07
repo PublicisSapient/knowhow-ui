@@ -101,9 +101,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
   // Add this property to your component class
-  private readonly inputValidationRegex = /[^a-zA-Z0-9]/;
-
-  isValidInput: boolean = true;
 
   constructor(
     private httpService: HttpService,
@@ -2427,7 +2424,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
     console.log('groupedKpiOptions ', this.groupedKpiOptions);
-    event.query = event.query.replace(/[^a-zA-Z0-9]/g, '');
+    event.query = event.query.replace(/[^a-zA-Z0-9\s]/g, '');
     // (event.target as HTMLInputElement).value = event.query;
 
     const query = event.query.toLowerCase();
@@ -2519,15 +2516,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
-    const hasSpecialChars = /[^a-zA-Z0-9]/.test(input);
-
-    // if (hasSpecialChars) {
-    //   this.isValidInput = false;
-    // } else {
-    //   this.isValidInput = true;
     this.selectedKPI = input;
     this.debouncedFilterKpis(event);
-    // }
   }
 
   removeSearchQuery() {
