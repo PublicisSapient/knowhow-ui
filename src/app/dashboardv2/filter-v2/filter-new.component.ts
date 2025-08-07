@@ -2514,10 +2514,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }, 10);
   }
 
-  validateInput(event) {
-    let input = (event.target as HTMLInputElement).value;
-  }
-
   handleInputChange(event) {
     const input = (event.target as HTMLInputElement).value;
     this.selectedKPI = input;
