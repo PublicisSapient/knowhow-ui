@@ -3412,6 +3412,33 @@ describe('FilterNewComponent', () => {
     });
   });
 
+  it('should show autocomplete dropdown and emit onShow if overlay is not visible', fakeAsync(() => {
+    const mockInput = document.createElement('input');
+    const showSpy = jasmine.createSpy();
+    const emitSpy = jasmine.createSpy();
+
+    component.filteredKpis = [{ kpiId: 'k1', kpiName: 'KPI 1' }];
+    component.autoComplete = {
+      el: {
+        nativeElement: {
+          querySelector: () => mockInput,
+        },
+      },
+      show: showSpy,
+      overlayVisible: false,
+      onShow: {
+        emit: emitSpy,
+      },
+    } as any;
+
+    component.showAutoCompleteDropdown();
+    tick(10); // wait for setTimeout
+
+    expect(showSpy).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
+    expect(component.isSearchingKPI).toBeFalse();
+  }));
+
   describe('handleInputChange', () => {
     it('should handle input with valid characters', () => {
       const event = {
