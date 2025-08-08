@@ -58,10 +58,10 @@
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
+}
 
-  td {
-    border-width: 0 1px 1px 1px;
-  }
+:host ::ng-deep .p-datatable-scrollable .p-datatable-tbody > tr > td {
+  border-width: 0 1px 1px 1px;
 }
 
 .table-head {
