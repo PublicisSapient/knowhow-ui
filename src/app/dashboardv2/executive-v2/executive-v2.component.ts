@@ -4830,8 +4830,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const currentUserDetails = localStorage.getItem('currentUserDetails');
     if (currentUserDetails) {
       const userDetails = JSON.parse(currentUserDetails);
-      this.floatingRecommendation =
-        userDetails.authorities?.includes('ROLE_SUPERADMIN');
+      this.floatingRecommendation = [
+        'ROLE_SUPERADMIN',
+        'ROLE_PROJECT_ADMIN',
+      ].some((role) => userDetails.authorities?.includes(role));
     }
   }
 
