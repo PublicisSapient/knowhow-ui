@@ -489,3 +489,14 @@ small {
   border-radius: 5px;
   box-shadow: 1px 1px #ced9d7;
 }
+
+.back-button {
+  background-color: #0b4bc8;
+}
+:host::ng-deep.p-button-icon-only:hover {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+:host::ng-deep.p-dataview .p-dataview-header {
+  background-color: #fff;
+}

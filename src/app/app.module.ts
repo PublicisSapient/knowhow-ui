@@ -135,9 +135,7 @@ import { SharelinkService } from './services/share-link.service';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
-  return (): Promise<any> => {
-    return appInitializerService.checkFeatureFlag();
-  };
+  return (): Promise<any> => appInitializerService.checkFeatureFlag();
 }
 
 @NgModule({

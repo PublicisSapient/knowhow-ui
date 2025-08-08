@@ -41,7 +41,7 @@ import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 class MockMultiSelect {
-  overlayVisible: boolean = false;
+  overlayVisible = false;
   close = () => {};
   show = () => {};
 }
@@ -972,8 +972,8 @@ describe('FilterNewComponent', () => {
           },
         };
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
-          '2': { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
+          1: { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
+          2: { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
         };
         const stateFilters = {
           primary_level: [{ nodeId: '1', labelName: 'Project' }],
@@ -1006,7 +1006,7 @@ describe('FilterNewComponent', () => {
       it('should not remove a filter if it is the only one present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         spyOn(sharedService, 'setSelectedTrends');
         spyOn(sharedService, 'setBackupOfFilterSelectionState');
@@ -1028,7 +1028,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal of a non-existent filter gracefully', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         spyOn(sharedService, 'setSelectedTrends');
         spyOn(sharedService, 'setBackupOfFilterSelectionState');
@@ -1730,13 +1730,13 @@ describe('FilterNewComponent', () => {
         component.setColors(data);
 
         expect(component.colorObj).toEqual({
-          '1': {
+          1: {
             nodeName: 'Node 1',
             color: '#6079C5',
             nodeId: '1',
             labelName: 'Label 1',
           },
-          '2': {
+          2: {
             nodeName: 'Node 2',
             color: '#FFB587',
             nodeId: '2',
@@ -1755,8 +1755,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1787,8 +1787,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters along with state filters are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1826,8 +1826,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters along with state filters and non-string selectedLevel are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = {
@@ -1873,7 +1873,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal when only one filter is present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1903,7 +1903,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal when filter ID does not exist', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1938,8 +1938,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'sprint1',
-            sprintStartDate: '2023-01-01T00:00:00',
-            sprintEndDate: '2023-01-15T00:00:00',
+            sprintStartDate: '2023-01-01T00:00:00Z',
+            sprintEndDate: '2023-01-15T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');
@@ -1962,8 +1962,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'release1',
-            releaseStartDate: '2023-02-01T00:00:00',
-            releaseEndDate: '2023-02-28T00:00:00',
+            releaseStartDate: '2023-02-01T00:00:00Z',
+            releaseEndDate: '2023-02-28T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');

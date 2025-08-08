@@ -186,12 +186,12 @@
           optionLabel="kpiName" aria-label="Select KPIs to Show or Hide" [attr.aria-expanded]="showHideDdn?.overlayVisible">
           <ng-template pTemplate="header">
             <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
-              [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;" aria-label="Select or Deselect All KPIs"></p-checkbox>
+              [binary]="true" (onChange)="onSelectAllToggle($event)" aria-label="Select or Deselect All KPIs"></p-checkbox>
           </ng-template>
           <ng-template let-option pTemplate="item">
             <div class="filter-item" role="checkbox" [attr.aria-checked]="option.isEnabled">
               <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-                (onChange)="setSelectAll(); disableShowHideApply = false;" [attr.aria-label]="'Toggle visibility for ' + option.kpiName" tabindex="0"></p-checkbox>
+                (onChange)="setSelectAll(option.isEnabled,option); disableShowHideApply = false;" [attr.aria-label]="'Toggle visibility for ' + option.kpiName" tabindex="0"></p-checkbox>
               <span>{{option.kpiName}}</span>
             </div>
           </ng-template>

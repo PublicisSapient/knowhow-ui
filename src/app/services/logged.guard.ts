@@ -19,9 +19,9 @@
 import { Injectable } from '@angular/core';
 import {
   Router,
-  Resolve,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
+  Resolve,
 } from '@angular/router';
 import { HttpService } from './http.service';
 import { SharedService } from './shared.service';

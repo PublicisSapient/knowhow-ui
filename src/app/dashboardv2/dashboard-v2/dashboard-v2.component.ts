@@ -47,11 +47,9 @@ export class DashboardV2Component implements AfterContentInit {
 
   authorized = true;
   isApply = false;
-  headerStyle;
   sideNavStyle;
-  goToTopButton: HTMLElement;
   selectedTab;
-  refreshCounter: number = 0;
+  refreshCounter = 0;
 
   @ViewChild('kpiSearchQuery') navNewComponent!: NavNewComponent;
 

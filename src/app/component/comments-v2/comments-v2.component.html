@@ -73,7 +73,7 @@
             [attr.aria-label]="'Comment by ' + comment?.commentBy">
 
             <div class="commented-by">
-              @{{comment?.commentBy}} commented - {{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy hh:mm'}}
+              &#64;{{comment?.commentBy}} commented - {{comment?.commentOn | UtcToLocalUserTimeZone : 'dd-MMM-yyyy hh:mm'}}
               <span class="icon-delete" role="group" aria-label="Comment Actions">
                 <i
                   *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]"

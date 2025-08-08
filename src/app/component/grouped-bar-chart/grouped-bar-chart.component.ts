@@ -122,23 +122,21 @@ export class GroupedBarChartComponent implements OnInit {
         .attr('transform', (d) => `translate(${x0(d.category)}, 0)`);
 
       // Function to create rounded top path
-      const roundedTopPath = (x, y, width, height, radius) => {
-        return `M${x},${y + radius}
+      const roundedTopPath = (x, y, width, height, radius) => `M${x},${
+        y + radius
+      }
                   A${radius},${radius} 0 0 1 ${x + radius},${y}
                   H${x + width - radius}
                   A${radius},${radius} 0 0 1 ${x + width},${y + radius}
                   V${y + height}
                   H${x}
                   Z`;
-      };
 
-      const nonRoundedTopPath = (x, y, width, height) => {
-        return `M${x},${y}
+      const nonRoundedTopPath = (x, y, width, height) => `M${x},${y}
                 H${x + width}
                 V${y + height}
                 H${x}
                 Z`;
-      };
 
       // Define the div for the tooltip
       const div = d3

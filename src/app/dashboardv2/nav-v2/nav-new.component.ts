@@ -4,6 +4,8 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-nav-new',
@@ -13,8 +15,8 @@ import { Router } from '@angular/router';
 export class NavNewComponent implements OnInit, OnDestroy {
   items: any;
   activeItem: any;
-  selectedTab: string = '';
-  selectedType: string = '';
+  selectedTab = '';
+  selectedType = '';
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
@@ -85,22 +87,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
         basicProjectConfigIds:
           projectList?.length && projectList[0] ? projectList : [],
       })
-      .subscribe(
-        (response) => {
+      .pipe(
+        tap((response) => {
           this.setBoards(response);
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.messageService.add({
             severity: 'error',
             summary: error.message,
           });
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   setBoards(response) {
     if (response.success === true) {
-      let data = response.data.userBoardConfigDTO;
+      const data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(
           localStorage.getItem('completeHierarchyData'),
@@ -206,15 +210,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 board.kpis.some((kpi) => kpi.shown === true) &&
                 board.kpis.length > 0,
             )
-            .map((obj) => {
-              return {
-                label: obj['boardName'],
-                slug: obj['boardSlug'],
-                command: () => {
-                  this.handleMenuTabFunctionality(obj);
-                },
-              };
-            });
+            .map((obj) => ({
+              label: obj['boardName'],
+              slug: obj['boardSlug'],
+              command: () => {
+                this.handleMenuTabFunctionality(obj);
+              },
+            }));
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];
@@ -234,17 +236,23 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   handleMenuTabFunctionality(obj) {
-    this.selectedTab = obj['boardSlug'];
-    if (this.selectedTab !== 'unauthorized access') {
+    const selectedTab = obj?.value?.boardSlug || obj?.boardSlug;
+
+    if (!selectedTab) {
+      console.warn('❌ selectedTab (boardSlug) is missing in object:', obj);
+      return;
+    }
+
+    this.selectedTab = selectedTab;
+
+    if (selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab) {
       if (
-        this.selectedTab === 'iteration' ||
-        this.selectedTab === 'release' ||
-        this.selectedTab === 'backlog' ||
-        this.selectedTab === 'dora' ||
-        this.selectedTab === 'kpi-maturity'
+        ['iteration', 'release', 'backlog', 'dora', 'kpi-maturity'].includes(
+          selectedTab,
+        )
       ) {
         this.sharedService.setBackupOfFilterSelectionState({
           additional_level: null,
@@ -252,9 +260,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
       }
     }
     this.sharedService.setBackupOfFilterSelectionState({
-      selected_tab: obj['boardSlug'],
+      selected_tab: selectedTab,
     });
-    this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+    this.router.navigate(['/dashboard/' + selectedTab]);
   }
 
   updateDataDirectly(searchQuery) {

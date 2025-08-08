@@ -14,9 +14,9 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class AddToReportPopUpComponent implements AfterViewInit {
   @Input() reportObj: any;
-  @Input() createNewReportTemplate: boolean = false;
+  @Input() createNewReportTemplate = false;
   @Input() existingReportData: any[] = [];
-  @Input() reportName: string = '';
+  @Input() reportName = '';
   // Reference to the scrollable container element
   @ViewChild('sliderContainer', { static: false })
   sliderContainer!: ElementRef<HTMLDivElement>;
@@ -35,7 +35,7 @@ export class AddToReportPopUpComponent implements AfterViewInit {
 
   objectValues(obj): any[] {
     // return this.helperService.getObjectKeys(obj)
-    let result = [];
+    const result = [];
     if (obj && Object.keys(obj)?.length) {
       Object.keys(obj).forEach((x) => {
         result.push(obj[x]);
@@ -69,8 +69,8 @@ export class AddToReportPopUpComponent implements AfterViewInit {
 
   /**
    * Removes keys from an object whose values (after deep canonicalization) are duplicates.
-   * @param {object} inputObj - The input object.
-   * @returns {object} - A new object containing only unique value entries.
+   * @param inputObj - The input object.
+   * @returns - A new object containing only unique value entries.
    */
   removeDuplicateKeys(inputObj) {
     const seen = new Set();

@@ -84,7 +84,8 @@
 }
 
 :host ::ng-deep .delete-kpi-btn:hover {
-  background-color: red;
+  background-color: #d32f2f;
+  border: 1px solid #0b4bc8;
 }
 
 .slider-div {
@@ -128,6 +129,12 @@
   justify-content: flex-end;
   padding-right: 20px; /* Adjust as needed */
   margin-top: 10px;
+}
+:host::ng-deep .print-button-container .p-button.p-component {
+  background-color: #0b4bc8 !important;
+}
+:host::ng-deep .print-button-container .p-button.p-component:hover {
+  background-color: #083896 !important;
 }
 
 .button-content {

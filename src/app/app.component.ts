@@ -41,9 +41,9 @@ import { throwError } from 'rxjs';
 export class AppComponent implements OnInit {
   loadingRouteConfig: boolean;
   authorized = <boolean>true;
-  refreshCounter: number = 0;
+  refreshCounter = 0;
   self: any = this;
-  selectedTab: string = '';
+  selectedTab = '';
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
@@ -130,7 +130,7 @@ export class AppComponent implements OnInit {
       const kpiFilters = queryParams.get('kpiFilters');
 
       if (stateFilters && stateFilters.length > 0) {
-        let decodedStateFilters: string = '';
+        let decodedStateFilters = '';
 
         if (stateFilters?.length <= 8) {
           this.httpService

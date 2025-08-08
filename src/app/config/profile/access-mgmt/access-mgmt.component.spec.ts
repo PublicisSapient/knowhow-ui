@@ -162,7 +162,7 @@ describe('AccessMgmtComponent', () => {
     const projectAccess = [
       {
         role: 'ROLE_PROJECT_VIEWER',
-        accessNodes: accessNodes,
+        accessNodes,
       },
     ];
     const index = 0;
@@ -179,7 +179,7 @@ describe('AccessMgmtComponent', () => {
     component.selectedProjectAccess = [
       {
         role: 'ROLE_PROJECT_VIEWER',
-        accessNodes: accessNodes,
+        accessNodes,
       },
     ];
     component.saveDialog();
@@ -197,7 +197,7 @@ describe('AccessMgmtComponent', () => {
     const access = [
       {
         role: 'ROLE_SUPERADMIN',
-        accessNodes: accessNodes,
+        accessNodes,
       },
     ];
     component.submitValidationMessage = `A row for ROLE_SUPERADMIN already exists, please add accesses there`;

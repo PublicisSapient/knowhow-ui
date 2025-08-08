@@ -44,12 +44,12 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   elem: any;
   dataPoints: any;
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart';
+  @Input() viewType = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() yAxisOrder: Array<any>;
   @Input() thresholdValue: number;
-  hierarchyLevel: string = '';
+  hierarchyLevel = '';
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
 
@@ -58,7 +58,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     this.draw(data);
   });
 
-  counter: number = 0;
+  counter = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -162,7 +162,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       tickets: 'T',
       unit: 'unit',
     };
-    let sprintList = [];
+    const sprintList = [];
     const kpiId = this.kpiId;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -231,7 +231,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     }
     barScale.domain(rateNames).range([0, xScale.bandwidth()]);
 
-    let y = d3
+    const y = d3
       .scaleBand()
       .range([height - margin.top, 0])
       .domain(Object.values(this.yAxisOrder).reverse());
@@ -267,7 +267,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
         .join('div')
         .attr('class', (d) => {
           let cssClass = 'tooltip2';
-          let value = d.lineValue;
+          const value = d.lineValue;
           if (
             this.thresholdValue &&
             this.thresholdValue !== 0 &&
@@ -284,7 +284,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
           return cssClass;
         })
         .style('left', (d, i) => {
-          let left = d.value[0]?.date || d.value[0]?.sortSprint;
+          const left = d.value[0]?.date || d.value[0]?.sortSprint;
           if (viewType === 'large') {
             return xScale(left) + xScale.bandwidth() / 2 + 'px';
           } else {
@@ -454,20 +454,20 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));
@@ -487,7 +487,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   }
 
   flattenData(data) {
-    let sprintMap = new Map();
+    const sprintMap = new Map();
     let sprintCounter = 1;
 
     data.forEach((project) => {
@@ -529,12 +529,10 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
-      const legendData = data.map((item) => {
-        return {
-          sprintNumber: item.sprintNumber,
-          sprintLabel: item.sprints.join(', '),
-        };
-      });
+      const legendData = data.map((item) => ({
+        sprintNumber: item.sprintNumber,
+        sprintLabel: item.sprints.join(', '),
+      }));
 
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
