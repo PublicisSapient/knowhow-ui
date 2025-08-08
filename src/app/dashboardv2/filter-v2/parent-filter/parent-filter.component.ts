@@ -56,6 +56,11 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
+        if (this.selectedTab.toLowerCase() === 'home') {
+          this.filterLevels = this.filterLevels.filter(
+            (e) => e.nodeDisplayName.toLowerCase() !== 'project',
+          );
+        }
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
@@ -66,32 +71,18 @@ export class ParentFilterComponent implements OnChanges {
           this.service.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId.toLowerCase() === this.stateFilters.toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters.toLowerCase());
           } else if (
             this.stateFilters &&
             typeof this.stateFilters !== 'string' &&
             this.stateFilters['labelName']
           ) {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId.toLowerCase() ===
-                this.stateFilters['labelName'].toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters['labelName']);
           } else if (
             this.stateFilters &&
             typeof this.stateFilters !== 'string'
           ) {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId?.toLowerCase() ===
-                this.stateFilters['nodeId']?.toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters['nodeId']);
           } else {
             this.selectedLevel =
               this.filterLevels[this.filterLevels.length - 1];
@@ -215,6 +206,33 @@ export class ParentFilterComponent implements OnChanges {
       }
     }
     this.service.setDataForSprintGoal({ selectedLevel: this.selectedLevel });
+  }
+
+  assignParentLevelHomeVSOther(valueToSet) {
+    let tempStateFilters;
+    if (this.stateFilters && typeof this.stateFilters === 'string') {
+      tempStateFilters = this.stateFilters;
+    } else if (
+      this.stateFilters &&
+      typeof this.stateFilters !== 'string' &&
+      this.stateFilters['labelName']
+    ) {
+      tempStateFilters = this.stateFilters['labelName'];
+    } else if (this.stateFilters && typeof this.stateFilters !== 'string') {
+      tempStateFilters = this.stateFilters['nodeId'];
+    }
+    if (
+      this.selectedTab.toLowerCase() === 'home' &&
+      tempStateFilters.toLowerCase() === 'project'
+    ) {
+      this.selectedLevel = this.filterLevels.filter((level) => {
+        return level.nodeId.toLowerCase() === 'engagement';
+      })[0];
+    } else {
+      this.selectedLevel = this.filterLevels.filter((level) => {
+        return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
+      })[0];
+    }
   }
 
   /**
