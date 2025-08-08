@@ -153,6 +153,7 @@ export class SharedService {
 
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
+  kpiPostData: object = {};
 
   constructor(
     private router: Router,
@@ -913,4 +914,12 @@ export class SharedService {
     return stateFilters.length <= 8;
   }
   //#endregion
+
+  setKPIPostData(data) {
+    this.kpiPostData = data;
+  }
+
+  getKPIPostData() {
+    return this.kpiPostData;
+  }
 }

@@ -1485,6 +1485,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   exportDataToConfluence(event) {
     // console.log('kpiData > ', this.kpiData);
+    const payloadDataFromKPIGroup = this.service.getKPIPostData();
+    console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
@@ -1514,16 +1516,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }); */
 
     // APPROACH 2
-    const infoLink = `{
-      'kpiId': '${this.kpiData.kpiId}',
-      'kpiData': '${JSON.stringify(this.kpiData)}',
-      'stateFilters': '${stateFilters}',
-      'kpiFilters': '${kpiFilters}',
-    }`;
+    const infoLink = {
+      kpiData: this.kpiData,
+      kpiGroupPayload: payloadDataFromKPIGroup,
+      stateFilters: queryParams.get('stateFilters'),
+      kpiFilters: queryParams.get('kpiFilters'),
+    };
     const compressedInfo = btoa(
       LZString.compressToEncodedURIComponent(JSON.stringify(infoLink)),
     );
-    console.log(compressedInfo);
+
     navigator.clipboard
       .writeText(compressedInfo)
       .then(() => {

@@ -176,7 +176,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   resetToDefaults() {
-    console.log('resetToDefaults');
     this.noFilterApplyData = false;
     this.kpiLoader = new Set();
     // this.kpiStatusCodeArr = {};
@@ -1328,6 +1327,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
+    this.service.setKPIPostData(postData);
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
@@ -1335,6 +1335,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
       if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+      console.log('postData', postData);
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
