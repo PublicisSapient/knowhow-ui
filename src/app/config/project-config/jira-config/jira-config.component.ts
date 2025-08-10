@@ -3197,6 +3197,12 @@ export class JiraConfigComponent implements OnInit {
       this.jiraConfigurationTypeOptions = resp.data.filter(
         (temp) => temp.tool?.toLowerCase() === 'jira',
       );
+
+      if (this.jiraConfigurationTypeOptions.length) {
+        this.toolForm
+          .get('jiraConfigurationType')
+          ?.setValue(this.jiraConfigurationTypeOptions[0].templateCode);
+      }
     });
   }
 
