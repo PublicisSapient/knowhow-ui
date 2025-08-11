@@ -6,6 +6,8 @@ import {
   Validators,
   UntypedFormControl,
 } from '@angular/forms';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-auto-approval',
@@ -56,8 +58,8 @@ export class AutoApprovalComponent implements OnInit {
   }
 
   getAutoApprovedRoles() {
-    this.httpService.getAutoApprovedRoleList().subscribe(
-      (response) => {
+    this.httpService.getAutoApprovedRoleList().subscribe({
+      next: (response) => {
         if (response && response['success']) {
           this.autoApprovedId = response.data[0].id;
           const selectedValues = response.data[0];
@@ -70,16 +72,16 @@ export class AutoApprovalComponent implements OnInit {
           this.autoApprovalForm.controls['roles'].setValue(selectedRolesName);
         }
       },
-      (errorResponse) => {
+      error: (errorResponse) => {
         const error = errorResponse['error'];
         const msg =
-          error['message'] || 'Some error occurred. Please try again later.';
+          error?.['message'] || 'Some error occurred. Please try again later.';
         this.messageService.add({
           severity: 'error',
           summary: msg,
         });
       },
-    );
+    });
   }
 
   onSubmit() {
@@ -89,17 +91,11 @@ export class AutoApprovalComponent implements OnInit {
     submitData['enableAutoApprove'] =
       this.autoApprovalFormValue['enableAutoApprove'].value;
     if (submitData['enableAutoApprove']) {
-      for (let i = 0; i < this.rolesData.length; i++) {
-        for (
-          let j = 0;
-          j < this.autoApprovalFormValue['roles'].value.length;
-          j++
-        ) {
-          if (
-            this.rolesData[i]['roleName'] ==
-            this.autoApprovalFormValue['roles'].value[j]
-          ) {
-            submitData['roles'].push(this.rolesData[i]);
+      for (const role of this.rolesData) {
+        for (const selectedRoleName of this.autoApprovalFormValue['roles']
+          .value) {
+          if (role['roleName'] === selectedRoleName) {
+            submitData['roles'].push(role);
           }
         }
       }
@@ -108,25 +104,29 @@ export class AutoApprovalComponent implements OnInit {
     if (this.autoApprovedId) {
       submitData['id'] = this.autoApprovedId;
     }
-    this.httpService.submitAutoApproveData(submitData).subscribe(
-      (response) => {
-        if (response && response['success']) {
+    this.httpService
+      .submitAutoApproveData(submitData)
+      .pipe(
+        tap((response) => {
+          if (response?.success) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Added new auto approve role',
+            });
+          }
+        }),
+        catchError((errorResponse) => {
+          const error = errorResponse?.error;
+          const msg =
+            error?.message || 'Some error occurred. Please try again later.';
           this.messageService.add({
-            severity: 'success',
-            summary: 'Added new auto approve role',
+            severity: 'error',
+            summary: msg,
           });
-        }
-      },
-      (errorResponse) => {
-        const error = errorResponse['error'];
-        const msg =
-          error['message'] || 'Some error occurred. Please try again later.';
-        this.messageService.add({
-          severity: 'error',
-          summary: msg,
-        });
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   shouldBeDisabled() {

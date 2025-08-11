@@ -1,7 +1,6 @@
 import {
   Component,
   EventEmitter,
-  HostListener,
   Input,
   OnChanges,
   Output,
@@ -11,7 +10,6 @@ import {
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-primary-filter',
@@ -22,19 +20,17 @@ export class PrimaryFilterComponent implements OnChanges {
   @Input() filterData = null;
   @Input() selectedLevel: any = '';
   @Input() primaryFilterConfig: any;
-  @Input() selectedType: string = '';
-  @Input() selectedTab: string = '';
+  @Input() selectedType = '';
+  @Input() selectedTab = '';
   filters: any[];
   previousSelectedFilters: any = [];
   selectedFilters: any = [];
-  selectedAdditionalFilters: any;
   subscriptions: any[] = [];
   stateFilters: any = {};
   hierarchyLevels: any[] = [];
-  defaultFilterCounter: number = 0;
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
-  applyFilters: boolean = false;
+  applyFilters = false;
   preventClose: boolean;
 
   constructor(
@@ -87,10 +83,10 @@ export class PrimaryFilterComponent implements OnChanges {
       return;
     }
 
-    let completeHiearchyData = JSON.parse(
+    const completeHiearchyData = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
     )[this.selectedType.toLowerCase()];
-    let projectLevelNode = completeHiearchyData?.filter(
+    const projectLevelNode = completeHiearchyData?.filter(
       (x) => x.hierarchyLevelId === 'project',
     );
     this.hierarchyLevels = completeHiearchyData
@@ -365,7 +361,7 @@ export class PrimaryFilterComponent implements OnChanges {
           (this.selectedFilters?.length &&
             this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')
         ) {
-          let addtnlStateFilters =
+          const addtnlStateFilters =
             JSON.parse(this.service.getBackupOfUrlFilters())
               ?.additional_level ||
             this.service.getBackupOfFilterSelectionState('additional_level');
@@ -378,7 +374,7 @@ export class PrimaryFilterComponent implements OnChanges {
               )) &&
             this.selectedTab !== 'developer'
           ) {
-            let combinedEvent = {};
+            const combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
@@ -562,21 +558,21 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   getImmediateParentDisplayName(child) {
-    let completeHiearchyData = JSON.parse(
+    const completeHiearchyData = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
     )[this.selectedType.toLowerCase()];
-    let selectedLevelNode = completeHiearchyData?.filter(
+    const selectedLevelNode = completeHiearchyData?.filter(
       (x) => x.hierarchyLevelName === this.selectedLevel,
     );
-    let level = selectedLevelNode[0].level;
+    const level = selectedLevelNode[0].level;
     if (level > 1) {
-      let parentLevel = level - 1;
-      let parentLevelNode = completeHiearchyData?.filter(
+      const parentLevel = level - 1;
+      const parentLevelNode = completeHiearchyData?.filter(
         (x) => x.level === parentLevel,
       );
-      let parentLevelName = parentLevelNode[0].hierarchyLevelName;
+      const parentLevelName = parentLevelNode[0].hierarchyLevelName;
 
-      let immediateParent = this.filterData[parentLevelName].find(
+      const immediateParent = this.filterData[parentLevelName].find(
         (x) => x.nodeId === child.parentId,
       );
       return immediateParent?.nodeDisplayName;

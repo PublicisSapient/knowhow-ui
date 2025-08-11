@@ -19,17 +19,17 @@ declare const require: any;
 export class HorizontalPercentBarChartComponent implements OnChanges {
   @Input() data = [];
   unmodifiedDataCopy = [];
-  @Input() isDrilledDown: boolean = false;
+  @Input() isDrilledDown = false;
   @Input() filter;
   selectedGroup = '';
   @ViewChild('popupHost', { read: ViewContainerRef })
   popupHost!: ViewContainerRef;
   elem: any;
   selectedNode: {};
-  @Input() kpiId: string = '';
+  @Input() kpiId = '';
   @Input() activeTab?: number = 0;
-  @Input() kpiWidth: string = '';
-  loader: boolean = false;
+  @Input() kpiWidth = '';
+  loader = false;
   constructor(public viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -69,10 +69,10 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   draw(data, selectedNode = '') {
     if (data && data?.length > 0) {
       if (document.getElementById('chart-' + this.kpiId)?.offsetWidth) {
-        let self = this;
+        const self = this;
         const elem = this.elem;
         self.selectedNode = selectedNode;
-        let isLong: boolean = false;
+        let isLong = false;
         data?.forEach((x) => {
           if (x.kpiGroup?.length > 15) {
             isLong = true;
@@ -85,11 +85,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           bottom: 20,
           left: this.kpiWidth == '100' && isLong ? 260 : 100,
         };
-        let tempWidth: any = document.getElementById('chart-' + this.kpiId)
+        const tempWidth: any = document.getElementById('chart-' + this.kpiId)
           ?.offsetWidth
           ? document.getElementById('chart-' + this.kpiId)?.offsetWidth
           : 485;
-        let chartContainerWidth = tempWidth;
+        const chartContainerWidth = tempWidth;
 
         // chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
         const chart = d3.select(elem).select('#chart-' + this.kpiId);
@@ -116,7 +116,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         const groups = this.isDrilledDown
           ? [data.kpiGroup]
           : data.map((d) => d.kpiGroup);
-        let subgroups = [];
+        const subgroups = [];
         if (!this.isDrilledDown) {
           data[0]['value']?.forEach((element) => {
             subgroups.push(element['subFilter']);
@@ -254,9 +254,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           .selectAll('g')
           .data(stackedData)
           .join('g')
-          .attr('fill', (d) => {
-            return color(d.key);
-          })
+          .attr('fill', (d) => color(d.key))
           .on('click', (event, d) => {
             if (
               !self.isDrilledDown &&
@@ -264,9 +262,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
               event.target.__data__.data.kpiGroup
             ) {
               self.isDrilledDown = true;
-              let key = d['key'];
-              let kpiGroup = event.target.__data__.data.kpiGroup;
-              let selectedNode = d.filter(
+              const key = d['key'];
+              const kpiGroup = event.target.__data__.data.kpiGroup;
+              const selectedNode = d.filter(
                 (x) => x.data['kpiGroup'] === kpiGroup,
               )[0];
               if (selectedNode) {
@@ -303,7 +301,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           .on('mouseover', (event, d) => {
             this.selectedGroup = d.data.kpiGroup;
             if (d.data && d.data && d.data.kpiGroup) {
-              let toolTipDataCollection = JSON.parse(JSON.stringify(self.data));
+              const toolTipDataCollection = JSON.parse(
+                JSON.stringify(self.data),
+              );
               const tooltipData = toolTipDataCollection.filter(
                 (tooltip) => tooltip.kpiGroup === this.selectedGroup,
               )[0];
@@ -465,7 +465,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   // Required for dynamic component only; not in use right now
   showDistributionChartOnTooltip(event, d) {
-    let variableWidthOffset =
+    const variableWidthOffset =
       document.documentElement.clientWidth > 1500 ? -200 : 200;
     // position the tooltip
     const xPosition = event.screenX;
@@ -495,7 +495,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       textLength = 48;
     }
     text.each(function () {
-      let text = d3.select(this);
+      const text = d3.select(this);
       if (text.text().length > textLength) {
         text.text(text.text().substring(0, textLength) + '...');
       }

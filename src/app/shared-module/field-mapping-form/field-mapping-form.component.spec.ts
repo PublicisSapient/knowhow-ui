@@ -351,7 +351,7 @@ describe('FieldMappingFormComponent', () => {
     component.selectedToolConfig = [{ id: '123', toolName: 'JIRA' }];
     spyOn(httpService, 'setFieldMappings').and.returnValue(of(successResponse));
     component.ngOnInit();
-    let mappingObj = [{ jiraconfig: '123' }];
+    const mappingObj = [{ jiraconfig: '123' }];
     component.saveFieldMapping(mappingObj);
     expect(component.form.valid).toBeTruthy();
   });
