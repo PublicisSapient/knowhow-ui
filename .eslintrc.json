@@ -1,18 +1,11 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
-        "project": [
-          "tsconfig.json",
-          "e2e/tsconfig.json"
-        ],
+        "project": ["tsconfig.json", "e2e/tsconfig.json"],
         "createDefaultProgram": true
       },
       "extends": [
@@ -29,10 +22,22 @@
             "accessibility": "explicit"
           }
         ],
-        "brace-style": [
+        "@typescript-eslint/naming-convention": [
           "error",
-          "1tbs"
+          {
+            "selector": "default",
+            "format": ["camelCase"],
+            "filter": {
+              "regex": ".*",
+              "match": true
+            }
+          },
+          {
+            "selector": "objectLiteralProperty",
+            "format": null
+          }
         ],
+        "brace-style": ["error", "1tbs"],
         "guard-for-in": "off",
         "id-blacklist": "off",
         "id-match": "off",

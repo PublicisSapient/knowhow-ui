@@ -86,7 +86,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
   isKanban = false;
   updatedGlobalConfigData: Array<object> = [];
   queryParamsSubscription!: Subscription;
-  refreshCounter: number = 0;
+  refreshCounter = 0;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -333,28 +333,26 @@ export class MaturityComponent implements OnInit, OnDestroy {
             kpi.kpiDetail?.calculateMaturity &&
             kpi.kpiDetail?.kanban === this.isKanban,
         )
-        .map((kpi) => {
-          return {
-            kpiId: kpi.kpiId,
-            kpiName: kpi.kpiName,
-            isEnabled: this.updatedGlobalConfigData.filter(
-              (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
-            )[0]
-              ? this.updatedGlobalConfigData.filter(
-                  (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
-                )[0]['isEnabled']
-              : true,
-            order: 1,
-            kpiDetail: kpi.kpiDetail,
-            shown: this.updatedGlobalConfigData.filter(
-              (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
-            )[0]
-              ? this.updatedGlobalConfigData.filter(
-                  (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
-                )[0]['shown']
-              : true,
-          };
-        });
+        .map((kpi) => ({
+          kpiId: kpi.kpiId,
+          kpiName: kpi.kpiName,
+          isEnabled: this.updatedGlobalConfigData.filter(
+            (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
+          )[0]
+            ? this.updatedGlobalConfigData.filter(
+                (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
+              )[0]['isEnabled']
+            : true,
+          order: 1,
+          kpiDetail: kpi.kpiDetail,
+          shown: this.updatedGlobalConfigData.filter(
+            (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
+          )[0]
+            ? this.updatedGlobalConfigData.filter(
+                (globalCOnfigKpi) => globalCOnfigKpi['kpiId'] === kpi.kpiId,
+              )[0]['shown']
+            : true,
+        }));
       if (
         !(
           this.filterData?.length > 0 &&
@@ -867,14 +865,16 @@ export class MaturityComponent implements OnInit, OnDestroy {
     const getFinalChildrenCount = (arr) => {
       let count = 0;
       arr.forEach((item) => {
-        if (item.maturity > 0) count++;
+        if (item.maturity > 0) {
+          count++;
+        }
       });
       return count;
     };
 
-    d3.select('svg').remove();
-    d3.select('.tooltip_').remove();
-    d3.select('.tooltipForCategory').remove();
+    d3.select('.chart123').select('svg').remove();
+    d3.select('.chart123').select('.tooltip_').remove();
+    d3.select('.chart123').select('.tooltipForCategory').remove();
     const self = this;
 
     const startRotation = this.loaderMaturity;
@@ -1278,8 +1278,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                   const arc =
                     event.target.parentElement.lastElementChild
                       .lastElementChild;
-                  let yPosition = arc?.getBoundingClientRect()?.top;
-                  let xPosition = arc?.getBoundingClientRect()?.right;
+                  const yPosition = arc?.getBoundingClientRect()?.top;
+                  const xPosition = arc?.getBoundingClientRect()?.right;
                   tooltipForMainCategoryDiv.html(
                     `<strong>Maturity Value: ${
                       getAverageMaturityValue(d.data['maturity']) === 0
@@ -1474,7 +1474,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
       renderDescription +=
         '<div class="p-grid justify-content-start maturity-level-header" ><span class="p-col" style="padding-left:0"><strong>Maturity Level :</strong></span>';
 
-      let kpiIdWithMaturityRangePrefixZero = [
+      const kpiIdWithMaturityRangePrefixZero = [
         'kpi82',
         'kpi34',
         'kpi42',

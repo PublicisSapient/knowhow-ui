@@ -11,14 +11,14 @@ export class KpiTableComponent implements OnInit {
   @Input() kpiData: object = {};
   @Input() colorObj: object = {};
   @Input() kpiConfigData: object = {};
-  activeIndex: number = 0;
+  activeIndex = 0;
   tabs: Array<any> = [];
-  showToolTip: boolean = false;
-  toolTipHtml: string = '';
-  left: string = '';
-  top: string = '';
+  showToolTip = false;
+  toolTipHtml = '';
+  left = '';
+  top = '';
   nodeColors: object = {};
-  loader: boolean = false;
+  loader = false;
 
   constructor(private service: SharedService) {}
 
@@ -70,7 +70,7 @@ export class KpiTableComponent implements OnInit {
   assignColorToNodes() {
     this.nodeColors = {};
     this.tabs = [];
-    for (let key in this.colorObj) {
+    for (const key in this.colorObj) {
       this.nodeColors[key] = this.colorObj[key]?.color;
       this.tabs.push({ ...this.colorObj[key] });
     }

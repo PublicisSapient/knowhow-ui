@@ -644,7 +644,7 @@ describe('AssigneeBoardComponent', () => {
         currentValue: [{ id: 2, title: 'Issue 2' }],
         previousValue: undefined,
         firstChange: false,
-        isFirstChange: function (): boolean {
+        isFirstChange(): boolean {
           return false;
         },
       },

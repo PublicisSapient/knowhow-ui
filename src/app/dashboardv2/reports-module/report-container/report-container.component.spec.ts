@@ -128,7 +128,7 @@ const reportsResponse = {
               filterOptions: {},
               trend: [],
               trendColors: {
-                '10243': {
+                10243: {
                   nodeName: 'KnowHOW v12.1.0_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '10243_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -273,7 +273,7 @@ const reportsResponse = {
               },
               trend: [],
               trendColors: {
-                '10243': {
+                10243: {
                   nodeName: 'KnowHOW v12.1.0_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '10243_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -454,7 +454,7 @@ const reportsResponse = {
               radioOption: 'Total Defects',
               trend: [],
               trendColors: {
-                '10243': {
+                10243: {
                   nodeName: 'KnowHOW v12.1.0_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '10243_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -803,7 +803,7 @@ const reportsResponse = {
                 'Issue Status': ['Code Review', 'In Progress'],
               },
               trendColors: {
-                '54058': {
+                54058: {
                   nodeName: 'KnowHOW | PI_19| ITR_6_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '54058_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -3239,7 +3239,7 @@ const reportsResponse = {
               chartType: 'CumulativeMultilineChartv2',
               filterOptions: {},
               trendColors: {
-                '54058': {
+                54058: {
                   nodeName: 'KnowHOW | PI_19| ITR_6_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '54058_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -5609,7 +5609,7 @@ const reportsResponse = {
                 Priority: ['P2 - Critical', 'P3 - Major'],
               },
               trendColors: {
-                '54058': {
+                54058: {
                   nodeName: 'KnowHOW | PI_19| ITR_6_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '54058_226a0880-9449-413a-ad35-5e15ff84c840',
@@ -8243,7 +8243,7 @@ const reportsResponse = {
               filterOptions: {},
               trend: [],
               trendColors: {
-                '10243': {
+                10243: {
                   nodeName: 'KnowHOW v12.1.0_PSknowHOW',
                   color: '#6079C5',
                   nodeId: '10243_226a0880-9449-413a-ad35-5e15ff84c840',

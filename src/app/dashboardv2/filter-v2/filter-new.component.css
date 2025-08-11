@@ -21,12 +21,6 @@
   z-index: 1002;
 }
 
-:host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
-:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-  font-size: 10px;
-  padding: 0.5rem 0.5rem;
-}
-
 /* Scrum/Kanban tabs start*/
 .tabs {
   display: flex;
@@ -367,9 +361,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   vertical-align: middle;
 }
 
-:host ::ng-deep .showHideDdn .p-element.p-multiselect-label-container,
-:host ::ng-deep .showHideDdn .p-multiselect-trigger,
-:host ::ng-deep .showHideDdn .p-checkbox-box {
+::ng-deep .showHideDdn .p-element.p-multiselect-label-container,
+::ng-deep .showHideDdn .p-multiselect-trigger,
+::ng-deep .showHideDdn .p-checkbox-box {
   display: none;
 }
 
@@ -430,6 +424,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 :host ::ng-deep .p-fluid .p-button {
+  background: #0b4bc8;
+}
+:host::ng-deep.p-button.p-button-primary {
   background: #0b4bc8;
 }
 

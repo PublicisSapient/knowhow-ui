@@ -18,7 +18,7 @@
 
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
-import 'zone.js/dist/zone-testing';
+import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
@@ -33,18 +33,23 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting(),
 );
 
-// // This will run only this files tests
-// const context = require.context('./', true, /jira-config.component\.spec\.ts$/);
-// // And load the modules.
-// context.keys().map(context);
+const moduleArray = ['dashboard', 'config', 'authentication'];
 
-const moduleArray = ['dashboard', 'config', 'authentication', ''];
-const context = require.context('./', true, /\.spec\.ts/);
+const allSpecFiles = Object.keys((window as any).__karma__.files)
+  .filter((file) => file.endsWith('.spec.ts'))
+  .filter((file) => moduleArray.some((module) => file.includes(`/${module}/`)));
 
-moduleArray.forEach((module) => {
-  context.keys().forEach((element) => {
-    if (element.indexOf(module) !== -1) {
-      [element].map(context);
+const importAllSpecFiles = async (): Promise<void> => {
+  try {
+    for (const file of allSpecFiles) {
+      await import(file);
     }
-  });
-});
+    console.log('All spec files have been successfully imported.');
+  } catch (error) {
+    console.error('Error importing spec files:', error);
+  }
+};
+
+(async () => {
+  await importAllSpecFiles();
+})();

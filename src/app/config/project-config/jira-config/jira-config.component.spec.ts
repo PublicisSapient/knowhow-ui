@@ -2346,9 +2346,9 @@ describe('JiraConfigComponent', () => {
     // Arrange
     const mockResponse = {
       data: [
-        { tool: 'Jira', kanban: true, name: 'Template1' },
-        { tool: 'Jira', kanban: false, name: 'Template2' },
-        { tool: 'Other', kanban: true, name: 'Template3' },
+        { tool: 'Jira', kanban: true, name: 'Template1', templateCode: 1 },
+        { tool: 'Jira', kanban: false, name: 'Template2', templateCode: 2 },
+        { tool: 'Other', kanban: true, name: 'Template3', templateCode: 3 },
       ],
     };
     component.selectedProject = { id: 1, type: 'kanban' };
@@ -2363,8 +2363,8 @@ describe('JiraConfigComponent', () => {
     // Assert
     expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
     expect(component.jiraConfigurationTypeOptions).toEqual([
-      { tool: 'Jira', kanban: true, name: 'Template1' },
-      { tool: 'Jira', kanban: false, name: 'Template2' },
+      { tool: 'Jira', kanban: true, name: 'Template1', templateCode: 1 },
+      { tool: 'Jira', kanban: false, name: 'Template2', templateCode: 2 },
     ]);
   }));
 

@@ -14,7 +14,7 @@ import * as d3 from 'd3';
 export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
   elem;
-  @Input() kpiId: string = '';
+  @Input() kpiId = '';
   @Input() activeTab?: number = 0;
   elemObserver = new ResizeObserver(() => {
     this.draw();
@@ -48,36 +48,37 @@ export class StackedAreaChartComponent implements OnInit {
         event.stopPropagation();
       });
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
-    let kpiId = this.kpiId;
+    const kpiId = this.kpiId;
     let keys = [];
     if (this.data[0]) {
       keys = Object.keys(this.data[0]?.value);
     }
     let yMax = 0;
-    let keyWiseYMax = {};
+    const keyWiseYMax = {};
     for (let i = 0; i < keys.length; i++) {
       keyWiseYMax[keys[i]] = 0;
     }
     /** calculating yMax and extracting keys */
     this.data.forEach((x) => {
-      for (let item in x.value) {
+      for (const item in x.value) {
         if (keys.indexOf(item) == -1) {
           keys.push(item);
           keyWiseYMax[item] = 0;
         }
-        if (keyWiseYMax[item] < x.value[item])
+        if (keyWiseYMax[item] < x.value[item]) {
           keyWiseYMax[item] = x.value[item];
+        }
       }
     });
-    for (let key in keyWiseYMax) {
+    for (const key in keyWiseYMax) {
       yMax += keyWiseYMax[key];
     }
     yMax += 200;
 
     /**adding missing issues with value of 0 */
     const data = this.data.map((item) => {
-      let dataItems = item?.value ? Object.keys(item?.value) : []; //['story', 'issues', 'change requests']
-      let obj = { ...item, ...item.value };
+      const dataItems = item?.value ? Object.keys(item?.value) : []; //['story', 'issues', 'change requests']
+      const obj = { ...item, ...item.value };
       if (keys?.length > dataItems?.length) {
         let missingItems: any = [];
         missingItems = keys.filter((x) => !dataItems.includes(x));
@@ -90,9 +91,9 @@ export class StackedAreaChartComponent implements OnInit {
     });
 
     // set the dimensions and margins of the graph
-    const margin = { top: 20, right: 20, bottom: 150, left: 50 },
-      width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0,
-      height = 228;
+    const margin = { top: 20, right: 20, bottom: 150, left: 50 };
+    const width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
+    const height = 228;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -243,7 +244,9 @@ export class StackedAreaChartComponent implements OnInit {
 
       // If no selection, back to initial coordinate. Otherwise, update X axis domain
       if (!extent) {
-        if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
+        if (!idleTimeout) {
+          return (idleTimeout = setTimeout(idled, 350));
+        } // This allows to wait a little bit
         x.domain(
           d3.extent(data, function (d) {
             return new Date(d.date);

@@ -7,7 +7,6 @@ import {
   ViewContainerRef,
   OnChanges,
   SimpleChanges,
-  OnInit,
 } from '@angular/core';
 import * as d3 from 'd3';
 import { HelperService } from 'src/app/services/helper.service';
@@ -44,8 +43,8 @@ export class GroupBarChartComponent implements OnChanges {
   lineGroups = [];
   plannedDueDate: any;
   releaseEndDateIndex;
-  lineColor: string = '';
-  totalAvgVelocity: string = '';
+  lineColor = '';
+  totalAvgVelocity = '';
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -113,7 +112,7 @@ export class GroupBarChartComponent implements OnChanges {
     const marginTop = 35;
     const xTick = barWidth;
     const tempWidth = window.innerWidth - 320 - marginLeft;
-    let width = elem.offsetWidth
+    const width = elem.offsetWidth
       ? elem.offsetWidth - 20 - marginLeft
       : tempWidth;
 
@@ -176,7 +175,7 @@ export class GroupBarChartComponent implements OnChanges {
     if (this.isXaxisGapRequired) {
       // Hide/show x-axis label logic
       const xLength = groups.length;
-      var gap = 0;
+      let gap = 0;
       if (xLength <= 10) {
         gap = 1;
       } else if (xLength > 10 && xLength <= 30) {
@@ -193,7 +192,7 @@ export class GroupBarChartComponent implements OnChanges {
         gap = 7;
       }
 
-      for (var i = 0; i < groups.length; i += gap) {
+      for (let i = 0; i < groups.length; i += gap) {
         this.VisibleXAxisLbl.push(groups[i]);
       }
       if (!this.VisibleXAxisLbl.includes(groups[groups.length - 1])) {
@@ -269,13 +268,13 @@ export class GroupBarChartComponent implements OnChanges {
             '/' +
             new Date(this.releaseEndDate).getFullYear()
           : undefined;
-      let htmlReleaseDueDate = `Due Date (${
+      const htmlReleaseDueDate = `Due Date (${
         plannedDueDate !== undefined ? plannedDueDate : 'N/A'
       })`;
-      let htmlReleaseEndDate = `Release End Date (${
+      const htmlReleaseEndDate = `Release End Date (${
         releaseEndDate !== undefined ? releaseEndDate : 'N/A'
       })`;
-      let htmlDiv = `${
+      const htmlDiv = `${
         new Date(this.plannedDueDate).getTime() >
         new Date(this.releaseEndDate).getTime()
           ? htmlReleaseDueDate + ' > ' + htmlReleaseEndDate
@@ -536,13 +535,11 @@ export class GroupBarChartComponent implements OnChanges {
     for (const kpiGroup of this.lineGroups) {
       const lineData = data
         .filter((d) => d.hasOwnProperty(kpiGroup.lineName))
-        .map((d) => {
-          return {
-            filter: d['group'],
-            value: d[kpiGroup.lineName].value,
-            lineType: d[kpiGroup.lineName].lineType,
-          };
-        });
+        .map((d) => ({
+          filter: d['group'],
+          value: d[kpiGroup.lineName].value,
+          lineType: d[kpiGroup.lineName].lineType,
+        }));
 
       const line = svgX
         .append('g')
@@ -700,7 +697,7 @@ export class GroupBarChartComponent implements OnChanges {
             lineType: groupD.lineCategory,
           },
           group: date,
-          date: date,
+          date,
           [groupD.kpiGroup + 'HoverValue']: groupD?.hoverValue,
           sprojectName: groupD.sprojectName,
         };
@@ -839,20 +836,20 @@ export class GroupBarChartComponent implements OnChanges {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));
