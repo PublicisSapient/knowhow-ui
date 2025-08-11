@@ -505,9 +505,7 @@
           ]
         }
       ],
-      "additionalGroup": [
-        "Gap Between Completed and Predicted"
-      ]
+      "additionalGroup": ["Gap Between Completed and Predicted"]
     }
   ],
   "maxValue": "",

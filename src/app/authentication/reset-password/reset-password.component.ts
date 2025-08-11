@@ -66,7 +66,7 @@ export class ResetPasswordComponent implements OnInit {
         ],
         confirmpassword: ['', Validators.required],
       },
-      { validator: this.checkPasswords },
+      { validators: this.checkPasswords },
     );
   }
 

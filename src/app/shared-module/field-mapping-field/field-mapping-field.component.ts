@@ -59,7 +59,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   setValue(isAddtional?) {
     if (typeof this.value === 'string' || this.value instanceof String) {
       this.onChange(this.value.trim());
-    } else if (Array.isArray(this.value) && isAddtional != true) {
+    } else if (Array.isArray(this.value) && isAddtional !== true) {
       this.value = this.value.map((val) => val.trim());
       this.onChange(this.value);
     } else {
@@ -71,12 +71,10 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   setValueConditionalInput(event) {
-    this.value = event.map((val) => {
-      return {
-        labelValue: val.labelValue,
-        countValue: val.countValue,
-      };
-    });
+    this.value = event.map((val) => ({
+      labelValue: val.labelValue,
+      countValue: val.countValue,
+    }));
 
     this.onChange(this.value);
   }
@@ -103,7 +101,6 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
       event.key === '+'
     ) {
       event.preventDefault();
-      return;
     }
   }
   numericInputUpDown(event: any) {

@@ -43,7 +43,7 @@ export class DashboardconfigComponent implements OnInit {
   userProjects: Array<any>;
   selectedProject: object;
   backupUserProjects: Array<any> = [];
-  noProjectsForSelectedCategory: boolean = false;
+  noProjectsForSelectedCategory = false;
   constructor(
     private httpService: HttpService,
     private service: SharedService,
@@ -75,7 +75,9 @@ export class DashboardconfigComponent implements OnInit {
               this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex, 1);
             }
             this.tabListContent[i] = this.kpiListData[i];
-            if (!this.tabHeaders.includes(i)) this.tabHeaders.push(i);
+            if (!this.tabHeaders.includes(i)) {
+              this.tabHeaders.push(i);
+            }
           }
         }
         this.setFormControlData();
@@ -93,7 +95,7 @@ export class DashboardconfigComponent implements OnInit {
   setFormControlData() {
     const kpiObj = {};
     const boardNames = {};
-    let list = [];
+    const list = [];
     this.kpiData = [...this.kpiListData[this.selectedTab]];
     this.kpiData.forEach((item) => {
       if (item?.boardName && item?.kpis) {

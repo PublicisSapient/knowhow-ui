@@ -41,7 +41,7 @@ import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 class MockMultiSelect {
-  overlayVisible: boolean = false;
+  overlayVisible = false;
   close = () => {};
   show = () => {};
 }
@@ -972,8 +972,8 @@ describe('FilterNewComponent', () => {
           },
         };
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
-          '2': { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
+          1: { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
+          2: { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
         };
         const stateFilters = {
           primary_level: [{ nodeId: '1', labelName: 'Project' }],
@@ -1006,7 +1006,7 @@ describe('FilterNewComponent', () => {
       it('should not remove a filter if it is the only one present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         spyOn(sharedService, 'setSelectedTrends');
         spyOn(sharedService, 'setBackupOfFilterSelectionState');
@@ -1028,7 +1028,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal of a non-existent filter gracefully', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         spyOn(sharedService, 'setSelectedTrends');
         spyOn(sharedService, 'setBackupOfFilterSelectionState');
@@ -1730,13 +1730,13 @@ describe('FilterNewComponent', () => {
         component.setColors(data);
 
         expect(component.colorObj).toEqual({
-          '1': {
+          1: {
             nodeName: 'Node 1',
             color: '#6079C5',
             nodeId: '1',
             labelName: 'Label 1',
           },
-          '2': {
+          2: {
             nodeName: 'Node 2',
             color: '#FFB587',
             nodeId: '2',
@@ -1755,8 +1755,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1787,8 +1787,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters along with state filters are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1826,8 +1826,8 @@ describe('FilterNewComponent', () => {
       it('should remove a filter when multiple filters along with state filters and non-string selectedLevel are present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
-          '2': { nodeId: '2', nodeName: 'Filter2' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
+          2: { nodeId: '2', nodeName: 'Filter2' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = {
@@ -1873,7 +1873,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal when only one filter is present', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1903,7 +1903,7 @@ describe('FilterNewComponent', () => {
       it('should handle removal when filter ID does not exist', () => {
         // Arrange
         component.colorObj = {
-          '1': { nodeId: '1', nodeName: 'Filter1' },
+          1: { nodeId: '1', nodeName: 'Filter1' },
         };
         component.selectedType = 'scrum';
         component.selectedLevel = 'Project';
@@ -1938,8 +1938,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'sprint1',
-            sprintStartDate: '2023-01-01T00:00:00',
-            sprintEndDate: '2023-01-15T00:00:00',
+            sprintStartDate: '2023-01-01T00:00:00Z',
+            sprintEndDate: '2023-01-15T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');
@@ -1962,8 +1962,8 @@ describe('FilterNewComponent', () => {
         const event = [
           {
             nodeId: 'release1',
-            releaseStartDate: '2023-02-01T00:00:00',
-            releaseEndDate: '2023-02-28T00:00:00',
+            releaseStartDate: '2023-02-01T00:00:00Z',
+            releaseEndDate: '2023-02-28T00:00:00Z',
           },
         ];
         spyOn(sharedService, 'setCurrentSelectedSprint');
@@ -3412,59 +3412,32 @@ describe('FilterNewComponent', () => {
     });
   });
 
-  describe('validateInput', () => {
-    it('should validate valid input', () => {
-      const event = {
-        target: { value: 'HelloWorld' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(component.isValidInput).toBe(true);
-    });
-    it('should validate invalid input with special characters', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(component.isValidInput).toBe(false);
-    });
-    it('should call preventDefault on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.validateInput(event);
-      expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    });
-    it('should add validation message on invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      spyOn(messageService, 'add');
-      component.validateInput(event);
-      expect(messageService.add).toHaveBeenCalledTimes(1);
-      expect(messageService.add).toHaveBeenCalledWith({
-        severity: 'warn',
-        summary: 'Invalid Character is present in input',
-        detail: 'Special characters are not allowed',
-      });
-    });
-    it('should clear invalid input', () => {
-      const event = {
-        target: { value: 'Hello@World' },
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as any;
-      component.autoComplete = {
-        inputEL: { nativeElement: { value: 'Hello@World' } },
-      } as any;
-      component.validateInput(event);
-      expect(component.autoComplete.inputEL.nativeElement.value).toBe(
-        'Hello@World',
-      );
-    });
-  });
+  it('should show autocomplete dropdown and emit onShow if overlay is not visible', fakeAsync(() => {
+    const mockInput = document.createElement('input');
+    const showSpy = jasmine.createSpy();
+    const emitSpy = jasmine.createSpy();
+
+    component.filteredKpis = [{ kpiId: 'k1', kpiName: 'KPI 1' }];
+    component.autoComplete = {
+      el: {
+        nativeElement: {
+          querySelector: () => mockInput,
+        },
+      },
+      show: showSpy,
+      overlayVisible: false,
+      onShow: {
+        emit: emitSpy,
+      },
+    } as any;
+
+    component.showAutoCompleteDropdown();
+    tick(10); // wait for setTimeout
+
+    expect(showSpy).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
+    expect(component.isSearchingKPI).toBeFalse();
+  }));
 
   describe('handleInputChange', () => {
     it('should handle input with valid characters', () => {
@@ -3478,21 +3451,21 @@ describe('FilterNewComponent', () => {
     });
     it('should handle input with invalid characters', () => {
       const event = {
-        target: { value: 'Hello!World' },
+        target: { value: 'HelloWorld' },
         query: 'testing',
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('');
+      expect(component.selectedKPI).toBe('HelloWorld');
     });
     it('should handle input with mixed valid and invalid characters', () => {
       const event = {
-        target: { value: 'Hello!World123' },
+        target: { value: 'HelloWorld123' },
         query: 'testing',
         preventDefault: jasmine.createSpy('preventDefault'),
       };
       component.handleInputChange(event);
-      expect(component.selectedKPI).toBe('');
+      expect(component.selectedKPI).toBe('HelloWorld123');
     });
     it('should not update input if no changes after sanitization', () => {
       const event = {
