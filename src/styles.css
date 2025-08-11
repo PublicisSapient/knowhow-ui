@@ -2517,7 +2517,6 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 }
 
 *:focus-visible {
-  background: red;
   outline: 3px solid #0b4bc8;
   border-radius: 5px;
 }
