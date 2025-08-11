@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-report-container',
@@ -28,7 +30,7 @@ export class ReportContainerComponent implements OnInit {
    * Initializes the component by fetching reports data and processing the first report's KPIs.
    * It sets the selected report and parses the chart data for each KPI.
    *
-   * @returns {void} - No return value.
+   * @returns - No return value.
    */
   ngOnInit(): void {
     this.getReportsData();
@@ -59,7 +61,7 @@ export class ReportContainerComponent implements OnInit {
    * @throws No exceptions are thrown.
    */
   getkpiwidth(kpiwidth) {
-    let retValue = this.widthObj[kpiwidth]
+    const retValue = this.widthObj[kpiwidth]
       ? this.widthObj[kpiwidth]
       : 'p-col-8';
     return retValue;
@@ -107,7 +109,7 @@ export class ReportContainerComponent implements OnInit {
    */
   objectValues(obj): any[] {
     // return this.helperService.getObjectKeys(obj)
-    let result = [];
+    const result = [];
     if (obj && Object.keys(obj)?.length) {
       Object.keys(obj).forEach((x) => {
         result.push(obj[x]);
@@ -129,12 +131,12 @@ export class ReportContainerComponent implements OnInit {
    */
   deleteKPIFromReport(selectedReport, kpi) {
     selectedReport.kpis = selectedReport.kpis.filter((x) => x.id !== kpi.id);
-    let data = { ...selectedReport };
+    const data = { ...selectedReport };
     data.kpis.forEach((element) => {
       element.chartData = JSON.stringify(element.chartData);
     });
 
-    let reportId = selectedReport.id;
+    const reportId = selectedReport.id;
     this.http.updateReport(reportId, data).subscribe((data) => {
       if (data['success']) {
         data['data']['kpis'].forEach((element) => {
@@ -187,23 +189,27 @@ export class ReportContainerComponent implements OnInit {
 
   removeReport(report: any, event: MouseEvent) {
     event.stopPropagation(); // Prevent triggering the button's onClick
-    let deletedReportId = report?.id;
-    this.http.deleteReport(deletedReportId).subscribe(
-      (res) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Report deleted successfully',
-        });
-        this.reportsData = this.reportsData.filter((r) => r !== report);
-        //this.getReportsData();
-      },
-      (error) => {
-        console.error('Error deleting report:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Failed to delete report',
-        });
-      },
-    );
+    const deletedReportId = report?.id;
+    this.http
+      .deleteReport(deletedReportId)
+      .pipe(
+        tap(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Report deleted successfully',
+          });
+          this.reportsData = this.reportsData.filter((r) => r !== report);
+          // this.getReportsData();
+        }),
+        catchError((error) => {
+          console.error('Error deleting report:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed to delete report',
+          });
+          return of();
+        }),
+      )
+      .subscribe();
   }
 }

@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
@@ -115,6 +115,7 @@ import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe'
     TabMenuModule,
     TableModule,
     ToastModule,
+    NgOptimizedImage,
   ],
   exports: [
     NgSelectModule,

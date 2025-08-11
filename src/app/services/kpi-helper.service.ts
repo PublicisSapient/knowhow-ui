@@ -62,7 +62,7 @@ export class KpiHelperService {
       return { chartData: [], totalCount: 0 };
     }
 
-    let chartData: any = [];
+    const chartData: any = [];
 
     // Handle categoryGroup if present
     // if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
@@ -90,12 +90,12 @@ export class KpiHelperService {
       });
     });
 
-    let totalCount = chartData.reduce((sum: any, issue: any) => {
-      return (
+    let totalCount = chartData.reduce(
+      (sum: any, issue: any) =>
         sum +
-        ((!excludeCatForTotal.includes(issue.category) ? issue.value : 0) || 0)
-      ); // Sum up the values for the key and excluding the same incase not applicable
-    }, 0);
+        ((!excludeCatForTotal.includes(issue.category) ? issue.value : 0) || 0), // Sum up the values for the key and excluding the same incase not applicable
+      0,
+    );
 
     if (!unit || !unit.length) {
       chartData.sort((a, b) => a.value - b.value);
@@ -123,7 +123,7 @@ export class KpiHelperService {
           (sum, issue) => sum + issue[key],
           0,
         );
-        list.push(`${duration}d: ${value} SP`);
+        list.push(`Last ${duration} days: ${value} SP`);
       } else {
         value = IssueFilterByDuration.length;
         list.push(`${duration}d: ${value} `);
@@ -150,29 +150,29 @@ export class KpiHelperService {
 
       chartData.push({
         category: group.name,
-        value: filteredIssues.reduce((sum: any, issue: any) => {
-          return sum + (issue[group.key] || 0); // Sum up the values for the key
-        }, 0),
+        value: filteredIssues.reduce(
+          (sum: any, issue: any) => sum + (issue[group.key] || 0), // Sum up the values for the key
+          0,
+        ),
         color: color[index % color.length],
       });
     });
 
-    const totalCount = chartData.reduce((sum: any, issue: any) => {
-      return sum + (issue.value || 0); // Sum up the values for the key
-    }, 0);
+    const totalCount = chartData.reduce(
+      (sum: any, issue: any) => sum + (issue.value || 0), // Sum up the values for the key
+      0,
+    );
 
-    const modifiedDataSet = chartData.map((item: any) => {
-      return {
-        ...item,
-        tooltipValue: this.convertToHoursIfTime(item.value, 'day'),
-        value: Math.floor(Math.floor(Math.abs(item.value) / 60) / 8),
-      };
-    });
+    const modifiedDataSet = chartData.map((item: any) => ({
+      ...item,
+      tooltipValue: this.convertToHoursIfTime(item.value, 'day'),
+      value: Math.floor(Math.floor(Math.abs(item.value) / 60) / 8),
+    }));
     return { chartData: modifiedDataSet, totalCount };
   }
 
   barChartData(json: any, color: any) {
-    let chartData = [];
+    const chartData = [];
     const issueData = json?.issueData || [];
     const dataGroup = json?.dataGroup?.dataGroup1; // Access the dataGroup from kpiFilterData
 
@@ -189,9 +189,10 @@ export class KpiHelperService {
         // Calculate the sum based on the key
         let sum;
         if (key) {
-          sum = issueData.reduce((acc: number, issue: any) => {
-            return acc + (issue[key] || 0); // Use the key from the data group
-          }, 0);
+          sum = issueData.reduce(
+            (acc: number, issue: any) => acc + (issue[key] || 0), // Use the key from the data group
+            0,
+          );
         } else {
           sum = issueData.length;
         }
@@ -203,23 +204,21 @@ export class KpiHelperService {
           category: name,
           value: sum,
           color: color[groupKey],
-          unit: unit,
+          unit,
         }); // Default color if not specified
       }
     }
 
-    const modifiedDataSet = chartData.map((item: any) => {
-      return {
-        ...item,
-        tooltipValue: item.value, //this.convertToHoursIfTime(item.value, json.unit),
-      };
-    });
+    const modifiedDataSet = chartData.map((item: any) => ({
+      ...item,
+      tooltipValue: item.value, //this.convertToHoursIfTime(item.value, json.unit),
+    }));
 
     return { chartData: modifiedDataSet };
   }
 
   groupedBarChartData(json, color, filter) {
-    let chartData = {};
+    const chartData = {};
     chartData['data'] = [];
     const issueData = json.issueData || [];
     const dataGroup = json.dataGroup?.dataGroup1;
@@ -231,23 +230,24 @@ export class KpiHelperService {
       issue[categoryKey].includes(filter),
     );
     categoryGroup?.forEach((categoryElem) => {
-      let categoryValue = categoryElem.categoryName;
+      const categoryValue = categoryElem.categoryName;
       let i = 0;
       let value = 0;
-      let test = {};
+      const test = {};
       test['category'] = categoryValue;
       issueDataCopy = issueDataFiltered.filter((issue) =>
         issue[categoryKey2][filter].includes(categoryValue),
       );
       dataGroup.forEach((dataGroupElem) => {
-        let dataColor = color[i];
+        const dataColor = color[i];
         i = i + 1;
         if (dataGroupElem.aggregation === 'count') {
           value = issueDataCopy.length;
         } else if (dataGroupElem.aggregation === 'sum') {
-          value = issueDataCopy.reduce((acc: number, issue: any) => {
-            return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
-          }, 0);
+          value = issueDataCopy.reduce(
+            (acc: number, issue: any) => acc + (issue[dataGroupElem.key] || 0), // Use the key from the data group
+            0,
+          );
           if (dataGroupElem.unit && dataGroupElem.unit === 'day') {
             value = value / (60 * 8);
           }
@@ -286,20 +286,20 @@ export class KpiHelperService {
     chartData['categoryData'] = categoryGroup;
     chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;
 
-    return { chartData: chartData };
+    return { chartData };
   }
 
   semicircledonutchartData(json: any, color: any) {
-    return { chartData: json.issueData.length, color: color };
+    return { chartData: json.issueData.length, color };
   }
 
   pieChartWithFiltersData(inputData: any) {
-    let chartData = inputData?.issueData;
-    let filterGroup = inputData?.filterGroup;
-    let categoryGroup = inputData?.categoryData?.categoryGroup;
-    let modifiedDataSet = {
-      chartData: chartData,
-      filterGroup: filterGroup,
+    const chartData = inputData?.issueData;
+    const filterGroup = inputData?.filterGroup;
+    const categoryGroup = inputData?.categoryData?.categoryGroup;
+    const modifiedDataSet = {
+      chartData,
+      filterGroup,
       category: categoryGroup,
       modalHeads: inputData?.modalHeads,
     };
@@ -334,9 +334,10 @@ export class KpiHelperService {
         } else if (group.aggregation === 'sum') {
           if (filteredIssues?.length) {
             filteredVal = this.convertToHoursIfTime(
-              filteredIssues.reduce((sum: any, issue: any) => {
-                return sum + (issue[group.key] || 0); // Sum up the values for the key
-              }, 0),
+              filteredIssues.reduce(
+                (sum: any, issue: any) => sum + (issue[group.key] || 0), // Sum up the values for the key
+                0,
+              ),
               group.unit,
             );
           }
@@ -346,9 +347,10 @@ export class KpiHelperService {
         aggregateVal = issueData.length;
       } else if (group.aggregation === 'sum') {
         aggregateVal = this.convertToHoursIfTime(
-          issueData.reduce((sum: any, issue: any) => {
-            return sum + (issue[group.key] || 0); // Sum up the values for the key
-          }, 0),
+          issueData.reduce(
+            (sum: any, issue: any) => sum + (issue[group.key] || 0), // Sum up the values for the key
+            0,
+          ),
           group.unit,
         );
       }
@@ -378,7 +380,7 @@ export class KpiHelperService {
       }
     });
     return {
-      chartData: chartData,
+      chartData,
     };
   }
 
@@ -399,7 +401,7 @@ export class KpiHelperService {
       });
     });
 
-    return { chartData: chartData };
+    return { chartData };
   }
 
   convertToHoursIfTime(val, unit) {
