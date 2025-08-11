@@ -3199,9 +3199,11 @@ export class JiraConfigComponent implements OnInit {
       );
 
       if (this.jiraConfigurationTypeOptions.length) {
-        this.toolForm
-          .get('jiraConfigurationType')
-          ?.setValue(this.jiraConfigurationTypeOptions[0].templateCode);
+        if (this.toolForm) {
+          this.toolForm
+            .get('jiraConfigurationType')
+            ?.setValue(this.jiraConfigurationTypeOptions[0].templateCode);
+        }
       }
     });
   }
