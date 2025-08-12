@@ -199,6 +199,7 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
+  private executivePageURL = this.baseUrl + '/api/executive';
 
   constructor(
     private router: Router,
@@ -1020,7 +1021,7 @@ export class HttpService {
       kpis: [
         {
           kpiId: 'kpi39',
-          kpiName: 'Sprint Velocity',
+          kpiName: 'Executive',
           isEnabled: true,
           order: 2,
           kpiDetail: {
@@ -1072,20 +1073,21 @@ export class HttpService {
         },
       },
     };
-    return this.http.post<any>(this.getShowHideKpiNewUIUrl, payload).pipe(
-      map((responce) => {
-        responce.data.userBoardConfigDTO['scrum'] = [
-          mockData,
-          ...responce.data.userBoardConfigDTO['scrum'],
-        ];
-        responce.data.userBoardConfigDTO['kanban'] = [
-          mockData,
-          ...responce.data.userBoardConfigDTO['kanban'],
-        ];
-        // console.log(responce);
-        return responce;
-      }),
-    );
+    return this.http.post<any>(this.getShowHideKpiNewUIUrl, payload);
+    // .pipe(
+    //   map((responce) => {
+    //     responce.data.userBoardConfigDTO['scrum'] = [
+    //       mockData,
+    //       ...responce.data.userBoardConfigDTO['scrum'],
+    //     ];
+    //     responce.data.userBoardConfigDTO['kanban'] = [
+    //       mockData,
+    //       ...responce.data.userBoardConfigDTO['kanban'],
+    //     ];
+    //     // console.log(responce);
+    //     return responce;
+    //   }),
+    // );
   }
 
   submitShowHideOnDashboard(data) {
@@ -1373,5 +1375,82 @@ export class HttpService {
 
   shareViaEmail(payload) {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
+  }
+
+  getExecutiveBoardData(payload, selectedType) {
+    return this.http.post<any>(
+      `${this.executivePageURL}?iskanban=${selectedType}`,
+      payload,
+    );
+    const mockData = {
+      success: true,
+      massage: 'data came successfully...',
+      data: {
+        matrix: {
+          rows: [
+            {
+              id: 'projectid',
+              name: 'Retail 3',
+              completion: '74%',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+            {
+              id: 'projectid',
+              name: 'Retail 344',
+              completion: '75%',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+            {
+              id: 'projectid',
+              name: 'Retail 334',
+              completion: '76%',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+            {
+              id: 'projectid444',
+              name: 'Retail 3909',
+              completion: '78%',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+          ],
+          column: [
+            // { field: 'id', header: 'Project ID' },
+            { field: 'name', header: 'Project name' },
+            { field: 'completion', header: 'Complete(%)' },
+            { field: 'health', header: 'Overall health' },
+            { field: 'speed', header: 'Speed' },
+            { field: 'quality', header: 'Quality' },
+            { field: 'value', header: 'Value' },
+            { field: 'dora', header: 'Dora' },
+          ],
+        },
+      },
+    };
+
+    return of(mockData);
   }
 }

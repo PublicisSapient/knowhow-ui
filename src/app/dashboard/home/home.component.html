@@ -25,32 +25,40 @@
                 <div class="kpi-card-title-container">
                     <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> Project Details & KPI
                     </h3>
-                    <!-- <span *ngIf="true" class="info-icon" [style]="{'position': 'relative'}" role="button" tabindex="0"
-                        aria-label="Show KPI Information">
-                        <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
-                    </span> -->
                 </div>
             </div>
-            <!-- <div #kpiMenuContainer class="kpi-menu-container" role="button" tabindex="0" aria-label="Open KPI Menu">
-                <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
-            </div>
-            <p-menu #kpimenu id="menu" [popup]="true" [model]="menuItems" aria-label="Actions Menu">
-                <ng-template pTemplate="item" let-item>
-                    <div role="menuitem" tabindex="0" [attr.aria-label]="item.label">
-                        <i [class]="item.icon" aria-hidden="true"></i>
-                        <span> {{ item.label }}</span>
-                    </div>
-                </ng-template>
-            </p-menu> -->
         </div>
 
         <div class="kpi-card-body">
-            <p-table [value]="rows" [columns]="columns" responsiveLayout="scroll" class="mt-3">
+            <p-table [value]="tableData['data']" [columns]="tableData['columns']" responsiveLayout="scroll" class="mt-3">
                 <ng-template pTemplate="header" let-columns>
                     <tr>
-                        <th *ngFor="let col of columns" style="background-color: #f4f9ff;">
-                            {{ col.header }}
-                        </th>
+                        <ng-container *ngFor="let col of columns">
+                            <th style="background-color: #f4f9ff;" [pSortableColumn]="sortableColumn(col.field)" id="{{col.field}}" > 
+                                <div class="table-head">
+                                    <span [ngStyle]="{'width':'max-content'}">{{col.header}}</span>
+                                    <div class="p-d-flex p-ml-2">
+                                        <p-columnFilter [field]="col.field" matchMode="in"
+                                            [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                                            [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                                                <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                                                    (onPanelShow)="onFilterClick(col.field)" (onPanelHide)="onFilterBlur(col.field)"
+                                                    [options]="tableColumnData[col.field]" [placeholder]="'Select '+ col.field"
+                                                    (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
+                                                    [ngModel]="tableColumnForm[col.field]" styleClass="column-filter"
+                                                    (keydown.enter)="handleMultiSelectEnter($event)">
+                                                    <ng-template pTemplate="selectedItems">
+                                                        <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                                                    </ng-template>
+                                                </p-multiSelect>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <p-sortIcon [field]="sortableColumn(col.field)" aria-label="Sort by column"></p-sortIcon>
+                                    </div>
+                                </div>
+                            </th>
+                        </ng-container>
                     </tr>
                 </ng-template>
 
@@ -61,13 +69,10 @@
 
                                 <span *ngSwitchCase="'name'">{{ row[col.field] }}</span>
 
-                                <span *ngSwitchCase="'date'">{{ row[col.field] }}</span>
-
-                                <div *ngSwitchCase="'manager'" class="flex align-items-center gap-2">
-                                    <!-- <img [src]="'assets/images/' + row.manager.image" class="border-circle" width="32"
-                                        height="32" /> -->
-                                    <span>{{ row.manager.name }}</span>
-                                </div>
+                                <span *ngSwitchCase="'dora'">
+                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
+                                        {{ row[col.field] }}</div>
+                                </span>
 
                                 <span *ngSwitchCase="'completion'">{{ row[col.field] }}</span>
 
@@ -87,8 +92,6 @@
                                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                                         {{ row[col.field] }}</div>
                                 </div>
-
-                                <a *ngSwitchCase="'action'" href="#" class="text-primary">View analysis</a>
 
                             </ng-container>
                         </td>
