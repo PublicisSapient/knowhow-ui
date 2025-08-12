@@ -64,12 +64,17 @@ jobs:
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       
-      # 5. Checkout Helm chart from Bitbucket
-      - name: Checkout Helm chart from Bitbucket
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
-          token: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO_TOKEN }}  # Bitbucket app password or token
+      - name: Checkout Helm charts from Bitbucket
+        run: |
+          git clone ${{BITBUCKET_HELM_REPO }}
+          cd build-configurations/KnowHOW-Deploy/knowhow-ui
+          # Update values.yaml image tag
+          yq -i '.image.tag = "qa-${{ github.run_number }}"' values-qa.yaml
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add values-qa.yaml
+          git commit -m "Update knowhow-ui image tag to ${{ github.sha }}"
+          git push origin HEAD
 
       # 6. Install ArgoCD CLI
       - name: Install ArgoCD CLI
@@ -89,8 +94,5 @@ jobs:
       # 8. Update image in Argo CD App and sync
       - name: Deploy with Argo CD
         run: |
-          argocd app set $ARGOCD_APP_NAME \
-            --helm-set image.repository=$ACR_LOGIN_SERVER/$IMAGE_NAME \
-            --helm-set image.tag=$IMAGE_TAG
           argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
 
