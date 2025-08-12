@@ -61,15 +61,15 @@ jobs:
           IMAGE_TAG=${GITHUB_SHA::8}
           docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
           docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
-          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:qa-$IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       
       - name: Checkout Helm charts from Bitbucket
         run: |
-          git clone ${{BITBUCKET_HELM_REPO }}
+          git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
           cd build-configurations/KnowHOW-Deploy/knowhow-ui
           # Update values.yaml image tag
-          yq -i '.image.tag = "qa-${{ github.run_number }}"' values-qa.yaml
+          yq -i ".image.tag = \"qa-${IMAGE_TAG}\"" values-qa.yaml
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add values-qa.yaml
@@ -95,4 +95,3 @@ jobs:
       - name: Deploy with Argo CD
         run: |
           argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
-
