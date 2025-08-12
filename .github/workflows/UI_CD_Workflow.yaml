@@ -66,7 +66,7 @@ jobs:
       
       - name: Checkout Helm charts from Bitbucket
         run: |
-          git clone ${{BITBUCKET_HELM_REPO }}
+          git clone ${{ secrets.BITBUCKET_HELM_REPO }}
           cd build-configurations/KnowHOW-Deploy/knowhow-ui
           # Update values.yaml image tag
           yq -i '.image.tag = "qa-${{ github.run_number }}"' values-qa.yaml
@@ -95,4 +95,3 @@ jobs:
       - name: Deploy with Argo CD
         run: |
           argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
-
