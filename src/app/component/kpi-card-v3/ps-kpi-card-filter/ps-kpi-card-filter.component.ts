@@ -9,7 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class PsKpiCardFilterComponent implements OnInit {
   @Input() kpiCardFilter: any;
-  @Input() kpiId: string = '';
+  @Input() kpiId = '';
   @Output() filterChange = new EventEmitter<any>();
   @Output() filterClear = new EventEmitter<any>();
   selectedKeyObj;
@@ -40,7 +40,7 @@ export class PsKpiCardFilterComponent implements OnInit {
         ),
       ),
     ];
-    return uniqueValues.map((value) => ({ label: value, value: value }));
+    return uniqueValues.map((value) => ({ label: value, value }));
   }
 
   handleChange() {
@@ -70,9 +70,9 @@ export class PsKpiCardFilterComponent implements OnInit {
       [this.kpiCardFilter.categoryData.categoryKey]: event.value,
     };
     this.selectedKeyObj = tempObject;
-    let label = this.getOptionValue();
-    let options = this.getSelectButtonOptions();
-    let selectedOption = options.find((f) => f[label] === event.value);
+    const label = this.getOptionValue();
+    const options = this.getSelectButtonOptions();
+    const selectedOption = options.find((f) => f[label] === event.value);
     this.service.setKpiSubFilterObj({ [this.kpiId]: { ...selectedOption } });
     this.handleChange();
   }
@@ -90,9 +90,9 @@ export class PsKpiCardFilterComponent implements OnInit {
             filter.kpiFilters.selectedKey,
         };
         this.selectedKeyObj = tempObject;
-        let label = this.getOptionValue();
-        let options = this.getSelectButtonOptions();
-        let selectedOption = options.find(
+        const label = this.getOptionValue();
+        const options = this.getSelectButtonOptions();
+        const selectedOption = options.find(
           (f) => f[label] === filter.kpiFilters.selectedKey,
         );
 
@@ -108,7 +108,7 @@ export class PsKpiCardFilterComponent implements OnInit {
                 : 'categoryName'
             ];
       } else {
-        let options = this.getSelectButtonOptions();
+        const options = this.getSelectButtonOptions();
         if (
           options.length &&
           options[0][
@@ -126,7 +126,7 @@ export class PsKpiCardFilterComponent implements OnInit {
         }
       }
     } else {
-      let options = this.getSelectButtonOptions();
+      const options = this.getSelectButtonOptions();
       if (
         options.length &&
         options[0][

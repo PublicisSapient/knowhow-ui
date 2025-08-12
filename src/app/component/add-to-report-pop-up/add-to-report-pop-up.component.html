@@ -77,16 +77,29 @@
     </div>
 </ng-container>
 
-<app-report-kpi-card [currentChartData]="reportObj.chartData" [copyCardData]="reportObj.metadata.copyCardData" [kpiDataStatusCode]="reportObj.metadata.kpiDataStatusCode"
-    [kpiData]="reportObj.metadata" [chartType]="reportObj.metadata.chartType" [kpiTrendsObj]="reportObj.metadata.trend"
-    [trendColors]="reportObj.metadata.trendColors" [kpiFilters]="reportObj.metadata.selectedKPIFilters"
-    [selectedButtonValue]="reportObj.metadata.selectedButtonValue" [cardData]="reportObj.metadata.cardData"
-    [kpiFilterData]="reportObj.metadata?.kpiFilterData" [selectedTab]="reportObj.metadata.selectedTab"
-    [iterationKPIFilterValues]="reportObj.metadata.iterationKPIFilterValues"
-    [filterApplyData]="reportObj.metadata.filterApplyData"
-    [kpiSelectedFilterObj]="reportObj.metadata.kpiSelectedFilterObj"
-    [chartColorList]="reportObj.metadata.chartColorList" [yAxis]="reportObj.metadata.yAxis"
-    [capturedAt]="reportObj.metadata.capturedAt" [kpiHeight]="reportObj.metadata.kpiHeight"
-    [releaseEndDate]="reportObj.metadata.releaseEndDate" [hieararchy]="reportObj.metadata.hieararchy"
-    [additional_filters]="reportObj.metadata.additional_filters" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel">
+<app-report-kpi-card
+  [currentChartData]="reportObj.chartData"
+  [copyCardData]="reportObj.metadata.copyCardData"
+  [kpiDataStatusCode]="reportObj.metadata.kpiDataStatusCode"
+  [kpiData]="reportObj.metadata"
+  [chartType]="reportObj.metadata.chartType"
+  [kpiTrendsObj]="reportObj.metadata.trend"
+  [trendColors]="reportObj.metadata.trendColors"
+  [kpiFilters]="reportObj.metadata.selectedKPIFilters"
+  [selectedButtonValue]="reportObj.metadata.selectedButtonValue"
+  [cardData]="reportObj.metadata.cardData"
+  [kpiFilterData]="reportObj.metadata?.kpiFilterData"
+  [selectedTab]="reportObj.metadata.selectedTab"
+  [iterationKPIFilterValues]="reportObj.metadata.iterationKPIFilterValues"
+  [filterApplyData]="reportObj.metadata.filterApplyData"
+  [kpiSelectedFilterObj]="reportObj.metadata.kpiSelectedFilterObj"
+  [chartColorList]="reportObj.metadata.chartColorList"
+  [yAxis]="reportObj.metadata.yAxis"
+  [capturedAt]="reportObj.metadata.capturedAt"
+  [kpiHeight]="reportObj.metadata.kpiHeight"
+  [releaseEndDate]="reportObj.metadata.releaseEndDate"
+  [hieararchy]="reportObj.metadata.hieararchy"
+  [additional_filters]="reportObj.metadata.additional_filters"
+  [xAxisLabel]="xAxisLabel"
+  [yAxisLabel]="yAxisLabel">
 </app-report-kpi-card>

@@ -117,3 +117,6 @@ div.main {
 :host .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
+:host::ng-deep.p-overlay.p-component {
+  width: -webkit-fill-available;
+}

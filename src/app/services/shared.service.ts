@@ -19,7 +19,6 @@
 import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HelperService } from './helper.service';
 import { SharelinkService } from './share-link.service';
 /*************
 SharedService
@@ -56,7 +55,7 @@ export class SharedService {
   public boardId = 1;
   private authToken = '';
   public sprintForRnR;
-  public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  public dateFilterSelectedDateType = new BehaviorSubject<string>('Weeks');
   primaryFilterChangeSubject = new BehaviorSubject(false);
   public kpiExcelSubject = new BehaviorSubject<{}>({});
   public switchBoard = new BehaviorSubject<boolean>(false);
@@ -99,7 +98,7 @@ export class SharedService {
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData: any = [];
-  kpiCardView: string = 'chart';
+  kpiCardView = 'chart';
   maturityTableLoader = new Subject<boolean>();
   globalConfigData: any;
   visibleSideBarSubject = new BehaviorSubject(false);
@@ -136,14 +135,14 @@ export class SharedService {
   // URL Sharing
   selectedFilterArray: any = [];
   selectedFilters: any = {};
-  selectedUrlFilters: string = '{}';
+  selectedUrlFilters = '{}';
   isSprintGoal;
   sprintGoalData: any = {};
 
   // for reports
   onChartChange = new Subject<any>();
   onChartChangeObs = this.onChartChange.asObservable();
-  noReports: boolean = true;
+  noReports = true;
   selectedReport: any = {};
   onSelectedReportChange = new Subject<any>();
   onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
@@ -701,7 +700,7 @@ export class SharedService {
     if (kpiListData[selectedType] && Array.isArray(kpiListData[selectedType])) {
       for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
         let kpiShownCount = 0;
-        let board = kpiListData[selectedType][i];
+        const board = kpiListData[selectedType][i];
         let kpiList;
         if (board?.boardName?.toLowerCase() === 'iteration') {
           kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
@@ -756,7 +755,7 @@ export class SharedService {
   }
 
   extractHierarchyData(hierarchyArray) {
-    let result = {};
+    const result = {};
     if (!Array.isArray(hierarchyArray)) {
       console.error('Invalid input: hierarchyArray should be an array.');
       return result; // Return empty object if input is not an array

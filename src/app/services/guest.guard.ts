@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  CanActivate,
+} from '@angular/router';
 import { SharedService } from './shared.service';
 @Injectable()
 export class GuestGuard implements CanActivate {

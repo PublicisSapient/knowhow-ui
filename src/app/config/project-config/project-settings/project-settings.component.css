@@ -58,3 +58,6 @@ div.main {
 ::ng-deep .p-tabview .p-tabview-nav .p-tabview-ink-bar {
   display: block !important;
 }
+:host::ng-deep.p-overlay.p-component {
+  width: -webkit-fill-available;
+}

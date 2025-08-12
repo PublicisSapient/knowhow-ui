@@ -45,9 +45,9 @@ export class LoginComponent implements OnInit {
   adLogin = true;
   loginConfig = {};
 
-  refreshCounter: number = 0;
+  refreshCounter = 0;
   self: any = this;
-  selectedTab: string = '';
+  selectedTab = '';
 
   constructor(
     private formBuilder: UntypedFormBuilder,

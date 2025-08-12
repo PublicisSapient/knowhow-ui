@@ -28,7 +28,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class ConfigSettingsComponent implements OnInit {
   configOptions: { tab: string; tabValue: string }[];
-  selectedTab: string = 'projectSettings';
+  selectedTab = 'projectSettings';
   tab: any;
   selectedToolName: string = null;
   selectedProject: any;
@@ -74,7 +74,7 @@ export class ConfigSettingsComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
   }
 
-  onTabChange() {
+  onTabChange(event: any) {
     if (this.selectedTab === 'projectConfig') {
       this.router.navigate(['.'], {
         queryParams: {

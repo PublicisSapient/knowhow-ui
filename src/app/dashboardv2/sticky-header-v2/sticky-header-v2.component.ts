@@ -1,6 +1,5 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
   Component,
   OnDestroy,
   ChangeDetectorRef,
@@ -40,7 +39,7 @@ export class StickyHeaderV2Component implements AfterViewChecked, OnDestroy {
         if (Object.keys(data).length > 0) {
           this.colorObj = data;
         }
-        let colorsArr = [
+        const colorsArr = [
           '#6079C5',
           '#FFB587',
           '#D48DEF',

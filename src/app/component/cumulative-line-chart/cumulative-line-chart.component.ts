@@ -22,7 +22,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   VisibleXAxisLbl = [];
   graphData;
   elem;
-  @Input() onPopup: boolean = false;
+  @Input() onPopup = false;
 
   constructor(private viewContainerRef: ViewContainerRef) {}
 
@@ -39,7 +39,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     d3.select(elem).select('#chart').select('svg').remove();
     d3.select(elem).select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    let width = this.onPopup
+    const width = this.onPopup
       ? 650
       : d3.select(elem).select('#chart').node().offsetWidth -
         margin.left -
@@ -86,7 +86,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
     /**X-Axis Gaps */
     const xLength = xCoordinates.length;
-    var gap = 0;
+    let gap = 0;
     if (xLength <= 10) {
       gap = 1;
     } else if (xLength > 10 && xLength <= 30) {
@@ -103,7 +103,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       gap = 7;
     }
 
-    for (var i = 0; i < xCoordinates.length; i += gap) {
+    for (let i = 0; i < xCoordinates.length; i += gap) {
       this.VisibleXAxisLbl.push(xCoordinates[i]);
     }
     if (!this.VisibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
