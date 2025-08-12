@@ -93,20 +93,3 @@ jobs:
             --helm-set image.tag=$IMAGE_TAG
           argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
 
-
-
-  # ✅ Final Job to Ensure Completion
-  GitHub_CI_Complete:
-    needs: [ui_ci]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Job Status
-        run: |
-          if [[ "${{ needs.ui_ci.result }}" == "failure" || \
-                "${{ needs.ui_ci.result }}" == "cancelled" ]]; then
-            echo "❌ Jobs failed or were cancelled. Failing CI."
-            exit 1
-          else
-            echo "✅ All relevant jobs have passed."
-          fi
