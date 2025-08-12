@@ -29,7 +29,7 @@ export class PsKpiCardHeaderComponent implements OnInit {
   menuItems: MenuItem[] | undefined;
   warning = '';
   MenuValues = KPI_HEADER_ACTION;
-  disableSettings: boolean = false;
+  disableSettings = false;
   userRole: string;
   checkIfViewer: boolean;
   constructor(
@@ -121,8 +121,9 @@ export class PsKpiCardHeaderComponent implements OnInit {
         icon: 'pi pi-table',
         command: ($event) => {
           // this.exportToExcel(); modalHeads
+          const target = $event?.originalEvent?.target as HTMLElement;
           const id =
-            $event?.originalEvent?.target?.parentElement?.parentElement?.parentElement?.parentElement?.id.substring(
+            target?.parentElement?.parentElement?.parentElement?.parentElement?.id?.substring(
               5,
             );
           this.actionTriggered.emit({

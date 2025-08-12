@@ -16,10 +16,20 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<div class="progress-bar-comp" [ngClass]="{'w-85': (percentage === 100)}">
+<div class="progress-bar-comp" [ngClass]="{ 'w-85': percentage === 100 }">
   <div class="progressbar">
     <div class="progress"></div>
-    <span class="progress-start" [ngStyle]="{'left': (percentage-2)+'%'}" *ngIf="percentage < 100">{{value}}<span>({{percentage | number:'1.0-2'}}%)</span></span>
-    <span class="progress-end" [ngClass]="{'color-red': (percentage === 100)}" >{{maxValue}}<span *ngIf="percentage === 100">({{percentage | number:'1.0-2'}}%)</span></span>
+    <span
+      class="progress-start"
+      [ngStyle]="{ left: percentage - 2 + '%' }"
+      *ngIf="percentage < 100"
+      >{{ value }}<span>({{ percentage | number : '1.0-2' }}%)</span></span
+    >
+    <span class="progress-end" [ngClass]="{ 'color-red': percentage === 100 }"
+      >{{ maxValue
+      }}<span *ngIf="percentage === 100"
+        >({{ percentage | number : '1.0-2' }}%)</span
+      ></span
+    >
   </div>
 </div>

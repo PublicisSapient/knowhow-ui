@@ -63,3 +63,9 @@ div.main {
   pointer-events: none;
   background-color: #dedede;
 }
+
+::ng-deep .custom-panelmenu .p-menuitem-link-active {
+  background-color: #083896 !important;
+  color: #fff !important;
+  font-weight: bold;
+}
