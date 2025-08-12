@@ -73,7 +73,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add values-qa.yaml
-          git commit -m "Update knowhow-ui image tag to ${{ github.sha }}"
+          git diff --cached --quiet || git commit -m "Update image tag to qa-${IMAGE_TAG}"
           git push origin HEAD
 
       # 6. Install ArgoCD CLI
