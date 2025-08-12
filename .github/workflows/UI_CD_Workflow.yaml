@@ -1,0 +1,112 @@
+name: UI_CD_Workflow  # Define the name of the workflow
+
+# Define when the workflow should trigger
+on:
+  push:
+    branches:
+      - qa-testing
+  workflow_dispatch:
+
+# Define environment variables
+env:
+  IMAGE_NAME: ${{ secrets.KNH_UI_IMAGE_NAME }}
+  ACR_NAME: ${{ secrets.SPEEDTOOLS_ACR_NAME }}  # without .azurecr.io
+  ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}  # e.g. myacr.azurecr.io
+  BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }} # HTTPS clone URL (without creds)
+  HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
+  ARGOCD_APP_NAME: ${{ secrets.KNH_UI_ARGOCD_APP_NAME }}
+  ARGOCD_SERVER: ${{ secrets.SPEEDTOOLS_ARGOCD_SERVER }}
+
+jobs:
+  # ✅ UI Build & Testing
+  build_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout GitHub repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Azure login
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SPEEDTOOLS_AZURE_CREDENTIALS }}
+
+      # 3. Login to Azure Container Registry
+      - name: ACR Login
+        run: az acr login --name $ACR_NAME
+
+      - name: Set Up Node.js  # Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies & Build UI
+        run: |
+          npm cache clean --force
+          npm install
+          npm install -g @angular/cli@17.3.12
+          npm run build:dev
+          mkdir -p build
+          cp -r dist/dashboard/* build/
+          chmod -R 775 build
+          cd build
+          tar -czvf ui2.tar *
+          mv ui2.tar ../nginx/files
+          rm -rf build
+
+      # Docker build & push to ACR
+      - name: Build & Push Docker Image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::8}
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      
+      # 5. Checkout Helm chart from Bitbucket
+      - name: Checkout Helm chart from Bitbucket
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+          token: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO_TOKEN }}  # Bitbucket app password or token
+
+      # 6. Install ArgoCD CLI
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/
+
+      # 7. Login to Argo CD
+      - name: Argo CD Login
+        run: |
+          argocd login $ARGOCD_SERVER \
+            --username ${{ secrets.SPEEDTOOLS_ARGOCD_USERNAME }} \
+            --password ${{ secrets.SPEEDTOOLS_ARGOCD_PASSWORD }} \
+            --insecure
+
+      # 8. Update image in Argo CD App and sync
+      - name: Deploy with Argo CD
+        run: |
+          argocd app set $ARGOCD_APP_NAME \
+            --helm-set image.repository=$ACR_LOGIN_SERVER/$IMAGE_NAME \
+            --helm-set image.tag=$IMAGE_TAG
+          argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
+
+
+
+  # ✅ Final Job to Ensure Completion
+  GitHub_CI_Complete:
+    needs: [ui_ci]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Job Status
+        run: |
+          if [[ "${{ needs.ui_ci.result }}" == "failure" || \
+                "${{ needs.ui_ci.result }}" == "cancelled" ]]; then
+            echo "❌ Jobs failed or were cancelled. Failing CI."
+            exit 1
+          else
+            echo "✅ All relevant jobs have passed."
+          fi
