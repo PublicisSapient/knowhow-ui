@@ -9,9 +9,13 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Environment to deploy (dev, dev1, qa)'
-        required: false
+        description: 'Environment to deploy'
+        required: true
         default: 'dev'
+        type: choice
+        options:
+          - dev
+          - dev1
 
 # Define environment variables
 env:
