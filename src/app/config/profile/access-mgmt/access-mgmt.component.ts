@@ -514,7 +514,7 @@ export class AccessMgmtComponent implements OnInit {
       .subscribe();
   }
 
-  accessDeletionStatus(data, isSuperAdmin ) {
+  accessDeletionStatus(data, isSuperAdmin) {
     this.accessConfirm = false;
     let message = '';
     let icon = '';
