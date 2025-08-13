@@ -4,13 +4,18 @@ name: UI_CD_Workflow  # Define the name of the workflow
 on:
   push:
     branches:
-      - qa-testing
+      - qa-master
+      - master
   workflow_dispatch:
     inputs:
       env:
-        description: 'Environment to deploy (dev, dev1, qa)'
-        required: false
+        description: 'Environment to deploy'
+        required: true
         default: 'dev'
+        type: choice
+        options:
+          - dev
+          - dev1
 
 # Define environment variables
 env:
@@ -28,9 +33,13 @@ jobs:
       - name: Set IMAGE_TAG and values file
         id: set_env
         run: |
-          if [[ "${GITHUB_REF##*/}" == "qa-testing" ]]; then
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "$BRANCH" == "qa-master" ]]; then
             echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
+          elif [[ "$BRANCH" == "master" ]]; then
+            echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
           else
             ENV="${{ github.event.inputs.env }}"
             if [[ "$ENV" == "dev1" ]]; then
@@ -54,8 +63,8 @@ jobs:
         run: |
           npm cache clean --force
           npm install
-          npm install -g @angular/cli@17.3.12
-          npm run build:dev
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          npm run build
           mkdir -p build
           cp -r dist/dashboard/* build/
           chmod -R 775 build
