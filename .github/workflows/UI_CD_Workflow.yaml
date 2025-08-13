@@ -1,0 +1,90 @@
+name: UI_CD_Workflow  # Define the name of the workflow
+
+# Define when the workflow should trigger
+on:
+  push:
+    branches:
+      - qa-master
+      - master
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy (dev, dev1, qa)'
+        required: false
+        default: 'dev'
+
+# Define environment variables
+env:
+  IMAGE_NAME: ${{ secrets.KNH_UI_IMAGE_NAME }}
+  ACR_NAME: ${{ secrets.SPEEDTOOLS_ACR_NAME }}  # without .azurecr.io
+  ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}  # e.g. myacr.azurecr.io
+  BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }} # HTTPS clone URL (without creds)
+  HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
+
+jobs:
+  # ✅ UI Build & Testing
+  build_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set IMAGE_TAG and values file
+        id: set_env
+        run: |
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "$BRANCH" == "qa-master" ]]; then
+            echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
+          elif [[ "$BRANCH" == "master" ]]; then
+            echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
+          else
+            ENV="${{ github.event.inputs.env }}"
+            if [[ "$ENV" == "dev1" ]]; then
+              echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
+            else
+              echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
+            fi
+          fi
+      # 1. Checkout GitHub repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js  # Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies & Build UI
+        run: |
+          npm cache clean --force
+          npm install
+          npm install -g @angular/cli@17.3.12
+          npm run build:dev
+          mkdir -p build
+          cp -r dist/dashboard/* build/
+          chmod -R 775 build
+          cd build
+          tar -czvf ui2.tar *
+          mv ui2.tar ../nginx/files
+          rm -rf build
+
+      # Docker build & push to ACR
+      - name: Build & Push Docker Image
+        run: |
+          docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      
+      - name: Checkout Helm charts from Bitbucket
+        run: |
+          git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+          cd build-configurations/KnowHOW-Deploy/knowhow-ui
+          # Update values.yaml image tag
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
