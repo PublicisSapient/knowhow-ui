@@ -4,7 +4,8 @@ name: UI_CD_Workflow  # Define the name of the workflow
 on:
   push:
     branches:
-      - qa-testing
+      - qa-master
+      - master
   workflow_dispatch:
     inputs:
       env:
@@ -28,9 +29,13 @@ jobs:
       - name: Set IMAGE_TAG and values file
         id: set_env
         run: |
-          if [[ "${GITHUB_REF##*/}" == "qa-testing" ]]; then
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "$BRANCH" == "qa-master" ]]; then
             echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
+          elif [[ "$BRANCH" == "master" ]]; then
+            echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
           else
             ENV="${{ github.event.inputs.env }}"
             if [[ "$ENV" == "dev1" ]]; then
