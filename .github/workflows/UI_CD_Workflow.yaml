@@ -63,8 +63,8 @@ jobs:
         run: |
           npm cache clean --force
           npm install
-          npm install -g @angular/cli@17.3.12
-          npm run build:dev
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          npm run build
           mkdir -p build
           cp -r dist/dashboard/* build/
           chmod -R 775 build
