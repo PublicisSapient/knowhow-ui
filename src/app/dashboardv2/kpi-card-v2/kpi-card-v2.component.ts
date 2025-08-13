@@ -65,7 +65,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   checkIfViewer: boolean;
   subscriptions: any[] = [];
   filterOptions: object = {};
-  filterOptionsString = {};
   radioOption: string;
   filterMultiSelectOptionsData: object = {};
   kpiSelectedFilterObj: any = {};
@@ -103,7 +102,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader = true;
   @Input() partialData = false;
   warning = '';
-  //spal
   kpiHeaderData: {};
   kpiFilterData: {};
   copyCardData: any;
@@ -153,100 +151,96 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
-        const currentKpiId = this.kpiData?.kpiId;
-        const kpiFilterData = x?.[currentKpiId];
+        if (x && Object.keys(x)?.length) {
+          this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
 
-        if (kpiFilterData) {
-          if (Array.isArray(kpiFilterData)) {
-            if (this.kpiData.kpiDetail.kpiFilter.toLowerCase() === 'dropdown') {
-              this.filterOptions['filter1'] = kpiFilterData;
-            } else {
-              this.filterOptions['filter1'] = kpiFilterData.length
-                ? kpiFilterData[0]
-                : null;
-            }
-          } else if (typeof kpiFilterData === 'object') {
-            for (const key in kpiFilterData) {
-              let val = kpiFilterData[key];
-              if (Array.isArray(val)) {
-                if (
-                  this.kpiData.kpiDetail.kpiFilter.toLowerCase() ===
-                    'multiselectdropdown' ||
-                  this.kpiData.kpiDetail.kpiFilter.toLowerCase() ===
-                    'multitypefilters'
-                ) {
-                  this.filterOptions[key] = val;
-                } else {
-                  this.filterOptions[key] = val.length > 0 ? val[0] : null;
-                }
-              } else {
-                this.filterOptions[key] = val;
-              }
-            }
-          } else {
-            this.filterOptions['filter1'] = kpiFilterData;
-          }
-        }
+          for (const key in x[this.kpiData?.kpiId]) {
+            const kpiFilterType =
+              this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
 
-        if (Array.isArray(this.dropdownArr)) {
-          this.dropdownArr.forEach((filter, index) => {
-            const key = 'filter' + (index + 1);
-            let val = this.filterOptions[key];
-
-            // console.log(this.kpiData.kpiDetail.kpiFilter.toLowerCase());
+            const currentFilterArray = x[this.kpiData?.kpiId][key];
 
             if (
-              this.kpiData.kpiDetail.kpiFilter.toLowerCase() ==
-                'multiselectdropdown' ||
-              this.kpiData.kpiDetail.kpiFilter.toLowerCase() ==
-                'multitypefilters'
+              Array.isArray(currentFilterArray) &&
+              currentFilterArray.includes('Overall')
             ) {
-              if (!Array.isArray(this.filterOptions[key])) {
-                this.filterOptions[key] = this.filterOptions[key]
-                  ? [this.filterOptions[key]]
-                  : [];
+              if (this.kpiData?.kpiId === 'kpi72') {
+                if (key === 'filter1' || key === 'filter2') {
+                  this.filterOptions[key] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
+                } else {
+                  this.filterOptions = { ...this.filterOptions };
+                }
+              } else {
+                if (kpiFilterType === 'multiselectdropdown') {
+                  this.filterOptions[key] = [...currentFilterArray];
+                } else {
+                  this.filterOptions = { ...this.filterOptions };
+                }
               }
             } else {
-              if (Array.isArray(val)) {
-                this.filterOptions[key] = val[0] ?? null;
+              if (this.kpiData?.kpiId === 'kpi72') {
+                if (key === 'filter1' || key === 'filter2') {
+                  this.filterOptions[key] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
+                }
+              } else {
+                if (kpiFilterType === 'multiselectdropdown') {
+                  this.filterOptions[key] = [...currentFilterArray];
+                } else {
+                  this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
+                    ? { filter1: x[this.kpiData?.kpiId] }
+                    : { ...x[this.kpiData?.kpiId] };
+                }
               }
             }
-          });
-        }
+          }
 
+          if (
+            this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
+            (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
+              'radiobutton' ||
+              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
+                'multitypefilters')
+          ) {
+            if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+              const filterObj = this.kpiSelectedFilterObj[this.kpiData?.kpiId];
+              const isMultiType =
+                this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
+                'multitypefilters';
+
+              if (filterObj.hasOwnProperty('filter1')) {
+                if (isMultiType) {
+                  this.radioOption = Array.isArray(filterObj['filter2'])
+                    ? filterObj['filter2'][0]
+                    : null;
+                } else {
+                  this.radioOption = Array.isArray(filterObj['filter1'])
+                    ? filterObj['filter1'][0]
+                    : null;
+                }
+              } else {
+                this.radioOption = Array.isArray(filterObj)
+                  ? filterObj[0]
+                  : null;
+              }
+            }
+          }
+        }
         this.selectedTab = this.service.getSelectedTab()
           ? this.service.getSelectedTab().toLowerCase()
           : '';
-
-        if (
-          this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
-          (this.kpiData.kpiDetail.kpiFilter.toLowerCase() === 'radiobutton' ||
-            this.kpiData.kpiDetail.kpiFilter.toLowerCase() ===
-              'multitypefilters')
-        ) {
-          if (this.kpiSelectedFilterObj?.[currentKpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[
-              currentKpiId
-            ].hasOwnProperty('filter1')
-              ? this.kpiData.kpiDetail.kpiFilter.toLowerCase() ===
-                  'multitypefilters' ||
-                this.kpiData.kpiDetail.kpiFilter.toLowerCase() ===
-                  'multiselectdropdown'
-                ? this.kpiSelectedFilterObj[currentKpiId]['filter2']?.[0]
-                : this.kpiSelectedFilterObj[currentKpiId]['filter1']?.[0]
-              : this.kpiSelectedFilterObj[currentKpiId]?.[0];
-          }
-        }
       }),
     );
+    /** assign 1st value to radio button by default */
 
     this.subscriptions.push(
       this.service.onChartChangeObs.subscribe((stringifiedData) => {
         if (stringifiedData) {
-          const data = JSON.parse(stringifiedData);
-          this.selectedMainCategory = data['selectedMainCategory'];
-          this.selectedMainFilter = data['selectedMainFilter'];
-          this.selectedFilter2 = data['selectedFilter2'];
+          stringifiedData = JSON.parse(stringifiedData);
+          this.selectedMainCategory = stringifiedData['selectedMainCategory'];
+          this.selectedMainFilter = stringifiedData['selectedMainFilter'];
+          this.selectedFilter2 = stringifiedData['selectedFilter2'];
         }
       }),
     );
@@ -484,49 +478,41 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @returns
    */
   handleChange(type, value = null, filterIndex = 0) {
-    if (value?.value && Array.isArray(value.value)) {
+    // moving selected option to top
+    if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach((selectedItem) => {
-        const opts = this.dropdownArr[filterIndex]?.options;
-        if (!opts) return;
-        const idx = opts.indexOf(selectedItem);
-        if (idx > -1) opts.splice(idx, 1);
-        opts.unshift(selectedItem);
+        this.dropdownArr[filterIndex]?.options.splice(
+          this.dropdownArr[filterIndex]?.options.indexOf(selectedItem),
+          1,
+        ); // remove the item from list
+        this.dropdownArr[filterIndex]?.options.unshift(selectedItem); // this will add selected item on the top
       });
     }
-
-    if (typeof value === 'object' && value?.value) {
-      value = value.value;
+    if (typeof value === 'object') {
+      value = value?.value;
     }
-
-    const normalizedValues = Array.isArray(value) ? value : [value];
-
-    if (type?.toLowerCase() === 'single') {
-      this.filterOptions[`filter${filterIndex + 1}`] = normalizedValues;
-    } else if (
-      type?.toLowerCase() === 'radio' &&
+    if (
+      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters'
+    ) {
+      if (value && type?.toLowerCase() === 'radio') {
+        this.filterOptions['filter' + (filterIndex + 1)] = [value];
+      }
+    }
+    if (
+      value &&
+      type?.toLowerCase() == 'radio' &&
       this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'
     ) {
-      this.filterOptions[`filter${filterIndex + 1}`] = normalizedValues;
-    } else {
-      // default = multiselect sau multitypefilters
-      this.filterOptions[`filter${filterIndex + 1}`] = normalizedValues;
-    }
-
-    if (!this.filterOptions || Object.keys(this.filterOptions).length === 0) {
-      this.optionSelected.emit(['Overall']);
-    } else if (
-      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
-        'multiselectdropdown' ||
-      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'multitypefilters'
-    ) {
+      this.optionSelected.emit(value);
+    } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
     } else {
-      this.optionSelected.emit([
-        ...this.filterOptions[`filter${filterIndex + 1}`],
-      ]);
+      if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
+        this.optionSelected.emit(['Overall']);
+      } else {
+        this.optionSelected.emit(this.filterOptions);
+      }
     }
-
-    // GA event tracking
     const gaObj = {
       kpiName: this.kpiData?.kpiName,
       filter1: this.filterOptions?.['filter1'] || [value],
