@@ -69,7 +69,8 @@ export class AccessMgmtComponent implements OnInit {
     projectsAccess: [],
   };
   ssoLogin = environment.SSO_LOGIN;
-  isSuperAdmin = false;
+  isSuperAdmin: boolean = false;
+  isProjectAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
   isOpenSource: boolean = false;
@@ -86,6 +87,7 @@ export class AccessMgmtComponent implements OnInit {
   ngOnInit() {
     this.isOpenSource = this.service.getGlobalConfigData()?.openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
+    this.isProjectAdmin = this.authService.checkIfProjectAdmin(); 
     this.getRolesList();
     this.getUsers();
     this.subscription = this.service.passAllProjectsData.subscribe(
@@ -512,7 +514,7 @@ export class AccessMgmtComponent implements OnInit {
       .subscribe();
   }
 
-  accessDeletionStatus(data, isSuperAdmin) {
+  accessDeletionStatus(data, isSuperAdmin ) {
     this.accessConfirm = false;
     let message = '';
     let icon = '';
