@@ -6,6 +6,11 @@ on:
     branches:
       - qa-testing
   workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy (dev, dev1, qa)'
+        required: false
+        default: 'dev'
 
 # Define environment variables
 env:
@@ -14,27 +19,31 @@ env:
   ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}  # e.g. myacr.azurecr.io
   BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }} # HTTPS clone URL (without creds)
   HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
-  ARGOCD_APP_NAME: ${{ secrets.KNH_UI_ARGOCD_APP_NAME }}
-  ARGOCD_SERVER: ${{ secrets.SPEEDTOOLS_ARGOCD_SERVER }}
 
 jobs:
   # ✅ UI Build & Testing
   build_deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set IMAGE_TAG and values file
+        id: set_env
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "qa-testing" ]]; then
+            echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
+          else
+            ENV="${{ github.event.inputs.env }}"
+            if [[ "$ENV" == "dev1" ]]; then
+              echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
+            else
+              echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
+            fi
+          fi
       # 1. Checkout GitHub repo
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # # 2. Azure login
-      # - name: Azure CLI Login
-      #   uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.SPEEDTOOLS_AZURE_CREDENTIALS }}
-
-      # # 3. Login to Azure Container Registry
-      # - name: ACR Login
-      #   run: az acr login --name $ACR_NAME
 
       - name: Set Up Node.js  # Set up Node.js environment
         uses: actions/setup-node@v3
@@ -58,7 +67,6 @@ jobs:
       # Docker build & push to ACR
       - name: Build & Push Docker Image
         run: |
-          IMAGE_TAG=qa-${GITHUB_SHA::8}
           docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
           docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
@@ -69,29 +77,9 @@ jobs:
           git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
           cd build-configurations/KnowHOW-Deploy/knowhow-ui
           # Update values.yaml image tag
-          yq -i ".image.tag = \"${IMAGE_TAG}\"" values-qa.yaml
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add values-qa.yaml
-          git diff --cached --quiet || git commit -m "Update image tag to qa-${IMAGE_TAG}"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
           git push origin HEAD
-
-      # 6. Install ArgoCD CLI
-      - name: Install ArgoCD CLI
-        run: |
-          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x argocd
-          sudo mv argocd /usr/local/bin/
-
-      # 7. Login to Argo CD
-      - name: Argo CD Login
-        run: |
-          argocd login $ARGOCD_SERVER \
-            --username ${{ secrets.SPEEDTOOLS_ARGOCD_USERNAME }} \
-            --password ${{ secrets.SPEEDTOOLS_ARGOCD_PASSWORD }} \
-            --insecure
-
-      # 8. Update image in Argo CD App and sync
-      - name: Deploy with Argo CD
-        run: |
-          argocd app sync $ARGOCD_APP_NAME --prune --timeout 300
