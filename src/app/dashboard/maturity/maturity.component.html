@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <ng-container *ngIf="!noProjects; else noProjectsTemplate">
   <div class="maturity-container">
-    <ng-container *ngIf="!showNoDataMsg">
+    <!-- <ng-container *ngIf="showNoDataMsg"> -->
       <div class="tabs-container">
         <div
           class="tab"
@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-    </ng-container>
+    <!-- </ng-container> -->
     <div *ngIf="showNoDataMsg && !loader && noDataForFilter">
       <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
         <h2 class="msg" tabindex="0">
