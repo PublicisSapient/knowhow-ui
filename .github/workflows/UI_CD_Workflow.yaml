@@ -43,7 +43,7 @@ jobs:
             --plaintext
   # ✅ UI Build & Testing
   build_deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-s
     steps:
       - name: Set IMAGE_TAG and values file
         id: set_env
