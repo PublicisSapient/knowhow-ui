@@ -26,6 +26,21 @@ env:
   HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
 
 jobs:
+  argocd_setup:
+    runs-on: github-actions-self-hosted-runner
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd \
+            https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+      - name: ArgoCD CLI Login
+        run: |
+          argocd login argocd-server \
+            --username ${{ secrets.SPEEDTOOLS_ARGOCD_USERNAME}} \
+            --password ${{ secrets.SPEEDTOOLS_ARGOCD_PASSWORD }} \
+            --plaintext
   # ✅ UI Build & Testing
   build_deploy:
     runs-on: ubuntu-latest
@@ -50,6 +65,7 @@ jobs:
               echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
             fi
           fi
+
       # 1. Checkout GitHub repo
       - name: Checkout repository
         uses: actions/checkout@v4
