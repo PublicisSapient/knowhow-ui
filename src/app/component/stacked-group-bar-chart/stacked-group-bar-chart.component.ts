@@ -16,17 +16,17 @@ import * as d3 from 'd3';
 })
 export class StackedGroupBarChartComponent implements OnInit, OnChanges {
   @Input() kpiData: any;
-  @Input() color;
-  @Input() data;
+  @Input() color: string[];
+  @Input() data: any;
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
+
+  private severityKeys = ['s1', 's2', 's3', 's4'];
 
   constructor() {}
 
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(this.kpiData);
-    console.log(this.color);
     if (this.kpiData) {
       this.createChart();
     }
@@ -34,20 +34,18 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
-    const sprintGroups: { [key: string]: any[] } = {};
 
+    // Prepare sprint group data
+    const sprintGroups: { [key: string]: any[] } = {};
     this.kpiData.forEach((project: any) => {
       project.value.forEach((sprint: any, index: number) => {
         const sprintKey = `Sprint ${index + 1}`;
         if (!sprintGroups[sprintKey]) {
           sprintGroups[sprintKey] = [];
         }
-
         const severityData: any = {
           project: project.data,
-          rate: project.data,
-          value: 0,
-          ...['s1', 's2', 's3', 's4'].reduce((acc, severity) => {
+          ...this.severityKeys.reduce((acc, severity) => {
             const found = sprint.drillDown.find(
               (d: any) => d.severity === severity,
             );
@@ -55,21 +53,32 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
             return acc;
           }, {}),
         };
-
         sprintGroups[sprintKey].push(severityData);
       });
     });
 
     const sprints = Object.keys(sprintGroups);
-    const projects = [...new Set(this.kpiData.map((d) => d.data))];
-    const severityKeys = ['s1', 's2', 's3', 's4'];
-
-    // Chart dimensions - TODO make it responsive
+    const projects: any[] = [...new Set(this.kpiData.map((d: any) => String(d.data)))];
     const margin = { top: 30, right: 30, bottom: 60, left: 40 };
     const width = 800 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
-    // Create chart container
+    // Color mapping per project
+    const projectColors = new Map<string, string>();
+    projects.forEach((proj, idx) => {
+      projectColors.set(proj, this.color[idx % this.color.length]);
+    });
+
+    // Scales
+    const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
+    const x1 = d3
+      .scaleBand()
+      .domain(projects)
+      .range([0, x0.bandwidth()])
+      .padding(0.1);
+    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).nice();
+
+    // SVG container
     const svg = d3
       .select(this.chartContainer.nativeElement)
       .append('svg')
@@ -78,78 +87,42 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // X0 scale for sprints
-    const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
+    // Draw bars for each sprint group
+    sprints.forEach((sprint) => {
+      // Stack by severity
+      const stack = d3.stack().keys(this.severityKeys);
+      const stackedData = stack(sprintGroups[sprint]);
 
-    // X1 scale for projects within each sprint
-    const x1 = d3
-      .scaleBand()
-      .domain(projects)
-      .range([0, x0.bandwidth()])
-      .padding(0.1);
-
-    // TODO replace that 500 value with something that will be made dynamic
-    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).nice();
-
-    // COLOR SETUP
-    const color = d3.scaleOrdinal().domain(projects).range(this.color);
-
-    const projectColors = new Map<string, string>();
-    this.kpiData.forEach((project: any, index: number) => {
-      projectColors.set(project.data, this.color[index % this.color.length]);
-    });
-    // console.log(projectColors);
-    const test = [...projectColors];
-    console.log(test);
-
-    test.forEach((a: any, i: number) => {
-      console.log(a);
-      console.log(i);
-      sprints.forEach((sprint) => {
-        const stack = d3.stack().keys(severityKeys);
-        const stackedData = stack(sprintGroups[sprint]);
-        const bars = svg
+      stackedData.forEach((severitySeries, severityIdx) => {
+        svg
           .append('g')
-          .selectAll('.group')
-          .data(stackedData)
-          .enter()
-          .append('g')
-          .attr('class', 'group')
-          .style('fill', (d: any) => {
-            // console.log(d);
-            // const projectName = d[i]?.data?.project;
-            // const baseColor = a[1];
-            const severityIndex = severityKeys.indexOf(d.key);
-            console.log(a[1]);
-            console.log(a[i][1]);
-            return this.generateShade(a[1], severityIndex, severityKeys.length);
-          });
-
-        bars
+          .attr('class', `severity-group-${severitySeries.key}`)
           .selectAll('rect')
-          .data((d: any) => d)
+          .data(severitySeries)
           .enter()
           .append('rect')
-          .attr('x', (d: any) => x0(sprint) + x1(d.data.project))
+          .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)!)
           .attr('y', (d: any) => y(d[1]))
-          .attr('height', (d: any) => y(d[0]) - y(d[1]))
-          .attr('width', x1.bandwidth());
+          .attr('height', (d: any) => y(d) - y(d))
+          .attr('width', x1.bandwidth())
+          .attr('fill', (d: any) => {
+            const baseColor = projectColors.get(d.data.project) || '#999';
+            return this.generateShade(baseColor, severityIdx, this.severityKeys.length);
+          });
 
-        // Add labels on bars
-        bars
+        // Add labels
+        svg
+          .append('g')
           .selectAll('text')
-          .data((d: any) => d)
+          .data(severitySeries)
           .enter()
           .append('text')
-          .attr(
-            'x',
-            (d: any) => x0(sprint) + x1(d.data.project) + x1.bandwidth() / 2,
-          )
-          .attr('y', (d: any) => (y(d[0]) + y(d[1])) / 2)
+          .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)! + x1.bandwidth() / 2)
+          .attr('y', (d: any) => (y(d[0]) + y(d)) / 2)
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
           .text((d: any) => {
-            const value = d[1] - d[0];
+            const value = d - d;
             return value >= 1 ? `${value.toFixed(0)}` : '';
           })
           .style('fill', 'black')
@@ -157,57 +130,46 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
       });
     });
 
-    // Draw the bars
-
-    // Add X axis - sprints
+    // X Axis
     svg
       .append('g')
       .attr('transform', `translate(0,${height})`)
       .call(d3.axisBottom(x0));
 
-    // Add Y axis - values
+    // Y Axis
     svg.append('g').call(d3.axisLeft(y).ticks(5));
   }
 
-  // Helper function to generate shades from base color
+  // Generates a shade from a base color, varying lightness by index
   private generateShade(
     baseColor: string,
     index: number,
     total: number,
   ): string {
-    // Convert hex to HSL
+    // Hex to HSL
     const hexToHsl = (hex: string) => {
-      const r = parseInt(hex?.slice(1, 3), 16) / 255;
-      const g = parseInt(hex?.slice(3, 5), 16) / 255;
-      const b = parseInt(hex?.slice(5, 7), 16) / 255;
-
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
       let h = 0,
         s = 0,
         l = (max + min) / 2;
-
       if (max !== min) {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
         switch (max) {
-          case r:
-            h = (g - b) / d + (g < b ? 6 : 0);
-            break;
-          case g:
-            h = (b - r) / d + 2;
-            break;
-          case b:
-            h = (r - g) / d + 4;
-            break;
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
         }
         h /= 6;
       }
-
       return [h * 360, s * 100, l * 100];
     };
 
-    // Convert HSL to hex
+    // HSL to hex
     const hslToHex = (h: number, s: number, l: number) => {
       l /= 100;
       const a = (s * Math.min(l, 1 - l)) / 100;
@@ -222,69 +184,7 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     };
 
     const [h, s, l] = hexToHsl(baseColor);
-    // Vary lightness based on index
     const newLightness = l + index * (60 / total) - 30;
     return hslToHex(h, s, Math.min(95, Math.max(15, newLightness)));
   }
-
-  // private generateColorShades(baseColor: string, count: number): string[] {
-  //   // Convert hex to HSL (better for generating shades)
-  //   const hexToHsl = (hex: string) => {
-  //     const r = parseInt(hex.slice(1, 3), 16) / 255;
-  //     const g = parseInt(hex.slice(3, 5), 16) / 255;
-  //     const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  //     const max = Math.max(r, g, b);
-  //     const min = Math.min(r, g, b);
-  //     let h = 0,
-  //       s = 0,
-  //       l = (max + min) / 2;
-
-  //     if (max !== min) {
-  //       const d = max - min;
-  //       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  //       switch (max) {
-  //         case r:
-  //           h = (g - b) / d + (g < b ? 6 : 0);
-  //           break;
-  //         case g:
-  //           h = (b - r) / d + 2;
-  //           break;
-  //         case b:
-  //           h = (r - g) / d + 4;
-  //           break;
-  //       }
-  //       h /= 6;
-  //     }
-
-  //     return [h * 360, s * 100, l * 100];
-  //   };
-
-  //   // Convert HSL to hex
-  //   const hslToHex = (h: number, s: number, l: number) => {
-  //     l /= 100;
-  //     const a = (s * Math.min(l, 1 - l)) / 100;
-  //     const f = (n: number) => {
-  //       const k = (n + h / 30) % 12;
-  //       const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-  //       return Math.round(255 * color)
-  //         .toString(16)
-  //         .padStart(2, '0');
-  //     };
-  //     return `#${f(0)}${f(8)}${f(4)}`;
-  //   };
-
-  //   const [h, s, l] = hexToHsl(baseColor);
-  //   const shades = [];
-
-  //   // Generate shades by varying lightness
-  //   for (let i = 0; i < count; i++) {
-  //     const lightness = l + i * 10 - count * 5;
-  //     const newL = Math.min(95, Math.max(15, lightness));
-  //     shades.push(hslToHex(h, s, newL));
-  //   }
-
-  //   console.log(shades);
-  //   return shades;
-  // }
 }
