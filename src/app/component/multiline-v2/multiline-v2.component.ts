@@ -841,6 +841,7 @@ export class MultilineV2Component implements OnChanges {
         });
 
       /* Add circles (data) on the line */
+      console.log('data ', data);
       lines
         .selectAll('circle-group')
         .data(data)
@@ -1028,6 +1029,13 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi184'
       ) {
         // Render Sprint Legend
+        console.log('data ', data);
+        console.log(
+          'xCaption ',
+          'flatten data ',
+          this.xCaption,
+          this.flattenData(data),
+        );
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
       }
     }
