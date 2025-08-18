@@ -114,6 +114,7 @@
                       [virtualScrollItemSize]="30"
                       [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
                       [attr.aria-label]="filter?.filterType + ' dropdown'"
+                      [placeholder]="filterOptions['filter'+(k+1)]"
                       role="listbox"
                       [tabindex]="0">
           </p-dropdown>
