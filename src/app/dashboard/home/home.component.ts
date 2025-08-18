@@ -14,11 +14,11 @@ import { MaturityComponent } from '../maturity/maturity.component';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  listOfMaturityData: Array<object> = [];
+  aggregrationDataList: Array<object> = [];
   filteredColumn;
   tableColumnData: any = [];
   tableColumnForm: Array<Object> = [];
-  tableData: Object = {
+  tableData: any = {
     columns: [],
     data: [],
   };
@@ -40,65 +40,38 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.listOfMaturityData = [
-      {
-        category: 'Critical Project',
-        value: 100,
-        icon: 'Watch.svg',
-        totalIssues: 100,
-      },
-      {
-        category: 'Active Project',
-        value: 0.43,
-        icon: 'visibility_on.svg',
-        totalIssues: 100,
-      },
-      {
-        category: 'Health Project',
-        value: 12,
-        icon: 'Check.svg',
-        totalIssues: 100,
-      },
-      {
-        category: 'Efficiency',
-        value: 15,
-        icon: 'Warning.svg',
-        totalIssues: 100,
-      },
-      {
-        category: 'Pass Rate',
-        value: 15,
-        icon: 'Warning.svg',
-        totalIssues: 100,
-      },
-    ];
-
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
         .subscribe((sharedobject) => {
-          const filterData = this.service.getFilterData();
+          console.log(JSON.parse(JSON.stringify(sharedobject.filterApplyData)));
+          // const filterData = this.service.getFilterData();
           const selectedType = this.service.getSelectedType();
-          const hierarchyData = JSON.parse(
-            localStorage.getItem('completeHierarchyData'),
-          )[selectedType];
-          const filterApplyData = sharedobject.filterApplyData;
-          const listOfProjects = this.getProjects(
-            filterApplyData,
-            hierarchyData,
-            filterData,
+          // const hierarchyData = JSON.parse(
+          //   localStorage.getItem('completeHierarchyData'),
+          // )[selectedType];
+          const filterApplyData = this.payloadPreparation(
             sharedobject.filterApplyData,
+            selectedType,
           );
-          const listOfProjectsNodeIds = listOfProjects
-            .filter((pro) => !pro.onHold)
-            .map((pro) => pro.nodeId);
-          filterApplyData.selectedMap.project = listOfProjectsNodeIds;
-          filterApplyData.ids = listOfProjectsNodeIds;
-          console.log(selectedType);
-          console.log(listOfProjects);
-          console.log(filterApplyData);
+
+          // const listOfProjects = this.getProjects(
+          //   filterApplyData,
+          //   hierarchyData,
+          //   filterData,
+          //   sharedobject.filterApplyData,
+          // );
+          // const listOfProjectsNodeIds = listOfProjects
+          //   .filter((pro) => !pro.onHold)
+          //   .map((pro) => pro.nodeId);
+          // filterApplyData.selectedMap.project = listOfProjectsNodeIds;
+          // filterApplyData.ids = listOfProjectsNodeIds;
+          // console.log(selectedType);
+          // console.log(listOfProjects);
+          // console.log(filterApplyData);
+          // console.log('final payload : ', filterApplyData);
           this.httpService
-            .getExecutiveBoardData(filterApplyData, selectedType === 'scrum')
+            .getExecutiveBoardData(filterApplyData, selectedType !== 'scrum')
             .subscribe((res: any) => {
               if (res.success) {
                 this.tableData['data'] = res.data.matrix.rows.map((row) => {
@@ -106,6 +79,33 @@ export class HomeComponent implements OnInit, OnDestroy {
                 });
                 this.tableData['columns'] = res.data.matrix.column;
                 this.generateColumnFilterData();
+
+                this.aggregrationDataList = [
+                  {
+                    category: 'Active Project',
+                    value: this.tableData['data'].length,
+                    icon: 'visibility_on.svg',
+                    average: 'NA',
+                  },
+                  {
+                    category: 'Critical Project',
+                    value: this.calculateHealth('critical').count,
+                    icon: 'Watch.svg',
+                    average: this.calculateHealth('critical').average,
+                  },
+                  {
+                    category: 'Health Project',
+                    value: this.calculateHealth('healthy').count,
+                    icon: 'Check.svg',
+                    average: this.calculateHealth('healthy').average,
+                  },
+                  {
+                    category: 'Avg Efficiency',
+                    value: this.tableData['data'].length,
+                    icon: 'Warning.svg',
+                    average: this.calculateEfficiency(),
+                  },
+                ];
               }
             });
 
@@ -117,6 +117,40 @@ export class HomeComponent implements OnInit, OnDestroy {
           });
         }),
     );
+  }
+
+  payloadPreparation(filterApplyData, selectedType, filterType?) {
+    return {
+      level: filterApplyData.level,
+      label: filterApplyData.label,
+      parentid: filterType ? filterType : '',
+      date: selectedType === 'scrum' ? '' : filterApplyData.selectedMap.date[0],
+      duration: selectedType === 'scrum' ? '' : filterApplyData.ids[0],
+    };
+  }
+
+  calculateEfficiency() {
+    const rowData = this.tableData['data'];
+    const sum = rowData.reduce((acc, num) => {
+      return acc + Number(num.completion);
+    }, 0);
+    const average = Math.round(sum / rowData.length);
+    return average + '%';
+  }
+
+  calculateHealth(healthType) {
+    const rowData = [
+      ...this.tableData['data'].filter(
+        (data) => data.health.toLowerCase() === healthType.toLowerCase(),
+      ),
+    ];
+    const sum = rowData.reduce((acc, num) => {
+      return acc + Number(num.completion);
+    }, 0);
+    // console.log(healthType + ' : ', average);
+    const average = Math.round(sum / rowData.length);
+
+    return { average: average + '%', count: rowData.length };
   }
 
   getProjects(
