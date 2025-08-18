@@ -37,7 +37,7 @@
             <p-accordionTab [header]="'Project: ' + data.name">
               <article class="p-d-flex p-flex-column" *ngIf="isAdmin" role="region">
                 <div class="p-d-flex p-jc-end p-mb-5">
-                  <button type="button" class="p-button-raised" pButton pRipple label="Summarize | AI" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals"></button>
+                  <button type="button" class="p-button-raised" icon="pi pi-sparkles" iconpos="left"  pButton pRipple label="Summarize | AI" (click)="summariseUsingAI(data)" aria-label="Summarise the list of sprint goals"></button>
                 </div>
                 <div class="p-d-flex p-jc-start p-mb-5" *ngIf="defaultMessage"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i> <em style="line-height: 2rem; margin-left: 1rem;">Summarising the sprint goals ...</em></div>
                 <div role="region" *ngIf="summarisedSprintGoalsMap[data.name]" aria-hidden="!isSummaryAvailableMap[data.name]" class="p-mb-5 summary-container" tabindex="{{isSummaryAvailableMap[data.name] ? 0 : -1}}">

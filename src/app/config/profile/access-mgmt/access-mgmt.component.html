@@ -23,7 +23,7 @@
     <div class="content">
       <div class="p-d-flex p-jc-between">
         <h3 class="form_title" tabindex="0" id="page-heading">Access Management</h3>
-        <form #addUserForm="ngForm" *ngIf="isSuperAdmin && !isOpenSource">
+        <form #addUserForm="ngForm" *ngIf="(isSuperAdmin || isProjectAdmin) && !isOpenSource">
           <div class="form-container p-d-flex p-mb-3">
             <div class="p-mt-3 p-mr-2">
               <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">

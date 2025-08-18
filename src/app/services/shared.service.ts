@@ -897,13 +897,12 @@ export class SharedService {
     } else {
       this.router.navigateByUrl('/dashboard/iteration');
     }
-    localStorage.removeItem('shared_link');
+    // localStorage.removeItem('shared_link');
   }
 
   checkStateFilterLength(url: string): boolean {
-    const parsedUrl = new URL(url, window.location.origin);
+    const parsedUrl = new URL(url, window.location.href);
     const stateFilters = parsedUrl.searchParams.get('stateFilters');
-
     if (!stateFilters) {
       console.warn('stateFilters param not found.');
       return false; // or true, depending on your use case when param is missing
