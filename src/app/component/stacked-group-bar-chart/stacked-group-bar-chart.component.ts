@@ -94,62 +94,70 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     // COLOR SETUP
     const color = d3.scaleOrdinal().domain(projects).range(this.color);
 
-    // Draw the bars
-    sprints.forEach((sprint) => {
-      const stack = d3.stack().keys(severityKeys);
-      const stackedData = stack(sprintGroups[sprint]);
-      const bars = svg
-        .append('g')
-        .selectAll('.group')
-        .data(stackedData)
-        .enter()
-        .append('g')
-        .attr('class', 'group')
-        .style('fill', (d: any) => {
-          // TODO figure out why it does not change color
-          const projectName = d[0].data.project;
-          const baseColor = color(projectName);
-
-          // Generate shades from base color based on severity
-          // TODO see why shades from one color are used
-          const severityIndex = severityKeys.indexOf(d.key);
-          return this.generateShade(
-            baseColor,
-            severityIndex,
-            severityKeys.length,
-          );
-        });
-
-      bars
-        .selectAll('rect')
-        .data((d: any) => d)
-        .enter()
-        .append('rect')
-        .attr('x', (d: any) => x0(sprint) + x1(d.data.project))
-        .attr('y', (d: any) => y(d[1]))
-        .attr('height', (d: any) => y(d[0]) - y(d[1]))
-        .attr('width', x1.bandwidth());
-
-      // Add labels on bars
-      bars
-        .selectAll('text')
-        .data((d: any) => d)
-        .enter()
-        .append('text')
-        .attr(
-          'x',
-          (d: any) => x0(sprint) + x1(d.data.project) + x1.bandwidth() / 2,
-        )
-        .attr('y', (d: any) => (y(d[0]) + y(d[1])) / 2)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'middle')
-        .text((d: any) => {
-          const value = d[1] - d[0];
-          return value >= 1 ? `${value.toFixed(0)}` : '';
-        })
-        .style('fill', 'black')
-        .style('font-size', '10px');
+    const projectColors = new Map<string, string>();
+    this.kpiData.forEach((project: any, index: number) => {
+      projectColors.set(project.data, this.color[index % this.color.length]);
     });
+    // console.log(projectColors);
+    const test = [...projectColors];
+    console.log(test);
+
+    test.forEach((a: any, i: number) => {
+      console.log(a);
+      console.log(i);
+      sprints.forEach((sprint) => {
+        const stack = d3.stack().keys(severityKeys);
+        const stackedData = stack(sprintGroups[sprint]);
+        const bars = svg
+          .append('g')
+          .selectAll('.group')
+          .data(stackedData)
+          .enter()
+          .append('g')
+          .attr('class', 'group')
+          .style('fill', (d: any) => {
+            // console.log(d);
+            // const projectName = d[i]?.data?.project;
+            // const baseColor = a[1];
+            const severityIndex = severityKeys.indexOf(d.key);
+            console.log(a[1]);
+            console.log(a[i][1]);
+            return this.generateShade(a[1], severityIndex, severityKeys.length);
+          });
+
+        bars
+          .selectAll('rect')
+          .data((d: any) => d)
+          .enter()
+          .append('rect')
+          .attr('x', (d: any) => x0(sprint) + x1(d.data.project))
+          .attr('y', (d: any) => y(d[1]))
+          .attr('height', (d: any) => y(d[0]) - y(d[1]))
+          .attr('width', x1.bandwidth());
+
+        // Add labels on bars
+        bars
+          .selectAll('text')
+          .data((d: any) => d)
+          .enter()
+          .append('text')
+          .attr(
+            'x',
+            (d: any) => x0(sprint) + x1(d.data.project) + x1.bandwidth() / 2,
+          )
+          .attr('y', (d: any) => (y(d[0]) + y(d[1])) / 2)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .text((d: any) => {
+            const value = d[1] - d[0];
+            return value >= 1 ? `${value.toFixed(0)}` : '';
+          })
+          .style('fill', 'black')
+          .style('font-size', '10px');
+      });
+    });
+
+    // Draw the bars
 
     // Add X axis - sprints
     svg
@@ -169,9 +177,9 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
   ): string {
     // Convert hex to HSL
     const hexToHsl = (hex: string) => {
-      const r = parseInt(hex.slice(1, 3), 16) / 255;
-      const g = parseInt(hex.slice(3, 5), 16) / 255;
-      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      const r = parseInt(hex?.slice(1, 3), 16) / 255;
+      const g = parseInt(hex?.slice(3, 5), 16) / 255;
+      const b = parseInt(hex?.slice(5, 7), 16) / 255;
 
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
