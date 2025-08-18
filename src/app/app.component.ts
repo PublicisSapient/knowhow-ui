@@ -102,7 +102,6 @@ export class AppComponent implements OnInit {
           loc &&
           loc.indexOf('authentication') === -1 &&
           loc.indexOf('Error') === -1 &&
-          loc.indexOf('Config') === -1 &&
           !this.service.checkStateFilterLength(loc) &&
           loc.indexOf('pageNotFound') === -1
         ) {
@@ -111,7 +110,8 @@ export class AppComponent implements OnInit {
       }
     });
 
-    const url = localStorage.getItem('shared_link');
+    const url =
+      localStorage.getItem('shared_link') ?? localStorage.getItem('last_link');
     let currentUserProjectAccess = JSON.parse(
       localStorage.getItem('currentUserDetails'),
     )?.projectsAccess?.length
@@ -213,7 +213,7 @@ export class AppComponent implements OnInit {
     if (projectLevelSelected) {
       if (hasAccessToAll) {
         this.service.navigateToLastVisitedURL(url);
-        localStorage.removeItem('shared_link');
+        // localStorage.removeItem('shared_link');
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({
