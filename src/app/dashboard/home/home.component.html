@@ -1,21 +1,27 @@
-<div class="p-d-flex maturity-tablur-view p-flex-wrap">
-    <div *ngFor="let item of listOfMaturityData;" class="p-d-flex data-item p-col-2 p-my-2 p-mx-5">
+<div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
+    @for (item of aggregrationDataList; track item) {
+      <div class="p-d-flex data-item p-col-2 p-my-2 p-mx-5">
         <div class="icon-container">
-            <div class="icon">
-                <img src="../../../assets/img/{{ item.icon }}" alt="KPI Icon" class="kpi-logo" aria-hidden="true" />
-            </div>
+          <div class="icon">
+            <img 
+              [src]="'../../../assets/img/' + item.icon" 
+              alt="KPI Icon" 
+              class="kpi-logo" 
+              aria-hidden="true" />
+          </div>
         </div>
         <div class="data">
-            <p class="tabularKPI-column-header p-mb-0" tabindex="0">{{ item.category }}</p>
-            <div class="p-d-flex">
-                <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">{{ item.value}}</p>
-                <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0"><i class="pi pi-angle-up"
-                        style="font-size: 1rem ; color: red;"></i></p>
-                <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0" style="color: red;"> +1 Projects</p>
-            </div>
+          <p class="tabularKPI-column-header p-mb-0" tabindex="0">{{ item.category }}</p>
+          <div class="p-d-flex">
+            <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
+              {{ item.value }} ({{ item.average }})
+            </p>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
+    }
+  </div>
+  
 
 <div class="kpi-details-table-container p-mx-5">
 
@@ -110,23 +116,8 @@
                 <div class="kpi-card-title-container">
                     <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> Maturity Wheel
                     </h3>
-                    <!-- <span *ngIf="true" class="info-icon" [style]="{'position': 'relative'}" role="button" tabindex="0"
-                        aria-label="Show KPI Information">
-                        <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
-                    </span> -->
                 </div>
             </div>
-            <!-- <div #kpiMenuContainer class="kpi-menu-container" role="button" tabindex="0" aria-label="Open KPI Menu">
-                <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
-            </div>
-            <p-menu #kpimenu id="menu" [popup]="true" [model]="menuItems" aria-label="Actions Menu">
-                <ng-template pTemplate="item" let-item>
-                    <div role="menuitem" tabindex="0" [attr.aria-label]="item.label">
-                        <i [class]="item.icon" aria-hidden="true"></i>
-                        <span> {{ item.label }}</span>
-                    </div>
-                </ng-template>
-            </p-menu> -->
         </div>
 
         <div class="kpi-card-body">
