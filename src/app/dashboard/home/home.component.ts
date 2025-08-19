@@ -65,13 +65,11 @@ export class HomeComponent implements OnInit, OnDestroy {
             )
             .subscribe((res: any) => {
               if (res.data) {
-                this.tableData['data'] = res.data.data.matrix.rows.map(
-                  (row) => {
-                    return { ...row, ...row?.boardMaturity };
-                  },
-                );
+                this.tableData['data'] = res.data.matrix.rows.map((row) => {
+                  return { ...row, ...row?.boardMaturity };
+                });
 
-                this.tableData['columns'] = res.data.data.matrix.columns.filter(
+                this.tableData['columns'] = res.data.matrix.columns.filter(
                   (col) => col.field !== 'id',
                 );
 
@@ -147,7 +145,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     return {
       level: targetLevel,
       label: targetLabel,
-      parentId: this.selectedRowToExpand.id || '',
+      parentId: dataFor === 'child' ? this.selectedRowToExpand.id || '' : '',
       date:
         selectedType === 'scrum'
           ? ''
@@ -237,7 +235,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
       .subscribe((res: any) => {
         if (res.data) {
-          res.data.data.matrix.rows = res.data.data.matrix.rows.map((row) => {
+          res.data.matrix.rows = res.data.matrix.rows.map((row) => {
             return { ...row, ...row?.boardMaturity };
           });
           const targettedDetails = this.tableData.data.find(
@@ -245,9 +243,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           if (targettedDetails) {
             targettedDetails['children'] = targettedDetails['children'] || {};
-            targettedDetails['children']['data'] = res.data.data.matrix.rows;
+            targettedDetails['children']['data'] = res.data.matrix.rows;
             targettedDetails['children']['columns'] =
-              res.data.data.matrix.columns.filter((col) => col.field !== 'id');
+              res.data.matrix.columns.filter((col) => col.field !== 'id');
             const { tableColumnData, tableColumnForm } =
               this.generateColumnFilterData(
                 targettedDetails['children']['data'],
