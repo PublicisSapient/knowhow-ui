@@ -33,6 +33,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedType: string = '';
   filterApplyData: any = {};
   selectedRowToExpand: any = {};
+  loader: boolean = true;
+  nestedLoader: boolean = false;
+  products: any;
 
   constructor(
     private service: SharedService,
@@ -44,12 +47,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.products = Array.from({ length: 5 }).map((_, i) => `Item #${i}`);
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
         .subscribe((sharedobject) => {
-          console.log(JSON.parse(JSON.stringify(sharedobject.filterApplyData)));
-          // const filterData = this.service.getFilterData();
+          this.loader = true;
           this.selectedType = this.service.getSelectedType();
           this.filterApplyData = sharedobject.filterApplyData;
           const filterApplyData = this.payloadPreparation(
@@ -116,6 +119,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                   },
                 ];
               }
+              this.loader = false;
             });
 
           // this.maturityComponent.receiveSharedData({
@@ -224,6 +228,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onRowExpand(event) {
+    this.nestedLoader = true;
     this.selectedRowToExpand = event.data;
     const filterApplyData = this.payloadPreparation(
       this.filterApplyData,
@@ -254,6 +259,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             targettedDetails['children']['tableColumnData'] = tableColumnData;
             targettedDetails['children']['tableColumnForm'] = tableColumnForm;
           }
+          this.nestedLoader = false;
         }
       });
   }
