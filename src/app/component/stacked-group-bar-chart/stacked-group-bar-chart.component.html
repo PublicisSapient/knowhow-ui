@@ -1,2 +1,34 @@
+<!-- <div>
+    <p-multiSelect
+    [options]="filter"
+    optionLabel="option"
+    [showHeader]="false"
+    selectedItemsLabel="{0} items selected"
+    [maxSelectedLabels]="3"
+    [style]="{'height': '32px', 'margin-left': '5px'}"
+    placeholder="Select something"
+    [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
+    (onChange)="handleChange($event)">
+</p-multiSelect>
+   
+  </div>
 <div #chartContainer id="chartContainer" style="width: 100%" [ngStyle]="{ height: 250 + 'px' }">
-</div>
+</div> -->
+
+<div>
+    <p-multiSelect 
+      [options]="filter" 
+      optionLabel="option" 
+      [showHeader]="false" 
+      selectedItemsLabel="{0} items selected"
+      [maxSelectedLabels]="3" 
+      [style]="{'height': '32px', 'margin-left': '5px'}" 
+      placeholder="Filter Severities"
+      [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
+      (onChange)="handleChange($event)"
+      [defaultLabel]="'All Severities'"
+      >
+    </p-multiSelect>
+  </div>
+  <div #chartContainer id="chartContainer" style="width: 100%" [ngStyle]="{ height: 250 + 'px' }">
+  </div>
