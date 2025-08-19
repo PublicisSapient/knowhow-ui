@@ -223,12 +223,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
             });
 
           // Home tab will visible for superadmin only
-          this.items = this.items.filter((board: any) => {
-            if (!this.authorizationService.checkIfSuperUser()) {
-              return board.slug !== 'home';
-            }
-            return true;
-          });
+          // this.items = this.items.filter((board: any) => {
+          //   if (!this.authorizationService.checkIfSuperUser()) {
+          //     return board.slug !== 'home';
+          //   }
+          //   return true;
+          // });
 
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
