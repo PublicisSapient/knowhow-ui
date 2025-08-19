@@ -29,9 +29,11 @@
       [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
       (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
       [selectedTab]="selectedTab" [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
-    <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel"
-      [selectedType]="selectedType" [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
-      (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
+      <div [hidden]="selectedTab?.toLowerCase() === 'home'">
+        <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel"
+        [selectedType]="selectedType" [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
+        (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
+      </div>
     <ng-container *ngIf="additionalFilterConfig?.length">
       <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
         [additionalFilterConfig]="additionalFilterConfig" [additionalFilterLevelArr]="additionalFilterLevelArr"

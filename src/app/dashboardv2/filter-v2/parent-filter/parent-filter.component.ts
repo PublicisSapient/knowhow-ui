@@ -222,9 +222,24 @@ export class ParentFilterComponent implements OnChanges {
       this.selectedTab.toLowerCase() === 'home' &&
       tempStateFilters.toLowerCase() === 'project'
     ) {
-      this.selectedLevel = this.filterLevels.filter((level) => {
-        return level.nodeId.toLowerCase() === 'engagement';
-      })[0];
+      const hierarchy = JSON.parse(
+        localStorage.getItem('completeHierarchyData') || '{}',
+      )[this.selectedType];
+      const projectHierarchyDetails = hierarchy.find(
+        (hi) => hi.hierarchyLevelId === 'project',
+      );
+      if (projectHierarchyDetails) {
+        const leafNodePlusOneDetails = hierarchy.find(
+          (item) => item.level === projectHierarchyDetails.level - 1,
+        );
+
+        this.selectedLevel = this.filterLevels.filter((level) => {
+          return (
+            level.nodeId.toLowerCase() ===
+            leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
+          );
+        })[0];
+      }
     } else {
       this.selectedLevel = this.filterLevels.filter((level) => {
         return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
