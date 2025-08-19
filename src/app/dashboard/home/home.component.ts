@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   aggregrationDataList: Array<object> = [];
   filteredColumn;
   tableColumnData: any = [];
-  tableColumnForm: Array<Object> = [];
+  tableColumnForm: any = [];
   tableData: any = {
     columns: [],
     data: [],
@@ -29,6 +29,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   subscription = [];
   @ViewChild('maturityComponent')
   maturityComponent: MaturityComponent;
+  expandedRows: { [key: string]: boolean } = {};
+  selectedType: string = '';
+  filterApplyData: any = {};
+  selectedRowToExpand: any = {};
 
   constructor(
     private service: SharedService,
@@ -46,39 +50,46 @@ export class HomeComponent implements OnInit, OnDestroy {
         .subscribe((sharedobject) => {
           console.log(JSON.parse(JSON.stringify(sharedobject.filterApplyData)));
           // const filterData = this.service.getFilterData();
-          const selectedType = this.service.getSelectedType();
-          // const hierarchyData = JSON.parse(
-          //   localStorage.getItem('completeHierarchyData'),
-          // )[selectedType];
+          this.selectedType = this.service.getSelectedType();
+          this.filterApplyData = sharedobject.filterApplyData;
           const filterApplyData = this.payloadPreparation(
-            sharedobject.filterApplyData,
-            selectedType,
+            this.filterApplyData,
+            this.selectedType,
+            'parent',
           );
 
-          // const listOfProjects = this.getProjects(
-          //   filterApplyData,
-          //   hierarchyData,
-          //   filterData,
-          //   sharedobject.filterApplyData,
-          // );
-          // const listOfProjectsNodeIds = listOfProjects
-          //   .filter((pro) => !pro.onHold)
-          //   .map((pro) => pro.nodeId);
-          // filterApplyData.selectedMap.project = listOfProjectsNodeIds;
-          // filterApplyData.ids = listOfProjectsNodeIds;
-          // console.log(selectedType);
-          // console.log(listOfProjects);
-          // console.log(filterApplyData);
-          // console.log('final payload : ', filterApplyData);
           this.httpService
-            .getExecutiveBoardData(filterApplyData, selectedType !== 'scrum')
+            .getExecutiveBoardData(
+              filterApplyData,
+              this.selectedType !== 'scrum',
+            )
             .subscribe((res: any) => {
-              if (res.success) {
-                this.tableData['data'] = res.data.matrix.rows.map((row) => {
-                  return { ...row, ...row?.boardMaturity };
-                });
-                this.tableData['columns'] = res.data.matrix.column;
-                this.generateColumnFilterData();
+              if (res.data) {
+                this.tableData['data'] = res.data.data.matrix.rows.map(
+                  (row) => {
+                    return { ...row, ...row?.boardMaturity };
+                  },
+                );
+
+                this.tableData['columns'] = res.data.data.matrix.columns.filter(
+                  (col) => col.field !== 'id',
+                );
+
+                const { tableColumnData, tableColumnForm } =
+                  this.generateColumnFilterData(
+                    this.tableData['data'],
+                    this.tableData['columns'],
+                  );
+
+                this.tableColumnData = tableColumnData;
+                this.tableColumnForm = tableColumnForm;
+
+                this.expandedRows = this.tableData['data']
+                  .filter((p) => p.children && p.children.length > 0) // only rows with children
+                  .reduce((acc, curr) => {
+                    acc[curr.id] = true; // mark as expanded
+                    return acc;
+                  }, {} as { [key: string]: boolean });
 
                 this.aggregrationDataList = [
                   {
@@ -94,7 +105,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     average: this.calculateHealth('critical').average,
                   },
                   {
-                    category: 'Health Project',
+                    category: 'Healthy Project',
                     value: this.calculateHealth('healthy').count,
                     icon: 'Check.svg',
                     average: this.calculateHealth('healthy').average,
@@ -109,31 +120,57 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             });
 
-          this.maturityComponent.receiveSharedData({
-            masterData: sharedobject.masterData,
-            filterdata: sharedobject.filterdata,
-            filterApplyData: sharedobject.filterApplyData,
-            dashConfigData: sharedobject.dashConfigData,
-          });
+          // this.maturityComponent.receiveSharedData({
+          //   masterData: sharedobject.masterData,
+          //   filterdata: sharedobject.filterdata,
+          //   filterApplyData: sharedobject.filterApplyData,
+          //   dashConfigData: sharedobject.dashConfigData,
+          // });
         }),
     );
   }
 
-  payloadPreparation(filterApplyData, selectedType, filterType?) {
+  payloadPreparation(filterApplyData, selectedType, dataFor) {
+    const hierarchy = JSON.parse(
+      localStorage.getItem('completeHierarchyData') || '{}',
+    )[selectedType];
+
+    let targetLevel = filterApplyData.level;
+    let targetLabel = filterApplyData.label;
+
+    if (dataFor === 'child' && hierarchy) {
+      const child = this.getImmediateChild(hierarchy, filterApplyData.level);
+      targetLevel = child?.level ?? targetLevel;
+      targetLabel = child?.hierarchyLevelId ?? targetLabel;
+    }
+
     return {
-      level: filterApplyData.level,
-      label: filterApplyData.label,
-      parentid: filterType ? filterType : '',
-      date: selectedType === 'scrum' ? '' : filterApplyData.selectedMap.date[0],
-      duration: selectedType === 'scrum' ? '' : filterApplyData.ids[0],
+      level: targetLevel,
+      label: targetLabel,
+      parentId: this.selectedRowToExpand.id || '',
+      date:
+        selectedType === 'scrum'
+          ? ''
+          : filterApplyData.selectedMap?.date?.[0] || '',
+      duration: selectedType === 'scrum' ? '' : filterApplyData.ids?.[0] || '',
     };
+  }
+
+  getImmediateChild(hierarchyData, parentLevel) {
+    // Find the item with the next level
+    const child = hierarchyData.find((item) => item.level === parentLevel + 1);
+    return child || null;
   }
 
   calculateEfficiency() {
     const rowData = this.tableData['data'];
     const sum = rowData.reduce((acc, num) => {
-      return acc + Number(num.completion);
+      return acc + parseInt(num.completion, 10);
     }, 0);
+
+    if (rowData.length === 0) {
+      return 0 + '%';
+    }
     const average = Math.round(sum / rowData.length);
     return average + '%';
   }
@@ -147,70 +184,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     const sum = rowData.reduce((acc, num) => {
       return acc + Number(num.completion);
     }, 0);
-    // console.log(healthType + ' : ', average);
+
+    // ✅ Handle empty case to avoid divide by zero
+    if (rowData.length === 0) {
+      return { average: '0%', count: 0 };
+    }
+
     const average = Math.round(sum / rowData.length);
 
     return { average: average + '%', count: rowData.length };
-  }
-
-  getProjects(
-    selectedNodeId: any,
-    hierarchyDetails: any[],
-    filterData: any[],
-    filterApplyData,
-  ) {
-    // 1) find 'project' level dynamically
-    const projectHierarchy = hierarchyDetails.find(
-      (h) => h.hierarchyLevelId === 'project',
-    );
-    if (!projectHierarchy) return [];
-    const projectLevel = projectHierarchy.level;
-    filterApplyData.level = projectLevel;
-    filterApplyData.label = 'project';
-
-    // 2) build parentId -> children map
-    const childrenMap: { [parentId: string]: any[] } = {};
-    for (const node of filterData) {
-      if (!node.parentId) continue;
-      (childrenMap[node.parentId] = childrenMap[node.parentId] || []).push(
-        node,
-      );
-    }
-
-    // 3) collect projects by traversing descendants
-    const projects: any[] = [];
-    this.collectDescendants(
-      selectedNodeId.ids[0],
-      childrenMap,
-      projectLevel,
-      projects,
-    );
-    return projects;
-  }
-
-  private collectDescendants(
-    nodeId: string,
-    childrenMap: { [parentId: string]: any[] },
-    projectLevel: number,
-    projects: any[],
-  ) {
-    const children = childrenMap[nodeId] || [];
-    for (const child of children) {
-      // collect if this node is at project level and labelName is "project"
-      if (child.level === projectLevel && child.labelName === 'project') {
-        projects.push(child);
-      }
-      // traverse deeper only while child's level < project level (optimization)
-      if (child.level < projectLevel) {
-        this.collectDescendants(
-          child.nodeId,
-          childrenMap,
-          projectLevel,
-          projects,
-        );
-      }
-      // if child.level >= projectLevel then we don't need to traverse deeper for finding projects under this branch
-    }
   }
 
   getMClass(value: string) {
@@ -243,11 +225,48 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateColumnFilterData() {
-    if (this.tableData['data'].length > 0) {
-      this.tableData['columns'].forEach((colName) => {
+  onRowExpand(event) {
+    this.selectedRowToExpand = event.data;
+    const filterApplyData = this.payloadPreparation(
+      this.filterApplyData,
+      this.selectedType,
+      'child',
+    );
+
+    this.httpService
+      .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
+      .subscribe((res: any) => {
+        if (res.data) {
+          res.data.data.matrix.rows = res.data.data.matrix.rows.map((row) => {
+            return { ...row, ...row?.boardMaturity };
+          });
+          const targettedDetails = this.tableData.data.find(
+            (list) => list.id === this.selectedRowToExpand.id,
+          );
+          if (targettedDetails) {
+            targettedDetails['children'] = targettedDetails['children'] || {};
+            targettedDetails['children']['data'] = res.data.data.matrix.rows;
+            targettedDetails['children']['columns'] =
+              res.data.data.matrix.columns.filter((col) => col.field !== 'id');
+            const { tableColumnData, tableColumnForm } =
+              this.generateColumnFilterData(
+                targettedDetails['children']['data'],
+                targettedDetails['children']['columns'],
+              );
+            targettedDetails['children']['tableColumnData'] = tableColumnData;
+            targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+          }
+        }
+      });
+  }
+
+  generateColumnFilterData(data, columns) {
+    if (data.length > 0) {
+      const tableColumnData = {};
+      const tableColumnForm = {};
+      columns.forEach((colName) => {
         const uniqueMap = new Map();
-        this.tableData['data'].forEach((rowData) => {
+        data.forEach((rowData) => {
           const key = rowData[colName.field];
           if (!uniqueMap.has(key)) {
             uniqueMap.set(key, {
@@ -256,11 +275,12 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
           }
         });
-
-        this.tableColumnData[colName.field] = Array.from(uniqueMap.values());
-        this.tableColumnForm[colName.field] = [];
+        tableColumnData[colName.field] = Array.from(uniqueMap.values());
+        tableColumnForm[colName.field] = [];
       });
+      return { tableColumnData, tableColumnForm };
     }
+    return;
   }
 
   ngOnDestroy() {

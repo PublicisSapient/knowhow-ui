@@ -1391,7 +1391,7 @@ export class HttpService {
             {
               id: 'projectid',
               name: 'Retail 3',
-              completion: '74%',
+              completion: '7',
               health: 'Healthy',
               boardMaturity: {
                 speed: 'M1',
@@ -1399,12 +1399,34 @@ export class HttpService {
                 value: 'M2',
                 dora: 'M4',
               },
+              children: [
+                {
+                  id: 'projectid',
+                  name: 'Retail 344',
+                  completion: '7',
+                  health: 'Critic',
+                  speed: 'M1',
+                  quality: 'M3',
+                  value: 'M2',
+                  dora: 'M4',
+                },
+                {
+                  id: 'projectid',
+                  name: 'Retail 344',
+                  completion: '7',
+                  health: 'Critic',
+                  speed: 'M1',
+                  quality: 'M3',
+                  value: 'M2',
+                  dora: 'M4',
+                },
+              ],
             },
             {
               id: 'projectid',
               name: 'Retail 344',
-              completion: '75%',
-              health: 'Healthy',
+              completion: '7',
+              health: 'Critic',
               boardMaturity: {
                 speed: 'M1',
                 quality: 'M3',
@@ -1415,7 +1437,7 @@ export class HttpService {
             {
               id: 'projectid',
               name: 'Retail 334',
-              completion: '76%',
+              completion: '7',
               health: 'Healthy',
               boardMaturity: {
                 speed: 'M1',
@@ -1427,7 +1449,7 @@ export class HttpService {
             {
               id: 'projectid444',
               name: 'Retail 3909',
-              completion: '78%',
+              completion: '7',
               health: 'Healthy',
               boardMaturity: {
                 speed: 'M1',
@@ -1437,7 +1459,7 @@ export class HttpService {
               },
             },
           ],
-          column: [
+          columns: [
             // { field: 'id', header: 'Project ID' },
             { field: 'name', header: 'Project name' },
             { field: 'completion', header: 'Complete(%)' },

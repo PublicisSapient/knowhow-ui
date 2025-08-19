@@ -39,6 +39,7 @@
     </ng-container>
   </div>
 </div>
+@if (selectedTab?.toLowerCase() !== 'home') {
 <div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
   <div class="p-d-flex p-ai-center kpi-search">
     <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
@@ -61,7 +62,9 @@
   </div>
   <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
 </div>
+}
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
+  @if (selectedTab?.toLowerCase() !== 'home') {
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
@@ -79,6 +82,7 @@
       </ng-container>
     </ng-container>
   </ul>
+ }
 
 
 
