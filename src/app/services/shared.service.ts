@@ -61,7 +61,7 @@ export class SharedService {
   public switchBoard = new BehaviorSubject<boolean>(false);
 
   // make filterdata and masterdata persistent across dashboards
-  private filterData  : any[] = [];
+  private filterData: any[] = [];
   private masterdata = {};
   private chartColorList = {};
   changedMainDashboardValueSub = new Subject<any>();
