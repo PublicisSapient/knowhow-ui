@@ -17,7 +17,11 @@ import * as d3 from 'd3';
 export class StackedGroupBarChartComponent implements OnInit, OnChanges {
   @Input() kpiData: any;
   @Input() color: string[];
+<<<<<<< HEAD
   @Input() data: any; // Seems redundant with kpiData, but keeping it as per your code
+=======
+  @Input() data: any;
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
 
   // --- NEW PROPERTIES FOR CHART STATE ---
@@ -48,14 +52,20 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
+<<<<<<< HEAD
     if (changes['kpiData'] && this.kpiData) {
       this.initializeChart();
       this.updateDataAndChart();
+=======
+    if (this.kpiData) {
+      this.createChart();
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
     }
   }
 
   private initializeChart(): void {
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
+<<<<<<< HEAD
     const containerWidth = this.chartContainer.nativeElement.clientWidth;
     this.width = containerWidth - this.margin.left - this.margin.right;
     this.height = 250 - this.margin.top - this.margin.bottom;
@@ -116,6 +126,8 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
 
   private updateDataAndChart(): void {
     if (!this.kpiData || !this.svg) return;
+=======
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
 
     const sprintGroups: { [key: string]: any[] } = {};
 
@@ -126,6 +138,7 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
           sprintGroups[sprintKey] = [];
         }
 
+<<<<<<< HEAD
         const severityData: any = { project: project.data };
 
         this.activeSeverityKeys.forEach((severity) => {
@@ -134,11 +147,24 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
           );
           severityData[severity] = found ? found.breachedPercentage : 0;
         });
+=======
+        const severityData: any = {
+          project: project.data,
+          ...['s1', 's2', 's3', 's4'].reduce((acc, severity) => {
+            const found = sprint.drillDown.find(
+              (d: any) => d.severity === severity,
+            );
+            acc[severity] = found ? found.breachedPercentage : 0;
+            return acc;
+          }, {}),
+        };
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
 
         sprintGroups[sprintKey].push(severityData);
       });
     });
 
+<<<<<<< HEAD
     this.filteredData = sprintGroups;
 
     console.log(this.filteredData);
@@ -160,17 +186,104 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     index: number,
     total: number,
   ): string {
-    const hexToHsl = (hex: string) => {
-      const r = parseInt(hex?.slice(1, 3), 16) / 255;
-      const g = parseInt(hex?.slice(3, 5), 16) / 255;
-      const b = parseInt(hex?.slice(5, 7), 16) / 255;
+=======
+    const sprints = Object.keys(sprintGroups);
+    const projects: any[] = [...new Set(this.kpiData.map((d: any) => String(d.data)))];
+    const severityKeys = ['s1', 's2', 's3', 's4'];
 
+    // Chart dimensions
+    const margin = { top: 30, right: 30, bottom: 60, left: 40 };
+    const width = 800 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    // Create SVG container
+    const svg = d3
+      .select(this.chartContainer.nativeElement)
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Scales
+    const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
+    const x1 = d3
+      .scaleBand()
+      .domain(projects)
+      .range([0, x0.bandwidth()])
+      .padding(0.1);
+    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).nice();
+
+    // Map each project to a base color
+    const projectColors = new Map<string, string>();
+    projects.forEach((proj, idx) => {
+      projectColors.set(proj, this.color[idx % this.color.length]);
+    });
+
+    // Generate stacks for each sprint and severity key
+    sprints.forEach((sprint) => {
+      const stack = d3.stack().keys(severityKeys);
+      const stackedData = stack(sprintGroups[sprint]);
+
+      // For each severity stack, create groups and bars
+      stackedData.forEach((severitySeries, severityIndex) => {
+        const groups = svg
+          .append('g')
+          .attr('class', `severity-group-${severitySeries.key}`)
+          .selectAll('rect')
+          .data(severitySeries)
+          .enter()
+          .append('rect')
+          .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)!)
+          .attr('y', (d: any) => y(d[1]))
+          .attr('height', (d: any) => y(d) - y(d))
+          .attr('width', x1.bandwidth())
+          .attr('fill', (d: any) => {
+            // Use base color for the project and generate shade based on severity index
+            const baseColor = projectColors.get(d.data.project) || '#999999';
+            return this.generateShade(baseColor, severityIndex, severityKeys.length);
+          });
+
+        // Add labels on bars
+        svg
+          .append('g')
+          .selectAll('text')
+          .data(severitySeries)
+          .enter()
+          .append('text')
+          .attr(
+            'x',
+            (d: any) => x0(sprint)! + x1(d.data.project)! + x1.bandwidth() / 2,
+          )
+          .attr('y', (d: any) => (y(d[0]) + y(d)) / 2)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .text((d: any) => {
+            const value = d - d;
+            return value >= 1 ? `${value.toFixed(0)}` : '';
+          })
+          .style('fill', 'black')
+          .style('font-size', '10px');
+      });
+    });
+
+    // Add Axes
+    svg.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x0));
+    svg.append('g').call(d3.axisLeft(y).ticks(5));
+  }
+
+  // Helper to generate shade variations of base color
+  private generateShade(baseColor: string, index: number, total: number): string {
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
+    const hexToHsl = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
       let h = 0,
         s = 0,
         l = (max + min) / 2;
-
       if (max !== min) {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -187,7 +300,6 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
         }
         h /= 6;
       }
-
       return [h * 360, s * 100, l * 100];
     };
 
@@ -208,6 +320,7 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     const newLightness = l + index * (60 / total) - 30;
     return hslToHex(h, s, Math.min(95, Math.max(15, newLightness)));
   }
+<<<<<<< HEAD
   private findOriginalData(projectName: string, sprintName: string): any {
     // Extract sprint number from sprintName (e.g., "Sprint 1" -> 1)
     const sprintNumber = parseInt(sprintName.replace('Sprint ', ''), 10) - 1;
@@ -292,4 +405,6 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
         .attr('y', (d: any) => (this.y(d[0]) + this.y(d[1])) / 2);
     });
   }
+=======
+>>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
 }
