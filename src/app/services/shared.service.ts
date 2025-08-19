@@ -897,7 +897,6 @@ export class SharedService {
     } else {
       this.router.navigateByUrl('/dashboard/iteration');
     }
-    // localStorage.removeItem('shared_link');
   }
 
   checkStateFilterLength(url: string): boolean {

@@ -109,10 +109,12 @@
                       [options]="filter?.options"
                       [(ngModel)]="filterOptions['filter'+(k+1)]"
                       [style]="{'margin-left': '5px', 'height': '32px'}"
-                      (onChange)="handleChange('single', k)"
-                      [virtualScroll]="true" [virtualScrollItemSize]="30"
-                      [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"
+                      (onChange)="handleChange('single', $event, k)"
+                      [virtualScroll]="true"
+                      [virtualScrollItemSize]="30"
+                      [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
                       [attr.aria-label]="filter?.filterType + ' dropdown'"
+                      [placeholder]="filterOptions['filter'+(k+1)]"
                       role="listbox"
                       [tabindex]="0">
           </p-dropdown>
@@ -121,38 +123,23 @@
       <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr; let k = index">
           <ng-select *ngIf="filter?.options?.length && filterOptions['filter'+(k+1)]?.[0] && filter.filterType === 'Duration'"
-                     [(ngModel)]="filterOptions['filter'+(k+1)][0]"
-                     [dropdownPosition]="'bottom'"
-                     [filter]="false"
-                     [showHeader]="false"
-                     (change)="handleChange('multi')"
-                     [placeholder]="filter?.filterType"
-                     [clearable]="false"
-                     class="p-pb-0 kpi-dropdown"
-                     [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
-                     [attr.aria-label]="filter?.filterType + ' multi-select'"
-                     role="listbox"
-                     [tabindex]="0">
+                     [(ngModel)]="filterOptions['filter'+(k+1)][0]" [dropdownPosition]="'bottom'" [filter]="false"
+                     [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType || 'Select a filter'" [clearable]="false"
+                     class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
+                     [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
             <ng-container *ngFor="let item of filter?.options; index as i">
-              <ng-option [value]="item" role="option">{{item}}</ng-option>
+              <ng-option [value]="item" role="option">
+                {{item}}
+              </ng-option>
             </ng-container>
           </ng-select>
 
-          <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'"
-                         #multiSelect
-                         inputId="multiselectFilter"
-                         [options]="filter?.options"
-                         [(ngModel)]="filterOptions['filter'+(k+1)]"
-                         [maxSelectedLabels]="3"
-                         selectedItemsLabel="{0} items selected"
-                         (onChange)="handleChange('multi', $event, k)"
-                         (onClear)="handleClearAll('filter'+(k+1))"
-                         [filter]="false"
-                         [showHeader]="false"
-                         [showClear]="true"
-                         [style]="{'height': '32px', 'margin-left': '5px'}"
-                         placeholder="{{filter?.filterType}}"
-                         [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+          <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
+                         inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+                         [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
+                         (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
+                         [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
+                         [placeholder]="filter?.filterType || 'Select a filter'" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
           </p-multiSelect>
         </ng-container>
       </div>
