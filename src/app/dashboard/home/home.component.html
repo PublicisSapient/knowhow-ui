@@ -159,7 +159,33 @@
                 <ng-template pTemplate="body" let-childRow>
                     <tr>
                         <td *ngFor="let childCol of row.children?.columns">
-                            {{ childRow[childCol.field] }}
+                            <ng-container [ngSwitch]="childCol.field">
+
+                                <span *ngSwitchCase="'dora'">
+                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(row[childCol.field])">
+                                        {{ childRow[childCol.field] }}</div>
+                                </span>
+
+                                <span *ngSwitchDefault>{{ childRow[childCol.field] }}</span>
+
+                                <div *ngSwitchCase="'health'">
+                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                                        {{ childRow[childCol.field] }}</div>
+                                </div>
+                                <div *ngSwitchCase="'speed'">
+                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                                        {{ childRow[childCol.field] }}</div>
+                                </div>
+                                <div *ngSwitchCase="'quality'" class="p-p-3">
+                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                                        {{ childRow[childCol.field] }}</div>
+                                </div>
+                                <div *ngSwitchCase="'value'" class="p-p-3">
+                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                                        {{ childRow[childCol.field] }}</div>
+                                </div>
+
+                            </ng-container>
                         </td>
                     </tr>
                 </ng-template>
