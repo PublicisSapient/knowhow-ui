@@ -92,21 +92,29 @@ export class HomeComponent implements OnInit, OnDestroy {
                     return acc;
                   }, {} as { [key: string]: boolean });
 
+                const hierarchy = JSON.parse(
+                  localStorage.getItem('completeHierarchyData') || '{}',
+                )[this.selectedType];
+
+                const label = hierarchy.find(
+                  (hi) => hi.level === filterApplyData.level,
+                ).hierarchyLevelName;
+
                 this.aggregrationDataList = [
                   {
-                    category: 'Active Project',
+                    category: 'Active ' + label,
                     value: this.tableData['data'].length,
                     icon: 'visibility_on.svg',
                     average: 'NA',
                   },
                   {
-                    category: 'Critical Project',
+                    category: 'Critical ' + label,
                     value: this.calculateHealth('critical').count,
                     icon: 'Watch.svg',
                     average: this.calculateHealth('critical').average,
                   },
                   {
-                    category: 'Healthy Project',
+                    category: 'Healthy ' + label,
                     value: this.calculateHealth('healthy').count,
                     icon: 'Check.svg',
                     average: this.calculateHealth('healthy').average,
@@ -199,7 +207,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getMClass(value: string) {
     const v = (value || '').toLowerCase();
+    console.log(value, v);
     return {
+      m0: 'm0',
       m1: 'm1',
       m2: 'm2',
       m3: 'm3',
@@ -207,6 +217,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       m5: 'm5',
       healthy: 'healthy',
       critical: 'critical',
+      unhealthy: 'unhealthy',
+      moderate: 'moderate',
     }[v];
   }
 

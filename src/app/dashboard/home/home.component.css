@@ -149,6 +149,11 @@
   color: white;
 }
 
+.m0 {
+  background: #fd8185;
+  color: white;
+}
+
 .healthy {
   background: #00bd24;
   color: white;
@@ -156,6 +161,16 @@
 
 .critical {
   background: #ff1f44;
+  color: white;
+}
+
+.unhealthy {
+  background: #c2a778;
+  color: white;
+}
+
+.moderate {
+  background: #93856d;
   color: white;
 }
 
