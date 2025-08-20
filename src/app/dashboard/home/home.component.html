@@ -34,7 +34,7 @@
         <div class="kpi-card-body">
             <p-table *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']"
                 responsiveLayout="scroll" class="mt-3" [expandedRowKeys]="expandedRows" dataKey="id"
-                (onRowExpand)="onRowExpand($event)">
+                (onRowExpand)="onRowExpand($event)" rowExpandMode="single">
                 <ng-template pTemplate="header" let-columns>
                     <tr>
                         <ng-container *ngFor="let col of columns">
@@ -79,11 +79,10 @@
                         <td *ngFor="let col of columns">
                             <ng-container [ngSwitch]="col.field">
 
-                                <span *ngSwitchCase="'name'">{{ row[col.field] }}
-                                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true"
-                                        [plain]="true"
-                                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-                                </span>
+                                <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">{{ row[col.field] }}
+                                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" [plain]="true"
+                                        [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
+                                </div>
 
                                 <span *ngSwitchCase="'dora'">
                                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">

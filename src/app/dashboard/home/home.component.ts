@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.products = Array.from({ length: 5 }).map((_, i) => `Item #${i}`);
+    this.products = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
