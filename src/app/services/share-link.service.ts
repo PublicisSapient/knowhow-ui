@@ -113,7 +113,6 @@ export class SharelinkService {
 
     if (hasAccessToAll) {
       this.router.navigate([url]);
-      localStorage.removeItem('shared_link');
     } else {
       this.router.navigate(['/dashboard/Error']);
       setTimeout(() => {
