@@ -1,0 +1,108 @@
+<!--
+  ~   Copyright 2014 CapitalOne, LLC.
+  ~   Further development Copyright 2022 Sapient Corporation.
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+  <p-multiSelect
+  [id]="fieldConfig?.fieldName"
+  [options]="fieldConfig?.options"
+  [placeholder]="fieldConfig?.placeHolderText || fieldConfig?.fieldLabel"
+  styleClass="p-w-100"
+  [showHeader]="false"
+  [(ngModel)]="finalValue"
+  optionLabel="label"
+  (onChange)="setValue($event)"
+  role="listbox"
+  [attr.aria-label]="fieldConfig?.fieldLabel + ' Multi-Select'"
+  [attr.aria-multiselectable]="true"
+  [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
+  [attr.aria-describedby]="fieldConfig?.fieldName + '_description'"
+  tabindex="0">
+  <!-- Selected Items Template -->
+  <ng-template let-value pTemplate="selectedItems">
+    <span
+      class="country-item country-item-value"
+      role="list"
+      aria-label="Selected Items"
+      tabindex="0">
+      <ng-container *ngFor="let option of templateData; let i = index">
+        <span
+          role="listitem"
+          [attr.aria-label]="
+            'Selected item ' + (i + 1) + ': ' + option.label
+          "
+          tabindex="0">
+          <ng-container *ngIf="option.countValue">
+            {{
+              option.label +
+                ' ' +
+                option.operator +
+                ' ' +
+                option.countValue
+            }}&nbsp;,&nbsp;
+          </ng-container>
+          <ng-container *ngIf="!option.countValue">
+            {{ option.label }}&nbsp;,&nbsp;
+          </ng-container>
+        </span>
+      </ng-container>
+
+      <div
+        *ngIf="!templateData || templateData.length === 0"
+        class="country-placeholder"
+        role="status"
+        aria-live="polite"
+        tabindex="0">
+        {{ fieldConfig?.placeHolderText || fieldConfig?.fieldLabel }}
+      </div>
+    </span>
+  </ng-template>
+
+  <!-- Dropdown Item Template -->
+  <ng-template let-option pTemplate="item">
+    <div
+      class="country-item"
+      role="option"
+      [attr.aria-label]="option.label + ' selection'"
+      [attr.aria-selected]="finalValue?.includes(option)"
+      tabindex="0">
+      <div>
+        <span>{{ option.label }}</span>
+        <span class="p-ml-2">{{ option.operator }}</span>
+
+        <p-inputNumber
+          class="count-box"
+          [(ngModel)]="option.countValue"
+          [inputStyle]="{ width: '80px' }"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          spinnerMode="horizontal"
+          [disabled]="!templateLabels.includes(option.label)"
+          decrementButtonClass="p-button-danger"
+          incrementButtonClass="p-button-success"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+          [min]="0"
+          (click)="$event.stopPropagation(); $event.preventDefault()"
+          (onInput)="setCounter($event, option)"
+          (onFocus)="removeFocus($event)"
+          role="spinbutton"
+          [attr.aria-label]="'Count input for ' + option.label"
+          tabindex="0">
+        </p-inputNumber>
+      </div>
+    </div>
+  </ng-template>
+</p-multiSelect>
