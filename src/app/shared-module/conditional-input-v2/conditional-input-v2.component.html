@@ -44,16 +44,16 @@
             'Selected item ' + (i + 1) + ': ' + option.label
           "
           tabindex="0">
-          <ng-container *ngIf="option.countValue">
+          <ng-container *ngIf="option.structuredValue.sla">
             {{
               option.label +
                 ' ' +
                 option.operator +
                 ' ' +
-                option.countValue
+                option.structuredValue.sla
             }}&nbsp;,&nbsp;
           </ng-container>
-          <ng-container *ngIf="!option.countValue">
+          <ng-container *ngIf="!option.structuredValue.sla">
             {{ option.label }}&nbsp;,&nbsp;
           </ng-container>
         </span>
@@ -72,29 +72,23 @@
 
   <!-- Dropdown Item Template -->
   <ng-template let-option pTemplate="item">
-    <div
-      class="country-item"
-      role="option"
-      [attr.aria-label]="option.label + ' selection'"
-      [attr.aria-selected]="finalValue?.includes(option)"
-      tabindex="0">
+    <div class="country-item">
       <div>
         <span>{{ option.label }}</span>
-        <span class="p-ml-2">{{ option.operator }}</span>
 
         <p-inputNumber
           class="count-box"
-          [(ngModel)]="option.countValue"
+          [(ngModel)]="option.structuredValue.sla"
           [inputStyle]="{ width: '80px' }"
           [showButtons]="true"
           buttonLayout="horizontal"
           spinnerMode="horizontal"
-          [disabled]="!templateLabels.includes(option.label)"
           decrementButtonClass="p-button-danger"
           incrementButtonClass="p-button-success"
           incrementButtonIcon="pi pi-plus"
           decrementButtonIcon="pi pi-minus"
           [min]="0"
+          [disabled]="!templateLabels.includes(option.label)"
           (click)="$event.stopPropagation(); $event.preventDefault()"
           (onInput)="setCounter($event, option)"
           (onFocus)="removeFocus($event)"
