@@ -4792,7 +4792,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   private handlePageScrollOnSearch(searchValue) {
     if (searchValue) {
-      this.scrollToHighlightedKpi(searchValue.kpiId);
+      this.scrollToHighlightedKpi(searchValue.value.kpiId);
     }
   }
 
