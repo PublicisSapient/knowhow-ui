@@ -3,9 +3,10 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   ViewChild,
+  AfterViewInit,
+  HostListener,
 } from '@angular/core';
 import * as d3 from 'd3';
 
@@ -14,62 +15,77 @@ import * as d3 from 'd3';
   templateUrl: './stacked-group-bar-chart.component.html',
   styleUrls: ['./stacked-group-bar-chart.component.css'],
 })
-export class StackedGroupBarChartComponent implements OnInit, OnChanges {
+export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   @Input() kpiData: any;
-  @Input() color: string[];
-<<<<<<< HEAD
-  @Input() data: any; // Seems redundant with kpiData, but keeping it as per your code
-=======
-  @Input() data: any;
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
+  @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
 
-  // --- NEW PROPERTIES FOR CHART STATE ---
   private svg: any;
-  private x0: any;
-  private x1: any;
-  private y: any;
-  private tooltip: any;
-  private margin = { top: 30, right: 30, bottom: 60, left: 40 };
-  private width: number;
-  private height: number;
-  private projects;
-  private sprints: string[];
+  private margin = { top: 30, right: 30, bottom: 60, left: 60 };
+  private width: number = 0;
+  private height: number = 400;
+  private filteredData: any;
+  private activeSeverityKeys = ['s1', 's2', 's3', 's4'];
   private allSeverityKeys = ['s1', 's2', 's3', 's4'];
-  private activeSeverityKeys: string[] = [...this.allSeverityKeys]; // Start with all keys active
+  private isStacked = true;
+  private isInitialized = false;
 
-  // --- FILTER DATA ---
   filter = [
     { option: 'S1', value: 's1', selected: true },
     { option: 'S2', value: 's2', selected: true },
     { option: 'S3', value: 's3', selected: true },
     { option: 'S4', value: 's4', selected: true },
   ];
-  filteredData: any; // Your processed data for the chart
 
   constructor() {}
 
-  ngOnInit(): void {}
-
   ngOnChanges(changes: SimpleChanges): void {
-<<<<<<< HEAD
     if (changes['kpiData'] && this.kpiData) {
-      this.initializeChart();
+      console.log('KPI Data changed:', this.kpiData);
       this.updateDataAndChart();
-=======
-    if (this.kpiData) {
-      this.createChart();
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
+    }
+    if (changes['color'] && this.color) {
+      this.updateChart();
     }
   }
 
-  private initializeChart(): void {
-    d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
-<<<<<<< HEAD
-    const containerWidth = this.chartContainer.nativeElement.clientWidth;
-    this.width = containerWidth - this.margin.left - this.margin.right;
-    this.height = 250 - this.margin.top - this.margin.bottom;
+  ngAfterViewInit(): void {
+    this.isInitialized = true;
+    this.initChart();
+    if (this.kpiData) {
+      this.updateDataAndChart();
+    }
+  }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (this.filteredData) {
+      this.updateChart();
+    }
+  }
+
+  private initChart(): void {
+    if (!this.chartContainer) {
+      console.error('Chart container not found');
+      return;
+    }
+
+    // Clear previous chart
+    d3.select(this.chartContainer.nativeElement).select('svg').remove();
+
+    // Set up dimensions
+    const containerWidth = this.chartContainer.nativeElement.offsetWidth;
+    this.width = containerWidth - this.margin.left - this.margin.right;
+
+    console.log('Container width:', containerWidth, 'Chart width:', this.width);
+
+    if (this.width <= 0) {
+      console.warn('Container has zero width, retrying in 100ms');
+      setTimeout(() => this.initChart(), 100);
+      return;
+    }
+
+    // Create SVG
     this.svg = d3
       .select(this.chartContainer.nativeElement)
       .append('svg')
@@ -77,108 +93,370 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+  }
 
-    this.projects = [...new Set(this.kpiData.map((d: any) => d.data))];
-    const numSprints = Math.max(
-      ...this.kpiData.map((p: any) => p.value.length),
-    );
-    this.sprints = Array.from(
-      { length: numSprints },
-      (_, i) => `Sprint ${i + 1}`,
+  private updateDataAndChart(): void {
+    if (!this.kpiData) {
+      console.warn('No KPI data available');
+      return;
+    }
+
+    console.log('Processing KPI data:', this.kpiData);
+
+    const sprintGroups: { [key: string]: any[] } = {};
+
+    this.kpiData.forEach((project: any) => {
+      console.log('Processing project:', project);
+
+      if (project.value && Array.isArray(project.value)) {
+        project.value.forEach((sprint: any, index: number) => {
+          const sprintKey = `Sprint ${index + 1}`;
+          if (!sprintGroups[sprintKey]) {
+            sprintGroups[sprintKey] = [];
+          }
+
+          const severityData: any = { project: project.data || 'Unknown' };
+
+          this.activeSeverityKeys.forEach((severity) => {
+            if (sprint.drillDown && Array.isArray(sprint.drillDown)) {
+              const found = sprint.drillDown.find(
+                (d: any) => d.severity === severity,
+              );
+              severityData[severity] = found ? found.breachedPercentage : 0;
+            } else {
+              severityData[severity] = 0;
+            }
+          });
+
+          sprintGroups[sprintKey].push(severityData);
+        });
+      }
+    });
+
+    this.filteredData = sprintGroups;
+    console.log('Filtered data:', this.filteredData);
+
+    if (this.isInitialized) {
+      this.updateChart();
+    }
+  }
+
+  private updateChart(): void {
+    if (!this.filteredData || Object.keys(this.filteredData).length === 0) {
+      console.warn('No filtered data available for chart');
+      return;
+    }
+
+    if (!this.svg) {
+      this.initChart();
+    }
+
+    // Clear previous chart elements but keep the SVG structure
+    this.svg.selectAll('*').remove();
+
+    const sprints = Object.keys(this.filteredData);
+    const projects = Array.from(
+      new Set(
+        Object.values(this.filteredData)
+          .flat()
+          .map((d: any) => d.project),
+      ),
     );
 
-    this.x0 = d3
+    console.log('Sprints:', sprints, 'Projects:', projects);
+
+    // Calculate max Y value
+    const maxY = this.calculateMaxY() + 20;
+    const chartHeight = this.height - this.margin.top - this.margin.bottom;
+
+    // Create scales
+    const x0 = d3
       .scaleBand()
-      .domain(this.sprints)
+      .domain(sprints.map((s) => s.replace('Sprint ', '')))
       .range([0, this.width])
-      .padding(0.1);
-    this.x1 = d3
+      .padding(0.2);
+
+    const x1 = d3
       .scaleBand()
-      .domain(this.projects)
-      .range([0, this.x0.bandwidth()])
+      .domain(projects)
+      .range([0, x0.bandwidth()])
       .padding(0.1);
-    this.y = d3.scaleLinear().domain([0, 100]).nice().range([this.height, 0]);
 
+    const y = d3.scaleLinear().domain([0, maxY]).range([chartHeight, 0]);
+
+    const colorScale = d3
+      .scaleOrdinal()
+      .domain(this.activeSeverityKeys)
+      .range(this.generateColorShades());
+
+    // Add X axis
     this.svg
       .append('g')
-      .attr('transform', `translate(0,${this.height})`)
-      .attr('class', 'x-axis')
-      .call(d3.axisBottom(this.x0));
+      .attr('transform', `translate(0,${chartHeight})`)
+      .call(d3.axisBottom(x0))
+      .selectAll('text')
+      .style('text-anchor', 'middle')
+      .style('font-size', '12px');
 
+    // Add Y axis
     this.svg
       .append('g')
-      .attr('class', 'y-axis')
-      .call(d3.axisLeft(this.y).ticks(5));
+      .call(d3.axisLeft(y).ticks(5))
+      .selectAll('text')
+      .style('font-size', '12px');
 
-    this.tooltip = d3
+    // Add axes labels
+    this.svg
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('x', this.width / 2)
+      .attr('y', chartHeight + 40)
+      .text('Sprints')
+      .style('font-size', '14px');
+
+    this.svg
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -this.margin.left + 15)
+      .attr('x', -chartHeight / 2)
+      .text('Severity Score (%)')
+      .style('font-size', '14px');
+
+    // Draw bars based on view type
+    if (this.isStacked) {
+      this.drawStackedBars(
+        sprints,
+        projects,
+        x0,
+        x1,
+        y,
+        colorScale,
+        chartHeight,
+      );
+    } else {
+      this.drawGroupedBars(
+        sprints,
+        projects,
+        x0,
+        x1,
+        y,
+        colorScale,
+        chartHeight,
+      );
+    }
+
+    // Add legend
+    this.drawLegend(colorScale);
+  }
+
+  private drawStackedBars(
+    sprints: string[],
+    projects: string[],
+    x0: any,
+    x1: any,
+    y: any,
+    color: any,
+    chartHeight: number,
+  ): void {
+    sprints.forEach((sprint) => {
+      const sprintData = this.filteredData[sprint];
+      const sprintName = sprint.replace('Sprint ', '');
+
+      projects.forEach((project) => {
+        const projectData = sprintData.find((d: any) => d.project === project);
+        if (!projectData) return;
+
+        let currentY = 0;
+
+        this.activeSeverityKeys.forEach((severity, j) => {
+          const value = projectData[severity] || 0;
+          if (value > 0) {
+            const bar = this.svg
+              .append('rect')
+              .attr('x', x0(sprintName) + x1(project))
+              .attr('y', y(currentY + value))
+              .attr('height', y(currentY) - y(currentY + value))
+              .attr('width', x1.bandwidth())
+              .attr('fill', color(severity))
+              .attr('class', 'bar')
+              .attr('data-project', project)
+              .attr('data-severity', severity)
+              .attr('data-sprint', sprintName);
+
+            bar
+              .on('mouseover', (event: any) => {
+                this.showTooltip(event, {
+                  project,
+                  severity,
+                  value,
+                  sprint: sprintName,
+                });
+              })
+              .on('mouseout', () => {
+                this.hideTooltip();
+              });
+
+            currentY += value;
+          }
+        });
+      });
+    });
+  }
+
+  private drawGroupedBars(
+    sprints: string[],
+    projects: string[],
+    x0: any,
+    x1: any,
+    y: any,
+    color: any,
+    chartHeight: number,
+  ): void {
+    sprints.forEach((sprint) => {
+      const sprintData = this.filteredData[sprint];
+      const sprintName = sprint.replace('Sprint ', '');
+
+      projects.forEach((project) => {
+        const projectData = sprintData.find((d: any) => d.project === project);
+        if (!projectData) return;
+
+        this.activeSeverityKeys.forEach((severity, j) => {
+          const value = projectData[severity] || 0;
+          if (value > 0) {
+            const barWidth = x1.bandwidth() / this.activeSeverityKeys.length;
+
+            const bar = this.svg
+              .append('rect')
+              .attr('x', x0(sprintName) + x1(project) + j * barWidth)
+              .attr('y', y(value))
+              .attr('height', chartHeight - y(value))
+              .attr('width', barWidth - 2)
+              .attr('fill', color(severity))
+              .attr('class', 'bar')
+              .attr('data-project', project)
+              .attr('data-severity', severity)
+              .attr('data-sprint', sprintName);
+
+            bar
+              .on('mouseover', (event: any) => {
+                this.showTooltip(event, {
+                  project,
+                  severity,
+                  value,
+                  sprint: sprintName,
+                });
+              })
+              .on('mouseout', () => {
+                this.hideTooltip();
+              });
+          }
+        });
+      });
+    });
+  }
+
+  private drawLegend(color: any): void {
+    const legend = this.svg
+      .append('g')
+      .attr('transform', `translate(${this.width - 200}, -25)`);
+
+    this.activeSeverityKeys.forEach((severity, i) => {
+      const legendItem = legend
+        .append('g')
+        .attr('transform', `translate(${i * 50}, 0)`);
+
+      legendItem
+        .append('rect')
+        .attr('width', 15)
+        .attr('height', 15)
+        .attr('fill', color(severity));
+
+      legendItem
+        .append('text')
+        .attr('x', 20)
+        .attr('y', 12)
+        .text(`S${i + 1}`)
+        .style('font-size', '12px')
+        .style('fill', '#333');
+    });
+  }
+
+  private calculateMaxY(): number {
+    let maxTotal = 0;
+    Object.values(this.filteredData).forEach((projects: any) => {
+      projects.forEach((project: any) => {
+        const total = this.activeSeverityKeys.reduce(
+          (sum, severity) => sum + (project[severity] || 0),
+          0,
+        );
+        if (total > maxTotal) maxTotal = total;
+      });
+    });
+    return Math.max(maxTotal, 100); // Ensure at least 100 for percentage scale
+  }
+
+  private generateColorShades(): string[] {
+    if (!this.color || this.color.length === 0) {
+      return ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'];
+    }
+
+    const baseColor = this.color[0];
+    return this.activeSeverityKeys.map((_, i) =>
+      this.generateShade(baseColor, i, this.activeSeverityKeys.length),
+    );
+  }
+
+  private showTooltip(event: any, data: any): void {
+    const tooltip = d3
       .select('body')
       .append('div')
       .attr('class', 'chart-tooltip')
       .style('opacity', 0)
       .style('position', 'absolute')
-      .style('background', '#000')
-      .style('color', '#fff')
+      .style('background', 'rgba(0, 0, 0, 0.8)')
+      .style('color', 'white')
       .style('padding', '8px')
       .style('border-radius', '4px')
       .style('font-size', '12px')
-      .style('pointer-events', 'none');
+      .style('pointer-events', 'none')
+      .style('z-index', '1000');
+
+    tooltip
+      .html(
+        `
+      <strong>${data.project}</strong><br>
+      Sprint: ${data.sprint}<br>
+      Severity: ${data.severity.toUpperCase()}<br>
+      Value: ${data.value}%
+    `,
+      )
+      .style('left', event.pageX + 10 + 'px')
+      .style('top', event.pageY - 28 + 'px')
+      .transition()
+      .duration(200)
+      .style('opacity', 1);
   }
 
-  private updateDataAndChart(): void {
-    if (!this.kpiData || !this.svg) return;
-=======
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
-
-    const sprintGroups: { [key: string]: any[] } = {};
-
-    this.kpiData.forEach((project: any) => {
-      project.value.forEach((sprint: any, index: number) => {
-        const sprintKey = `Sprint ${index + 1}`;
-        if (!sprintGroups[sprintKey]) {
-          sprintGroups[sprintKey] = [];
-        }
-
-<<<<<<< HEAD
-        const severityData: any = { project: project.data };
-
-        this.activeSeverityKeys.forEach((severity) => {
-          const found = sprint.drillDown.find(
-            (d: any) => d.severity === severity,
-          );
-          severityData[severity] = found ? found.breachedPercentage : 0;
-        });
-=======
-        const severityData: any = {
-          project: project.data,
-          ...['s1', 's2', 's3', 's4'].reduce((acc, severity) => {
-            const found = sprint.drillDown.find(
-              (d: any) => d.severity === severity,
-            );
-            acc[severity] = found ? found.breachedPercentage : 0;
-            return acc;
-          }, {}),
-        };
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
-
-        sprintGroups[sprintKey].push(severityData);
-      });
-    });
-
-<<<<<<< HEAD
-    this.filteredData = sprintGroups;
-
-    console.log(this.filteredData);
-    this.updateChart();
+  private hideTooltip(): void {
+    d3.selectAll('.chart-tooltip')
+      .transition()
+      .duration(500)
+      .style('opacity', 0)
+      .remove();
   }
 
   handleChange(event: any): void {
     this.activeSeverityKeys = event.value.map((f: any) => f.value);
-
     if (this.activeSeverityKeys.length === 0) {
       this.activeSeverityKeys = [...this.allSeverityKeys];
     }
-
     this.updateDataAndChart();
+  }
+
+  toggleView(): void {
+    this.isStacked = !this.isStacked;
+    this.updateChart();
   }
 
   private generateShade(
@@ -186,95 +464,7 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     index: number,
     total: number,
   ): string {
-=======
-    const sprints = Object.keys(sprintGroups);
-    const projects: any[] = [...new Set(this.kpiData.map((d: any) => String(d.data)))];
-    const severityKeys = ['s1', 's2', 's3', 's4'];
-
-    // Chart dimensions
-    const margin = { top: 30, right: 30, bottom: 60, left: 40 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
-
-    // Create SVG container
-    const svg = d3
-      .select(this.chartContainer.nativeElement)
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    // Scales
-    const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
-    const x1 = d3
-      .scaleBand()
-      .domain(projects)
-      .range([0, x0.bandwidth()])
-      .padding(0.1);
-    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).nice();
-
-    // Map each project to a base color
-    const projectColors = new Map<string, string>();
-    projects.forEach((proj, idx) => {
-      projectColors.set(proj, this.color[idx % this.color.length]);
-    });
-
-    // Generate stacks for each sprint and severity key
-    sprints.forEach((sprint) => {
-      const stack = d3.stack().keys(severityKeys);
-      const stackedData = stack(sprintGroups[sprint]);
-
-      // For each severity stack, create groups and bars
-      stackedData.forEach((severitySeries, severityIndex) => {
-        const groups = svg
-          .append('g')
-          .attr('class', `severity-group-${severitySeries.key}`)
-          .selectAll('rect')
-          .data(severitySeries)
-          .enter()
-          .append('rect')
-          .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)!)
-          .attr('y', (d: any) => y(d[1]))
-          .attr('height', (d: any) => y(d) - y(d))
-          .attr('width', x1.bandwidth())
-          .attr('fill', (d: any) => {
-            // Use base color for the project and generate shade based on severity index
-            const baseColor = projectColors.get(d.data.project) || '#999999';
-            return this.generateShade(baseColor, severityIndex, severityKeys.length);
-          });
-
-        // Add labels on bars
-        svg
-          .append('g')
-          .selectAll('text')
-          .data(severitySeries)
-          .enter()
-          .append('text')
-          .attr(
-            'x',
-            (d: any) => x0(sprint)! + x1(d.data.project)! + x1.bandwidth() / 2,
-          )
-          .attr('y', (d: any) => (y(d[0]) + y(d)) / 2)
-          .attr('text-anchor', 'middle')
-          .attr('dominant-baseline', 'middle')
-          .text((d: any) => {
-            const value = d - d;
-            return value >= 1 ? `${value.toFixed(0)}` : '';
-          })
-          .style('fill', 'black')
-          .style('font-size', '10px');
-      });
-    });
-
-    // Add Axes
-    svg.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x0));
-    svg.append('g').call(d3.axisLeft(y).ticks(5));
-  }
-
-  // Helper to generate shade variations of base color
-  private generateShade(baseColor: string, index: number, total: number): string {
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
+    // Your existing generateShade function
     const hexToHsl = (hex: string) => {
       const r = parseInt(hex.slice(1, 3), 16) / 255;
       const g = parseInt(hex.slice(3, 5), 16) / 255;
@@ -284,6 +474,7 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
       let h = 0,
         s = 0,
         l = (max + min) / 2;
+
       if (max !== min) {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -320,91 +511,4 @@ export class StackedGroupBarChartComponent implements OnInit, OnChanges {
     const newLightness = l + index * (60 / total) - 30;
     return hslToHex(h, s, Math.min(95, Math.max(15, newLightness)));
   }
-<<<<<<< HEAD
-  private findOriginalData(projectName: string, sprintName: string): any {
-    // Extract sprint number from sprintName (e.g., "Sprint 1" -> 1)
-    const sprintNumber = parseInt(sprintName.replace('Sprint ', ''), 10) - 1;
-
-    // Find the project in kpiData
-    const projectData = this.kpiData.find((p: any) => p.data === projectName);
-    if (projectData?.value && projectData.value.length > sprintNumber) {
-      return projectData.value[sprintNumber];
-    }
-    return null;
-  }
-
-  private updateChart(): void {
-    if (!this.kpiData || !this.svg) return;
-
-    this.svg.selectAll('.severity-layer').remove();
-
-    const stack = d3.stack().keys(this.activeSeverityKeys);
-
-    this.sprints.forEach((sprint) => {
-      const sprintData = this.filteredData[sprint];
-      if (!sprintData) return;
-
-      const stackedData = stack(sprintData);
-
-      const sprintGroup = this.svg
-        .append('g')
-        .attr('class', 'sprint-group')
-        .attr('transform', `translate(${this.x0(sprint)}, 0)`);
-
-      const layer = sprintGroup
-        .selectAll('.severity-layer')
-        .data(stackedData)
-        .enter()
-        .append('g')
-        .attr('class', (d: any) => `severity-layer severity-${d.key}`)
-        .style('fill', (d: any) => {
-          const severityIndex = this.allSeverityKeys.indexOf(d.key);
-          return this.generateShade(
-            this.color[0],
-            severityIndex,
-            this.allSeverityKeys.length,
-          );
-        });
-
-      layer
-        .selectAll('rect')
-        .data((d: any) => d)
-        .enter()
-        .append('rect')
-        .attr('x', (d: any) => this.x1(d.data.project))
-        .attr('width', this.x1.bandwidth())
-        .attr('y', this.height)
-        .attr('height', 0)
-        .transition()
-        .duration(750)
-        .delay((d, i) => i * 100)
-        .attr('y', (d: any) => this.y(d[1]))
-        .attr('height', (d: any) => this.y(d[0]) - this.y(d[1]));
-
-      layer
-        .selectAll('text')
-        .data((d: any) => d)
-        .enter()
-        .append('text')
-        .attr(
-          'x',
-          (d: any) => this.x1(d.data.project) + this.x1.bandwidth() / 2,
-        )
-        .attr('y', this.height)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'middle')
-        .text((d: any) => {
-          const value = d[1] - d[0];
-          return value >= 1 ? `${value.toFixed(0)}` : '';
-        })
-        .style('fill', 'black')
-        .style('font-size', '10px')
-        .transition()
-        .duration(750)
-        .delay((d, i) => i * 100)
-        .attr('y', (d: any) => (this.y(d[0]) + this.y(d[1])) / 2);
-    });
-  }
-=======
->>>>>>> 89db45d7fcdb0bfd3c6c3baec958ad650cc147aa
 }
