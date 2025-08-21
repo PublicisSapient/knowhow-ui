@@ -23,20 +23,21 @@ export class ConditionalInputV2Component implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log(this.fieldConfig);
+    console.log(this.valueObj);
     if (changes.valueObj && this.valueObj.length) {
       this.templateLabels = this.templateLabelToLowercase(
-        this.valueObj.map((val) => val.labelValue),
+        this.valueObj.map((val) => val.label),
       );
       this.templateData = this.fieldConfig.options.filter((opt) =>
-        this.templateLabels.includes(opt.labelValue),
+        this.templateLabels.includes(opt.label),
       );
       this.finalValue = [...this.templateData];
       this.valueObj.forEach((element) => {
         const opt = this.fieldConfig.options.filter(
-          (opt) => opt.labelValue === element.labelValue.toLowerCase(),
+          (opt) => opt.label === element.label.toLowerCase(),
         )[0];
         if (opt) {
-          opt['countValue'] = element.countValue;
+          opt['structuredValue']['sla'] = element.structuredValue.sla;
         }
       });
     }
@@ -46,17 +47,18 @@ export class ConditionalInputV2Component implements OnChanges {
     arr.map((val: any) => val.toLowerCase());
 
   setValue(event) {
+    console.log(event);
     this.templateLabels = this.templateLabelToLowercase(
-      event.value.map((val) => val.labelValue),
+      event.value.map((val) => val.label),
     );
     this.templateData = this.fieldConfig.options.filter((opt) =>
-      this.templateLabels.includes(opt.labelValue),
+      this.templateLabels.includes(opt.label),
     );
     const selectedOption = this.templateData.filter(
-      (opt) => opt.labelValue === event.itemValue.labelValue,
+      (opt) => opt.label === event.itemValue.label,
     )[0];
     if (selectedOption) {
-      selectedOption['countValue'] = selectedOption['minValue'];
+      selectedOption['structuredValue']['sla'] = selectedOption['minValue'];
     }
     this.setOutput();
   }
@@ -67,12 +69,12 @@ export class ConditionalInputV2Component implements OnChanges {
         .length
     ) {
       const newOption = JSON.parse(JSON.stringify(option));
-      newOption.countValue = event.value;
+      newOption.structuredValue.sla = event.value;
       this.templateData.push(newOption);
     } else {
       this.templateData.filter(
         (opt) => opt.labelValue === option.labelValue,
-      )[0].countValue = event.value;
+      )[0].structuredValue.sla = event.value;
     }
     this.setOutput();
   }
