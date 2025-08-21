@@ -1,0 +1,69 @@
+<div class="calc-container">
+  <div class="calc-card">
+    <h2 class="calc-title">Potential Economic Benefits Calculator</h2>
+    <form class="calc-form" autocomplete="off">
+      <div class="form-group">
+        <label for="developers">Total Number of Developers</label>
+        <input id="developers" type="number" class="calc-input" [(ngModel)]="developers" name="developers" placeholder="20" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cost">Average Cost to Company per Developer</label>
+          <input id="cost" type="number" class="calc-input" [(ngModel)]="costPerDeveloper" name="costPerDeveloper" placeholder="10000" />
+        </div>
+        <div class="form-group time-group">
+          <label for="duration">Time Duration</label>
+          <select id="duration" class="calc-input" [(ngModel)]="duration" name="duration">
+            <option>Monthly</option>
+            <option>Quarterly</option>
+            <option>Half-yearly</option>
+            <option>Annually</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" class="calc-btn" (click)="calculatePEB()">Caiculate PEB</button>
+    </form>
+    <div *ngIf="annualPEB !== null">
+  <h3>Annual Potential Economic Benefit: {{ annualPEB | currency }}</h3>
+</div>
+  </div>
+
+  <div class="calc-card">
+    <h3 class="calc-summary-title">Executive Summary</h3>
+    <div class="summary-top">
+      <div class="summary-box">
+        <div class="summary-label">Estimated Savings<br>from Reduced Rework</div>
+        <div class="summary-value">$42,000</div>
+        <div class="summary-sub">21 %</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Estimated Value<br>from Faster Delivery</div>
+        <div class="summary-value">$25,000</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Overall Potential<br>Economic Benefit</div>
+        <div class="summary-value">$67,000</div>
+      </div>
+    </div>
+    <div class="summary-bottom">
+      <div class="bar-chart">
+        <!-- <div class="bar-wrapper">
+          <div class="bar current"></div>
+          <div class="bar-label">Current</div>
+        </div>
+        <div class="bar-wrapper">
+          <div class="bar ai"></div>
+          <div class="bar-label">AI-Assisted</div>
+        </div> -->
+      </div>
+      <div class="ai-note">
+        <div class="ai-note-text">80% AI recommmendation adoption could yield an aditional</div>
+        <div class="ai-note-value">$15,000</div>
+        <div class="ai-note-caption">
+          Estimates based on your inputs<br />
+          and historical project data
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
