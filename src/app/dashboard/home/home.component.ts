@@ -299,9 +299,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     return;
   }
 
-  urlRedirection(){
-    
-  }
+  urlRedirection() {}
 
   ngOnDestroy() {
     this.subscription.forEach((subscription) => subscription.unsubscribe());
