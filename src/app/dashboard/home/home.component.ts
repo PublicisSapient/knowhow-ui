@@ -102,28 +102,28 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 this.aggregrationDataList = [
                   {
-                    category: 'Active ' + label,
+                    category: 'Active ' + label + ' (s)',
                     value: this.tableData['data'].length,
                     icon: 'visibility_on.svg',
                     average: 'NA',
                   },
                   {
-                    category: 'Critical ' + label,
+                    category: 'Avg. Efficiency',
+                    value: this.tableData['data'].length,
+                    icon: 'Warning.svg',
+                    average: this.calculateEfficiency(),
+                  },
+                  {
+                    category: 'Critical ' + label + ' (s)',
                     value: this.calculateHealth('critical').count,
                     icon: 'Watch.svg',
                     average: this.calculateHealth('critical').average,
                   },
                   {
-                    category: 'Healthy ' + label,
+                    category: 'Healthy ' + label + ' (s)',
                     value: this.calculateHealth('healthy').count,
                     icon: 'Check.svg',
                     average: this.calculateHealth('healthy').average,
-                  },
-                  {
-                    category: 'Avg Efficiency',
-                    value: this.tableData['data'].length,
-                    icon: 'Warning.svg',
-                    average: this.calculateEfficiency(),
                   },
                 ];
               }
@@ -297,6 +297,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       return { tableColumnData, tableColumnForm };
     }
     return;
+  }
+
+  urlRedirection(){
+    
   }
 
   ngOnDestroy() {
