@@ -18,7 +18,12 @@
 
 <div [formGroup]="parentForm">
   <div class="autocomplete">
-    <input type="text" class="form-control mb-2 mr-sm-2" id="autoComplete" placeholder="Enter {{name}}" name="{{name}}"
-      [formControlName]="controlName">
+    <input
+      type="text"
+      class="form-control mb-2 mr-sm-2"
+      id="autoComplete"
+      placeholder="Enter {{ name }}"
+      name="{{ name }}"
+      [formControlName]="controlName" />
   </div>
 </div>

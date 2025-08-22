@@ -46,7 +46,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
   @Input() selectedtype: string;
   elem;
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart';
+  @Input() viewType = 'chart';
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
   });
@@ -273,16 +273,14 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
         .join('div')
         .attr('class', 'tooltip2')
         .style('left', (d, i) => {
-          let left = d.date || d.sSprintName;
+          const left = d.date || d.sSprintName;
           if (viewType === 'large') {
             return xScale(left) + xScale.bandwidth() / 2 - 5 + 'px';
           } else {
             return xScale(i + 1) + xScale.bandwidth() / 2 - 5 + 'px';
           }
         })
-        .style('top', (d) => {
-          return yScale(d.value) + 7 + 'px';
-        })
+        .style('top', (d) => yScale(d.value) + 7 + 'px')
         .text((d) => Math.round(d.value * 100) / 100 + ' ' + showUnit)
         .transition()
         .duration(500)
@@ -557,7 +555,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
           const tooltipDivWidth = document
             .getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`)
             .getBoundingClientRect().width;
-          let newLeft = xPosition - tooltipDivWidth / 2;
+          const newLeft = xPosition - tooltipDivWidth / 2;
 
           div.style('left', newLeft + 'px').style('top', yPosition + 20 + 'px');
           for (const hoverData in d.hoverValue) {
@@ -682,7 +680,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
           .style('width', '400px');
 
         let htmlString = ``;
-        for (let d of dataCategory) {
+        for (const d of dataCategory) {
           htmlString += `<div>`;
           lineTypes.forEach((lineType, i) => {
             htmlString += `<div class="legend-item"><span>${

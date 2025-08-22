@@ -41,8 +41,8 @@ export class ToolMenuComponent implements OnInit {
   displayGeneratedToken = false;
   generatedToken = '';
   tokenCopied = false;
-  isAssigneeSwitchChecked: boolean = false;
-  isAssigneeSwitchDisabled: boolean = false;
+  isAssigneeSwitchChecked = false;
+  isAssigneeSwitchDisabled = false;
   assigneeSwitchInfo =
     'Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project.';
   userName: string;
@@ -51,7 +51,7 @@ export class ToolMenuComponent implements OnInit {
   userProjects = [];
   activeProject: any;
   configOptions: { name: string; value: string }[];
-  selectedTab: string = 'projectConfig';
+  selectedTab = 'projectConfig';
   uniqueTools: any = [];
 
   constructor(
@@ -66,7 +66,7 @@ export class ToolMenuComponent implements OnInit {
    * Initializes the component by retrieving the selected project, configuring project type options,
    * and processing hierarchy level details. It also navigates to the project list if no project is selected.
    *
-   * @returns {void} - No return value.
+   * @returns - No return value.
    */
   ngOnInit() {
     this.selectedProject = this.sharedService.getSelectedProject();
@@ -85,18 +85,17 @@ export class ToolMenuComponent implements OnInit {
         : 'scrum';
     const levelDetails = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
-    )[selectedType].map((x) => {
-      return {
-        id: x['hierarchyLevelId'],
-        name: x['hierarchyLevelName'],
-      };
-    });
+    )[selectedType].map((x) => ({
+      id: x['hierarchyLevelId'],
+      name: x['hierarchyLevelName'],
+    }));
 
     setTimeout(() => {
       if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
         Object.keys(this.selectedProject).forEach((key) => {
           if (levelDetails.map((x) => x.id).includes(key)) {
-            let propertyName = levelDetails.filter((x) => x.id === key)[0].name;
+            const propertyName = levelDetails.filter((x) => x.id === key)[0]
+              .name;
             this.selectedProject[propertyName] = this.selectedProject[key];
             delete this.selectedProject[key];
           }
@@ -377,7 +376,7 @@ export class ToolMenuComponent implements OnInit {
             this.selectedType = jiraOrAzure[0].toolName === 'Azure';
             const kpiID =
               this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
-            let obj = {
+            const obj = {
               releaseNodeId: null,
             };
             this.httpService
@@ -434,6 +433,7 @@ export class ToolMenuComponent implements OnInit {
     } else {
       this.tools.unshift(jiraType);
     }
+    console.log(this.tools);
   }
 
   isProjectConfigured(toolName) {
@@ -461,7 +461,7 @@ export class ToolMenuComponent implements OnInit {
 
   setGaData() {
     let gaObj = {};
-    let toolArr = [];
+    const toolArr = [];
     this.selectedTools?.forEach((x) => {
       if (!toolArr.includes(x.toolName)) {
         toolArr?.push(x.toolName);

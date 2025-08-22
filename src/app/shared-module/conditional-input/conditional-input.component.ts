@@ -31,7 +31,7 @@ export class ConditionalInputComponent implements OnChanges {
       );
       this.finalValue = [...this.templateData];
       this.valueObj.forEach((element) => {
-        let opt = this.fieldConfig.options.filter(
+        const opt = this.fieldConfig.options.filter(
           (opt) => opt.labelValue === element.labelValue.toLowerCase(),
         )[0];
         if (opt) {
@@ -51,7 +51,7 @@ export class ConditionalInputComponent implements OnChanges {
     this.templateData = this.fieldConfig.options.filter((opt) =>
       this.templateLabels.includes(opt.labelValue),
     );
-    let selectedOption = this.templateData.filter(
+    const selectedOption = this.templateData.filter(
       (opt) => opt.labelValue === event.itemValue.labelValue,
     )[0];
     if (selectedOption) {
@@ -65,7 +65,7 @@ export class ConditionalInputComponent implements OnChanges {
       !this.templateData.filter((opt) => opt.labelValue === option.labelValue)
         .length
     ) {
-      let newOption = JSON.parse(JSON.stringify(option));
+      const newOption = JSON.parse(JSON.stringify(option));
       newOption.countValue = event.value;
       this.templateData.push(newOption);
     } else {
