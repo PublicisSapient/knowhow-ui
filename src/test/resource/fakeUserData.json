@@ -5,9 +5,7 @@
     {
       "id": "5f748f9aa50d7baba8300a88",
       "username": "testUser1",
-      "authorities": [
-        "ROLE_VIEWER"
-      ],
+      "authorities": ["ROLE_VIEWER"],
       "authType": "STANDARD",
       "emailAddress": "rishabh.shukla.abcdefghijklmnopqrstuvwxyz@publicissapient.com",
       "projectsAccess": [
@@ -34,9 +32,7 @@
     {
       "id": "5f748ff5a50d7baba8300a8a",
       "username": "SUPERADMIN",
-      "authorities": [
-        "ROLE_SUPERADMIN"
-      ],
+      "authorities": ["ROLE_SUPERADMIN"],
       "authType": "STANDARD",
       "projectsAccess": [
         {
@@ -48,9 +44,7 @@
     {
       "id": "5f748f59a50d7baba8300a87",
       "username": "testUser2",
-      "authorities": [
-        "ROLE_VIEWER"
-      ],
+      "authorities": ["ROLE_VIEWER"],
       "authType": "STANDARD",
       "emailAddress": "narender@nn.com",
       "projectsAccess": [
@@ -77,9 +71,7 @@
     {
       "id": "5f748fc9a50d7baba8300a89",
       "username": "testUser3",
-      "authorities": [
-        "ROLE_VIEWER"
-      ],
+      "authorities": ["ROLE_VIEWER"],
       "authType": "STANDARD",
       "emailAddress": "pankaj@nn.com",
       "projectsAccess": [
@@ -97,9 +89,7 @@
     {
       "id": "5f34748fc9a50d7baba8300a89",
       "username": "testUser4",
-      "authorities": [
-        "ROLE_VIEWER"
-      ],
+      "authorities": ["ROLE_VIEWER"],
       "authType": "STANDARD",
       "emailAddress": "pankajsharma@nn.com",
       "projectsAccess": [
@@ -134,9 +124,7 @@
     {
       "id": "5f34748fc9a50d7baba8300a89",
       "username": "testUser5",
-      "authorities": [
-        "ROLE_VIEWER"
-      ],
+      "authorities": ["ROLE_VIEWER"],
       "authType": "STANDARD",
       "emailAddress": "dilip@nn.com",
       "projectsAccess": [

@@ -63,22 +63,14 @@
       "Assignee": "Hasmukh Rawal",
       "First Time Pass": "Y",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["Roadmap_Priority_2024"],
       "Created Date": "2024-08-27",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-49173",
@@ -98,24 +90,15 @@
       "Assignee": "Mansi Sabharwal",
       "First Time Pass": "Y",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "TECH_DEBT",
-        "CodeCoverage"
-      ],
+      "Labels": ["TECH_DEBT", "CodeCoverage"],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Mansi Sabharwal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Mansi Sabharwal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "-",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-48272",
@@ -135,23 +118,14 @@
       "Assignee": "Vikas Kumar Singh",
       "First Time Pass": "Y",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "Estimation_Delay",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["Estimation_Delay", "Roadmap_Priority_2024"],
       "Created Date": "2024-08-09",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Vikas Kumar Singh"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Vikas Kumar Singh"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-49169",
@@ -171,24 +145,15 @@
       "Assignee": "Mansi Sabharwal",
       "First Time Pass": "Y",
       "Change Date": "2024-09-12",
-      "Labels": [
-        "TECH_DEBT",
-        "CodeCoverage"
-      ],
+      "Labels": ["TECH_DEBT", "CodeCoverage"],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Mansi Sabharwal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Mansi Sabharwal"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "-",
       "Updated Date": "2024-09-12",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-47985",
@@ -225,24 +190,14 @@
         "GECP-49355": "P3 - Major"
       },
       "Change Date": "2024-09-14",
-      "Labels": [
-        "QETestable",
-        "RTIOff_Nissan",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["QETestable", "RTIOff_Nissan", "Roadmap_Priority_2024"],
       "Created Date": "2024-08-06",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Charu Chopra"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Charu Chopra"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-48903",
@@ -262,22 +217,14 @@
       "Assignee": "Meghan moloney",
       "First Time Pass": "Y",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["Roadmap_Priority_2024"],
       "Created Date": "2024-08-28",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Meghan moloney"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Meghan moloney"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-49417",
@@ -303,23 +250,14 @@
         "GECP-49783": "P4 - Minor"
       },
       "Change Date": "2024-09-14",
-      "Labels": [
-        "RTIOff_Nissan",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["RTIOff_Nissan", "Roadmap_Priority_2024"],
       "Created Date": "2024-09-10",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-49180",
@@ -341,19 +279,13 @@
       "Change Date": "2024-09-04",
       "Labels": [],
       "Created Date": "2024-09-03",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Namitha Kn"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Namitha Kn"],
       "Sprint Name": "BAU Sprint 36",
       "Resolution": "Fixed or Completed",
       "Release Name": "-",
       "Updated Date": "2024-09-04",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-48802",
@@ -381,23 +313,14 @@
         "GECP-49753": "P3 - Major"
       },
       "Change Date": "2024-09-13",
-      "Labels": [
-        "Roadmap_Priority_2024",
-        "DesignExploration"
-      ],
+      "Labels": ["Roadmap_Priority_2024", "DesignExploration"],
       "Created Date": "2024-08-27",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Hasmukh Rawal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Hasmukh Rawal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-47767",
@@ -431,18 +354,12 @@
         "Roadmap_Priority_2024"
       ],
       "Created Date": "2024-08-02",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Ashwati Menon"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Ashwati Menon"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     },
     {
       "Issue Id": "GECP-47309",
@@ -468,23 +385,14 @@
         "GECP-49356": "P3 - Major"
       },
       "Change Date": "2024-09-13",
-      "Labels": [
-        "RTIOff_Nissan",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["RTIOff_Nissan", "Roadmap_Priority_2024"],
       "Created Date": "2024-07-23",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Prateek Shrivastava"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Prateek Shrivastava"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ]
+      "Testing Phase": ["Undefined"]
     }
   ],
   "maxValue": "",

@@ -27,12 +27,12 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
   @Input() selectedTab;
   @Input() category;
   @Input() kpiId;
-  displayModal: boolean = false;
+  displayModal = false;
   selectedMainFilter;
   modalDetails;
   selectedFilter2;
   elem;
-  selectedMainCategory: string = '';
+  selectedMainCategory = '';
   @Input() selectedMainFilterForReport: any = null;
   @Input() selectedMainCategoryForReport: any = null;
   @Input() selectedFilter2ForReport: any = null;
@@ -127,7 +127,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
       };
 
       this.populateAdditionalFilters();
-      let fakeEvent = {};
+      const fakeEvent = {};
 
       (this.selectedFilter2 || this.selectedFilter2ForReport)?.forEach(
         (element) => {
@@ -138,7 +138,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
               );
             } else {
               this.dataCopy = this.dataCopy.filter((d) => {
-                let dataProperty = new Set(d[element.filterKey]);
+                const dataProperty = new Set(d[element.filterKey]);
                 return (
                   element.selectedValue.filter((item) => dataProperty.has(item))
                     .length > 0
@@ -194,14 +194,14 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
 
   draw(data) {
     d3.select(this.elem).select('svg').remove();
-    let width = 250,
-      height = 250,
-      margin = 20;
+    const width = 250;
+    const height = 250;
+    const margin = 20;
 
     // The radius of the pieplot is half the width or half the height (smallest one).
-    let radius = Math.min(width, height) / 2 - margin;
+    const radius = Math.min(width, height) / 2 - margin;
 
-    let svg = d3
+    const svg = d3
       .select(this.elem)
       .select('#chart')
       .append('svg')
@@ -209,13 +209,13 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
       .attr('height', height)
       .append('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-    var color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
+    const color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
 
-    var data_ready = Object.entries(data).map(([key, value]) => ({
+    let data_ready = Object.entries(data).map(([key, value]) => ({
       key,
       value,
     }));
-    let pie_input = [];
+    const pie_input = [];
     data_ready.forEach((d) => {
       pie_input.push({
         key: d.key,
@@ -223,7 +223,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
         name: Object.keys(d.value)[0],
       });
     });
-    let pie = d3.pie().value(function (d) {
+    const pie = d3.pie().value(function (d) {
       return d.value;
     });
     data_ready = pie(pie_input);
@@ -288,7 +288,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
     arr.forEach((element) => {
       total += element[Object.keys(element)[0]];
     });
-    var color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
+    const color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
     arr.forEach((element) => {
       this.legendData.push({
         key: Object.keys(element)[0],

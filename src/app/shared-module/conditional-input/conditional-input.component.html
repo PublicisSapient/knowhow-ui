@@ -15,7 +15,7 @@
   ~    limitations under the License.
   -->
 
-  <p-multiSelect
+<p-multiSelect
   [id]="fieldConfig?.fieldName"
   [options]="fieldConfig?.options"
   [placeholder]="fieldConfig?.placeHolderText || fieldConfig?.fieldLabel"
@@ -30,7 +30,6 @@
   [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
   [attr.aria-describedby]="fieldConfig?.fieldName + '_description'"
   tabindex="0">
-
   <!-- Selected Items Template -->
   <ng-template let-value pTemplate="selectedItems">
     <span
@@ -38,15 +37,21 @@
       role="list"
       aria-label="Selected Items"
       tabindex="0">
-      
       <ng-container *ngFor="let option of templateData; let i = index">
         <span
           role="listitem"
-          [attr.aria-label]="'Selected item ' + (i + 1) + ': ' + option.labelValue"
+          [attr.aria-label]="
+            'Selected item ' + (i + 1) + ': ' + option.labelValue
+          "
           tabindex="0">
-          
           <ng-container *ngIf="option.countValue">
-            {{ option.labelValue + ' ' + option.operator + ' ' + option.countValue }}&nbsp;,&nbsp;
+            {{
+              option.labelValue +
+                ' ' +
+                option.operator +
+                ' ' +
+                option.countValue
+            }}&nbsp;,&nbsp;
           </ng-container>
           <ng-container *ngIf="!option.countValue">
             {{ option.labelValue }}&nbsp;,&nbsp;
@@ -73,7 +78,6 @@
       [attr.aria-label]="option.labelValue + ' selection'"
       [attr.aria-selected]="finalValue?.includes(option)"
       tabindex="0">
-
       <div>
         <span>{{ option.labelValue }}</span>
         <span class="p-ml-2">{{ option.operator }}</span>
@@ -81,7 +85,7 @@
         <p-inputNumber
           class="count-box"
           [(ngModel)]="option.countValue"
-          [inputStyle]="{ 'width': '80px' }"
+          [inputStyle]="{ width: '80px' }"
           [showButtons]="true"
           buttonLayout="horizontal"
           spinnerMode="horizontal"
@@ -90,7 +94,7 @@
           incrementButtonClass="p-button-success"
           incrementButtonIcon="pi pi-plus"
           decrementButtonIcon="pi pi-minus"
-          (click)="$event.stopPropagation(); $event.preventDefault();"
+          (click)="$event.stopPropagation(); $event.preventDefault()"
           [min]="option.minValue"
           [max]="option.maxValue"
           (onInput)="setCounter($event, option)"
@@ -113,4 +117,3 @@
     </div>
   </ng-template>
 </p-multiSelect>
-
