@@ -608,6 +608,7 @@ export class JiraConfigComponent implements OnInit {
       self.boardsData.forEach((board) => {
         board['projectKey'] = self.toolForm.controls['projectKey'].value;
       });
+      self.toolForm.controls['boards'].setValue([]);
 
       // If boards already has value
       if (self.toolForm.controls['boards']?.value?.length) {
