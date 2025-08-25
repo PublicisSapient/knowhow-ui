@@ -26,14 +26,105 @@ env:
   HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
 
 jobs:
-  argocd_setup:
+  #✅ UI Build & Testing
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      argocd_app_name: ${{ steps.set_env.outputs.argocd_app_name }}
+    steps:
+      - name: Set IMAGE_TAG and values file
+        id: set_env
+        run: |
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "$BRANCH" == "qa-master" ]]; then
+            echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
+            echo "ARGOCD_APP_NAME=knh-ui-qa" >> $GITHUB_ENV
+            echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH" == "master" ]]; then
+            echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
+            echo "ARGOCD_APP_NAME=knh-ui-stage" >> $GITHUB_ENV
+            echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+          else
+            ENV="${{ github.event.inputs.env }}"
+            if [[ "$ENV" == "dev1" ]]; then
+              echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
+              echo "ARGOCD_APP_NAME=knh-ui-dev1" >> $GITHUB_ENV
+              echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+            else
+              echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+              echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
+              echo "ARGOCD_APP_NAME=knh-ui-dev" >> $GITHUB_ENV
+              echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      # 1. Checkout GitHub repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js  # Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies & Build UI
+        run: |
+          npm cache clean --force
+          npm install
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          npm run build
+          mkdir -p build
+          cp -r dist/dashboard/* build/
+          chmod -R 775 build
+          cd build
+          tar -czvf ui2.tar *
+          mv ui2.tar ../nginx/files
+          rm -rf build
+
+      # Docker build & push to ACR
+      - name: Build & Push Docker Image
+        run: |
+          docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      
+      - name: Checkout Helm charts from Bitbucket
+        run: |
+          git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+          cd build-configurations/KnowHOW-Deploy/knowhow-ui
+          # Update values.yaml image tag
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
+
+  deploy:
     runs-on: github-actions-self-hosted-runner
+    needs: build
+    env:
+      ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}
     steps:
       - name: Install ArgoCD CLI
         run: |
-          curl -sSL -o /usr/local/bin/argocd \
+          # Define a writable path within the runner's home directory
+          export ARGO_PATH="$HOME/bin"
+          mkdir -p $ARGO_PATH
+          
+          # Download ArgoCD CLI to the new path
+          curl -sSL -o "$ARGO_PATH/argocd" \
             https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x /usr/local/bin/argocd
+          
+          # Make the downloaded file executable
+          chmod +x "$ARGO_PATH/argocd"
+          
+          # Add the new path to the shell's PATH
+          echo "$ARGO_PATH" >> $GITHUB_PATH
 
       - name: ArgoCD CLI Login
         run: |
@@ -41,70 +132,52 @@ jobs:
             --username ${{ secrets.SPEEDTOOLS_ARGOCD_USERNAME}} \
             --password ${{ secrets.SPEEDTOOLS_ARGOCD_PASSWORD }} \
             --plaintext
-  # ✅ UI Build & Testing
-  # build_deploy:
-  #   runs-on: ubuntu-latest-s
-  #   steps:
-  #     - name: Set IMAGE_TAG and values file
-  #       id: set_env
-  #       run: |
-  #         BRANCH="${GITHUB_REF##*/}"
-  #         if [[ "$BRANCH" == "qa-master" ]]; then
-  #           echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
-  #           echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
-  #         elif [[ "$BRANCH" == "master" ]]; then
-  #           echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
-  #           echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
-  #         else
-  #           ENV="${{ github.event.inputs.env }}"
-  #           if [[ "$ENV" == "dev1" ]]; then
-  #             echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
-  #             echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
-  #           else
-  #             echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
-  #             echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
-  #           fi
-  #         fi
-
-  #     # 1. Checkout GitHub repo
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Set Up Node.js  # Set up Node.js environment
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 18
-
-  #     - name: Install Dependencies & Build UI
-  #       run: |
-  #         npm cache clean --force
-  #         npm install
-  #         npm install --save-dev @angular-devkit/build-angular@17.3.12
-  #         npm run build
-  #         mkdir -p build
-  #         cp -r dist/dashboard/* build/
-  #         chmod -R 775 build
-  #         cd build
-  #         tar -czvf ui2.tar *
-  #         mv ui2.tar ../nginx/files
-  #         rm -rf build
-
-  #     # Docker build & push to ACR
-  #     - name: Build & Push Docker Image
-  #       run: |
-  #         docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
-  #         docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
-  #         docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
-  #         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       
-  #     - name: Checkout Helm charts from Bitbucket
-  #       run: |
-  #         git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
-  #         cd build-configurations/KnowHOW-Deploy/knowhow-ui
-  #         # Update values.yaml image tag
-  #         yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
-  #         git config user.name "github-actions"
-  #         git config user.email "github-actions@github.com"
-  #         git add $VALUES_FILE
-  #         git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
-  #         git push origin HEAD
+       # Step 2: Sync the application
+      - name: Sync application
+        id: sync-app
+        run: argocd app sync ${{ env.ARGOCD_APP_NAME }}
+        continue-on-error: true # Allow the workflow to proceed even if sync fails
+        
+      # Step 3: Get application URL
+      - name: Get app URL for errors
+        id: get-url
+        if: ${{ steps.sync-app.outcome != 'success' }}
+        run: |
+          app_url=$(argocd app get ${{ env.ARGOCD_APP_NAME }} | grep 'URL:' | awk '{print $2}')
+          echo "APP_URL=${app_url}" >> $GITHUB_ENV
+        
+      # Step 4: Handle sync failure
+      - name: Handle Sync Failure
+        if: ${{ steps.sync-app.outcome != 'success' && env.APP_URL }}
+        run: |
+          echo "❌ Deployment failed: Sync for '${{ env.ARGOCD_APP_NAME }}' did not complete."
+          echo "View details here: ${{ env.APP_URL }}"
+          exit 1 # Fail the job
+      
+      # Step 5: Wait for the application to become healthy
+      - name: Wait for application health
+        id: wait-app
+        run: argocd app wait ${{ env.ARGOCD_APP_NAME }} --health --timeout 300
+        continue-on-error: true # Allow the workflow to proceed if the wait times out
+
+      # Step 6: Get application URL for wait failure
+      - name: Get app URL for wait failure
+        id: get-wait-url
+        if: ${{ steps.wait-app.outcome != 'success' }}
+        run: |
+          app_url=$(argocd app get ${{ env.ARGOCD_APP_NAME }} | grep 'URL:' | awk '{print $2}')
+          echo "APP_URL=${app_url}" >> $GITHUB_ENV
+
+      # Step 7: Handle wait failure
+      - name: Handle Wait Failure
+        if: ${{ steps.wait-app.outcome != 'success' && env.APP_URL }}
+        run: |
+          echo "⚠️ '${{ env.ARGOCD_APP_NAME }}' is deployed but not healthy after timeout."
+          echo "Check app status and logs here: ${{ env.APP_URL }}"
+          exit 1 # Fail the job
+      
+      - name: Deployment Succeeded
+        if: ${{ steps.sync-app.outcome == 'success' && steps.wait-app.outcome == 'success' }}
+        run: |
+          echo "✅ Deployment successful!"
