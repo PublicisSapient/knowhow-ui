@@ -25,7 +25,7 @@
         <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
             <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
                 <div class="kpi-card-title-container">
-                    <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> Project Details & KPI
+                    <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> KPI Details
                     </h3>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <ng-template pTemplate="header" let-columns>
                     <tr>
                         <ng-container *ngFor="let col of columns">
-                            <th style="background-color: #f4f9ff;" [pSortableColumn]="sortableColumn(col.field)"
+                            <th style="background-color: #d9e7fe;" [pSortableColumn]="sortableColumn(col.field)"
                                 id="{{col.field}}">
                                 <div class="table-head">
                                     <span [ngStyle]="{'width':'max-content'}">{{col.header}}</span>
@@ -79,9 +79,10 @@
                         <td *ngFor="let col of columns">
                             <ng-container [ngSwitch]="col.field">
 
-                                <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">{{ row[col.field] }}
-                                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" [plain]="true"
-                                        [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
+                                <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">
+                                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" styleClass="expand-cta-btn"
+                                        [plain]="true" [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
+                                    {{ row[col.field] }}
                                 </div>
 
                                 <span *ngSwitchCase="'dora'">
@@ -117,7 +118,7 @@
                     <tr>
                         <td [attr.colspan]="row?.children?.columns?.length || tableData['columns'].length">
                             <!-- Child Table Example -->
-                            <p-table *ngIf="!nestedLoader && row?.children?.data" [value]="row.children?.data"
+                            <p-table *ngIf="!nestedLoader && row?.children?.data" [value]="row.children?.data" styleClass="expanded-table-wrapper" tableStyleClass="expanded-table"
                                 responsiveLayout="scroll">
                                 <ng-template pTemplate="header">
                     <tr>

@@ -175,9 +175,13 @@
 }
 
 .styled-cell {
-  width: fit-content;
-  border-radius: 10px;
-  height: fit-content;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  display: inline-block;
+  text-align: center;
+  min-width: 80px;
 }
 
 .table-head {
@@ -247,4 +251,39 @@
   color: #374151;
   background: #f9fafb;
   transition: box-shadow 0.2s;
+}
+
+.expanded-table-wrapper {
+}
+
+/* .expanded-table {
+} */
+
+/* :host ::ng-deep .expanded-table tbody tr {
+  background-color: #d9e7fe;
+}
+
+:host ::ng-deep .expanded-table thead th {
+  background-color: #2d6dd4;
+} */
+
+:host ::ng-deep .expand-cta-btn {
+  background-color: #0b4bc8;
+}
+
+:host ::ng-deep .expand-cta-btn {
+  background-color: #0b4bc8;
+  color: white;
+}
+
+/* :host ::ng-deep .expand-cta-btn button {
+  height: 2rem;
+  width: 2rem;
+  margin-right: 0.5rem;
+} */
+
+:host ::ng-deep .p-button.p-button-icon-only.p-button-rounded {
+  height: 2rem;
+  width: 2rem;
+  margin-right: 0.5rem;
 }
