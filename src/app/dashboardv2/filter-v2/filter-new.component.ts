@@ -955,9 +955,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     } else if (Array.isArray(event)) {
       // sort the event array based on nodeId
-      event.sort((a, b) =>
-        a.nodeId > b.nodeId ? 1 : b.nodeId > a.nodeId ? -1 : 0,
-      );
+      // event.sort((a, b) =>
+      //   a.nodeId > b.nodeId ? 1 : b.nodeId > a.nodeId ? -1 : 0,
+      // );
     }
     this.noSprint = false;
 
