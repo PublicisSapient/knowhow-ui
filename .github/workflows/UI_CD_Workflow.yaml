@@ -40,26 +40,27 @@ jobs:
             echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
             echo "ARGOCD_APP_NAME=knh-ui-qa" >> $GITHUB_ENV
-            echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+            echo "argocd_app_name=knh-ui-qa" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH" == "master" ]]; then
             echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
             echo "ARGOCD_APP_NAME=knh-ui-stage" >> $GITHUB_ENV
-            echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+            echo "argocd_app_name=knh-ui-stage" >> $GITHUB_OUTPUT
           else
             ENV="${{ github.event.inputs.env }}"
             if [[ "$ENV" == "dev1" ]]; then
               echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
               echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
               echo "ARGOCD_APP_NAME=knh-ui-dev1" >> $GITHUB_ENV
-              echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+              echo "argocd_app_name=knh-ui-dev1" >> $GITHUB_OUTPUT
             else
               echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
               echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
               echo "ARGOCD_APP_NAME=knh-ui-dev" >> $GITHUB_ENV
-              echo "argocd_app_name=$ARGOCD_APP_NAME" >> $GITHUB_OUTPUT
+              echo "argocd_app_name=knh-ui-dev" >> $GITHUB_OUTPUT
             fi
           fi
+
 
       # 1. Checkout GitHub repo
       - name: Checkout repository
@@ -110,6 +111,8 @@ jobs:
     env:
       ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}
     steps:
+      - name: Debug ARGOCD_APP_NAME
+        run: echo "ARGOCD_APP_NAME=${{ env.ARGOCD_APP_NAME }}"
       - name: Install ArgoCD CLI
         run: |
           # Define a writable path within the runner's home directory
