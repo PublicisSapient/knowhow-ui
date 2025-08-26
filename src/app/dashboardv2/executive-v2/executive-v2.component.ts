@@ -942,7 +942,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi: { kpiId: any }) => kpi.kpiId,
           );
           kpiArr.forEach((element) => this.kpiLoader.add(element));
-          this.postJiraKpi(this.kpiJira, 'jira');
+          this.postJiraKpi(this.kpiJira, 'jira', true);
         }
       }
     });
@@ -1324,8 +1324,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // post request of Jira(scrum)
-  postJiraKpi(postData, source): void {
-    this.service.setKPIPostData(postData);
+  postJiraKpi(postData, source, bool): void {
+    if (bool) this.service.setKPIPostData(postData);
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
@@ -4768,7 +4768,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.selectedTab?.toLocaleLowerCase(),
       )
     ) {
-      this.postJiraKpi(kpiJiraTest, 'jira');
+      this.postJiraKpi(kpiJiraTest, 'jira', false);
     }
   }
 
