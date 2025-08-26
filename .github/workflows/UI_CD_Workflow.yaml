@@ -63,47 +63,47 @@ jobs:
 
 
       # 1. Checkout GitHub repo
-      # - name: Checkout repository
-      #   uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # - name: Set Up Node.js  # Set up Node.js environment
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
+      - name: Set Up Node.js  # Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-      # - name: Install Dependencies & Build UI
-      #   run: |
-      #     npm cache clean --force
-      #     npm install
-      #     npm install --save-dev @angular-devkit/build-angular@17.3.12
-      #     npm run build
-      #     mkdir -p build
-      #     cp -r dist/dashboard/* build/
-      #     chmod -R 775 build
-      #     cd build
-      #     tar -czvf ui2.tar *
-      #     mv ui2.tar ../nginx/files
-      #     rm -rf build
+      - name: Install Dependencies & Build UI
+        run: |
+          npm cache clean --force
+          npm install
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          npm run build
+          mkdir -p build
+          cp -r dist/dashboard/* build/
+          chmod -R 775 build
+          cd build
+          tar -czvf ui2.tar *
+          mv ui2.tar ../nginx/files
+          rm -rf build
 
-      # # Docker build & push to ACR
-      # - name: Build & Push Docker Image
-      #   run: |
-      #     docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
-      #     docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
-      #     docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
-      #     echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      # Docker build & push to ACR
+      - name: Build & Push Docker Image
+        run: |
+          docker login $ACR_LOGIN_SERVER --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       
-      # - name: Checkout Helm charts from Bitbucket
-      #   run: |
-      #     git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
-      #     cd build-configurations/KnowHOW-Deploy/knowhow-ui
-      #     # Update values.yaml image tag
-      #     yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
-      #     git config user.name "github-actions"
-      #     git config user.email "github-actions@github.com"
-      #     git add $VALUES_FILE
-      #     git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
-      #     git push origin HEAD
+      - name: Checkout Helm charts from Bitbucket
+        run: |
+          git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+          cd build-configurations/KnowHOW-Deploy/knowhow-ui
+          # Update values.yaml image tag
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
 
   deploy:
     runs-on: github-actions-self-hosted-runner
@@ -111,8 +111,6 @@ jobs:
     env:
       ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}
     steps:
-      - name: Debug ARGOCD_APP_NAME
-        run: echo "ARGOCD_APP_NAME=${{ env.ARGOCD_APP_NAME }}"
       - name: Install ArgoCD CLI
         run: |
           # Define a writable path within the runner's home directory
