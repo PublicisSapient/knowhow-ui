@@ -7,6 +7,7 @@ import {
   ViewChild,
   AfterViewInit,
   HostListener,
+  ViewContainerRef,
 } from '@angular/core';
 import * as d3 from 'd3';
 
@@ -19,6 +20,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   @Input() kpiData: any;
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
+  elem: any;
 
   private svg: any;
   private margin = { top: 30, right: 30, bottom: 60, left: 60 };
@@ -36,7 +38,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     { option: 'S4', value: 's4', selected: true },
   ];
 
-  constructor() {}
+  constructor(private viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['kpiData'] && this.kpiData) {
@@ -48,6 +50,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       // this.updateChart();
       this.createChart();
     }
+    this.elem = this.viewContainerRef.element.nativeElement;
   }
 
   ngAfterViewInit(): void {
@@ -101,21 +104,20 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   private createChart(): void {
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
     const sprintGroups: { [key: string]: any[] } = {};
-
-    console.log(this.filteredData);
+    const severityKeys = this.activeSeverityKeys.length
+      ? this.activeSeverityKeys
+      : this.allSeverityKeys;
 
     this.kpiData.forEach((project: any) => {
       project.value.forEach((sprint: any, index: number) => {
-        const sprintKey = `Sprint ${index + 1}`;
-        if (!sprintGroups[sprintKey]) {
-          sprintGroups[sprintKey] = [];
-        }
+        const sprintKey = `${index + 1}`;
+        if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
 
         const severityData: any = {
           project: project.data,
           rate: project.data,
           value: 0,
-          ...['s1', 's2', 's3', 's4'].reduce((acc, severity) => {
+          ...severityKeys.reduce((acc, severity) => {
             const found = sprint.drillDown.find(
               (d: any) => d.severity === severity,
             );
@@ -130,39 +132,59 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
 
     const sprints = Object.keys(sprintGroups);
     const projects = [...new Set(this.kpiData.map((d) => d.data))];
-    const severityKeys = ['s1', 's2', 's3', 's4'];
 
-    // Chart dimensions - TODO make it responsive
     const margin = { top: 30, right: 30, bottom: 60, left: 40 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
 
-    // Create chart container
+    //  Get container size dynamically
+    const containerWidth = this.chartContainer.nativeElement.offsetWidth || 700;
+    const containerHeight =
+      this.chartContainer.nativeElement.offsetHeight || 400;
+
+    //  Increase width factor for <g> drawing space
+    const extraWidthFactor = 1.2; // <-- adjust this multiplier (1.2 = +20%)
+    const width =
+      containerWidth * extraWidthFactor - margin.left - margin.right;
+    const height = containerHeight - margin.top - margin.bottom;
+
     const svg = d3
       .select(this.chartContainer.nativeElement)
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr(
+        'viewBox',
+        `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
+      ) //  scaled
+      .attr('preserveAspectRatio', 'xMidYMid meet')
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // X0 scale for sprints
+    // --- Scales ---
     const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
-
-    // X1 scale for projects within each sprint
     const x1 = d3
       .scaleBand()
       .domain(projects)
       .range([0, x0.bandwidth()])
       .padding(0.1);
+    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).clamp(true);
 
-    // TODO replace that 500 value with something that will be made dynamic
-    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).nice();
+    const xGrid = d3
+      .axisBottom(x0)
+      .tickSize(-height)
+      .tickFormat(() => '');
+    svg
+      .append('g')
+      .attr('class', 'x-grid')
+      .attr('transform', `translate(0,${height})`)
+      .call(xGrid)
+      .selectAll('line')
+      .attr('stroke', '#E0E0E0');
+    svg.select('.x-grid').select('.domain').remove();
 
     const tooltip = d3
       .select('body')
-      .append('div') // Append to body to avoid clipping
-      .attr('class', 'chart-tooltip') // Changed class name for specificity
+      .append('div')
+      .attr('class', 'chart-tooltip')
       .style('opacity', 0)
       .style('position', 'absolute')
       .style('background', '#000')
@@ -177,13 +199,24 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .style('min-width', '180px')
       .style('transition', 'opacity 0.2s');
 
-    // COLOR SETUP
-    const color = d3.scaleOrdinal().domain(projects).range(this.color);
+    const yGrid = d3
+      .axisLeft(y)
+      .ticks(6)
+      .tickSize(-width)
+      .tickFormat(() => '');
+    svg
+      .append('g')
+      .attr('class', 'grid')
+      .call(yGrid)
+      .selectAll('line')
+      .attr('stroke', '#E0E0E0');
+    svg.select('.grid').select('.domain').remove();
 
     const projectColors = new Map<string, string>();
     this.kpiData.forEach((project: any, index: number) => {
-      projectColors.set(project.data, this.color[index % this.color.length]);
+      projectColors.set(project.data, this.color[index]);
     });
+
     sprints.forEach((sprint) => {
       const stack = d3.stack().keys(severityKeys);
       const stackedData = stack(sprintGroups[sprint]);
@@ -193,37 +226,39 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         .data(stackedData)
         .enter()
         .append('g')
-        .attr('class', 'group')
-        .style('fill', (d: any) => {
-          const severityIndex = severityKeys.indexOf(d.key);
-          let color;
-          for (const element of this.color) {
-            color = element;
-          }
-
-          return this.generateShade(color, severityIndex, severityKeys.length);
-        });
+        .attr('class', 'group');
 
       bars
         .selectAll('rect')
         .data((d: any) => d)
         .enter()
         .append('rect')
-        .attr('x', (d: any) => x0(sprint) + x1(d.data.project))
+        .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)!)
         .attr('y', (d: any) => y(d[1]))
         .attr('height', (d: any) => y(d[0]) - y(d[1]))
         .attr('width', x1.bandwidth())
+        .attr('fill', (d: any, i: number, nodes: any[]) => {
+          const projectName = d.data.project;
+          const severityKey = (nodes[i].parentNode as any).__data__.key;
+          const severityIndex = severityKeys.indexOf(severityKey);
+          const baseColor = projectColors.get(projectName) || '#888';
+          return this.generateShade(
+            baseColor,
+            severityIndex,
+            severityKeys.length,
+          );
+        })
         .on('mouseover', (event, d: any) => {
           const [mouseX, mouseY] = d3.pointer(event, window);
           const originalData = this.findOriginalData(d.data.project, sprint);
-
           if (originalData?.hoverValue) {
             tooltip
               .style('visibility', 'visible')
               .html(
                 `
                 <div><strong>Total Resolved:</strong> ${originalData.hoverValue.totalResolvedIssues}</div>
-                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>`,
+                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>
+              `,
               )
               .style('left', `${mouseX + 15}px`)
               .style('top', `${mouseY - 15}px`)
@@ -235,11 +270,9 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
             .style('left', event.pageX + 10 + 'px')
             .style('top', event.pageY - 10 + 'px');
         })
-        .on('mouseout', () => {
-          tooltip.style('visibility', 'hidden');
-        });
+        .on('mouseout', () => tooltip.style('visibility', 'hidden'));
 
-      // Add labels on bars
+      // --- Labels ---
       bars
         .selectAll('text')
         .data((d: any) => d)
@@ -247,7 +280,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         .append('text')
         .attr(
           'x',
-          (d: any) => x0(sprint) + x1(d.data.project) + x1.bandwidth() / 2,
+          (d: any) => x0(sprint)! + x1(d.data.project)! + x1.bandwidth() / 2,
         )
         .attr('y', (d: any) => (y(d[0]) + y(d[1])) / 2)
         .attr('text-anchor', 'middle')
@@ -260,14 +293,234 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         .style('font-size', '10px');
     });
 
-    // Add X axis - sprints
+    // --- X Axis ---
     svg
       .append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x0));
+      .call(d3.axisBottom(x0).tickSize(0))
+      .call((g) => {
+        g.select('.domain').attr('stroke', '#EDEFF2');
+        g.append('line')
+          .attr('x1', 0)
+          .attr('x2', width)
+          .attr('y1', 0)
+          .attr('y2', 0)
+          .attr('stroke', '#EDEFF2')
+          .attr('stroke-width', 1);
+      });
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', height + 40)
+      .attr('text-anchor', 'middle')
+      .text('Sprints')
+      .style('font-size', '16px')
+      .style('fill', '#49535e');
 
-    // Add Y axis - values
-    svg.append('g').call(d3.axisLeft(y).ticks(5));
+    // --- Y Axis ---
+    svg
+      .append('g')
+      .call(d3.axisLeft(y).ticks(6).tickSize(0))
+      .call((g) => {
+        g.select('.domain').attr('stroke', '#EDEFF2');
+        g.append('line')
+          .attr('x1', 0)
+          .attr('x2', 0)
+          .attr('y1', 0)
+          .attr('y2', height * -1)
+          .attr('stroke', '#EDEFF2')
+          .attr('stroke-width', 1);
+      });
+    svg
+      .append('text')
+      .attr('transform', `rotate(-90)`)
+      .attr('x', -height / 2)
+      .attr('y', -margin.left + 15)
+      .attr('text-anchor', 'middle')
+      .text('Breached %')
+      .style('font-size', '16px')
+      .style('fill', '#49535e');
+
+    // --- Legend ---
+    this.renderSprintsLegend(this.flattenData(this.kpiData), 'Sprints');
+  }
+
+  flattenData(data) {
+    const sprintMap = new Map();
+    let sprintCounter = 1;
+
+    data.forEach((project) => {
+      const projectName = project.data.trim();
+      project.value.forEach((entry, index) => {
+        const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
+        const sprintKey = index; // assuming index-based alignment
+
+        if (!sprintMap.has(sprintKey)) {
+          sprintMap.set(sprintKey, {
+            sprintNumber: sprintCounter++,
+            projects: {},
+            sprints: [],
+          });
+        }
+
+        const sprintEntry = sprintMap.get(sprintKey);
+        const sprintData = sprintEntry.projects;
+
+        // Add date range to x-axis labels if not already present
+        console.log(dateRange, 'dateRange');
+        console.log(sprintEntry, 'sprintEntry');
+        if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
+          sprintEntry.sprints.push(entry.sSprintName);
+        }
+
+        // Assign hoverValue data (use empty object if missing)
+        sprintData[projectName] = Object.keys(entry.hoverValue || {}).reduce(
+          (acc, key) => {
+            acc[key] = entry.hoverValue[key] || 0;
+            return acc;
+          },
+          {},
+        );
+      });
+    });
+    console.log(Array.from(sprintMap.values()), 'sprintMap');
+    return Array.from(sprintMap.values());
+  }
+
+  renderSprintsLegend(data, xAxisCaption) {
+    // this.counter++;
+    // if (this.counter === 1) {
+    const legendData = data.map((item) => ({
+      sprintNumber: item.sprintNumber,
+      sprintLabel: item.sprints.join(', '),
+    }));
+    console.log(legendData, 'legendData');
+
+    // Select the body and insert the legend container at the top
+    const body = d3.select(this.elem);
+    // 🧹 Clean up any existing legend container
+    body.selectAll('.sprint-legend-container').remove();
+
+    const container = body
+      .insert('div') // Insert at top of body
+      .attr('class', 'sprint-legend-container')
+      .style('margin', '20px 0 0 0')
+      .style('font-family', 'Arial, sans-serif')
+      .style('font-size', '14px')
+      .style('max-width', '100%');
+
+    // Toggle Button
+    const toggleButton = container
+      .append('button')
+      .style('margin', '0 0 10px 0')
+      .style('padding', '0')
+      .style('cursor', 'pointer')
+      .style('font-size', '14px')
+      .style('background', 'none')
+      .style('border', 'none')
+      .style('color', '#0b4bc8')
+      .style('text-decoration', 'underline')
+      .style('text-underline-offset', '5px')
+      .attr('class', 'p-element p-component')
+      .on('click', function () {
+        const isVisible = legend.style('display') !== 'none';
+        legend.style('display', isVisible ? 'none' : 'block');
+        legend.style('aria-hidden', isVisible ? 'true' : 'false');
+        legend.style('tabindex', isVisible ? '-1' : '0');
+        toggleButton.text(
+          isVisible ? 'Show X-Axis Legend' : 'Hide X-Axis Legend',
+        );
+      });
+
+    // Legend Box
+    const legend = container
+      .append('div')
+      .attr('class', 'sprint-legend')
+      .style('padding', '0')
+      .style('border', '1px solid #ddd')
+      .style('border-radius', '6px')
+      .style('margin-top', '10px')
+      .attr('role', 'region')
+      .attr('aria-labelledby', 'legend-title');
+
+    legend.style('display', 'none'); // Show the legend by default
+    legend.attr('aria-hidden', 'true');
+    toggleButton.text('Show X-Axis Legend');
+
+    // Wrap the table in a scrollable container
+    const scrollContainer = legend
+      .append('div')
+      .style('overflow-x', 'auto')
+      .style('max-width', '100%');
+
+    // Create the table inside scroll container
+    const table = scrollContainer
+      .append('table')
+      .attr('role', 'table')
+      .style('width', '100%')
+      .style('border-collapse', 'collapse')
+      .style('min-width', '400px');
+
+    // Table Header
+    const thead = table.append('thead').attr('role', 'rowgroup');
+
+    const headerRow = thead.append('tr').attr('role', 'row');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('X-Axis')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('width', '10%')
+      .style('font-weight', '600');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('Legend')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('font-weight', '600');
+
+    // Table Body
+    const tbody = table.append('tbody').attr('role', 'rowgroup');
+
+    const rows = tbody
+      .selectAll('tr')
+      .data(legendData)
+      .enter()
+      .append('tr')
+      .attr('role', 'row')
+      .style('background', (d, i) => (i % 2 === 0 ? '#fff' : '#fafafa'));
+
+    // Table Cells
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d) => `${xAxisCaption} ${d.sprintNumber}:`)
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('width', '10%')
+      .style('color', '#333');
+
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d) => d.sprintLabel)
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('word-break', 'break-word')
+      .style('color', '#666');
+    // }
   }
 
   private findOriginalData(projectName: string, sprintName: string): any {
@@ -301,7 +554,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
 
       if (project.value && Array.isArray(project.value)) {
         project.value.forEach((sprint: any, index: number) => {
-          const sprintKey = `Sprint ${index + 1}`;
+          const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) {
             sprintGroups[sprintKey] = [];
           }
@@ -325,7 +578,6 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     });
 
     this.filteredData = sprintGroups;
-    console.log('Filtered data:', this.filteredData);
 
     if (this.isInitialized) {
       // this.updateChart();
@@ -564,7 +816,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   }
 
   handleChange(event: any): void {
-    this.activeSeverityKeys = event.value.map((f: any) => f.value);
+    this.activeSeverityKeys = event.value.map((f: any) => f);
     if (this.activeSeverityKeys.length === 0) {
       this.activeSeverityKeys = [...this.allSeverityKeys];
     }
