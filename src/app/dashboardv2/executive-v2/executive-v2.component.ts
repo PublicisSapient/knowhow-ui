@@ -942,6 +942,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi: { kpiId: any }) => kpi.kpiId,
           );
           kpiArr.forEach((element) => this.kpiLoader.add(element));
+          console.log('kpiJira', this.kpiJira);
           this.postJiraKpi(this.kpiJira, 'jira', true);
         }
       }
@@ -1325,6 +1326,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source, bool): void {
+    console.log('postData', postData);
     if (bool) this.service.setKPIPostData(postData);
     if (
       this.selectedTab !== 'release' &&

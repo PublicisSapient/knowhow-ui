@@ -22,7 +22,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
 
@@ -436,6 +436,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     //#endregion
 
+    console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
       this.selectedTab === 'my-knowhow' ||
@@ -454,6 +455,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
         disabled: false,
       });
+      // this.service.flag$.subscribe((flag) => {
+      //   console.log('recieving flag > ', flag);
+      //   if (flag) {
+      //   }
+      // });
     }
   }
 
@@ -1500,7 +1506,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportDataToConfluence(event) {
-    // console.log('kpiData > ', this.kpiData);
+    console.log('kpiData > ', this.kpiData);
     const payloadDataFromKPIGroup = this.service.getKPIPostData();
     console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,

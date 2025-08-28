@@ -154,6 +154,10 @@ export class SharedService {
   public searchQuery$ = this.searchQueryBSubject.asObservable();
   kpiPostData: object = {};
 
+  private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
+  // Observable for components to subscribe to
+  flag$ = this.flagMultilineChartSubject.asObservable();
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -918,5 +922,11 @@ export class SharedService {
 
   getKPIPostData() {
     return this.kpiPostData;
+  }
+
+  // Method to set the flag
+  setMultilineChartFlag(value: boolean) {
+    console.log('Setting multiline chart flag to:', value);
+    this.flagMultilineChartSubject.next(value);
   }
 }
