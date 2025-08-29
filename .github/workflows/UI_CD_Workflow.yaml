@@ -109,6 +109,7 @@ jobs:
       - name: Run UI Unit Tests
         if: ${{ github.event.inputs.test == 'true' }}
         run: |
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
           ng test --code-coverage
 
       - name: SonarQube Analysis  # Run static analysis
