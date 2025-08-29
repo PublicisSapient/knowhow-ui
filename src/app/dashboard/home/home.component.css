@@ -1,10 +1,23 @@
 /* Maturity tabluar Styles start */
 
 :host .data-item {
-  padding: 5px;
+  width: 24%;
   background-color: #fff;
   border-radius: 10px;
   border: 1px solid #d5dbe1;
+}
+
+:host .data-item.users {
+  background-color: #8980ed;
+}
+:host .data-item.gauge {
+  background-color: #9fe8fa;
+}
+:host .data-item.exclamation {
+  background-color: #fbcf5f;
+}
+:host .data-item.heart-fill {
+  background-color: #ed8888;
 }
 
 .maturity-tablur-view {
@@ -14,12 +27,12 @@
 .icon-container {
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 .icon {
-  height: 50px;
-  width: 50px;
+  height: 80px;
+  width: 80px;
   border-radius: 50%;
   background-color: #f5f9ff;
   display: flex;
@@ -125,32 +138,32 @@
 }
 
 .m1 {
-  background: #88f99c;
+  background: #fe414d;
   color: white;
 }
 
 .m2 {
-  background: #8acfa6;
+  background: #ffa96a;
   color: white;
 }
 
 .m3 {
-  background: #ffcd44;
-  color: white;
+  background: #ffed74;
+  color: #000000;
 }
 
 .m4 {
-  background: #ffb27f;
-  color: white;
+  background: #95f5b3;
+  color: #000000;
 }
 
 .m5 {
-  background: #fd8185;
+  background: #22ad8d;
   color: white;
 }
 
 .m0 {
-  background: #fd8185;
+  background: #000000;
   color: white;
 }
 

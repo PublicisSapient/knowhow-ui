@@ -102,27 +102,31 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 this.aggregrationDataList = [
                   {
+                    cssClassName: 'users',
                     category: 'Active ' + label + ' (s)',
                     value: this.tableData['data'].length,
-                    icon: 'visibility_on.svg',
+                    icon: 'pi-users',
                     average: 'NA',
                   },
                   {
+                    cssClassName: 'gauge',
                     category: 'Avg. Efficiency',
                     value: this.tableData['data'].length,
-                    icon: 'Warning.svg',
+                    icon: 'pi-gauge',
                     average: this.calculateEfficiency(),
                   },
                   {
+                    cssClassName: 'exclamation',
                     category: 'Critical ' + label + ' (s)',
                     value: this.calculateHealth('critical').count,
-                    icon: 'Watch.svg',
+                    icon: 'pi-exclamation-triangle',
                     average: this.calculateHealth('critical').average,
                   },
                   {
+                    cssClassName: 'heart-fill',
                     category: 'Healthy ' + label + ' (s)',
                     value: this.calculateHealth('healthy').count,
-                    icon: 'Check.svg',
+                    icon: 'pi-heart-fill',
                     average: this.calculateHealth('healthy').average,
                   },
                 ];
@@ -207,7 +211,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getMClass(value: string) {
     const v = (value || '').toLowerCase();
-    console.log(value, v);
+    // console.log(value, v);
     return {
       m0: 'm0',
       m1: 'm1',
@@ -240,6 +244,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onRowExpand(event) {
+    console.log('event ', event);
     this.nestedLoader = true;
     this.selectedRowToExpand = event.data;
     const filterApplyData = this.payloadPreparation(
