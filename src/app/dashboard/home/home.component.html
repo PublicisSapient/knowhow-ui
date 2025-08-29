@@ -1,265 +1,398 @@
 <div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
-    @for (item of aggregrationDataList; track item) {
-    <div class="p-d-flex data-item p-col-2 p-my-2 p-mx-5">
-        <div class="icon-container">
-            <div class="icon">
-                <img [src]="'../../../assets/img/' + item.icon" alt="KPI Icon" class="kpi-logo" aria-hidden="true" />
-            </div>
+  @for (item of aggregrationDataList; track item) {
+    <div class="p-d-flex data-item p-col-2 p-my-3 p-py-4 p-px-6" [ngClass]="item.cssClassName">
+      <div class="icon-container">
+        <div class="icon">
+          <!-- <img
+            [src]="'../../../assets/img/' + item.icon"
+            alt="KPI Icon"
+            class="kpi-logo"
+            aria-hidden="true" /> -->
+            <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
         </div>
-        <div class="data">
-            <p class="tabularKPI-column-header p-mb-0" tabindex="0">{{ item.category }}</p>
-            <div class="p-d-flex">
-                <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
-                    {{ item.value }} {{ (item.average && item.average !== 'NA') ? '('+item.average +')' : '' }}
-                </p>
-            </div>
+      </div>
+      <div class="data">
+        <p class="tabularKPI-column-header p-mb-0" tabindex="0">
+          {{ item.category }}
+        </p>
+        <div class="p-d-flex">
+          <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
+            {{ item.value }}
+            {{
+              item.average && item.average !== 'NA'
+                ? '(' + item.average + ')'
+                : ''
+            }}
+          </p>
         </div>
+      </div>
     </div>
-    }
+  }
 </div>
 
-
 <div class="kpi-details-table-container p-mx-5">
-
-    <div class="kpi-card-container">
-        <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
-            <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
-                <div class="kpi-card-title-container">
-                    <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> KPI Details
-                    </h3>
-                </div>
-            </div>
+  <div class="kpi-card-container">
+    <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+      <div
+        class="kpi-card-name-placeholder"
+        role="region"
+        aria-label="KPI Card Header">
+        <div class="kpi-card-title-container">
+          <h3 tabindex="0" [attr.aria-label]="'KPI Details'">KPI Details</h3>
         </div>
-
-        <div class="kpi-card-body">
-            <p-table *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']"
-                responsiveLayout="scroll" class="mt-3" [expandedRowKeys]="expandedRows" dataKey="id"
-                (onRowExpand)="onRowExpand($event)" rowExpandMode="single">
-                <ng-template pTemplate="header" let-columns>
-                    <tr>
-                        <ng-container *ngFor="let col of columns">
-                            <th style="background-color: #d9e7fe;" [pSortableColumn]="sortableColumn(col.field)"
-                                id="{{col.field}}">
-                                <div class="table-head">
-                                    <span [ngStyle]="{'width':'max-content'}">{{col.header}}</span>
-                                    <div class="p-d-flex p-ml-2">
-                                        <p-columnFilter [field]="col.field" matchMode="in" [showMenu]="false"
-                                            [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
-                                            [showClearButton]="false" [showApplyButton]="false"
-                                            [style]="{'margin-top':'2px'}">
-                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback"
-                                                #filter>
-                                                <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
-                                                    (onPanelShow)="onFilterClick(col.field)"
-                                                    (onPanelHide)="onFilterBlur(col.field)"
-                                                    [options]="tableColumnData[col.field]"
-                                                    [placeholder]="'Select '+ col.field"
-                                                    (onChange)="filter($event.value)" [optionValue]="'value'"
-                                                    [optionLabel]="'name'" [ngModel]="tableColumnForm[col.field]"
-                                                    styleClass="column-filter"
-                                                    (keydown.enter)="handleMultiSelectEnter($event)">
-                                                    <ng-template pTemplate="selectedItems">
-                                                        <i class="pi pi-filter-icon pi-filter"
-                                                            style="font-size: 0.8rem"></i>
-                                                    </ng-template>
-                                                </p-multiSelect>
-                                            </ng-template>
-                                        </p-columnFilter>
-                                        <p-sortIcon [field]="sortableColumn(col.field)"
-                                            aria-label="Sort by column"></p-sortIcon>
-                                    </div>
-                                </div>
-                            </th>
-                        </ng-container>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-row let-columns="columns" let-expanded="expanded">
-                    <tr>
-                        <td *ngFor="let col of columns">
-                            <ng-container [ngSwitch]="col.field">
-
-                                <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">
-                                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" styleClass="expand-cta-btn"
-                                        [plain]="true" [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
-                                    {{ row[col.field] }}
-                                </div>
-
-                                <span *ngSwitchCase="'dora'">
-                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
-                                        {{ row[col.field] }}</div>
-                                </span>
-
-                                <span *ngSwitchCase="'completion'">{{ row[col.field] }}</span>
-
-                                <div *ngSwitchCase="'health'">
-                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
-                                        {{ row[col.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'speed'">
-                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
-                                        {{ row[col.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'quality'" class="p-p-3">
-                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
-                                        {{ row[col.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'value'" class="p-p-3">
-                                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
-                                        {{ row[col.field] }}</div>
-                                </div>
-
-                            </ng-container>
-                        </td>
-                    </tr>
-                </ng-template>
-                <!-- Row Expansion  -->
-                <ng-template pTemplate="rowexpansion" let-row let-columns="row.children?.columns">
-                    <tr>
-                        <td [attr.colspan]="row?.children?.columns?.length || tableData['columns'].length">
-                            <!-- Child Table Example -->
-                            <p-table *ngIf="!nestedLoader && row?.children?.data" [value]="row.children?.data" styleClass="expanded-table-wrapper" tableStyleClass="expanded-table"
-                                responsiveLayout="scroll">
-                                <ng-template pTemplate="header">
-                    <tr>
-                        <ng-container *ngFor="let childCol of row.children?.columns">
-                            <th [pSortableColumn]="sortableColumn(childCol.field)" id="{{childCol.field}}">
-                                <div class="table-head">
-                                    <span [ngStyle]="{'width':'max-content'}">{{childCol.header}}</span>
-                                    <div class="p-d-flex p-ml-2">
-                                        <p-columnFilter [field]="childCol.field" matchMode="in" [showMenu]="false"
-                                            [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
-                                            [showClearButton]="false" [showApplyButton]="false"
-                                            [style]="{'margin-top':'2px'}">
-                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback"
-                                                #filter>
-                                                <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
-                                                    (onPanelShow)="onFilterClick(childCol.field)"
-                                                    (onPanelHide)="onFilterBlur(childCol.field)"
-                                                    [options]="row?.children?.tableColumnData[childCol.field]"
-                                                    [placeholder]="'Select '+ childCol.field"
-                                                    (onChange)="filter($event.value)" [optionValue]="'value'"
-                                                    [optionLabel]="'name'"
-                                                    [ngModel]="row?.children?.tableColumnForm[childCol.field]"
-                                                    styleClass="column-filter">
-                                                    <ng-template pTemplate="selectedItems">
-                                                        <i class="pi pi-filter-icon pi-filter"
-                                                            style="font-size: 0.8rem"></i>
-                                                    </ng-template>
-                                                </p-multiSelect>
-                                            </ng-template>
-                                        </p-columnFilter>
-                                        <p-sortIcon [field]="sortableColumn(childCol.field)"
-                                            aria-label="Sort by column"></p-sortIcon>
-                                    </div>
-                                </div>
-                            </th>
-                        </ng-container>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-childRow>
-                    <tr>
-                        <td *ngFor="let childCol of row.children?.columns">
-                            <ng-container [ngSwitch]="childCol.field">
-
-                                <span *ngSwitchCase="'dora'">
-                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(row[childCol.field])">
-                                        {{ childRow[childCol.field] }}</div>
-                                </span>
-
-                                <span *ngSwitchDefault>{{ childRow[childCol.field] }}</span>
-
-                                <div *ngSwitchCase="'health'">
-                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
-                                        {{ childRow[childCol.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'speed'">
-                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
-                                        {{ childRow[childCol.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'quality'" class="p-p-3">
-                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
-                                        {{ childRow[childCol.field] }}</div>
-                                </div>
-                                <div *ngSwitchCase="'value'" class="p-p-3">
-                                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
-                                        {{ childRow[childCol.field] }}</div>
-                                </div>
-
-                            </ng-container>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage" let-columns>
-                    <tr>
-                        <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">No Project found</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            <p-table *ngIf="nestedLoader" [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-product>
-                    <tr>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            </td>
-            </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage" let-columns>
-                <tr>
-                    <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">No Project found</td>
-                </tr>
-            </ng-template>
-            </p-table>
-
-            <p-table *ngIf="loader" [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-product>
-                    <tr>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
+      </div>
     </div>
+
+    <div class="kpi-card-body">
+      <p-table
+        *ngIf="!loader"
+        [value]="tableData['data']"
+        [columns]="tableData['columns']"
+        responsiveLayout="scroll"
+        class="mt-3"
+        [expandedRowKeys]="expandedRows"
+        dataKey="id"
+        (onRowExpand)="onRowExpand($event)"
+        rowExpandMode="single">
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <ng-container *ngFor="let col of columns">
+              <th
+                style="background-color: #d9e7fe"
+                [pSortableColumn]="sortableColumn(col.field)"
+                id="{{ col.field }}">
+                <div class="table-head">
+                  <span [ngStyle]="{ width: 'max-content' }">{{
+                    col.header
+                  }}</span>
+                  <div class="p-d-flex p-ml-2">
+                    <p-columnFilter
+                      [field]="col.field"
+                      matchMode="in"
+                      [showMenu]="false"
+                      [showMatchModes]="false"
+                      [showOperator]="false"
+                      [showAddButton]="false"
+                      [showClearButton]="false"
+                      [showApplyButton]="false"
+                      [style]="{ 'margin-top': '2px' }">
+                      <ng-template
+                        pTemplate="filter"
+                        let-value
+                        let-filter="filterCallback"
+                        #filter>
+                        <p-multiSelect
+                          resetFilterOnHide="true"
+                          autofocusFilter="true"
+                          (onPanelShow)="onFilterClick(col.field)"
+                          (onPanelHide)="onFilterBlur(col.field)"
+                          [options]="tableColumnData[col.field]"
+                          [placeholder]="'Select ' + col.field"
+                          (onChange)="filter($event.value)"
+                          [optionValue]="'value'"
+                          [optionLabel]="'name'"
+                          [ngModel]="tableColumnForm[col.field]"
+                          styleClass="column-filter"
+                          (keydown.enter)="handleMultiSelectEnter($event)">
+                          <ng-template pTemplate="selectedItems">
+                            <i
+                              class="pi pi-filter-icon pi-filter"
+                              style="font-size: 0.8rem"></i>
+                          </ng-template>
+                        </p-multiSelect>
+                      </ng-template>
+                    </p-columnFilter>
+                    <p-sortIcon
+                      [field]="sortableColumn(col.field)"
+                      aria-label="Sort by column"></p-sortIcon>
+                  </div>
+                </div>
+              </th>
+            </ng-container>
+          </tr>
+        </ng-template>
+
+        <ng-template
+          pTemplate="body"
+          let-row
+          let-columns="columns"
+          let-expanded="expanded">
+          <tr>
+            <td *ngFor="let col of columns">
+              <ng-container [ngSwitch]="col.field">
+                <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">
+                  <p-button
+                    type="button"
+                    pRipple
+                    [pRowToggler]="row"
+                    [text]="true"
+                    [rounded]="true"
+                    styleClass="expand-cta-btn"
+                    [plain]="true"
+                    [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
+                  {{ row[col.field] }}
+                </div>
+
+                <span *ngSwitchCase="'dora'">
+                  <div
+                    class="p-p-2 styled-cell"
+                    [ngClass]="getMClass(row[col.field])">
+                    {{ row[col.field] }}
+                  </div>
+                </span>
+
+                <span *ngSwitchCase="'completion'">{{ row[col.field] }}</span>
+
+                <div *ngSwitchCase="'health'">
+                  <div
+                    class="p-p-2 styled-cell"
+                    [ngClass]="getMClass(row[col.field])">
+                    {{ row[col.field] }}
+                  </div>
+                </div>
+                <div *ngSwitchCase="'speed'">
+                  <div
+                    class="p-p-2 styled-cell"
+                    [ngClass]="getMClass(row[col.field])">
+                    {{ row[col.field] }}
+                  </div>
+                </div>
+                <div *ngSwitchCase="'quality'">
+                  <div
+                    class="p-p-2 styled-cell"
+                    [ngClass]="getMClass(row[col.field])">
+                    {{ row[col.field] }}
+                  </div>
+                </div>
+                <div *ngSwitchCase="'value'">
+                  <div
+                    class="p-p-2 styled-cell"
+                    [ngClass]="getMClass(row[col.field])">
+                    {{ row[col.field] }}
+                  </div>
+                </div>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+        <!-- Row Expansion  -->
+        <ng-template
+          pTemplate="rowexpansion"
+          let-row
+          let-columns="row.children?.columns">
+          <tr>
+            <td
+              [attr.colspan]="
+                row?.children?.columns?.length || tableData['columns'].length
+              ">
+              <div class="p-p-5 background-grey">
+                <!-- Child Table Example -->
+                <p-table
+                  *ngIf="!nestedLoader && row?.children?.data"
+                  [value]="row.children?.data"
+                  styleClass="expanded-table-wrapper p-datatable-striped p-datatable-gridlines"
+                  tableStyleClass="expanded-table"
+                  responsiveLayout="scroll">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <ng-container
+                        *ngFor="let childCol of row.children?.columns">
+                        <th
+                          [pSortableColumn]="sortableColumn(childCol.field)"
+                          id="{{ childCol.field }}">
+                          <div class="table-head">
+                            <span [ngStyle]="{ width: 'max-content' }">{{
+                              childCol.header
+                            }}</span>
+                            <div class="p-d-flex p-ml-2">
+                              <p-columnFilter
+                                [field]="childCol.field"
+                                matchMode="in"
+                                [showMenu]="false"
+                                [showMatchModes]="false"
+                                [showOperator]="false"
+                                [showAddButton]="false"
+                                [showClearButton]="false"
+                                [showApplyButton]="false"
+                                [style]="{ 'margin-top': '2px' }">
+                                <ng-template
+                                  pTemplate="filter"
+                                  let-value
+                                  let-filter="filterCallback"
+                                  #filter>
+                                  <p-multiSelect
+                                    resetFilterOnHide="true"
+                                    autofocusFilter="true"
+                                    (onPanelShow)="onFilterClick(childCol.field)"
+                                    (onPanelHide)="onFilterBlur(childCol.field)"
+                                    [options]="
+                                      row?.children?.tableColumnData[
+                                        childCol.field
+                                      ]
+                                    "
+                                    [placeholder]="'Select ' + childCol.field"
+                                    (onChange)="filter($event.value)"
+                                    [optionValue]="'value'"
+                                    [optionLabel]="'name'"
+                                    [ngModel]="
+                                      row?.children?.tableColumnForm[
+                                        childCol.field
+                                      ]
+                                    "
+                                    styleClass="column-filter">
+                                    <ng-template pTemplate="selectedItems">
+                                      <i
+                                        class="pi pi-filter-icon pi-filter"
+                                        style="font-size: 0.8rem"></i>
+                                    </ng-template>
+                                  </p-multiSelect>
+                                </ng-template>
+                              </p-columnFilter>
+                              <p-sortIcon
+                                [field]="sortableColumn(childCol.field)"
+                                aria-label="Sort by column"></p-sortIcon>
+                            </div>
+                          </div>
+                        </th>
+                      </ng-container>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-childRow>
+                    <tr>
+                      <td *ngFor="let childCol of row.children?.columns">
+                        <ng-container [ngSwitch]="childCol.field">
+                          <span *ngSwitchCase="'dora'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(row[childCol.field])">
+                              {{ childRow[childCol.field] }}
+                            </div>
+                          </span>
+
+                          <span *ngSwitchDefault>{{
+                            childRow[childCol.field]
+                          }}</span>
+
+                          <div *ngSwitchCase="'health'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
+                            </div>
+                          </div>
+                          <div *ngSwitchCase="'speed'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
+                            </div>
+                          </div>
+                          <div *ngSwitchCase="'quality'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
+                            </div>
+                          </div>
+                          <div *ngSwitchCase="'value'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
+                            </div>
+                          </div>
+                        </ng-container>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                      <td
+                        [attr.colspan]="tableData['columns'].length"
+                        role="cell"
+                        tabindex="0">
+                        No Project found
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+                <p-table
+                  *ngIf="nestedLoader"
+                  [value]="products"
+                  [tableStyle]="{ 'min-width': '50rem' }">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-product>
+                    <tr>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+            <td
+              [attr.colspan]="tableData['columns'].length"
+              role="cell"
+              tabindex="0">
+              No Project found
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <p-table
+        *ngIf="loader"
+        [value]="products"
+        [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
 </div>
 
 <div class="kpi-details-table-container p-mx-5 p-mt-5">
-
-    <div class="kpi-card-container">
-        <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
-            <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
-                <div class="kpi-card-title-container">
-                    <h3 tabindex="0" [attr.aria-label]="'KPI Details'"> Maturity Wheel
-                    </h3>
-                </div>
-            </div>
+  <div class="kpi-card-container">
+    <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+      <div
+        class="kpi-card-name-placeholder"
+        role="region"
+        aria-label="KPI Card Header">
+        <div class="kpi-card-title-container">
+          <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Maturity Wheel</h3>
         </div>
-
-        <div class="kpi-card-body">
-            <app-maturity #maturityComponent></app-maturity>
-        </div>
+      </div>
     </div>
+
+    <div class="kpi-card-body">
+      <app-maturity #maturityComponent></app-maturity>
+    </div>
+  </div>
 </div>
