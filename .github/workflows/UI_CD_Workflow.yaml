@@ -98,7 +98,6 @@ jobs:
           cd build
           tar -czvf ui2.tar *
           mv ui2.tar ../nginx/files
-          rm -rf build
       
       - name: Run UI Unit Tests
         if: ${{ github.event.inputs.test == 'true' }}
