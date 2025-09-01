@@ -42,6 +42,7 @@ jobs:
   #✅ UI Build & Testing
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       argocd_app_name: ${{ steps.set_env.outputs.argocd_app_name }}
     steps:
@@ -151,6 +152,7 @@ jobs:
 
   deploy:
     runs-on: github-actions-self-hosted-runner
+    timeout-minutes: 30
     needs: build
     env:
       ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}
