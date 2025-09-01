@@ -1,13 +1,21 @@
-name: UI_CD_Workflow  # Define the name of the workflow
+name: UI_CI_CD_Workflow  # Define the name of the workflow
 
 # Define when the workflow should trigger
 on:
-  push:
-    branches:
-      - qa-master
-      - master
+  # push:
+  #   branches:
+  #     - qa-master
+  #     - master
   workflow_dispatch:
     inputs:
+      test:
+        description: 'Run tests'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - "false"
+          - "true"
       env:
         description: 'Environment to deploy'
         required: true
@@ -16,6 +24,8 @@ on:
         options:
           - dev
           - dev1
+          - qa
+          - stage
 
 # Define environment variables
 env:
@@ -24,58 +34,72 @@ env:
   ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}  # e.g. myacr.azurecr.io
   BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }} # HTTPS clone URL (without creds)
   HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}         # charts/myapp or similar
+  GITHUB_HEAD_NAME: $GITHUB_HEAD_REF  # Store the head branch name
+  sonartoken: ${{ secrets.SONARQUBE_TOKEN }}  # Secret for SonarQube authentication
+  sonarurl: ${{ secrets.SONARURL }}  # SonarQube URL stored in secrets
 
 jobs:
   #✅ UI Build & Testing
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       argocd_app_name: ${{ steps.set_env.outputs.argocd_app_name }}
     steps:
       - name: Set IMAGE_TAG and values file
         id: set_env
         run: |
-          BRANCH="${GITHUB_REF##*/}"
-          if [[ "$BRANCH" == "qa-master" ]]; then
+          ENV="${{ github.event.inputs.env }}"
+          if [[ "$ENV" == "qa" ]]; then
             echo "IMAGE_TAG=qa-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-qa.yaml" >> $GITHUB_ENV
             echo "ARGOCD_APP_NAME=knh-ui-qa" >> $GITHUB_ENV
             echo "argocd_app_name=knh-ui-qa" >> $GITHUB_OUTPUT
-          elif [[ "$BRANCH" == "master" ]]; then
+          elif [[ "$ENV" == "stage" ]]; then
             echo "IMAGE_TAG=master-${GITHUB_SHA::8}" >> $GITHUB_ENV
             echo "VALUES_FILE=values-stage.yaml" >> $GITHUB_ENV
             echo "ARGOCD_APP_NAME=knh-ui-stage" >> $GITHUB_ENV
             echo "argocd_app_name=knh-ui-stage" >> $GITHUB_OUTPUT
+          elif [[ "$ENV" == "dev1" ]]; then
+            echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
+            echo "ARGOCD_APP_NAME=knh-ui-dev1" >> $GITHUB_ENV
+            echo "argocd_app_name=knh-ui-dev1" >> $GITHUB_OUTPUT
           else
-            ENV="${{ github.event.inputs.env }}"
-            if [[ "$ENV" == "dev1" ]]; then
-              echo "IMAGE_TAG=dev1-${GITHUB_SHA::8}" >> $GITHUB_ENV
-              echo "VALUES_FILE=values-dev1.yaml" >> $GITHUB_ENV
-              echo "ARGOCD_APP_NAME=knh-ui-dev1" >> $GITHUB_ENV
-              echo "argocd_app_name=knh-ui-dev1" >> $GITHUB_OUTPUT
-            else
-              echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
-              echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
-              echo "ARGOCD_APP_NAME=knh-ui-dev" >> $GITHUB_ENV
-              echo "argocd_app_name=knh-ui-dev" >> $GITHUB_OUTPUT
-            fi
+            echo "IMAGE_TAG=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VALUES_FILE=values-dev.yaml" >> $GITHUB_ENV
+            echo "ARGOCD_APP_NAME=knh-ui-dev" >> $GITHUB_ENV
+            echo "argocd_app_name=knh-ui-dev" >> $GITHUB_OUTPUT
           fi
-
 
       # 1. Checkout GitHub repo
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
 
       - name: Set Up Node.js  # Set up Node.js environment
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      
+      - name: Check Code Format with Prettier
+        if: ${{ github.event.inputs.test == 'true' }}
+        run: |
+          npm cache clean --force
+          npm install
+          npx prettier "**/*.{ts,css}" --check
 
       - name: Install Dependencies & Build UI
         run: |
           npm cache clean --force
           npm install
-          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          npm install -g @angular/cli@17.3.12
           npm run build
           mkdir -p build
           cp -r dist/dashboard/* build/
@@ -83,7 +107,28 @@ jobs:
           cd build
           tar -czvf ui2.tar *
           mv ui2.tar ../nginx/files
-          rm -rf build
+      
+      - name: Run UI Unit Tests
+        if: ${{ github.event.inputs.test == 'true' }}
+        run: |
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          ng test --code-coverage
+
+      - name: SonarQube Analysis  # Run static analysis
+        if: ${{ github.event.inputs.test == 'true' }}
+        run: |
+          chown -R $(whoami) "$GITHUB_WORKSPACE"
+          echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
+          echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
+          echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
+          npm install -D sonarqube-scanner
+          npm run sonar
+
+      - name: Check SonarQube Quality Gate
+        if: ${{ github.event.inputs.test == 'true' }}
+        run: |
+          chmod +x SonarQG.sh
+          ./SonarQG.sh ./.scannerwork/report-task.txt
 
       # Docker build & push to ACR
       - name: Build & Push Docker Image
@@ -107,6 +152,7 @@ jobs:
 
   deploy:
     runs-on: github-actions-self-hosted-runner
+    timeout-minutes: 30
     needs: build
     env:
       ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}

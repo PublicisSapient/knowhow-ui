@@ -195,4 +195,18 @@
       ></app-conditional-input>
     </div>
 
+    <div *ngSwitchCase="'multiselect-dropdown'" tabindex="0">
+      <app-conditional-input-v2
+        [id]="fieldConfig?.fieldName"
+        [name]="fieldConfig?.fieldName"
+        ngDefaultControl
+        [valueObj]="value"
+        (conditionalInputChange)="setValueConditionalInput($event)"
+        [fieldConfig]="fieldConfig"
+        role="group"
+        aria-label="Conditional Input"
+        tabindex="0"
+      ></app-conditional-input-v2>
+    </div>
+
   </div>

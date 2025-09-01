@@ -498,19 +498,30 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.filterOptions['filter' + (filterIndex + 1)] = [value];
       }
     }
+    if (this.kpiData?.kpiId === 'kpi28') {
+      this.filterOptions['filter' + (filterIndex + 1)] = [value];
+    }
     if (
       value &&
       type?.toLowerCase() == 'radio' &&
       this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'
     ) {
-      this.optionSelected.emit(value);
+      if (this.kpiData?.kpiId === 'kpi28') {
+        this.optionSelected.emit(this.filterOptions['filter1']);
+      } else {
+        this.optionSelected.emit(value);
+      }
     } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
         this.optionSelected.emit(['Overall']);
       } else {
-        this.optionSelected.emit(this.filterOptions);
+        if (this.kpiData?.kpiId === 'kpi28') {
+          this.optionSelected.emit(this.filterOptions['filter1']);
+        } else {
+          this.optionSelected.emit(this.filterOptions);
+        }
       }
     }
     const gaObj = {

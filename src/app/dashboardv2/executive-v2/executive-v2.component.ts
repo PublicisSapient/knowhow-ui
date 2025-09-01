@@ -146,6 +146,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   showSprintGoalsPanel = false;
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
+  defectsBreachedSLAs;
 
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
@@ -1985,6 +1986,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
         this.kpiChartData[kpiId],
       );
+    }
+
+    if (kpiId === 'kpi195') {
+      this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
 
     this.createTrendsData(kpiId);

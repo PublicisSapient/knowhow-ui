@@ -1493,14 +1493,14 @@ export class MaturityComponent implements OnInit, OnDestroy {
       ];
 
       if (
-        maturityLevelData.maturityRange[0].charAt(0) === '-' &&
+        maturityLevelData.maturityRange[0]?.charAt(0) === '-' &&
         !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])
       ) {
         maturityLevelData.maturityRange[0] =
           '>= ' + maturityLevelData.maturityRange[0].substring(1);
       }
       if (
-        maturityLevelData.maturityRange[0].charAt(0) === '-' &&
+        maturityLevelData.maturityRange[0]?.charAt(0) === '-' &&
         kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])
       ) {
         maturityLevelData.maturityRange[0] =
@@ -1528,14 +1528,14 @@ export class MaturityComponent implements OnInit, OnDestroy {
         '</sub></span>';
 
       if (
-        maturityLevelData.maturityRange[4].slice(-1) === '-' &&
+        maturityLevelData.maturityRange[4]?.slice(-1) === '-' &&
         !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])
       ) {
         maturityLevelData.maturityRange[4] =
           maturityLevelData.maturityRange[4] + '0';
       }
       if (
-        maturityLevelData.maturityRange[4].slice(-1) === '-' &&
+        maturityLevelData.maturityRange[4]?.slice(-1) === '-' &&
         kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])
       ) {
         maturityLevelData.maturityRange[4] =

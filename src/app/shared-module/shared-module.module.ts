@@ -87,6 +87,7 @@ import { CollapsiblePanelComponent } from '../component/collapsible-panel/collap
 import { TableComponent } from '../component/table/table.component';
 import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
 import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe';
+import { ConditionalInputV2Component } from './conditional-input-v2/conditional-input-v2.component';
 
 @NgModule({
   imports: [
@@ -206,6 +207,7 @@ import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe'
     TableComponent,
     UtcToLocalUserPipe,
     DashToBulletsPipe,
+    ConditionalInputV2Component,
   ],
   providers: [ConfirmationService, KpiHelperService],
 })
