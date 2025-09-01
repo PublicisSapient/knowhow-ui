@@ -288,6 +288,13 @@
                                                                     </ng-container>
                                                                 </ng-container>
 
+                                                                <ng-container *ngSwitchCase="'stacked-bar-chart'">
+                                                                    <app-stacked-group-bar-chart
+                                                                        [kpiData]="defectsBreachedSLAs"
+                                                                        [data]="kpiChartData[kpi?.kpiId]"
+                                                                        [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
+                                                                </ng-container>
+
 
                                                                 <app-multiline-v2 *ngSwitchDefault
                                                                     [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
