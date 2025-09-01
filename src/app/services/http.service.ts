@@ -199,6 +199,7 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
+  private executivePageURL = this.baseUrl + '/api/executive';
 
   constructor(
     private router: Router,
@@ -1013,7 +1014,80 @@ export class HttpService {
 
   /** show-Hide for other nav, filter component in New UI */
   getShowHideOnDashboardNewUI(payload) {
+    const mockData = {
+      boardId: 0,
+      boardName: 'Home',
+      boardSlug: 'home',
+      kpis: [
+        {
+          kpiId: 'kpi39',
+          kpiName: 'Executive',
+          isEnabled: true,
+          order: 2,
+          kpiDetail: {
+            id: '65793ddb127be336160bc0d1',
+            kpiId: 'kpi39',
+            kpiName: 'Sprint Velocity',
+            isDeleted: 'False',
+            defaultOrder: 20,
+            kpiUnit: 'SP',
+            chartType: 'landign page',
+            upperThresholdBG: 'white',
+            lowerThresholdBG: 'red',
+            showTrend: false,
+            isPositiveTrend: true,
+            lineLegend: 'Sprint Velocity',
+            barLegend: 'Last 5 Sprints Average',
+            calculateMaturity: true,
+            hideOverallFilter: false,
+            kpiSource: 'Jira',
+            combinedKpiSource: 'Jira/Azure/Rally',
+            maxValue: '300',
+            thresholdValue: 40,
+            kanban: false,
+            groupId: 2,
+
+            aggregationCriteria: 'sum',
+            maturityRange: ['1-2', '2-3', '3-4', '4-5', '5-6'],
+            trendCalculative: false,
+            xaxisLabel: 'Sprints',
+            yaxisLabel: 'Count',
+            isAdditionalFilterSupport: true,
+          },
+          shown: true,
+        },
+      ],
+      filters: {
+        projectTypeSwitch: {
+          enabled: true,
+          visible: true,
+        },
+        primaryFilter: {
+          type: 'singleSelect',
+          defaultLevel: {
+            labelName: 'project',
+          },
+        },
+        parentFilter: {
+          labelName: 'Organization Level',
+        },
+      },
+    };
     return this.http.post<any>(this.getShowHideKpiNewUIUrl, payload);
+    // .pipe(
+    //   map((responce) => {
+    //     responce.data.userBoardConfigDTO['scrum'] = [
+    //       mockData,
+    //       ...responce.data.userBoardConfigDTO['scrum'],
+    //     ];
+    //     responce.data.userBoardConfigDTO['kanban'] = [
+    //       mockData,
+    //       ...responce.data.userBoardConfigDTO['kanban'],
+    //     ];
+    //     // console.log(responce);
+    //     return responce;
+    //   }),
+    // );
   }
 
   submitShowHideOnDashboard(data) {
@@ -1301,5 +1375,104 @@ export class HttpService {
 
   shareViaEmail(payload) {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
+  }
+
+  getExecutiveBoardData(payload, selectedType) {
+    return this.http.post<any>(
+      `${this.executivePageURL}?iskanban=${selectedType}`,
+      payload,
+    );
+    const mockData = {
+      success: true,
+      massage: 'data came successfully...',
+      data: {
+        matrix: {
+          rows: [
+            {
+              id: 'projectid',
+              name: 'Retail 3',
+              completion: '7',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+              children: [
+                {
+                  id: 'projectid',
+                  name: 'Retail 344',
+                  completion: '7',
+                  health: 'Critic',
+                  speed: 'M1',
+                  quality: 'M3',
+                  value: 'M2',
+                  dora: 'M4',
+                },
+                {
+                  id: 'projectid',
+                  name: 'Retail 344',
+                  completion: '7',
+                  health: 'Critic',
+                  speed: 'M1',
+                  quality: 'M3',
+                  value: 'M2',
+                  dora: 'M4',
+                },
+              ],
+            },
+            {
+              id: 'projectid',
+              name: 'Retail 344',
+              completion: '7',
+              health: 'Critic',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+            {
+              id: 'projectid',
+              name: 'Retail 334',
+              completion: '7',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+            {
+              id: 'projectid444',
+              name: 'Retail 3909',
+              completion: '7',
+              health: 'Healthy',
+              boardMaturity: {
+                speed: 'M1',
+                quality: 'M3',
+                value: 'M2',
+                dora: 'M4',
+              },
+            },
+          ],
+          columns: [
+            // { field: 'id', header: 'Project ID' },
+            { field: 'name', header: 'Project name' },
+            { field: 'completion', header: 'Complete(%)' },
+            { field: 'health', header: 'Overall health' },
+            { field: 'speed', header: 'Speed' },
+            { field: 'quality', header: 'Quality' },
+            { field: 'value', header: 'Value' },
+            { field: 'dora', header: 'Dora' },
+          ],
+        },
+      },
+    };
+
+    return of(mockData);
   }
 }
