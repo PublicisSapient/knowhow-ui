@@ -4,8 +4,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription, throwError } from 'rxjs';
-import { catchError, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 
 @Component({
@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                   localStorage.getItem('completeHierarchyData') || '{}',
                 )[this.selectedType];
 
-                const label = hierarchy.find(
+                const label = hierarchy?.find(
                   (hi) => hi.level === filterApplyData.level,
                 ).hierarchyLevelName;
 
