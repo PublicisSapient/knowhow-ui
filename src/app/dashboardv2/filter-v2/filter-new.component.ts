@@ -318,6 +318,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
+    console.log('type change');
     this.selectedType = type?.toLowerCase();
     if (type.toLowerCase() === 'kanban') {
       this.kanban = true;
