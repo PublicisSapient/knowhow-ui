@@ -25,6 +25,7 @@
   optionLabel="label"
   (onChange)="setValue($event)"
   role="listbox"
+ panelStyleClass="ms-checkbox-only"
   [attr.aria-label]="fieldConfig?.fieldLabel + ' Multi-Select'"
   [attr.aria-multiselectable]="true"
   [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
@@ -48,9 +49,9 @@
             {{
               option.label +
                 ' ' +
-                option.operator +
+                option.structuredValue.sla +
                 ' ' +
-                option.structuredValue.sla
+                option.structuredValue.timeUnit
             }}&nbsp;,&nbsp;
           </ng-container>
           <ng-container *ngIf="!option.structuredValue.sla">
@@ -77,18 +78,33 @@
         <span>{{ option.label }}</span>
 
         <p-inputNumber
+        (click)="$event.stopPropagation()"
           class="count-box"
           [(ngModel)]="option.structuredValue.sla"
           [inputStyle]="{ width: '80px' }"
           spinnerMode="horizontal"
           [min]="0"
-          (click)="$event.stopPropagation(); $event.preventDefault()"
+       [disabled]="!finalValue?.includes(option)"
           (onInput)="setCounter($event, option)"
-          (onFocus)="removeFocus($event)"
           role="spinbutton"
           [attr.aria-label]="'Count input for ' + option.label"
           tabindex="0">
         </p-inputNumber>
+       
+<div class="pill-dropdown" 
+     (click)="toggleDropdown($event,option)" 
+     [class.disabled]="!finalValue?.includes(option)">
+
+  <span>{{ option.structuredValue.timeUnit || 'Select' }}</span>
+  <span class="arrow"></span>
+
+  <ul class="pill-dropdown-options" *ngIf="option.show">
+    <li *ngFor="let item of templateDropValues" [class.selected]="option.structuredValue.timeUnit === item.name"
+        (click)="selectOption($event,item, option)">
+      {{ item.name }}
+    </li>
+  </ul>
+</div>     
       </div>
     </div>
   </ng-template>
