@@ -37,6 +37,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { SliderModule } from 'primeng/slider';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -236,6 +239,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     ProgressBarModule,
     AutoCompleteModule,
     ChipsModule,
+    CardModule,
+    DividerModule,
+    SliderModule,
   ],
   providers: [
     ExcelService,
