@@ -72,8 +72,8 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   setValueConditionalInput(event) {
     this.value = event.map((val) => ({
-      labelValue: val.labelValue,
-      countValue: val.countValue,
+      label: val.label,
+      structuredValue: val.structuredValue,
     }));
 
     this.onChange(this.value);
