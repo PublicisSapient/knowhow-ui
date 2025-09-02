@@ -17,6 +17,15 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
 import { of, throwError } from 'rxjs';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-maturity', // must match actual selector used in HomeComponent template
+  template: '',
+})
+class MockMaturityComponent {
+  receiveSharedData = jasmine.createSpy('receiveSharedData');
+}
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -97,7 +106,7 @@ describe('HomeComponent', () => {
         RouterTestingModule.withRoutes(routes),
         HttpClientTestingModule,
       ],
-      declarations: [HomeComponent],
+      declarations: [HomeComponent, MockMaturityComponent],
       providers: [
         MessageService,
         { provide: ActivatedRoute, useValue: activatedRouteMock },
