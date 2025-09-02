@@ -146,6 +146,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   showSprintGoalsPanel = false;
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
+  defectsBreachedSLAs;
 
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
@@ -1979,6 +1980,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
         this.kpiChartData[kpiId],
       );
+    }
+
+    if (kpiId === 'kpi195') {
+      this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
 
     this.createTrendsData(kpiId);
@@ -4779,7 +4784,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   private handlePageScrollOnSearch(searchValue) {
     if (searchValue) {
-      this.scrollToHighlightedKpi(searchValue.kpiId);
+      this.scrollToHighlightedKpi(searchValue.value.kpiId);
     }
   }
 
@@ -4817,8 +4822,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const currentUserDetails = localStorage.getItem('currentUserDetails');
     if (currentUserDetails) {
       const userDetails = JSON.parse(currentUserDetails);
-      this.floatingRecommendation =
-        userDetails.authorities?.includes('ROLE_SUPERADMIN');
+      this.floatingRecommendation = [
+        'ROLE_SUPERADMIN',
+        'ROLE_PROJECT_ADMIN',
+      ].some((role) => userDetails.authorities?.includes(role));
     }
   }
 

@@ -132,7 +132,7 @@ import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
-import { HomeComponent } from './dashboard/home/home.component';
+import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -191,7 +191,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     RecommendationsComponent,
     StickyHeaderV2Component,
     AddToReportPopUpComponent,
-    HomeComponent,
+    StackedGroupBarChartComponent,
   ],
   imports: [
     SharedModuleModule,
