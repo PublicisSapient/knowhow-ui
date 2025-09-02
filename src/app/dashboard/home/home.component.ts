@@ -134,12 +134,12 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.loader = false;
             });
 
-          // this.maturityComponent.receiveSharedData({
-          //   masterData: sharedobject.masterData,
-          //   filterdata: sharedobject.filterdata,
-          //   filterApplyData: sharedobject.filterApplyData,
-          //   dashConfigData: sharedobject.dashConfigData,
-          // });
+          this.maturityComponent.receiveSharedData({
+            masterData: sharedobject.masterData,
+            filterdata: sharedobject.filterdata,
+            filterApplyData: sharedobject.filterApplyData,
+            dashConfigData: sharedobject.dashConfigData,
+          });
         }),
     );
   }
@@ -211,7 +211,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getMClass(value: string) {
     const v = (value || '').toLowerCase();
-    // console.log(value, v);
     return {
       m0: 'm0',
       m1: 'm1',
@@ -244,7 +243,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onRowExpand(event) {
-    console.log('event ', event);
     this.nestedLoader = true;
     this.selectedRowToExpand = event.data;
     const filterApplyData = this.payloadPreparation(
