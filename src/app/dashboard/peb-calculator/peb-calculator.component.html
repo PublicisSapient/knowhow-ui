@@ -1,69 +1,78 @@
-<div class="calc-container">
-  <div class="calc-card">
-    <h2 class="calc-title">Potential Economic Benefits Calculator</h2>
-    <form class="calc-form" autocomplete="off">
-      <div class="form-group">
-        <label for="developers">Total Number of Developers</label>
-        <input id="developers" type="number" class="calc-input" [(ngModel)]="developers" name="developers" placeholder="20" />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="cost">Average Cost to Company per Developer</label>
-          <input id="cost" type="number" class="calc-input" [(ngModel)]="costPerDeveloper" name="costPerDeveloper" placeholder="10000" />
-        </div>
-        <div class="form-group time-group">
-          <label for="duration">Time Duration</label>
-          <select id="duration" class="calc-input" [(ngModel)]="duration" name="duration">
-            <option>Monthly</option>
-            <option>Quarterly</option>
-            <option>Half-yearly</option>
-            <option>Annually</option>
-          </select>
-        </div>
-      </div>
-      <button type="button" class="calc-btn" (click)="calculatePEB()">Caiculate PEB</button>
-    </form>
-    <div *ngIf="annualPEB !== null">
-  <h3>Annual Potential Economic Benefit: {{ annualPEB | currency }}</h3>
-</div>
-  </div>
+<div class="dashboard-container">
 
-  <div class="calc-card">
-    <h3 class="calc-summary-title">Executive Summary</h3>
-    <div class="summary-top">
-      <div class="summary-box">
-        <div class="summary-label">Estimated Savings<br>from Reduced Rework</div>
-        <div class="summary-value">$42,000</div>
-        <div class="summary-sub">21 %</div>
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">Estimated Value<br>from Faster Delivery</div>
-        <div class="summary-value">$25,000</div>
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">Overall Potential<br>Economic Benefit</div>
-        <div class="summary-value">$67,000</div>
-      </div>
-    </div>
-    <div class="summary-bottom">
-      <div class="bar-chart">
-        <!-- <div class="bar-wrapper">
-          <div class="bar current"></div>
-          <div class="bar-label">Current</div>
+  <p-card class="mb-3">
+    <div class="form-title">Potential Economic Benefits Calculator</div>
+    <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
+      <div class="p-d-flex">
+        <div class="p-col-4">
+          <div class="p-col-12"><label for="devCount">Total Number of Developers</label></div>
+          <div class="p-col-12"><input type="number" class="input-field-calc" id="devCount" pInputText placeholder="Total Number of Developers" formControlName="devCountControl" /></div>
+          <div class="p-col-12"><p-slider formControlName="devCountControl" class="w-full" [step]="1" [min]="1" [max]="50"></p-slider></div>
         </div>
-        <div class="bar-wrapper">
-          <div class="bar ai"></div>
-          <div class="bar-label">AI-Assisted</div>
-        </div> -->
-      </div>
-      <div class="ai-note">
-        <div class="ai-note-text">80% AI recommmendation adoption could yield an aditional</div>
-        <div class="ai-note-value">$15,000</div>
-        <div class="ai-note-caption">
-          Estimates based on your inputs<br />
-          and historical project data
+        <div class="p-col-4">
+          <div class="p-col-12"><label for="devCost">Average Cost per Developer</label></div>
+          <div class="p-col-12"><input type="number" class="input-field-calc" id="devCost" pInputText placeholder="Average Cost per Developer" formControlName="devCostControl" /></div>
+          <div class="p-col-12"><p-slider formControlName="devCostControl" class="w-full" [step]="10" [min]="50" [max]="10000"></p-slider></div>
+        </div>
+        <div class="p-col-4">
+          <div class="p-col-12"><label for="duration">Time Duration</label></div>
+          <div class="p-col-12"><p-dropdown id="duration" class="input-field-calc" [options]="durationOptions" formControlName="durationControl" placeholder="Time Duration"></p-dropdown></div>
         </div>
       </div>
+      <div class="p-col-12"><button pButton type="submit" label="Calculate PEB" class="calc-btn"></button></div>
+    </form>
+  </p-card>
+
+  <p-card class="p-mb-3">
+    <div class="exec-title p-mb-4 p-px-3">Executive Summary</div>
+    <div class="roi-impact-title p-mb-4 p-px-3">
+      <span class="green-text pi pi-dollar"></span> Expected ROI Impact
     </div>
-  </div>
+    <div class="p-grid metric-row p-px-3">
+      @for (roi of roiMetrics; track roi.label) {
+        <div class="p-col-3">
+          <div class="roi-card p-d-flex p-flex-column" [ngStyle]="{'background': roi.color}">
+            <span [class]="roi.icon + ' roi-icon'" class="item" [ngStyle]="{'color': roi.elemColor}"></span>
+            <div class="roi-label item">{{roi.label}}</div>
+            <div class="roi-percent item" [ngStyle]="{'color': roi.elemColor}">{{roi.percent}}%</div>
+          </div>
+          <div class="center-text p-mt-5 p-mb-2">
+            <div class="small-text">{{roi.estValueSavingsLabel}}</div>
+            <div class="est-value"><strong>{{roi.value | currency:'USD'}}</strong></div>
+          </div>
+        </div>
+      }
+    </div>
+    <p-divider></p-divider>
+    <div class="overall-benefit center-text p-mt-6 p-px-3">
+      <div class="p-mb-2"><strong>Overall Potential Economic Benefit</strong></div>
+      <div class="benefit-value blue-text">{{totalBenefit | currency:'USD'}}</div>
+      <div class="p-mt-2 small-text">Sum total of all cost savings above</div>
+    </div>
+  </p-card>
+
+  <p-card class="colored-card-block">
+    <div class="ai-section-title">Additional Cost Savings from AI Adoption <i class="pi pi-sparkles"></i></div>
+    <div class="colored-card-block_container p-p-3">
+      <div class="ai-comparison-title center-text p-my-3"><strong>Current vs AI-Assisted Development</strong></div>
+      <div class="p-grid mb-2 dev-comparison">
+        <div class="p-col-6">
+          <div class="dev-current-bar gray-bar"><span class="bar-percent">Current</span></div>
+          <div class="mb-1">Traditional Methods</div>
+        </div>
+        <div class="p-col-6">
+          <div class="dev-ai-bar blue-bar"><span class="bar-percent">+22%</span></div>
+          <div class="mb-1">AI-Enhanced</div>
+        </div>
+      </div>
+      <div class="ai-summary center-text p-p-5">
+        <div class="p-my-3"><span class="bold-text">80% AI recommendation adoption</span> could yield an additional</div>
+        <div class="p-my-3"><span class="ai-value blue-text">{{aiBenefit | currency:'USD'}}</span></div>
+        <div class="p-my-3">in potential economic benefits through AI-assisted development practices.</div>
+      </div>
+      <div class="p-mt-5 p-mb-3 small-text center-text">AI adoption estimates based on industry benchmarks and your organizational parameters</div>
+    </div>
+  </p-card>
+
 </div>
+
