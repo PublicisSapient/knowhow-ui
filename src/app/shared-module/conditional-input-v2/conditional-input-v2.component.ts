@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   Output,
@@ -20,21 +21,32 @@ export class ConditionalInputV2Component implements OnChanges {
   finalValue = [];
   templateData = [];
   templateLabels = [];
+  templateDropValues = [
+    { name: 'Days', code: 'D' },
+    { name: 'Hours', code: 'H' },
+  ];
+  @HostListener('document:click')
+  closeAll() {
+    if (this.finalValue) {
+      this.finalValue.forEach((opt) => (opt.show = false));
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(this.fieldConfig);
-    console.log(this.valueObj);
     if (changes.valueObj && this.valueObj.length) {
       this.templateLabels = this.templateLabelToLowercase(
         this.valueObj.map((val) => val.label),
       );
-      this.templateData = this.fieldConfig.options.filter((opt) =>
-        this.templateLabels.includes(opt.label),
-      );
+      this.templateData = this.fieldConfig.options
+        .map((opt) => {
+          opt.selected = this.templateLabels.includes(opt.label);
+          return opt;
+        })
+        .filter((opt) => opt.selected);
       this.finalValue = [...this.templateData];
       this.valueObj.forEach((element) => {
         const opt = this.fieldConfig.options.filter(
-          (opt) => opt.label === element.label.toLowerCase(),
+          (opt) => opt.label === element.label?.toLowerCase(),
         )[0];
         if (opt) {
           opt['structuredValue']['sla'] = element.structuredValue.sla;
@@ -44,10 +56,9 @@ export class ConditionalInputV2Component implements OnChanges {
   }
 
   templateLabelToLowercase = (arr: []) =>
-    arr.map((val: any) => val.toLowerCase());
+    arr.map((val: any) => val?.toLowerCase());
 
   setValue(event) {
-    console.log(event);
     this.templateLabels = this.templateLabelToLowercase(
       event.value.map((val) => val.label),
     );
@@ -85,5 +96,18 @@ export class ConditionalInputV2Component implements OnChanges {
 
   setOutput() {
     this.conditionalInputChange.emit(this.finalValue);
+  }
+
+  toggleDropdown(event: Event, option) {
+    if (!this.finalValue?.includes(option)) {
+      return;
+    }
+    option.show = !option.show;
+    event.stopPropagation();
+  }
+  selectOption(event, item: any, option: any) {
+    event.stopPropagation();
+    option.structuredValue.timeUnit = item.name;
+    option.show = false;
   }
 }
