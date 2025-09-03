@@ -145,8 +145,21 @@
       </div>
       <ng-container *ngSwitchCase="'radiobutton'">
         <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
-          <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
-            (onChange)="handleChange('radio', $event)"></p-selectButton>
+          <div class="p-selectbutton p-buttonset p-component">
+            <div *ngFor="let option of dropdownArr[0]?.options"
+                 class="p-ripple p-element p-button p-component"
+                 [ngClass]="{'p-highlight': radioOption === option}">
+
+              <p-radioButton [inputId]="option"
+                             [value]="option"
+                             [(ngModel)]="radioOption"
+                             [name]="kpiData?.kpiId"
+                             class="p-hidden-accessible"
+                             (onClick)="handleChange('radio', $event,option)"></p-radioButton>
+
+              <label [for]="option" class="p-button-label">{{ option }}</label>
+            </div>
+          </div>
         </ng-container>
       </ng-container>
 
