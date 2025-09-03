@@ -199,6 +199,7 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
+  private executivePageURL = this.baseUrl + '/api/executive';
 
   constructor(
     private router: Router,
@@ -1301,5 +1302,12 @@ export class HttpService {
 
   shareViaEmail(payload) {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
+  }
+
+  getExecutiveBoardData(payload, selectedType) {
+    return this.http.post<any>(
+      `${this.executivePageURL}?iskanban=${selectedType}`,
+      payload,
+    );
   }
 }
