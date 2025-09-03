@@ -299,7 +299,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
       return { tableColumnData, tableColumnForm };
     }
-    return;
   }
 
   urlRedirection() {}
