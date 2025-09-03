@@ -85,68 +85,70 @@ export class HomeComponent implements OnInit, OnDestroy {
                     res.originalError.message || 'Please try after sometime!',
                 });
               } else {
-                this.tableData['data'] = res.data.matrix.rows.map((row) => {
-                  return { ...row, ...row?.boardMaturity };
-                });
+                if (res?.data) {
+                  this.tableData['data'] = res.data.matrix.rows.map((row) => {
+                    return { ...row, ...row?.boardMaturity };
+                  });
 
-                this.tableData['columns'] = res.data.matrix.columns.filter(
-                  (col) => col.field !== 'id',
-                );
-
-                const { tableColumnData, tableColumnForm } =
-                  this.generateColumnFilterData(
-                    this.tableData['data'],
-                    this.tableData['columns'],
+                  this.tableData['columns'] = res.data.matrix.columns.filter(
+                    (col) => col.field !== 'id',
                   );
 
-                this.tableColumnData = tableColumnData;
-                this.tableColumnForm = tableColumnForm;
+                  const { tableColumnData, tableColumnForm } =
+                    this.generateColumnFilterData(
+                      this.tableData['data'],
+                      this.tableData['columns'],
+                    );
 
-                this.expandedRows = this.tableData['data']
-                  .filter((p) => p.children && p.children.length > 0) // only rows with children
-                  .reduce((acc, curr) => {
-                    acc[curr.id] = true; // mark as expanded
-                    return acc;
-                  }, {} as { [key: string]: boolean });
+                  this.tableColumnData = tableColumnData;
+                  this.tableColumnForm = tableColumnForm;
 
-                const hierarchy = JSON.parse(
-                  localStorage.getItem('completeHierarchyData') || '{}',
-                )[this.selectedType];
+                  this.expandedRows = this.tableData['data']
+                    .filter((p) => p.children && p.children.length > 0) // only rows with children
+                    .reduce((acc, curr) => {
+                      acc[curr.id] = true; // mark as expanded
+                      return acc;
+                    }, {} as { [key: string]: boolean });
 
-                const label = hierarchy?.find(
-                  (hi) => hi.level === filterApplyData.level,
-                ).hierarchyLevelName;
+                  const hierarchy = JSON.parse(
+                    localStorage.getItem('completeHierarchyData') || '{}',
+                  )[this.selectedType];
 
-                this.aggregrationDataList = [
-                  {
-                    cssClassName: 'users',
-                    category: 'Active ' + label + ' (s)',
-                    value: this.tableData['data'].length,
-                    icon: 'pi-users',
-                    average: 'NA',
-                  },
-                  {
-                    cssClassName: 'gauge',
-                    category: 'Avg. Efficiency',
-                    value: this.tableData['data'].length,
-                    icon: 'pi-gauge',
-                    average: this.calculateEfficiency(),
-                  },
-                  {
-                    cssClassName: 'exclamation',
-                    category: 'Critical ' + label + ' (s)',
-                    value: this.calculateHealth('critical').count,
-                    icon: 'pi-exclamation-triangle',
-                    average: this.calculateHealth('critical').average,
-                  },
-                  {
-                    cssClassName: 'heart-fill',
-                    category: 'Healthy ' + label + ' (s)',
-                    value: this.calculateHealth('healthy').count,
-                    icon: 'pi-heart-fill',
-                    average: this.calculateHealth('healthy').average,
-                  },
-                ];
+                  const label = hierarchy?.find(
+                    (hi) => hi.level === filterApplyData.level,
+                  ).hierarchyLevelName;
+
+                  this.aggregrationDataList = [
+                    {
+                      cssClassName: 'users',
+                      category: 'Active ' + label + ' (s)',
+                      value: this.tableData['data'].length,
+                      icon: 'pi-users',
+                      average: 'NA',
+                    },
+                    {
+                      cssClassName: 'gauge',
+                      category: 'Avg. Efficiency',
+                      value: this.tableData['data'].length,
+                      icon: 'pi-gauge',
+                      average: this.calculateEfficiency(),
+                    },
+                    {
+                      cssClassName: 'exclamation',
+                      category: 'Critical ' + label + ' (s)',
+                      value: this.calculateHealth('critical').count,
+                      icon: 'pi-exclamation-triangle',
+                      average: this.calculateHealth('critical').average,
+                    },
+                    {
+                      cssClassName: 'heart-fill',
+                      category: 'Healthy ' + label + ' (s)',
+                      value: this.calculateHealth('healthy').count,
+                      icon: 'pi-heart-fill',
+                      average: this.calculateHealth('healthy').average,
+                    },
+                  ];
+                }
               }
               this.loader = false;
             });
@@ -277,26 +279,28 @@ export class HomeComponent implements OnInit, OnDestroy {
             summary: res.originalError.message || 'Please try after sometime!',
           });
         } else {
-          res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-            return { ...row, ...row?.boardMaturity };
-          });
-          const targettedDetails = this.tableData.data.find(
-            (list) => list.id === this.selectedRowToExpand.id,
-          );
-          if (targettedDetails) {
-            targettedDetails['children'] = targettedDetails['children'] || {};
-            targettedDetails['children']['data'] = res.data.matrix.rows;
-            targettedDetails['children']['columns'] =
-              res.data.matrix.columns.filter((col) => col.field !== 'id');
-            const { tableColumnData, tableColumnForm } =
-              this.generateColumnFilterData(
-                targettedDetails['children']['data'],
-                targettedDetails['children']['columns'],
-              );
-            targettedDetails['children']['tableColumnData'] = tableColumnData;
-            targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+          if (res?.data) {
+            res.data.matrix.rows = res.data.matrix.rows.map((row) => {
+              return { ...row, ...row?.boardMaturity };
+            });
+            const targettedDetails = this.tableData.data.find(
+              (list) => list.id === this.selectedRowToExpand.id,
+            );
+            if (targettedDetails) {
+              targettedDetails['children'] = targettedDetails['children'] || {};
+              targettedDetails['children']['data'] = res.data.matrix.rows;
+              targettedDetails['children']['columns'] =
+                res.data.matrix.columns.filter((col) => col.field !== 'id');
+              const { tableColumnData, tableColumnForm } =
+                this.generateColumnFilterData(
+                  targettedDetails['children']['data'],
+                  targettedDetails['children']['columns'],
+                );
+              targettedDetails['children']['tableColumnData'] = tableColumnData;
+              targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+            }
+            this.nestedLoader = false;
           }
-          this.nestedLoader = false;
         }
       });
   }
