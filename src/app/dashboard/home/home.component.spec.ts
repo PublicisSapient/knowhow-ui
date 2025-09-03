@@ -577,7 +577,7 @@ describe('HomeComponent', () => {
 
     component.onRowExpand({ data: { id: 'row1' } });
 
-    expect(component.nestedLoader).toBeTrue(); // stays true since no data
+    expect(component.nestedLoader).toBeFalse(); // stays false since no data
   });
 
   it('should return columnName when it is a string', () => {

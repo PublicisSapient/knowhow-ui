@@ -84,6 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                   summary:
                     res.originalError.message || 'Please try after sometime!',
                 });
+                this.loader = false;
               } else {
                 if (res?.data) {
                   this.tableData['data'] = res.data.matrix.rows.map((row) => {
@@ -149,8 +150,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                     },
                   ];
                 }
+                this.loader = false;
               }
-              this.loader = false;
             });
 
           this.maturityComponent.receiveSharedData({
@@ -278,6 +279,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             severity: 'error',
             summary: res.originalError.message || 'Please try after sometime!',
           });
+          this.nestedLoader = false;
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
@@ -299,8 +301,8 @@ export class HomeComponent implements OnInit, OnDestroy {
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
             }
-            this.nestedLoader = false;
           }
+          this.nestedLoader = false;
         }
       });
   }
