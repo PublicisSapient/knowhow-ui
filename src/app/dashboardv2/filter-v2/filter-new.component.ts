@@ -318,6 +318,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
+    // console.log('type change');
     this.selectedType = type?.toLowerCase();
     if (type.toLowerCase() === 'kanban') {
       this.kanban = true;
@@ -423,6 +424,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           .getFilterData(this.selectedFilterData)
           .subscribe((filterApiData) => {
             if (filterApiData['success']) {
+              this.service.setFilterData(filterApiData['data']);
               this.filterApiData = filterApiData['data'];
               this.processFilterData(filterApiData['data']);
             } else {
@@ -443,6 +445,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       .getFilterData(selectedFilterData)
       .subscribe((filterApiData) => {
         if (filterApiData['success']) {
+          this.service.setFilterData(filterApiData['data']);
           if (filterApiData['data'].length >= 0) {
             const projects = filterApiData['data'].filter(
               (x) => x.labelName === 'project',
