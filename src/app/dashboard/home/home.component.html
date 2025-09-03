@@ -1,3 +1,7 @@
+<p-toast
+  [style]="{ marginTop: '80px' }"
+  aria-live="polite"
+  aria-atomic="true"></p-toast>
 <div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
   @for (item of aggregrationDataList; track item) {
     <div class="p-d-flex data-item p-col-2 p-my-3 p-py-4 p-px-6" [ngClass]="item.cssClassName">
@@ -347,7 +351,7 @@
               [attr.colspan]="tableData['columns'].length"
               role="cell"
               tabindex="0">
-              No Project found
+              No Data found.
             </td>
           </tr>
         </ng-template>

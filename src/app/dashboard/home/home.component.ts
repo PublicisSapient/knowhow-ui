@@ -7,6 +7,7 @@ import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-home',
@@ -44,14 +45,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
+    private readonly messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
     this.products = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    this.tableData = {
+      columns: [],
+      data: [],
+    };
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
         .subscribe((sharedobject) => {
+          this.tableData = {
+            columns: [],
+            data: [],
+          };
+          this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
           this.filterApplyData = sharedobject.filterApplyData;
@@ -67,7 +78,13 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.selectedType !== 'scrum',
             )
             .subscribe((res: any) => {
-              if (res.data) {
+              if (res?.error && res.status === 408) {
+                this.messageService.add({
+                  severity: 'error',
+                  summary:
+                    res.originalError.message || 'Please try after sometime!',
+                });
+              } else {
                 this.tableData['data'] = res.data.matrix.rows.map((row) => {
                   return { ...row, ...row?.boardMaturity };
                 });
@@ -254,7 +271,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
       .subscribe((res: any) => {
-        if (res.data) {
+        if (res?.error && res.status === 408) {
+          this.messageService.add({
+            severity: 'error',
+            summary: res.originalError.message || 'Please try after sometime!',
+          });
+        } else {
           res.data.matrix.rows = res.data.matrix.rows.map((row) => {
             return { ...row, ...row?.boardMaturity };
           });

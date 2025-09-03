@@ -126,16 +126,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         }
       }),
       catchError((err) => {
-        console.log('this is home', reqUrl.indexOf('home') !== -1);
-        console.log(err);
-        console.log(reqUrl);
-        console.log(req);
-        console.log('----------------------------');
         if (
           reqUrl.indexOf('kpiRecommendation') !== -1 ||
           reqUrl.indexOf('notifications') !== -1 ||
           reqUrl.indexOf('kpisearch') !== -1 ||
-          reqUrl.indexOf('home') !== -1
+          reqUrl.indexOf('executive') !== -1
         ) {
           // Return error as successful response instead of throwing
           return of(
