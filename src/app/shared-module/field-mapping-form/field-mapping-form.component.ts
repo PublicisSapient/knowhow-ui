@@ -84,6 +84,11 @@ export class FieldMappingFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.kpiId);
+    console.log(this.formConfig);
+    console.log(this.fieldMappingConfig);
+    console.log(this.fieldMappingMetaData);
+    // console.log(this.fieldMappingMultiSelectValues)
     this.historyList = [];
     this.filterHierarchy = JSON.parse(
       localStorage.getItem('completeHierarchyData'),

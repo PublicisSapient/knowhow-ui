@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+#chartContainer {
+  width: 100%;
+  height: 300px;
+  border-radius: 4px;
+  background: white;
+}
+
+.chart-tooltip {
+  position: absolute;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.bar {
+  transition: opacity 0.2s ease;
+}
+
+.bar:hover {
+  opacity: 0.8;
+}
