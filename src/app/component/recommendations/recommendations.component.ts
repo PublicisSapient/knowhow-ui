@@ -252,12 +252,14 @@ export class RecommendationsComponent implements OnInit {
   }
 
   focusDialogHeader() {
+    document.body.style.overflow = 'hidden';
     setTimeout(() => {
       this.selectAllSprints();
     }, 300);
   }
 
   onDialogClose() {
+    document.body.style.overflow = 'auto';
     this.resetSelections();
     this.cancelCurrentRequest$.next();
   }
