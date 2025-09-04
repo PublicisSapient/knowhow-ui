@@ -118,7 +118,8 @@ export class PrimaryFilterComponent implements OnChanges {
               ].toLowerCase()) ||
           this.hierarchyLevels
             .map((x) => x.toLowerCase())
-            .includes(this.filters[0]?.labelName.toLowerCase())
+            .includes(this.filters[0]?.labelName.toLowerCase()) ||
+          this.selectedTab.toLowerCase() === 'home'
         ) {
           if (
             this.stateFilters &&
@@ -207,7 +208,8 @@ export class PrimaryFilterComponent implements OnChanges {
                 ].toLowerCase() === this.filters[0]?.labelName.toLowerCase() ||
                 this.hierarchyLevels
                   .map((x) => x.toLowerCase())
-                  .includes(this.filters[0]?.labelName.toLowerCase())
+                  .includes(this.filters[0]?.labelName.toLowerCase()) ||
+                this.selectedTab.toLowerCase() === 'home'
               ) {
                 // reset
                 this.selectedFilters = [];

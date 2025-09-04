@@ -268,6 +268,9 @@ export class KpiHelperService {
               let value2 = issue[data2.key];
               if (data2.multipleValue) {
                 value2 = issue[data2.key][filter];
+                if (value2 == undefined) {
+                  value2 = 0;
+                }
               }
               //             if (value2 > 0) {
               return acc + value2 / (60 * 8);
