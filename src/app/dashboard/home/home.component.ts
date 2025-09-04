@@ -37,6 +37,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   loader: boolean = true;
   nestedLoader: boolean = false;
   products: any;
+  selectedFilters: Array<any> = [];
+  filters: Array<any> = [];
+  selectedLevel: any;
+  sharedobject = {};
 
   constructor(
     private service: SharedService,
@@ -65,6 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
+          this.sharedobject = sharedobject;
           this.filterApplyData = sharedobject.filterApplyData;
           const filterApplyData = this.payloadPreparation(
             this.filterApplyData,
@@ -154,14 +159,22 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             });
 
-          this.maturityComponent.receiveSharedData({
-            masterData: sharedobject.masterData,
-            filterdata: sharedobject.filterdata,
-            filterApplyData: sharedobject.filterApplyData,
-            dashConfigData: sharedobject.dashConfigData,
-          });
+          this.filters = this.processFilterData(
+            this.service.getFilterData(),
+            this.filterApplyData.label,
+          );
+          this.selectedFilters = [this.filters[0]];
+          this.getMaturityWheelData(sharedobject);
         }),
     );
+  }
+  getMaturityWheelData(sharedobject) {
+    this.maturityComponent.receiveSharedData({
+      masterData: sharedobject.masterData,
+      filterData: sharedobject.filterData,
+      filterApplyData: sharedobject.filterApplyData,
+      dashConfigData: sharedobject.dashConfigData,
+    });
   }
 
   payloadPreparation(filterApplyData, selectedType, dataFor) {
@@ -329,7 +342,25 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  processFilterData(data, filterType) {
+    if (Array.isArray(data)) {
+      return (this.filters = data.filter(
+        (nodes) => nodes.labelName === filterType,
+      ));
+    }
+    return [];
+  }
+
   urlRedirection() {}
+
+  onDropdownChange(event: any) {
+    const selectedNodeId = event.value.nodeId;
+    this.filterApplyData.ids = [selectedNodeId];
+    this.filterApplyData.selectedMap[this.filterApplyData.label] = [
+      selectedNodeId,
+    ];
+    this.getMaturityWheelData(this.sharedobject);
+  }
 
   ngOnDestroy() {
     this.subscription.forEach((subscription) => subscription.unsubscribe());
