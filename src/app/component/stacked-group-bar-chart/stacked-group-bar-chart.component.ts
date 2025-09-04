@@ -228,8 +228,6 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
           const severityKey = nodes[i].parentNode.__data__.key;
           const severityIndex = this.testExecutionKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
-          const originalData = this.findOriginalData(d.data.project, sprint);
-          console.log(originalData);
           return this.generateShade(
             baseColor,
             severityIndex,
