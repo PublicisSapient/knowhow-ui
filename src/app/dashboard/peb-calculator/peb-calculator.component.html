@@ -11,7 +11,9 @@
               <p-inputNumber
                 class="input-field-calc"
                 formControlName="devCountControl"
-                inputId="devCount" />
+                inputId="devCount"
+                ngDefaultControl
+              ></p-inputNumber>
           </div>
           <div class="p-col-12">
             <p-slider
@@ -19,7 +21,7 @@
               class="w-full"
               [step]="10"
               [min]="10"
-              [max]="300"></p-slider>
+              [max]="300" ngDefaultControl ></p-slider>
           </div>
         </div>
         <div class="p-col-4 grid-flex-wrap-100">
@@ -33,7 +35,9 @@
                 inputId="devCost"
                 mode="currency"
                 currency="USD"
-                locale="en-US" />
+                locale="en-US"
+                ngDefaultControl
+              ></p-inputNumber>
           </div>
           <div class="p-col-12">
             <p-slider
@@ -41,7 +45,7 @@
               class="w-full"
               [step]="100"
               [min]="100000"
-              [max]="500000"></p-slider>
+              [max]="500000" ngDefaultControl ></p-slider>
           </div>
         </div>
         <div class="p-col-4 grid-flex-wrap-100">
@@ -54,7 +58,7 @@
               class="input-field-calc"
               [options]="durationOptions"
               formControlName="durationControl"
-              placeholder="Time Duration"></p-dropdown>
+              placeholder="Time Duration" ngDefaultControl></p-dropdown>
           </div>
         </div>
       </div>
@@ -67,6 +71,14 @@
       </div>
     </form>
     @if (showLoader) { <div class="loader"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div> }
+    @if (isError) {
+      <p-messages severity="info">
+          <ng-template pTemplate>
+              <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
+              <div class="ml-2">There was some error calculating PEB. Please try again.</div>
+          </ng-template>
+      </p-messages>
+    }
   </p-card>
 
 
