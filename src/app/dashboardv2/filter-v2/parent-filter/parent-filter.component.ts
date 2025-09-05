@@ -59,8 +59,10 @@ export class ParentFilterComponent implements OnChanges {
           this.filterLevels = this.filterLevels.filter(
             (e) =>
               e.nodeName.toLowerCase() !== 'project' &&
-              e.nodeName.toLowerCase() !== 'vertical' &&
-              e.nodeName.toLowerCase() !== 'bu',
+              e.nodeName.toLowerCase() !==
+                Object.keys(this.filterData)[1].toLowerCase() &&
+              e.nodeName.toLowerCase() !==
+                Object.keys(this.filterData)[0].toLowerCase(),
           );
         }
         this.filterLevels = this.filterLevels.filter(
