@@ -43,15 +43,14 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   elem: any;
   hasFilter: boolean = true;
 
-  private svg: any;
-  private margin = { top: 30, right: 30, bottom: 60, left: 60 };
-  private width: number = 0;
-  private height: number = 400;
   private filteredData: any;
   private activeSeverityKeys = ['s1', 's2', 's3', 's4'];
-  private allSeverityKeys = ['s1', 's2', 's3', 's4'];
-  private testExecutionKeys = ['AUTOMATED', 'MANUAL', 'TOTAL'];
   private isInitialized = false;
+
+  private readonly svg: any;
+  private readonly width: number = 0;
+  private readonly allSeverityKeys = ['s1', 's2', 's3', 's4'];
+  private readonly testExecutionKeys = ['AUTOMATED', 'MANUAL', 'TOTAL'];
 
   filter = [
     { option: 'S1', value: 's1', selected: true },
@@ -60,32 +59,19 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     { option: 'S4', value: 's4', selected: true },
   ];
 
-  constructor(private viewContainerRef: ViewContainerRef) {}
+  constructor(private readonly viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
     }
-    if (this.kpiId === 'kpi195') {
-      if (changes['defectsBreachedSLAs'] && this.defectsBreachedSLAs) {
-        this.createChart();
-      }
-      if (changes['color'] && this.color) {
-        this.createChart();
-      }
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
-      this.createTestExecutionChart();
-    }
+    this.createChart();
     this.elem = this.viewContainerRef.element.nativeElement;
   }
 
   ngAfterViewInit(): void {
     this.isInitialized = true;
-    if (this.defectsBreachedSLAs && this.kpiId === 'kpi195') {
-      this.createChart();
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
-      this.createTestExecutionChart();
-    }
+    this.createChart();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -95,28 +81,56 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  private createTestExecutionChart() {
+  private createChart(): void {
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
     const sprintGroups: { [key: string]: any[] } = {};
+    let severityKeys;
+    if (this.kpiId === 'kpi195') {
+      severityKeys = this.activeSeverityKeys.length
+        ? this.activeSeverityKeys
+        : this.allSeverityKeys;
 
-    this.data.forEach((elem: any) => {
-      elem.value.forEach((val: any, index: number) => {
-        const sprintKey = `${index + 1}`;
-        if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
-        const obj = {};
-        for (const prop in val.hoverValue) {
-          obj[prop] = val.hoverValue[prop].avgExecutionTimeSec;
-        }
-        const data = {
-          project: elem.data,
-          ...obj,
-        };
-        sprintGroups[sprintKey].push(data);
+      this.defectsBreachedSLAs.forEach((project: any) => {
+        project.value.forEach((sprint: any, index: number) => {
+          const sprintKey = `${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+
+          const severityData: any = {
+            project: project.data,
+            rate: project.data,
+            value: 0,
+            ...severityKeys.reduce((acc, severity) => {
+              const found = sprint.drillDown.find(
+                (d: any) => d.severity === severity,
+              );
+              acc[severity] = found ? found.breachedPercentage : 0;
+              return acc;
+            }, {}),
+          };
+
+          sprintGroups[sprintKey].push(severityData);
+        });
       });
-    });
+    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+      this.data.forEach((elem: any) => {
+        elem.value.forEach((val: any, index: number) => {
+          const sprintKey = `${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+          const obj = {};
+          for (const prop in val.hoverValue) {
+            obj[prop] = val.hoverValue[prop].avgExecutionTimeSec;
+          }
+          const data = {
+            project: elem.data,
+            ...obj,
+          };
+          sprintGroups[sprintKey].push(data);
+        });
+      });
+    }
 
     const sprints = Object.keys(sprintGroups);
-    const projects = [...new Set(this.data.map((d) => d.data))];
+    const projects = [...new Set(this.defectsBreachedSLAs.map((d) => d.data))];
 
     const margin = { top: 30, right: 30, bottom: 60, left: 40 };
 
@@ -198,14 +212,21 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     svg.select('.grid').select('.domain').remove();
 
     const projectColors = new Map<string, string>();
-    this.data.forEach((project: any, index: number) => {
-      projectColors.set(project.data, this.color[index]);
-    });
+    if (this.kpiId === 'kpi195') {
+      this.defectsBreachedSLAs.forEach((project: any, index: number) => {
+        projectColors.set(project.data, this.color[index]);
+      });
+    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+      this.data.forEach((project: any, index: number) => {
+        projectColors.set(project.data, this.color[index]);
+      });
+    }
 
     sprints.forEach((sprint) => {
-      const stack = d3.stack().keys(this.testExecutionKeys);
+      const stack = d3
+        .stack()
+        .keys(this.kpiId === 'kpi195' ? severityKeys : this.testExecutionKeys);
       const stackedData = stack(sprintGroups[sprint]);
-
       const bars = svg
         .append('g')
         .selectAll('.group')
@@ -226,12 +247,17 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         .attr('fill', (d: any, i: number, nodes: any[]) => {
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
-          const severityIndex = this.testExecutionKeys.indexOf(severityKey);
+          const severityIndex =
+            this.kpiId === 'kpi195'
+              ? severityKeys.indexOf(severityKey)
+              : this.testExecutionKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
           return this.generateShade(
             baseColor,
             severityIndex,
-            this.testExecutionKeys.length,
+            this.kpiId === 'kpi195'
+              ? severityKeys.length
+              : this.testExecutionKeys.length,
           );
         })
         .on('mouseover', (event, d: any) => {
@@ -241,7 +267,12 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
             tooltip
               .style('visibility', 'visible')
               .html(
-                `
+                this.kpiId === 'kpi195'
+                  ? `
+                <div><strong>Total Resolved:</strong> ${originalData.hoverValue.totalResolvedIssues}</div>
+                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>
+              `
+                  : `
                 <div><strong>Average execution time:</strong> ${originalData.hoverValue.TOTAL.avgExecutionTimeSec}</div>
                 <div><strong>Total test cases:</strong> ${originalData.hoverValue.TOTAL.count}</div>
               `,
@@ -328,252 +359,10 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .style('fill', '#49535e');
 
     // --- Legend ---
-    this.renderSprintsLegend(this.flattenData(this.data), 'Sprints');
-  }
-
-  private createChart(): void {
-    d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
-    const sprintGroups: { [key: string]: any[] } = {};
-    const severityKeys = this.activeSeverityKeys.length
-      ? this.activeSeverityKeys
-      : this.allSeverityKeys;
-
-    this.defectsBreachedSLAs.forEach((project: any) => {
-      project.value.forEach((sprint: any, index: number) => {
-        const sprintKey = `${index + 1}`;
-        if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
-
-        const severityData: any = {
-          project: project.data,
-          rate: project.data,
-          value: 0,
-          ...severityKeys.reduce((acc, severity) => {
-            const found = sprint.drillDown.find(
-              (d: any) => d.severity === severity,
-            );
-            acc[severity] = found ? found.breachedPercentage : 0;
-            return acc;
-          }, {}),
-        };
-
-        sprintGroups[sprintKey].push(severityData);
-      });
-    });
-
-    const sprints = Object.keys(sprintGroups);
-    const projects = [...new Set(this.defectsBreachedSLAs.map((d) => d.data))];
-
-    const margin = { top: 30, right: 30, bottom: 60, left: 40 };
-
-    //  Get container size dynamically
-    const containerWidth = this.chartContainer.nativeElement.offsetWidth || 700;
-    const containerHeight =
-      this.chartContainer.nativeElement.offsetHeight || 400;
-
-    //  Increase width factor for <g> drawing space
-    const extraWidthFactor = 1.2; // <-- adjust this multiplier (1.2 = +20%)
-    const width =
-      containerWidth * extraWidthFactor - margin.left - margin.right;
-    const height = containerHeight - margin.top - margin.bottom;
-
-    const svg = d3
-      .select(this.chartContainer.nativeElement)
-      .append('svg')
-      .attr('width', '100%')
-      .attr('height', '100%')
-      .attr(
-        'viewBox',
-        `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
-      ) //  scaled
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    // --- Scales ---
-    const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
-    const x1 = d3
-      .scaleBand()
-      .domain(projects)
-      .range([0, x0.bandwidth()])
-      .padding(0.1);
-    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).clamp(true);
-
-    const xGrid = d3
-      .axisBottom(x0)
-      .tickSize(-height)
-      .tickFormat(() => '');
-    svg
-      .append('g')
-      .attr('class', 'x-grid')
-      .attr('transform', `translate(0,${height})`)
-      .call(xGrid)
-      .selectAll('line')
-      .attr('stroke', '#E0E0E0');
-    svg.select('.x-grid').select('.domain').remove();
-
-    const tooltip = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'chart-tooltip')
-      .style('opacity', 0)
-      .style('position', 'absolute')
-      .style('background', '#000')
-      .style('border', '1px solid #ddd')
-      .style('border-radius', '4px')
-      .style('padding', '12px')
-      .style('font-size', '13px')
-      .style('color', '#fff')
-      .style('pointer-events', 'none')
-      .style('box-shadow', '0 3px 6px rgba(0,0,0,0.16)')
-      .style('z-index', '1000')
-      .style('min-width', '180px')
-      .style('transition', 'opacity 0.2s');
-
-    const yGrid = d3
-      .axisLeft(y)
-      .ticks(6)
-      .tickSize(-width)
-      .tickFormat(() => '');
-    svg
-      .append('g')
-      .attr('class', 'grid')
-      .call(yGrid)
-      .selectAll('line')
-      .attr('stroke', '#E0E0E0');
-    svg.select('.grid').select('.domain').remove();
-
-    const projectColors = new Map<string, string>();
-    this.defectsBreachedSLAs.forEach((project: any, index: number) => {
-      projectColors.set(project.data, this.color[index]);
-    });
-
-    sprints.forEach((sprint) => {
-      const stack = d3.stack().keys(severityKeys);
-      const stackedData = stack(sprintGroups[sprint]);
-      const bars = svg
-        .append('g')
-        .selectAll('.group')
-        .data(stackedData)
-        .enter()
-        .append('g')
-        .attr('class', 'group');
-
-      bars
-        .selectAll('rect')
-        .data((d: any) => d)
-        .enter()
-        .append('rect')
-        .attr('x', (d: any) => x0(sprint)! + x1(d.data.project)!)
-        .attr('y', (d: any) => y(d[1]))
-        .attr('height', (d: any) => y(d[0]) - y(d[1]))
-        .attr('width', x1.bandwidth())
-        .attr('fill', (d: any, i: number, nodes: any[]) => {
-          const projectName = d.data.project;
-          const severityKey = nodes[i].parentNode.__data__.key;
-          const severityIndex = severityKeys.indexOf(severityKey);
-          const baseColor = projectColors.get(projectName) || '#888';
-          return this.generateShade(
-            baseColor,
-            severityIndex,
-            severityKeys.length,
-          );
-        })
-        .on('mouseover', (event, d: any) => {
-          const [mouseX, mouseY] = d3.pointer(event, window);
-          const originalData = this.findOriginalData(d.data.project, sprint);
-          if (originalData?.hoverValue) {
-            tooltip
-              .style('visibility', 'visible')
-              .html(
-                `
-                <div><strong>Total Resolved:</strong> ${originalData.hoverValue.totalResolvedIssues}</div>
-                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>
-              `,
-              )
-              .style('left', `${mouseX + 15}px`)
-              .style('top', `${mouseY - 15}px`)
-              .style('opacity', 1);
-          }
-        })
-        .on('mousemove', (event) => {
-          tooltip
-            .style('left', event.pageX + 10 + 'px')
-            .style('top', event.pageY - 10 + 'px');
-        })
-        .on('mouseout', () => tooltip.style('visibility', 'hidden'));
-
-      // --- Labels ---
-      bars
-        .selectAll('text')
-        .data((d: any) => d)
-        .enter()
-        .append('text')
-        .attr(
-          'x',
-          (d: any) => x0(sprint)! + x1(d.data.project)! + x1.bandwidth() / 2,
-        )
-        .attr('y', (d: any) => (y(d[0]) + y(d[1])) / 2)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'middle')
-        .text((d: any) => {
-          const value = d[1] - d[0];
-          return value >= 1 ? `${value.toFixed(0)}` : '';
-        })
-        .style('fill', 'black')
-        .style('font-size', '10px');
-    });
-
-    // --- X Axis ---
-    svg
-      .append('g')
-      .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x0).tickSize(0))
-      .call((g) => {
-        g.select('.domain').attr('stroke', '#EDEFF2');
-        g.append('line')
-          .attr('x1', 0)
-          .attr('x2', width)
-          .attr('y1', 0)
-          .attr('y2', 0)
-          .attr('stroke', '#EDEFF2')
-          .attr('stroke-width', 1);
-      });
-    svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', height + 40)
-      .attr('text-anchor', 'middle')
-      .text('Sprints')
-      .style('font-size', '16px')
-      .style('fill', '#49535e');
-
-    // --- Y Axis ---
-    svg
-      .append('g')
-      .call(d3.axisLeft(y).ticks(6).tickSize(0))
-      .call((g) => {
-        g.select('.domain').attr('stroke', '#EDEFF2');
-        g.append('line')
-          .attr('x1', 0)
-          .attr('x2', 0)
-          .attr('y1', 0)
-          .attr('y2', height * -1)
-          .attr('stroke', '#EDEFF2')
-          .attr('stroke-width', 1);
-      });
-    svg
-      .append('text')
-      .attr('transform', `rotate(-90)`)
-      .attr('x', -height / 2)
-      .attr('y', -margin.left + 15)
-      .attr('text-anchor', 'middle')
-      .text('Breached %')
-      .style('font-size', '16px')
-      .style('fill', '#49535e');
-
-    // --- Legend ---
     this.renderSprintsLegend(
-      this.flattenData(this.defectsBreachedSLAs),
+      this.flattenData(
+        this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
+      ),
       'Sprints',
     );
   }
