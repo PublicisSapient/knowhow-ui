@@ -40,6 +40,9 @@ import { ScrollTopModule } from 'primeng/scrolltop';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { SliderModule } from 'primeng/slider';
+import { SidebarModule } from 'primeng/sidebar';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MessagesModule } from 'primeng/messages';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -242,6 +245,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     CardModule,
     DividerModule,
     SliderModule,
+    SidebarModule,
+    InputNumberModule,
+    MessagesModule,
   ],
   providers: [
     ExcelService,

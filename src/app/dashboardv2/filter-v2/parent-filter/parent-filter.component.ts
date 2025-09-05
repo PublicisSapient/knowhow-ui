@@ -57,7 +57,10 @@ export class ParentFilterComponent implements OnChanges {
         });
         if (this.selectedTab.toLowerCase() === 'home') {
           this.filterLevels = this.filterLevels.filter(
-            (e) => e.nodeDisplayName.toLowerCase() !== 'project',
+            (e) =>
+              e.nodeName.toLowerCase() !== 'project' &&
+              e.nodeName.toLowerCase() !== 'vertical' &&
+              e.nodeName.toLowerCase() !== 'bu',
           );
         }
         this.filterLevels = this.filterLevels.filter(
