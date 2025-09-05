@@ -287,8 +287,9 @@
 
                                                                 <ng-container *ngSwitchCase="'stacked-bar-chart'">
                                                                     <app-stacked-group-bar-chart
-                                                                        [kpiData]="defectsBreachedSLAs"
+                                                                        [defectsBreachedSLAs]="defectsBreachedSLAs"
                                                                         [data]="kpiChartData[kpi?.kpiId]"
+                                                                        [kpiId]="kpi?.kpiId"
                                                                         [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                                                 </ng-container>
 
