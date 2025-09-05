@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { Message } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -64,12 +63,12 @@ export class PebCalculatorComponent implements OnInit {
 
   messages: Message[] | undefined;
   showLoader: boolean = false;
+  isError: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     public sharedService: SharedService,
     public http: HttpService,
-    private messageService: MessageService,
   ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
@@ -109,7 +108,7 @@ export class PebCalculatorComponent implements OnInit {
    * - Duration (month/quarter/year)
    * - Productivity gain percentages for different metrics
    *
-   * Shows loading and error messages using MessageService during the process.
+   * Shows loading and error messages during the process.
    * Updates the roiMetrics array and annualPEB property with calculated values.
    *
    * @throws Will display an error message if productivity gain data fetch fails
@@ -119,7 +118,7 @@ export class PebCalculatorComponent implements OnInit {
         localStorage.getItem('completeHierarchyData'),
       ),
       selectedLevelName =
-        this.sharedService.getDataForSprintGoal().selectedLevel.nodeName,
+        this.sharedService.getDataForSprintGoal()?.selectedLevel.nodeName,
       reqPayload = {
         label: '',
         level: '',
@@ -136,58 +135,46 @@ export class PebCalculatorComponent implements OnInit {
     });
 
     this.showLoader = true;
-    this.http.getProductivityGain(reqPayload).subscribe((response) => {
-      // const response = {
-      //   success: true,
-      //   data: {
-      //     categorizedProductivityGain: {
-      //       overall: 10,
-      //       speed: 5,
-      //       efficiency: 3,
-      //       quality: 2,
-      //       productivity: 1,
-      //     },
-      //   },
-      // };
-      if (response && response['success']) {
-        this.showLoader = false;
-        this.showResults = true;
-        const productivityGain =
-          response['data']['categorizedProductivityGain'];
-        console.log('productivityGain', productivityGain);
-        const overallGain = productivityGain['overall'];
+    this.http.getProductivityGain(reqPayload).subscribe({
+      next: (response) => {
+        if (response['success']) {
+          this.showLoader = false;
+          this.showResults = true;
+          const productivityGain =
+            response['data']['categorizedProductivityGain'];
+          console.log('productivityGain', productivityGain);
+          const overallGain = productivityGain['overall'];
 
-        this.annualPEB = Math.round(
-          this.pebForm.get('devCountControl')!.value *
-            this.pebForm.get('devCostControl')!.value *
-            (overallGain / 100) *
-            (this.pebForm.get('durationControl')!.value === 'month'
-              ? 1 / 12
-              : this.pebForm.get('durationControl')!.value === 'quarter'
-              ? 1 / 4
-              : 1),
-        );
-        this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+          this.annualPEB = Math.round(
+            this.pebForm.get('devCountControl')!.value *
+              this.pebForm.get('devCostControl')!.value *
+              (overallGain / 100) *
+              (this.pebForm.get('durationControl')!.value === 'month'
+                ? 1 / 12
+                : this.pebForm.get('durationControl')!.value === 'quarter'
+                ? 1 / 4
+                : 1),
+          );
+          this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
-        this.roiMetrics = this.roiMetrics.map((metric) => {
-          const key = metric.label.toLowerCase();
-          const percent =
-            productivityGain[key] <= 0 ? 0 : productivityGain[key]; // CHANGE: Calculate percent directly
-          const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
-          return {
-            ...metric,
-            percent,
-            value,
-          };
-        });
-      } else {
+          this.roiMetrics = this.roiMetrics.map((metric) => {
+            const key = metric.label.toLowerCase();
+            const percent =
+              productivityGain[key] <= 0 ? 0 : productivityGain[key]; // CHANGE: Calculate percent directly
+            const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
+            return {
+              ...metric,
+              percent,
+              value,
+            };
+          });
+        }
+      },
+      error: (err) => {
         this.showLoader = false;
-        console.error('Failed to fetch productivity gain data');
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error in calculating PEB!',
-        });
-      }
+        this.isError = true;
+        console.error('Failed to fetch productivity gain data', err.message);
+      },
     });
   }
 }

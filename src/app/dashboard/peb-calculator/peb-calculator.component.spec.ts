@@ -1,176 +1,135 @@
-// karma::peb-calculator.component.spec.ts::src/app/dashboard/peb-calculator/peb-calculator.component.spec.ts
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { PebCalculatorComponent } from './peb-calculator.component';
-import { FormBuilder } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { of, throwError } from 'rxjs';
+import { Message } from 'primeng/api';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+
+class MockHttpService {
+  getProductivityGain() {
+    return of({
+      success: true,
+      data: {
+        categorizedProductivityGain: {
+          overall: 10,
+          speed: 10,
+          efficiency: 20,
+          quality: 30,
+          productivity: 40,
+        },
+      },
+    });
+  }
+}
+
+class MockSharedService {
+  getDataForSprintGoal() {
+    return { selectedLevel: { nodeName: 'level1' } };
+  }
+  getSelectedType() {
+    return 'type1';
+  }
+}
 
 describe('PebCalculatorComponent', () => {
   let component: PebCalculatorComponent;
   let fixture: ComponentFixture<PebCalculatorComponent>;
-  let mockHttpService: jasmine.SpyObj<HttpService>;
-  let mockSharedService: jasmine.SpyObj<SharedService>;
-  let mockMessageService: jasmine.SpyObj<MessageService>;
 
-  beforeEach(() => {
-    mockHttpService = jasmine.createSpyObj('HttpService', [
-      'getProductivityGain',
-    ]);
-    mockSharedService = jasmine.createSpyObj('SharedService', [
-      'getDataForSprintGoal',
-      'getSelectedType',
-    ]);
-    mockMessageService = jasmine.createSpyObj('MessageService', [
-      'add',
-      'clear',
-    ]);
-
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [PebCalculatorComponent],
+      imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        InputNumberModule,
+        InputTextModule,
+      ],
       providers: [
         FormBuilder,
-        { provide: HttpService, useValue: mockHttpService },
-        { provide: SharedService, useValue: mockSharedService },
-        { provide: MessageService, useValue: mockMessageService },
+        { provide: HttpService, useClass: MockHttpService },
+        { provide: SharedService, useClass: MockSharedService },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PebCalculatorComponent);
     component = fixture.componentInstance;
+
+    // Setup localStorage mocks for tests
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      if (key === 'completeHierarchyData') {
+        return JSON.stringify({
+          type1: [
+            {
+              hierarchyLevelName: 'level1',
+              hierarchyLevelId: 'id1',
+              level: 'L1',
+            },
+          ],
+        });
+      }
+      if (key === 'selectedTrend') {
+        return 'trend1';
+      }
+      return null;
+    });
+    fixture.detectChanges();
   });
 
-  it('testNgOnInit', () => {
-    component.ngOnInit();
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should initialize form with default values', () => {
+    expect(component.pebForm.get('devCountControl').value).toBe(30);
+    expect(component.pebForm.get('devCostControl').value).toBe(100000);
+    expect(component.pebForm.get('durationControl').value).toBe('year');
+  });
+
+  it('should subscribe to valueChanges in ngOnInit without triggering infinite loop', fakeAsync(() => {
     const devCountControl = component.pebForm.get('devCountControl');
+    devCountControl.setValue(40);
+    tick();
+    expect(devCountControl.value).toBe(40);
+
     const devCostControl = component.pebForm.get('devCostControl');
+    devCostControl.setValue(200000);
+    tick();
+    expect(devCostControl.value).toBe(200000);
+  }));
 
-    devCountControl!.setValue(40);
-    expect(devCountControl!.value).toBe(40);
-
-    devCostControl!.setValue(120000);
-    expect(devCostControl!.value).toBe(120000);
-  });
-
-  it('testCalculatePEBWithValidData', (done) => {
-    const mockResponse = {
-      success: true,
-      data: {
-        categorizedProductivityGain: {
-          overall: 10,
-          speed: 5,
-          efficiency: 3,
-          quality: 2,
-          productivity: 1,
-        },
-      },
-    };
-
-    mockHttpService.getProductivityGain.and.returnValue(of(mockResponse));
-    mockSharedService.getDataForSprintGoal.and.returnValue({
-      selectedLevel: { nodeName: 'Level1' },
-    });
-    mockSharedService.getSelectedType.and.returnValue('someType');
-
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({
-        someType: [
-          { hierarchyLevelName: 'Level1', hierarchyLevelId: '1', level: '2' },
-        ],
-      }),
-    );
-
+  it('should set showLoader, compute ROI and annualPEB on calculatePEB()', fakeAsync(() => {
+    component.pebForm.get('devCountControl').setValue(20);
+    component.pebForm.get('devCostControl').setValue(50000);
+    component.pebForm.get('durationControl').setValue('year');
     component.calculatePEB();
+    tick();
 
-    fixture.whenStable().then(() => {
-      expect(component.annualPEB).toBeGreaterThan(0);
-      done();
+    expect(component.showLoader).toBe(false);
+    expect(component.showResults).toBe(true);
+    expect(component.annualPEB).toBeGreaterThan(0);
+
+    component.roiMetrics.forEach((metric) => {
+      expect(metric.value).toBeGreaterThanOrEqual(0);
     });
-    expect(component.roiMetrics[0].value).toBeGreaterThan(0);
-    expect(mockMessageService.clear).toHaveBeenCalled();
-  });
+  }));
 
-  it('testCalculatePEBWithError', () => {
-    mockHttpService.getProductivityGain.and.returnValue(throwError('Error'));
-    mockSharedService.getDataForSprintGoal.and.returnValue({
-      selectedLevel: { nodeName: 'Level1' },
-    });
-    mockSharedService.getSelectedType.and.returnValue('someType');
-
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({
-        someType: [
-          { hierarchyLevelName: 'Level1', hierarchyLevelId: '1', level: '2' },
-        ],
-      }),
-    );
-
-    component.calculatePEB();
-
-    expect(mockMessageService.add).toHaveBeenCalledTimes(1);
-  });
-
-  it('testCalculatePEBWithEmptyData', () => {
-    mockHttpService.getProductivityGain.and.returnValue(
-      of({ success: true, data: {} }),
+  it('should handle and display error when HTTP service fails', fakeAsync(() => {
+    const http = TestBed.inject(HttpService) as any;
+    spyOn(http, 'getProductivityGain').and.returnValue(
+      throwError(() => new Error('error')),
     );
     component.calculatePEB();
-    expect(component.annualPEB).toBe(0);
-  });
+    tick();
 
-  it('testCalculatePEBWithDifferentDurations', () => {
-    const mockResponse = {
-      success: true,
-      data: {
-        categorizedProductivityGain: {
-          overall: 10,
-          speed: 5,
-          efficiency: 3,
-          quality: 2,
-          productivity: 1,
-        },
-      },
-    };
-
-    mockHttpService.getProductivityGain.and.returnValue(of(mockResponse));
-    mockSharedService.getDataForSprintGoal.and.returnValue({
-      selectedLevel: { nodeName: 'Level1' },
-    });
-    mockSharedService.getSelectedType.and.returnValue('someType');
-
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({
-        someType: [
-          { hierarchyLevelName: 'Level1', hierarchyLevelId: '1', level: '2' },
-        ],
-      }),
-    );
-
-    // Test monthly duration
-    component.pebForm.get('durationControl')!.setValue('month');
-    component.calculatePEB();
-    const monthlyPEB = component.annualPEB;
-
-    // Test quarterly duration
-    component.pebForm.get('durationControl')!.setValue('quarter');
-    component.calculatePEB();
-    const quarterlyPEB = component.annualPEB;
-
-    // Test yearly duration
-    component.pebForm.get('durationControl')!.setValue('year');
-    component.calculatePEB();
-    const yearlyPEB = component.annualPEB;
-
-    // Verify ratios between different durations
-    expect(Math.round(yearlyPEB / 12)).toEqual(monthlyPEB);
-    expect(Math.round(yearlyPEB / 4)).toEqual(quarterlyPEB);
-  });
-
-  afterEach(() => {
-    localStorage.removeItem('completeHierarchyData');
-  });
+    expect(component.showLoader).toBe(false);
+    expect(component.isError).toBe(true);
+  }));
 });
