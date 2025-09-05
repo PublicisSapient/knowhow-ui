@@ -118,7 +118,8 @@ export class PrimaryFilterComponent implements OnChanges {
               ].toLowerCase()) ||
           this.hierarchyLevels
             .map((x) => x.toLowerCase())
-            .includes(this.filters[0]?.labelName.toLowerCase())
+            .includes(this.filters[0]?.labelName.toLowerCase()) ||
+          this.selectedTab.toLowerCase() === 'home'
         ) {
           if (
             this.stateFilters &&
@@ -207,7 +208,8 @@ export class PrimaryFilterComponent implements OnChanges {
                 ].toLowerCase() === this.filters[0]?.labelName.toLowerCase() ||
                 this.hierarchyLevels
                   .map((x) => x.toLowerCase())
-                  .includes(this.filters[0]?.labelName.toLowerCase())
+                  .includes(this.filters[0]?.labelName.toLowerCase()) ||
+                this.selectedTab.toLowerCase() === 'home'
               ) {
                 // reset
                 this.selectedFilters = [];
@@ -458,6 +460,24 @@ export class PrimaryFilterComponent implements OnChanges {
     );
 
     this.filters = [...selected, ...unselected];
+  }
+
+  onPanelShow() {
+    this.moveSelectedOptionToTop();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const panel = document.querySelector('.p-multiselect-panel');
+        if (panel) {
+          const itemsWrapper = panel.querySelector(
+            '.p-multiselect-items-wrapper',
+          );
+          if (itemsWrapper) {
+            itemsWrapper.scrollTop = 0;
+          }
+        }
+      });
+    });
   }
 
   onSelectionChange(event: any) {
