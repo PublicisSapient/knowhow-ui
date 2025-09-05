@@ -21,6 +21,20 @@
   font-size: 12px;
   font-weight: 500;
 }
+
+:host
+  ::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link
+  .nav-anchor {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
 :host::ng-deep
   .board-menu
   .p-tabmenu
@@ -30,13 +44,30 @@
   background-color: #f5f9ff;
   border: 1px solid #d5dbe1;
 }
+
+:host
+  ::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link
+  .nav-anchor:hover {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+}
+
 :host ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav {
   border: none;
   background: #f5f9ff;
 }
+
 :host ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar {
   display: none;
 }
+
 :host
   ::ng-deep
   .board-menu
@@ -68,6 +99,7 @@
   .p-tabmenuitem.p-highlight {
   pointer-events: none;
 }
+
 :host
   ::ng-deep
   .p-tabmenu
