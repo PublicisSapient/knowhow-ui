@@ -1,12 +1,7 @@
-<!-- <section class="p-d-flex p-mx-5 p-jc-end calculator-section">
-  <div>
-    <p-button type="button" class="p-mr-2" (onClick)="sidebarVisible = true" icon="pi pi-arrow-left" label="PEB Calculator" />
-    <p-sidebar [(visible)]="sidebarVisible" position="right" id="sidebar" (onHide)="sidebarVisible = false" role="region">
-      <app-peb-calculator></app-peb-calculator>
-    </p-sidebar>
-  </div>
-</section> -->
-
+<p-toast
+  [style]="{ marginTop: '80px' }"
+  aria-live="polite"
+  aria-atomic="true"></p-toast>
 <div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
   @for (item of aggregrationDataList; track item) {
     <div class="p-d-flex data-item p-col-2 p-mt-3 p-mb-1 p-py-4 p-px-6">
@@ -278,85 +273,85 @@
                               childRow[childCol.field]
                             }}</span>
 
-                            <div *ngSwitchCase="'health'">
-                              <div
-                                class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(childRow[childCol.field])">
-                                {{ childRow[childCol.field] }}
-                              </div>
+                          <div *ngSwitchCase="'health'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
                             </div>
-                            <div *ngSwitchCase="'speed'">
-                              <div
-                                class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(childRow[childCol.field])">
-                                {{ childRow[childCol.field] }}
-                              </div>
+                          </div>
+                          <div *ngSwitchCase="'speed'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
                             </div>
-                            <div *ngSwitchCase="'quality'">
-                              <div
-                                class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(childRow[childCol.field])">
-                                {{ childRow[childCol.field] }}
-                              </div>
+                          </div>
+                          <div *ngSwitchCase="'quality'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
                             </div>
-                            <div *ngSwitchCase="'value'">
-                              <div
-                                class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(childRow[childCol.field])">
-                                {{ childRow[childCol.field] }}
-                              </div>
+                          </div>
+                          <div *ngSwitchCase="'value'">
+                            <div
+                              class="p-p-1 styled-cell"
+                              [ngClass]="getMClass(childRow[childCol.field])">
+                              {{ childRow[childCol.field] }}
                             </div>
-                          </ng-container>
-                        </td>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage" let-columns>
-                      <tr>
-                        <td
-                          [attr.colspan]="tableData['columns'].length"
-                          role="cell"
-                          tabindex="0">
-                          No Project found
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
-                  <p-table
-                    *ngIf="nestedLoader"
-                    [value]="products"
-                    [tableStyle]="{ 'min-width': '50rem' }">
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                        <th><p-skeleton /></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-product>
-                      <tr>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                        <td><p-skeleton /></td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage" let-columns>
-            <tr>
-              <td
-                [attr.colspan]="tableData['columns'].length"
-                role="cell"
-                tabindex="0">
-                No Project found
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+                          </div>
+                        </ng-container>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                      <td
+                        [attr.colspan]="tableData['columns'].length"
+                        role="cell"
+                        tabindex="0">
+                        No Project found
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+                <p-table
+                  *ngIf="nestedLoader"
+                  [value]="products"
+                  [tableStyle]="{ 'min-width': '50rem' }">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                      <th><p-skeleton /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-product>
+                    <tr>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                      <td><p-skeleton /></td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+            <td
+              [attr.colspan]="tableData['columns'].length"
+              role="cell"
+              tabindex="0">
+              No Data found.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
 
         <p-table
           *ngIf="loader"
