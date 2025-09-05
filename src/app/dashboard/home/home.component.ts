@@ -4,9 +4,10 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription, throwError } from 'rxjs';
-import { catchError, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-home',
@@ -45,14 +46,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
+    private readonly messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
     this.products = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    this.tableData = {
+      columns: [],
+      data: [],
+    };
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
         .subscribe((sharedobject) => {
+          this.tableData = {
+            columns: [],
+            data: [],
+          };
+          this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
           this.filterApplyData = sharedobject.filterApplyData;
@@ -68,79 +79,88 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.selectedType !== 'scrum',
             )
             .subscribe((res: any) => {
-              if (res.data) {
-                this.tableData['data'] = res.data.matrix.rows.map((row) => {
-                  return { ...row, ...row?.boardMaturity };
+              if (res?.error && res.status === 408) {
+                this.messageService.add({
+                  severity: 'error',
+                  summary:
+                    res.originalError.message || 'Please try after sometime!',
                 });
+                this.loader = false;
+              } else {
+                if (res?.data) {
+                  this.tableData['data'] = res.data.matrix.rows.map((row) => {
+                    return { ...row, ...row?.boardMaturity };
+                  });
 
-                this.tableData['columns'] = res.data.matrix.columns.filter(
-                  (col) => col.field !== 'id',
-                );
-
-                const { tableColumnData, tableColumnForm } =
-                  this.generateColumnFilterData(
-                    this.tableData['data'],
-                    this.tableData['columns'],
+                  this.tableData['columns'] = res.data.matrix.columns.filter(
+                    (col) => col.field !== 'id',
                   );
 
-                this.tableColumnData = tableColumnData;
-                this.tableColumnForm = tableColumnForm;
+                  const { tableColumnData, tableColumnForm } =
+                    this.generateColumnFilterData(
+                      this.tableData['data'],
+                      this.tableData['columns'],
+                    );
 
-                this.expandedRows = this.tableData['data']
-                  .filter((p) => p.children && p.children.length > 0) // only rows with children
-                  .reduce((acc, curr) => {
-                    acc[curr.id] = true; // mark as expanded
-                    return acc;
-                  }, {} as { [key: string]: boolean });
+                  this.tableColumnData = tableColumnData;
+                  this.tableColumnForm = tableColumnForm;
 
-                const hierarchy = JSON.parse(
-                  localStorage.getItem('completeHierarchyData') || '{}',
-                )[this.selectedType];
+                  this.expandedRows = this.tableData['data']
+                    .filter((p) => p.children && p.children.length > 0) // only rows with children
+                    .reduce((acc, curr) => {
+                      acc[curr.id] = true; // mark as expanded
+                      return acc;
+                    }, {} as { [key: string]: boolean });
 
-                const label = hierarchy.find(
-                  (hi) => hi.level === filterApplyData.level,
-                ).hierarchyLevelName;
+                  const hierarchy = JSON.parse(
+                    localStorage.getItem('completeHierarchyData') || '{}',
+                  )[this.selectedType];
 
-                this.aggregrationDataList = [
-                  {
-                    cssClassName: 'users',
-                    category: 'Active ' + label + ' (s)',
-                    value: this.tableData['data'].length,
-                    icon: 'pi-users',
-                    average: 'NA',
-                  },
-                  {
-                    cssClassName: 'gauge',
-                    category: 'Avg. Efficiency',
-                    value: this.tableData['data'].length,
-                    icon: 'pi-gauge',
-                    average: this.calculateEfficiency(),
-                  },
-                  {
-                    cssClassName: 'exclamation',
-                    category: 'Critical ' + label + ' (s)',
-                    value: this.calculateHealth('critical').count,
-                    icon: 'pi-exclamation-triangle',
-                    average: this.calculateHealth('critical').average,
-                  },
-                  {
-                    cssClassName: 'heart-fill',
-                    category: 'Healthy ' + label + ' (s)',
-                    value: this.calculateHealth('healthy').count,
-                    icon: 'pi-heart-fill',
-                    average: this.calculateHealth('healthy').average,
-                  },
-                ];
+                  const label = hierarchy?.find(
+                    (hi) => hi.level === filterApplyData.level,
+                  ).hierarchyLevelName;
+
+                  this.aggregrationDataList = [
+                    {
+                      cssClassName: 'users',
+                      category: 'Active ' + label + ' (s)',
+                      value: this.tableData['data'].length,
+                      icon: 'pi-users',
+                      average: 'NA',
+                    },
+                    {
+                      cssClassName: 'gauge',
+                      category: 'Avg. Efficiency',
+                      value: this.tableData['data'].length,
+                      icon: 'pi-gauge',
+                      average: this.calculateEfficiency(),
+                    },
+                    {
+                      cssClassName: 'exclamation',
+                      category: 'Critical ' + label + ' (s)',
+                      value: this.calculateHealth('critical').count,
+                      icon: 'pi-exclamation-triangle',
+                      average: this.calculateHealth('critical').average,
+                    },
+                    {
+                      cssClassName: 'heart-fill',
+                      category: 'Healthy ' + label + ' (s)',
+                      value: this.calculateHealth('healthy').count,
+                      icon: 'pi-heart-fill',
+                      average: this.calculateHealth('healthy').average,
+                    },
+                  ];
+                }
+                this.loader = false;
               }
-              this.loader = false;
             });
 
-          // this.maturityComponent.receiveSharedData({
-          //   masterData: sharedobject.masterData,
-          //   filterdata: sharedobject.filterdata,
-          //   filterApplyData: sharedobject.filterApplyData,
-          //   dashConfigData: sharedobject.dashConfigData,
-          // });
+          this.maturityComponent.receiveSharedData({
+            masterData: sharedobject.masterData,
+            filterdata: sharedobject.filterdata,
+            filterApplyData: sharedobject.filterApplyData,
+            dashConfigData: sharedobject.dashConfigData,
+          });
         }),
     );
   }
@@ -212,7 +232,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getMClass(value: string) {
     const v = (value || '').toLowerCase();
-    // console.log(value, v);
     return {
       m0: 'm0',
       m1: 'm1',
@@ -245,7 +264,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onRowExpand(event) {
-    console.log('event ', event);
     this.nestedLoader = true;
     this.selectedRowToExpand = event.data;
     const filterApplyData = this.payloadPreparation(
@@ -257,25 +275,33 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
       .subscribe((res: any) => {
-        if (res.data) {
-          res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-            return { ...row, ...row?.boardMaturity };
+        if (res?.error && res.status === 408) {
+          this.messageService.add({
+            severity: 'error',
+            summary: res.originalError.message || 'Please try after sometime!',
           });
-          const targettedDetails = this.tableData.data.find(
-            (list) => list.id === this.selectedRowToExpand.id,
-          );
-          if (targettedDetails) {
-            targettedDetails['children'] = targettedDetails['children'] || {};
-            targettedDetails['children']['data'] = res.data.matrix.rows;
-            targettedDetails['children']['columns'] =
-              res.data.matrix.columns.filter((col) => col.field !== 'id');
-            const { tableColumnData, tableColumnForm } =
-              this.generateColumnFilterData(
-                targettedDetails['children']['data'],
-                targettedDetails['children']['columns'],
-              );
-            targettedDetails['children']['tableColumnData'] = tableColumnData;
-            targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+          this.nestedLoader = false;
+        } else {
+          if (res?.data) {
+            res.data.matrix.rows = res.data.matrix.rows.map((row) => {
+              return { ...row, ...row?.boardMaturity };
+            });
+            const targettedDetails = this.tableData.data.find(
+              (list) => list.id === this.selectedRowToExpand.id,
+            );
+            if (targettedDetails) {
+              targettedDetails['children'] = targettedDetails['children'] || {};
+              targettedDetails['children']['data'] = res.data.matrix.rows;
+              targettedDetails['children']['columns'] =
+                res.data.matrix.columns.filter((col) => col.field !== 'id');
+              const { tableColumnData, tableColumnForm } =
+                this.generateColumnFilterData(
+                  targettedDetails['children']['data'],
+                  targettedDetails['children']['columns'],
+                );
+              targettedDetails['children']['tableColumnData'] = tableColumnData;
+              targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+            }
           }
           this.nestedLoader = false;
         }
@@ -302,7 +328,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
       return { tableColumnData, tableColumnForm };
     }
-    return;
   }
 
   urlRedirection() {}

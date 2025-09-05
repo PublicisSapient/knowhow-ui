@@ -212,7 +212,7 @@
       <!-- END: Show/Hide Dropdown -->
 
       <div class="date-filter-container cursor-pointer"
-        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')"
+        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora') && this.selectedTab?.toLowerCase()  !== 'home'"
         role="region" aria-label="Date Filter Options">
         <!-- Date filter start -->
         <div class="position-relative">

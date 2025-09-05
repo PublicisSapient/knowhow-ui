@@ -22,6 +22,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
   previousSelectedTrend: any;
+  previousSelectedType: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   @Input() kpiSearchQuery!: string;
@@ -58,10 +59,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
           !this.helperService.deepEqual(
             this.previousSelectedTrend,
             this.sharedService.getSelectedTrends()[0],
-          )
+          ) ||
+          this.previousSelectedType !== this.selectedType
         ) {
           this.previousSelectedTrend =
             this.sharedService.getSelectedTrends()[0];
+          this.previousSelectedType = this.selectedType;
           this.getBoardConfig([
             ...this.sharedService
               .getSelectedTrends()
