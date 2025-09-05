@@ -42,28 +42,28 @@
   </div>
 </div>
 @if (selectedTab?.toLowerCase() !== 'home') {
-<div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
-  <div class="p-d-flex p-ai-center kpi-search">
-    <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
-    <span class="search-icon"><i class="pi pi-search kpi-search-icon"></i></span>
-    <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem; margin-right: 25px;" (click)="removeSearchQuery()" (keydown.enter)="removeSearchQuery()"></i></span>
-    <p-autoComplete
-      #autoComplete
-      [suggestions]="filteredKpis"
-      [(ngModel)]="selectedKPI"
-      [group]="true"
-      [field]="'label'"
-      [optionGroupLabel]="'label'"
-      [optionGroupChildren]="'items'"
-      (completeMethod)="debouncedFilterKpis($event)"
-      [completeOnFocus]="true"
-      [placeholder]="'Search KPI'"
-      (onSelect)="onKpiSearch($event)"
-      (input)="handleInputChange($event)">
-    </p-autoComplete>
+  <div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
+    <div class="p-d-flex p-ai-center kpi-search">
+      <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
+      <span class="search-icon"><i class="pi pi-search kpi-search-icon"></i></span>
+      <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem; margin-right: 25px;" (click)="removeSearchQuery()" (keydown.enter)="removeSearchQuery()"></i></span>
+      <p-autoComplete
+        #autoComplete
+        [suggestions]="filteredKpis"
+        [(ngModel)]="selectedKPI"
+        [group]="true"
+        [field]="'label'"
+        [optionGroupLabel]="'label'"
+        [optionGroupChildren]="'items'"
+        (completeMethod)="debouncedFilterKpis($event)"
+        [completeOnFocus]="true"
+        [placeholder]="'Search KPI'"
+        (onSelect)="onKpiSearch($event)"
+        (input)="handleInputChange($event)">
+      </p-autoComplete>
+    </div>
+    <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
   </div>
-  <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
-</div>
 }
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
   @if (selectedTab?.toLowerCase() !== 'home') {

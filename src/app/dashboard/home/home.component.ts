@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loader: boolean = true;
   nestedLoader: boolean = false;
   products: any;
+  sidebarVisible: boolean = false;
 
   constructor(
     private service: SharedService,
