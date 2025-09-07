@@ -83,7 +83,6 @@ export class ParentFilterComponent implements OnChanges {
             return !result.includes(e.nodeName.toLowerCase());
           });
         }
-        console.log('this.filterLevels', this.filterLevels);
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
