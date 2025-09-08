@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedHierarchy: any;
   sharedobject = {};
   completeHierarchyData: any = {};
+  sidebarVisible: boolean = false;
 
   constructor(
     private service: SharedService,

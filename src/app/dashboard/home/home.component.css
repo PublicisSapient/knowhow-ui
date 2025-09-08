@@ -5,19 +5,27 @@
   background-color: #fff;
   border-radius: 10px;
   border: 1px solid #d5dbe1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 :host .data-item.users {
-  background-color: #8980ed;
+  background: rgb(212, 251, 223);
+  border: 1px solid rgb(21, 186, 64);
 }
+
 :host .data-item.gauge {
-  background-color: #9fe8fa;
+  background: rgb(222, 232, 252);
+  border: 1px solid rgb(47, 118, 255);
 }
+
 :host .data-item.exclamation {
-  background-color: #fbcf5f;
+  background: rgb(220, 231, 252);
+  border: 1px solid #8980ed;
 }
+
 :host .data-item.heart-fill {
-  background-color: #ed8888;
+  background: rgb(255, 236, 223);
+  border: 1px solid #f68605;
 }
 
 .maturity-tablur-view {
@@ -38,6 +46,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:host .icon.users {
+  background: rgb(212, 251, 223);
+}
+
+:host .icon.users .pi {
+  color: rgb(21, 186, 64);
+}
+
+:host .icon.gauge {
+  background: rgb(222, 232, 252);
+}
+
+:host .icon.gauge .pi {
+  color: rgb(47, 118, 255);
+}
+
+:host .icon.exclamation {
+  background: rgb(220, 231, 252);
+}
+
+:host .icon.exclamation .pi {
+  color: #8980ed;
+}
+
+:host .icon.heart-fill {
+  background: rgb(255, 236, 223);
+}
+
+:host .icon.heart-fill .pi {
+  color: #f68605;
 }
 
 .data {
@@ -216,6 +256,7 @@
 :host ::ng-deep.column-filter .p-multiselect-trigger {
   display: none;
 }
+
 :host ::ng-deep.p-datatable-header {
   border: none;
   padding-top: 0px;
@@ -262,12 +303,12 @@
   border-width: 0 0 1px 0;
   font-weight: 700;
   color: #374151;
-  background: #f9fafb;
+  background: #d9e7fec2;
   transition: box-shadow 0.2s;
 }
 
-.expanded-table-wrapper {
-}
+/* .expanded-table-wrapper {
+} */
 
 /* .expanded-table {
 } */
@@ -303,4 +344,7 @@
 
 .parent_span {
   color: green;
+}
+:host ::ng-deep .p-sidebar-right {
+  width: 60vw;
 }
