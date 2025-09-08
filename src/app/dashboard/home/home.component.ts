@@ -41,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   filters: Array<any> = [];
   selectedHierarchy: any;
   sharedobject = {};
+  completeHierarchyData: any = {};
 
   constructor(
     private service: SharedService,
@@ -70,6 +71,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
           this.sharedobject = sharedobject;
+          this.completeHierarchyData = JSON.parse(
+            localStorage.getItem('completeHierarchyData') || '{}',
+          )[this.selectedType];
           this.filterApplyData = sharedobject.filterApplyData;
           const filterApplyData = this.payloadPreparation(
             this.filterApplyData,
@@ -83,11 +87,11 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.selectedType !== 'scrum',
             )
             .subscribe((res: any) => {
-              if (res?.error && res.status === 408) {
+              if (res?.error) {
                 this.messageService.add({
                   severity: 'error',
                   summary:
-                    res.originalError.message || 'Please try after sometime!',
+                    res.message || 'Looks some problem in fetching the data!',
                 });
                 this.loader = false;
               } else {
@@ -116,9 +120,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       return acc;
                     }, {} as { [key: string]: boolean });
 
-                  const hierarchy = JSON.parse(
-                    localStorage.getItem('completeHierarchyData') || '{}',
-                  )[this.selectedType];
+                  const hierarchy = this.completeHierarchyData;
 
                   const label = hierarchy?.find(
                     (hi) => hi.level === filterApplyData.level,
@@ -178,9 +180,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   payloadPreparation(filterApplyData, selectedType, dataFor) {
-    const hierarchy = JSON.parse(
-      localStorage.getItem('completeHierarchyData') || '{}',
-    )[selectedType];
+    const hierarchy = this.completeHierarchyData;
 
     let targetLevel = filterApplyData.level;
     let targetLabel = filterApplyData.label;
@@ -294,10 +294,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
       .subscribe((res: any) => {
-        if (res?.error && res.status === 408) {
+        if (res?.error) {
           this.messageService.add({
             severity: 'error',
-            summary: res.originalError.message || 'Please try after sometime!',
+            summary: res.message || 'Looks some problem in fetching the data!',
           });
           this.nestedLoader = false;
         } else {
@@ -359,9 +359,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getImmediateParentDisplayName(child) {
-    const completeHiearchyData = JSON.parse(
-      localStorage.getItem('completeHierarchyData'),
-    )[this.selectedType.toLowerCase()];
+    const completeHiearchyData = this.completeHierarchyData;
     const selectedLevelNode = completeHiearchyData?.filter(
       (x) =>
         x.hierarchyLevelName === this.selectedHierarchy?.hierarchyLevelName,
@@ -382,7 +380,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       const immediateParent = filterData[parentLevelName].find(
         (x) => x.nodeId === child.parentId,
       );
-      console.log(immediateParent?.nodeDisplayName);
       return immediateParent?.nodeDisplayName;
     }
     return undefined;
