@@ -59,7 +59,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     { option: 'S4', value: 's4', selected: true },
   ];
 
-  constructor(private readonly viewContainerRef: ViewContainerRef) { }
+  constructor(private readonly viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
