@@ -57,7 +57,7 @@ export class ParentFilterComponent implements OnChanges {
       let result = [];
 
       if (projectLevel !== null) {
-        // --> Filter for everyone except project level-1 and project level-2
+        // --> Filter for everyone except for project level-1 and project level-2
         result = hierarchy
           .filter(
             (item) =>
