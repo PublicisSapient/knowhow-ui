@@ -59,7 +59,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     { option: 'S4', value: 's4', selected: true },
   ];
 
-  constructor(private readonly viewContainerRef: ViewContainerRef) {}
+  constructor(private readonly viewContainerRef: ViewContainerRef) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
@@ -376,39 +376,39 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     let sprintCounter = 1;
 
     if (data) {
-    data.forEach((project) => {
-      const projectName = project.data.trim();
-      project.value.forEach((entry, index) => {
-        const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
-        const sprintKey = index; // assuming index-based alignment
+      data.forEach((project) => {
+        const projectName = project.data.trim();
+        project.value.forEach((entry, index) => {
+          const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
+          const sprintKey = index; // assuming index-based alignment
 
-        if (!sprintMap.has(sprintKey)) {
-          sprintMap.set(sprintKey, {
-            sprintNumber: sprintCounter++,
-            projects: {},
-            sprints: [],
-          });
-        }
+          if (!sprintMap.has(sprintKey)) {
+            sprintMap.set(sprintKey, {
+              sprintNumber: sprintCounter++,
+              projects: {},
+              sprints: [],
+            });
+          }
 
-        const sprintEntry = sprintMap.get(sprintKey);
-        const sprintData = sprintEntry.projects;
+          const sprintEntry = sprintMap.get(sprintKey);
+          const sprintData = sprintEntry.projects;
 
-        // Add date range to x-axis labels if not already present
-        if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
-          sprintEntry.sprints.push(entry.sSprintName);
-        }
+          // Add date range to x-axis labels if not already present
+          if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
+            sprintEntry.sprints.push(entry.sSprintName);
+          }
 
-        // Assign hoverValue data (use empty object if missing)
-        sprintData[projectName] = Object.keys(entry.hoverValue || {}).reduce(
-          (acc, key) => {
-            acc[key] = entry.hoverValue[key] || 0;
-            return acc;
-          },
-          {},
-        );
+          // Assign hoverValue data (use empty object if missing)
+          sprintData[projectName] = Object.keys(entry.hoverValue || {}).reduce(
+            (acc, key) => {
+              acc[key] = entry.hoverValue[key] || 0;
+              return acc;
+            },
+            {},
+          );
+        });
       });
-    });
-  }
+    }
     return Array.from(sprintMap.values());
   }
 
