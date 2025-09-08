@@ -323,10 +323,8 @@
   font-weight: normal;
 }
 .severity-dot {
-  width: 12px;
   height: 12px;
   border-radius: 50%;
-  display: inline-block;
   margin-right: 10px;
   position: relative;
   left: -17px;
@@ -338,7 +336,7 @@
   color: #4b5563;
   display: block;
   width: 100%;
-  font-family: 'Poppins_Regular';
+  font-family: 'Poppins_Medium', sans-serif;
   font-size: 14px;
   font-weight: bold;
 }
