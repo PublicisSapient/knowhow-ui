@@ -50,7 +50,7 @@ export class ParentFilterComponent implements OnChanges {
         localStorage.getItem('completeHierarchyData'),
       )[this.selectedType];
 
-      const projectLevelObj = hierarchy.find(
+      const projectLevelObj = hierarchy?.find(
         (level) => level.hierarchyLevelName.toLowerCase() === 'project',
       );
       const projectLevel = projectLevelObj ? projectLevelObj.level : null;
