@@ -390,7 +390,7 @@
         role="region"
         aria-label="KPI Card Header">
         <div class="kpi-card-title-container">
-          <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Maturity Wheel</h3>
+          <!-- <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Maturity Wheel</h3> -->
           <span class="p-float-label">
             <p-dropdown inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]" placeholder="Select"
               optionLabel="nodeDisplayName" [style]="{ width: '300px', 'max-width': '100%', height: '40px' }"
@@ -404,28 +404,19 @@
               <ng-template let-option pTemplate="item">
                 <div class="filter-item">
                   <span>{{ option.nodeDisplayName }}</span>
-                  <!-- <span class="parent_span">
-                    ({{
-                    service.getSelectedTab().toLowerCase() === 'iteration'
-                    ? option.sprintState
-                    : service.getSelectedTab().toLowerCase() === 'release'
-                    ? option.releaseState
-                    : getImmediateParentDisplayName(option)
-                    }})
-                  </span> -->
+                  <span class="parent_span">
+                    ({{getImmediateParentDisplayName(option) ?? ''}})
+                  </span>
                 </div>
               </ng-template>
             </p-dropdown>
         
-            <!-- <label class="floating-label" for="singleselectFilter">
+            <label class="floating-label" for="singleselectFilter">
               Select
-              <ng-container *ngIf="!selectedLevel || isString(selectedLevel); else objectTemplate">
-                {{ selectedLevel || 'Project' }}
+              <ng-container>
+                {{ selectedHierarchy?.hierarchyLevelName }}
               </ng-container>
-              <ng-template #objectTemplate>
-                {{ selectedLevel?.emittedLevel }}
-              </ng-template>
-            </label> -->
+            </label>
           </span>
         </div>
       </div>
