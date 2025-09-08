@@ -212,7 +212,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getImmediateChild(hierarchyData, parentLevel) {
     // Find the item with the next level
-    const child = hierarchyData.find((item) => item.level === parentLevel);
+    const child = hierarchyData?.find((item) => item.level === parentLevel);
     return child || null;
   }
 
