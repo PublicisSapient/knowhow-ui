@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   products: any;
   selectedFilters: Array<any> = [];
   filters: Array<any> = [];
-  selectedLevel: any;
+  selectedHierarchy: any;
   sharedobject = {};
 
   constructor(
@@ -184,9 +184,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     let targetLevel = filterApplyData.level;
     let targetLabel = filterApplyData.label;
+    this.selectedHierarchy = this.getImmediateChild(
+      hierarchy,
+      filterApplyData.level,
+    );
 
     if (dataFor === 'child' && hierarchy) {
-      const child = this.getImmediateChild(hierarchy, filterApplyData.level);
+      const child = this.getImmediateChild(
+        hierarchy,
+        filterApplyData.level + 1,
+      );
       targetLevel = child?.level ?? targetLevel;
       targetLabel = child?.hierarchyLevelId ?? targetLabel;
     }
@@ -205,7 +212,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getImmediateChild(hierarchyData, parentLevel) {
     // Find the item with the next level
-    const child = hierarchyData.find((item) => item.level === parentLevel + 1);
+    const child = hierarchyData.find((item) => item.level === parentLevel);
     return child || null;
   }
 
@@ -344,18 +351,50 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   processFilterData(data, filterType) {
     if (Array.isArray(data)) {
-      return (this.filters = data.filter(
-        (nodes) => nodes.labelName === filterType,
-      ));
+      return data
+        .sort((a, b) => a.nodeDisplayName.localeCompare(b.nodeDisplayName))
+        .filter((nodes) => nodes.labelName === filterType);
     }
     return [];
+  }
+
+  getImmediateParentDisplayName(child) {
+    const completeHiearchyData = JSON.parse(
+      localStorage.getItem('completeHierarchyData'),
+    )[this.selectedType.toLowerCase()];
+    const selectedLevelNode = completeHiearchyData?.filter(
+      (x) =>
+        x.hierarchyLevelName === this.selectedHierarchy?.hierarchyLevelName,
+    );
+    const level = selectedLevelNode[0].level;
+    if (level > 1) {
+      const parentLevel = level - 1;
+      const parentLevelNode = completeHiearchyData?.filter(
+        (x) => x.level === parentLevel,
+      );
+      const parentLevelName = parentLevelNode[0].hierarchyLevelName;
+      const filterData = {
+        [parentLevelName]: this.processFilterData(
+          this.service.getFilterData(),
+          parentLevelNode[0].hierarchyLevelId,
+        ),
+      };
+      const immediateParent = filterData[parentLevelName].find(
+        (x) => x.nodeId === child.parentId,
+      );
+      console.log(immediateParent?.nodeDisplayName);
+      return immediateParent?.nodeDisplayName;
+    }
+    return undefined;
   }
 
   urlRedirection() {}
 
   onDropdownChange(event: any) {
     const selectedNodeId = event.value.nodeId;
-    this.filterApplyData.ids = [selectedNodeId];
+    if (this.selectedType === 'scrum') {
+      this.filterApplyData.ids = [selectedNodeId];
+    }
     this.filterApplyData.selectedMap[this.filterApplyData.label] = [
       selectedNodeId,
     ];

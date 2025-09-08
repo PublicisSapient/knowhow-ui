@@ -300,3 +300,7 @@
   width: 2rem;
   margin-right: 0.5rem;
 }
+
+.parent_span {
+  color: green;
+}
