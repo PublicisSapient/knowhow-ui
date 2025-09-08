@@ -684,4 +684,40 @@ export class RecommendationsComponent implements OnInit {
       });
     }
   }
+
+  getIconClass(recommendation) {
+    if (!recommendation) return;
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+    return recommendationType === 'high'
+      ? 'pi-exclamation-circle high-icon'
+      : recommendationType == 'medium'
+      ? 'pi-exclamation-circle medium-icon'
+      : recommendationType == 'critical'
+      ? 'pi-exclamation-triangle critical-icon'
+      : '';
+  }
+
+  getSeverityBackgroundColor(recommendation: any) {
+    if (!recommendation) return {};
+
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+
+    switch (recommendationType) {
+      case 'high':
+        return { 'background-color': '#ffb688', color: 'fff#' };
+      case 'medium':
+        return {
+          'background-color': '#fbcf5f',
+          color: '#fff',
+        };
+      case 'critical':
+        return { 'background-color': '#ed8888', color: '#fff' };
+      default:
+        return { 'background-color': '#ed8888', color: '#fff' };
+    }
+  }
 }
