@@ -201,6 +201,8 @@ export class HttpService {
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
   private executivePageURL = this.baseUrl + '/api/executive';
 
+  private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1309,5 +1311,9 @@ export class HttpService {
       `${this.executivePageURL}?iskanban=${selectedType}`,
       payload,
     );
+  }
+
+  getProductivityGain(payload) {
+    return this.http.post<any>(this.pebCalculateUrl, payload);
   }
 }
