@@ -462,6 +462,24 @@ export class PrimaryFilterComponent implements OnChanges {
     this.filters = [...selected, ...unselected];
   }
 
+  onPanelShow() {
+    this.moveSelectedOptionToTop();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const panel = document.querySelector('.p-multiselect-panel');
+        if (panel) {
+          const itemsWrapper = panel.querySelector(
+            '.p-multiselect-items-wrapper',
+          );
+          if (itemsWrapper) {
+            itemsWrapper.scrollTop = 0;
+          }
+        }
+      });
+    });
+  }
+
   onSelectionChange(event: any) {
     if (event?.value?.length > 0) {
       this.moveSelectedOptionToTop();

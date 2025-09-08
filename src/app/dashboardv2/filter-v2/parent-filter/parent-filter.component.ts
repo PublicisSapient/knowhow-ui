@@ -46,6 +46,29 @@ export class ParentFilterComponent implements OnChanges {
         )) ||
       selectedTabChanged
     ) {
+      const hierarchy = JSON.parse(
+        localStorage.getItem('completeHierarchyData'),
+      )[this.selectedType];
+
+      const projectLevelObj = hierarchy?.find(
+        (level) => level.hierarchyLevelName.toLowerCase() === 'project',
+      );
+      const projectLevel = projectLevelObj ? projectLevelObj.level : null;
+      let result = [];
+
+      if (projectLevel !== null) {
+        // --> Filter for everyone except for project level-1 and project level-2
+        result = hierarchy
+          .filter(
+            (item) =>
+              !(
+                item.level === projectLevel - 1 ||
+                item.level === projectLevel - 2
+              ),
+          )
+          .map((item) => item.hierarchyLevelName.toLowerCase());
+      }
+
       if (this.parentFilterConfig['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData).map((item) => {
@@ -56,13 +79,14 @@ export class ParentFilterComponent implements OnChanges {
           };
         });
         if (this.selectedTab.toLowerCase() === 'home') {
-          this.filterLevels = this.filterLevels.filter(
-            (e) => e.nodeDisplayName.toLowerCase() !== 'project',
-          );
+          this.filterLevels = this.filterLevels.filter((e) => {
+            return !result.includes(e.nodeName.toLowerCase());
+          });
         }
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
+        console.log('this.filterLevels', this.filterLevels);
         this.service.setDataForSprintGoal({ filterLevels: this.filterLevels });
         this.stateFilters =
           (this.service.getBackupOfUrlFilters() &&

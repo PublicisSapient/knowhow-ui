@@ -2515,3 +2515,7 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
   color: #3f51b5;
   border-color: transparent;
 }
+
+.custom-multiselect-panel .p-multiselect-items-wrapper {
+  max-height: 170px !important;
+}

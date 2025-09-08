@@ -16,7 +16,7 @@
       appendTo="body"
       [resetFilterOnHide]="true"
       (onChange)="onSelectionChange($event)"
-      (onPanelShow)="moveSelectedOptionToTop()"
+      (onPanelShow)="onPanelShow()"
       (onPanelHide)="handlePanelHide($event)"
       (onBlur)="handleBlur()">
       <ng-template let-option pTemplate="item">

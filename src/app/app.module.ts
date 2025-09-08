@@ -37,6 +37,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { SliderModule } from 'primeng/slider';
+import { SidebarModule } from 'primeng/sidebar';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MessagesModule } from 'primeng/messages';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -132,8 +138,9 @@ import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
-import { HomeComponent } from './dashboard/home/home.component';
+import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
+import { HomeComponent } from './dashboard/home/home.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -192,8 +199,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     RecommendationsComponent,
     StickyHeaderV2Component,
     AddToReportPopUpComponent,
-    HomeComponent,
+    PebCalculatorComponent,
     StackedGroupBarChartComponent,
+    HomeComponent,
   ],
   imports: [
     SharedModuleModule,
@@ -234,6 +242,12 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     ProgressBarModule,
     AutoCompleteModule,
     ChipsModule,
+    CardModule,
+    DividerModule,
+    SliderModule,
+    SidebarModule,
+    InputNumberModule,
+    MessagesModule,
   ],
   providers: [
     ExcelService,

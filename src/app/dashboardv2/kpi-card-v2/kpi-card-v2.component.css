@@ -517,3 +517,7 @@
 :host::ng-deep.p-menu-list .p-element.p-menuitem {
   cursor: pointer;
 }
+
+:host::ng-deep.p-button-label {
+  background-color: transparent !important;
+}
