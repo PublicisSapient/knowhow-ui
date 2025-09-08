@@ -130,8 +130,12 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     }
 
     const sprints = Object.keys(sprintGroups);
-    const projects = [...new Set(this.defectsBreachedSLAs.map((d) => d.data))];
-
+    let projects;
+    if (this.kpiId === 'kpi195') {
+      projects = [...new Set(this.defectsBreachedSLAs?.map((d) => d.data))];
+    } else {
+      projects = [...new Set(this.data?.map((d) => d.data))];
+    }
     const margin = { top: 30, right: 30, bottom: 60, left: 40 };
 
     //  Get container size dynamically
@@ -371,6 +375,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     const sprintMap = new Map();
     let sprintCounter = 1;
 
+    if (data) {
     data.forEach((project) => {
       const projectName = project.data.trim();
       project.value.forEach((entry, index) => {
@@ -403,6 +408,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         );
       });
     });
+  }
     return Array.from(sprintMap.values());
   }
 
