@@ -37,6 +37,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   loader: boolean = true;
   nestedLoader: boolean = false;
   products: any;
+  selectedFilters: Array<any> = [];
+  filters: Array<any> = [];
+  selectedHierarchy: any;
+  sharedobject = {};
+  completeHierarchyData: any = {};
   sidebarVisible: boolean = false;
 
   constructor(
@@ -66,6 +71,10 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
+          this.sharedobject = sharedobject;
+          this.completeHierarchyData = JSON.parse(
+            localStorage.getItem('completeHierarchyData') || '{}',
+          )[this.selectedType];
           this.filterApplyData = sharedobject.filterApplyData;
           const filterApplyData = this.payloadPreparation(
             this.filterApplyData,
@@ -79,11 +88,11 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.selectedType !== 'scrum',
             )
             .subscribe((res: any) => {
-              if (res?.error && res.status === 408) {
+              if (res?.error) {
                 this.messageService.add({
                   severity: 'error',
                   summary:
-                    res.originalError.message || 'Please try after sometime!',
+                    res.message || 'Looks some problem in fetching the data!',
                 });
                 this.loader = false;
               } else {
@@ -112,9 +121,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       return acc;
                     }, {} as { [key: string]: boolean });
 
-                  const hierarchy = JSON.parse(
-                    localStorage.getItem('completeHierarchyData') || '{}',
-                  )[this.selectedType];
+                  const hierarchy = this.completeHierarchyData;
 
                   const label = hierarchy?.find(
                     (hi) => hi.level === filterApplyData.level,
@@ -155,26 +162,39 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             });
 
-          this.maturityComponent.receiveSharedData({
-            masterData: sharedobject.masterData,
-            filterdata: sharedobject.filterdata,
-            filterApplyData: sharedobject.filterApplyData,
-            dashConfigData: sharedobject.dashConfigData,
-          });
+          this.filters = this.processFilterData(
+            this.service.getFilterData(),
+            this.filterApplyData.label,
+          );
+          this.selectedFilters = [this.filters[0]];
+          this.getMaturityWheelData(sharedobject);
         }),
     );
   }
+  getMaturityWheelData(sharedobject) {
+    this.maturityComponent.receiveSharedData({
+      masterData: sharedobject.masterData,
+      filterData: sharedobject.filterData,
+      filterApplyData: sharedobject.filterApplyData,
+      dashConfigData: sharedobject.dashConfigData,
+    });
+  }
 
   payloadPreparation(filterApplyData, selectedType, dataFor) {
-    const hierarchy = JSON.parse(
-      localStorage.getItem('completeHierarchyData') || '{}',
-    )[selectedType];
+    const hierarchy = this.completeHierarchyData;
 
     let targetLevel = filterApplyData.level;
     let targetLabel = filterApplyData.label;
+    this.selectedHierarchy = this.getImmediateChild(
+      hierarchy,
+      filterApplyData.level,
+    );
 
     if (dataFor === 'child' && hierarchy) {
-      const child = this.getImmediateChild(hierarchy, filterApplyData.level);
+      const child = this.getImmediateChild(
+        hierarchy,
+        filterApplyData.level + 1,
+      );
       targetLevel = child?.level ?? targetLevel;
       targetLabel = child?.hierarchyLevelId ?? targetLabel;
     }
@@ -193,7 +213,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getImmediateChild(hierarchyData, parentLevel) {
     // Find the item with the next level
-    const child = hierarchyData.find((item) => item.level === parentLevel + 1);
+    const child = hierarchyData?.find((item) => item.level === parentLevel);
     return child || null;
   }
 
@@ -275,10 +295,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
       .subscribe((res: any) => {
-        if (res?.error && res.status === 408) {
+        if (res?.error) {
           this.messageService.add({
             severity: 'error',
-            summary: res.originalError.message || 'Please try after sometime!',
+            summary: res.message || 'Looks some problem in fetching the data!',
           });
           this.nestedLoader = false;
         } else {
@@ -330,7 +350,54 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  processFilterData(data, filterType) {
+    if (Array.isArray(data)) {
+      return data
+        .sort((a, b) => a.nodeDisplayName.localeCompare(b.nodeDisplayName))
+        .filter((nodes) => nodes.labelName === filterType);
+    }
+    return [];
+  }
+
+  getImmediateParentDisplayName(child) {
+    const completeHiearchyData = this.completeHierarchyData;
+    const selectedLevelNode = completeHiearchyData?.filter(
+      (x) =>
+        x.hierarchyLevelName === this.selectedHierarchy?.hierarchyLevelName,
+    );
+    const level = selectedLevelNode[0].level;
+    if (level > 1) {
+      const parentLevel = level - 1;
+      const parentLevelNode = completeHiearchyData?.filter(
+        (x) => x.level === parentLevel,
+      );
+      const parentLevelName = parentLevelNode[0].hierarchyLevelName;
+      const filterData = {
+        [parentLevelName]: this.processFilterData(
+          this.service.getFilterData(),
+          parentLevelNode[0].hierarchyLevelId,
+        ),
+      };
+      const immediateParent = filterData[parentLevelName].find(
+        (x) => x.nodeId === child.parentId,
+      );
+      return immediateParent?.nodeDisplayName;
+    }
+    return undefined;
+  }
+
   urlRedirection() {}
+
+  onDropdownChange(event: any) {
+    const selectedNodeId = event.value.nodeId;
+    if (this.selectedType === 'scrum') {
+      this.filterApplyData.ids = [selectedNodeId];
+    }
+    this.filterApplyData.selectedMap[this.filterApplyData.label] = [
+      selectedNodeId,
+    ];
+    this.getMaturityWheelData(this.sharedobject);
+  }
 
   ngOnDestroy() {
     this.subscription.forEach((subscription) => subscription.unsubscribe());
