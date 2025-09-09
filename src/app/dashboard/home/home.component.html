@@ -389,7 +389,7 @@
     </div>
   </div>
   <div class="p-col-3 p-pl-4">
-    <app-peb-calculator></app-peb-calculator>
+    <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
   </div>
 </div>
 
@@ -451,7 +451,7 @@
                 </div>
               </ng-template>
             </p-dropdown>
-        
+
             <label class="floating-label" for="singleselectFilter">
               Select
               <ng-container>
