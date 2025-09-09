@@ -342,6 +342,9 @@
   margin-right: 0.5rem;
 }
 
+.parent_span {
+  color: green;
+}
 :host ::ng-deep .p-sidebar-right {
   width: 60vw;
 }
