@@ -9,8 +9,8 @@
 }
 
 :host .data-item.users {
-  background: rgb(212, 251, 223);
-  border: 1px solid rgb(21, 186, 64);
+  background: rgb(220, 231, 252);
+  border: 1px solid #8980ed;
 }
 
 :host .data-item.gauge {
@@ -19,13 +19,13 @@
 }
 
 :host .data-item.exclamation {
-  background: rgb(220, 231, 252);
-  border: 1px solid #8980ed;
+  background: rgb(255, 236, 223);
+  border: 1px solid #f68605;
 }
 
 :host .data-item.heart-fill {
-  background: rgb(255, 236, 223);
-  border: 1px solid #f68605;
+  background: rgb(212, 251, 223);
+  border: 1px solid rgb(21, 186, 64);
 }
 
 .maturity-tablur-view {
@@ -49,11 +49,11 @@
 }
 
 :host .icon.users {
-  background: rgb(212, 251, 223);
+  background: rgb(220, 231, 252);
 }
 
 :host .icon.users .pi {
-  color: rgb(21, 186, 64);
+  color: #8980ed;
 }
 
 :host .icon.gauge {
@@ -65,19 +65,19 @@
 }
 
 :host .icon.exclamation {
-  background: rgb(220, 231, 252);
-}
-
-:host .icon.exclamation .pi {
-  color: #8980ed;
-}
-
-:host .icon.heart-fill {
   background: rgb(255, 236, 223);
 }
 
-:host .icon.heart-fill .pi {
+:host .icon.exclamation .pi {
   color: #f68605;
+}
+
+:host .icon.heart-fill {
+  background: rgb(212, 251, 223);
+}
+
+:host .icon.heart-fill .pi {
+  color: rgb(21, 186, 64);
 }
 
 .data {
@@ -178,22 +178,22 @@
 }
 
 .m1 {
-  background: #fe414d;
+  background: #ed8888;
   color: white;
 }
 
 .m2 {
-  background: #ffa96a;
+  background: #ffb688;
   color: white;
 }
 
 .m3 {
-  background: #ffed74;
+  background: #fbcf5f;
   color: #000000;
 }
 
 .m4 {
-  background: #95f5b3;
+  background: #99cda9;
   color: #000000;
 }
 
@@ -203,7 +203,7 @@
 }
 
 .m0 {
-  background: #fe414d;
+  background: #6079c5;
   color: white;
 }
 
