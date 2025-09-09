@@ -101,6 +101,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                     return { ...row, ...row?.boardMaturity };
                   });
 
+                  console.log('table data', this.tableData['data']);
+
                   this.tableData['columns'] = res.data.matrix.columns.filter(
                     (col) => col.field !== 'id',
                   );
@@ -113,6 +115,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                   this.tableColumnData = tableColumnData;
                   this.tableColumnForm = tableColumnForm;
+
+                  console.log('tableColumnData', this.tableColumnData);
+                  console.log('tableColumnForm', this.tableColumnForm);
 
                   this.expandedRows = this.tableData['data']
                     .filter((p) => p.children && p.children.length > 0) // only rows with children
@@ -336,6 +341,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         const uniqueMap = new Map();
         data.forEach((rowData) => {
           const key = rowData[colName.field];
+          console.log('key', key);
           if (!uniqueMap.has(key)) {
             uniqueMap.set(key, {
               name: key,
