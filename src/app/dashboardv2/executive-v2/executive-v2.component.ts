@@ -461,6 +461,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             });
           });
         }
+        if (this.selectedTab === 'home') {
+          setTimeout(() => {
+            this.router.navigate([`dashboard/${this.selectedTab}`], {
+              queryParams: {
+                stateFilters: stateFiltersParam,
+                kpiFilters: kpiFiltersParam,
+                selectedTab: this.selectedTab,
+              }, // Pass the object here
+            });
+          });
+        }
         if (stateFiltersParam?.length) {
           if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
             this.httpService
