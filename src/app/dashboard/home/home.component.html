@@ -2,6 +2,8 @@
   [style]="{ marginTop: '80px' }"
   aria-live="polite"
   aria-atomic="true"></p-toast>
+
+<!-- TOP TILES  -->
 <div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
   @for (item of aggregrationDataList; track item) {
     <div class="p-d-flex data-item p-col-2 p-mt-3 p-mb-1 p-py-4 p-px-6">
@@ -29,6 +31,7 @@
   }
 </div>
 
+<!-- MATURITY TABLE -->
 <div class="kpi-details-table-container p-d-flex p-mx-2">
   <div class="p-col-9">
     <div class="kpi-card-container">
@@ -382,6 +385,36 @@
   </div>
 </div>
 
+<!-- TOP/BOTTOM TREND SECTION -->
+<div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
+  @for (item of bottomTilesData; track item) {
+    <div class="p-d-flex data-item p-col-2 p-mt-3 p-mb-1 p-py-4 p-px-6">
+      <div class="icon-container">
+        <div class="icon" [ngClass]="item.cssClassName">
+          <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+        </div>
+      </div>
+      <div class="data">
+        <p class="tabularKPI-column-header p-mb-0" tabindex="0">
+          {{ item.category }}
+        </p>
+        <div class="p-d-flex">
+          <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
+            {{ item.value }}
+            {{
+              item.average && item.average !== 'NA'
+                ? '(' + item.average + ')'
+                : ''
+            }}
+          </p>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+
+<!-- MATURITY WHEEL -->
 <div class="kpi-details-table-container p-mx-5 p-mt-5">
   <div class="kpi-card-container">
     <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
