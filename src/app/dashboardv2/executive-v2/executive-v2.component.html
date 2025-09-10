@@ -20,6 +20,7 @@
     <app-collapsible-panel [rawData]="sprintGoalData" ></app-collapsible-panel>
   </div>
   <a href="#" class="gotoRecommendation sr-only" title="Go to recommendation" (keydown.enter)="goToRecommendation()" (focus)="onFocusGoToRecommendation($event)"  (blur)="onBlurGoToRecommendation($event)">Skip to go to recommendation</a>
+
   <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
     <ng-container *ngIf="!noFilterApplyData; else noFilterApplyDataTemplate">
         <ng-container *ngIf="!noKpis; else noKpiTemplate">
@@ -283,6 +284,15 @@
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
                                                                         </ng-container>
                                                                     </ng-container>
+                                                                </ng-container>
+
+                                                                <ng-container *ngSwitchCase="'stacked-bar-chart'">
+                                                                    <app-stacked-group-bar-chart
+                                                                        [defectsBreachedSLAs]="defectsBreachedSLAs"
+                                                                        [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
+                                                                        [data]="kpiChartData[kpi?.kpiId]"
+                                                                        [kpiId]="kpi?.kpiId"
+                                                                        [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                                                 </ng-container>
 
 

@@ -146,6 +146,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   showSprintGoalsPanel = false;
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
+  defectsBreachedSLAs;
+  defectsBreachedSLAsAllValues;
 
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
@@ -460,6 +462,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             });
           });
         }
+        if (this.selectedTab === 'home') {
+          setTimeout(() => {
+            this.router.navigate([`dashboard/${this.selectedTab}`], {
+              queryParams: {
+                stateFilters: stateFiltersParam,
+                kpiFilters: kpiFiltersParam,
+                selectedTab: this.selectedTab,
+              }, // Pass the object here
+            });
+          });
+        }
         if (stateFiltersParam?.length) {
           if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
             this.httpService
@@ -484,9 +497,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   const longStateFiltersString =
                     response.data['longStateFiltersString'];
                   stateFiltersParam = atob(longStateFiltersString);
-                  // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
-                  // const kpiFiltersParam = params['kpiFilters'];
                   if (longKPIFiltersString) {
                     const kpiFilterParamDecoded = atob(longKPIFiltersString);
 
@@ -496,8 +507,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                         : this.service.getKpiSubFilterObj();
                     this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                   }
-
-                  // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
 
                   this.urlRedirection(stateFiltersParam);
                   this.refreshCounter++;
@@ -715,7 +724,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.sprintGoalData = [];
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
-        const nodeName = key.slice(0, idx);
         this.kpiTableDataObj[key] = [];
       }
 
@@ -1411,7 +1419,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
     } else if (this.selectedTab === 'iteration') {
-      //this.iterationKPIData = [];
       this.postJiraKPIForIteration(postData, source);
     }
   }
@@ -1989,6 +1996,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.transformJSONForSQVTable(
         this.kpiChartData[kpiId],
       );
+    }
+
+    if (kpiId === 'kpi195') {
+      this.defectsBreachedSLAsAllValues = this.allKpiArray[idx]?.trendValueList
+        ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
+        : {};
+      this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
 
     this.createTrendsData(kpiId);
@@ -2901,7 +2915,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   }
                 });
                 if (!anyProject?.length) {
-                  console.log(dataItem);
+                  // console.log(dataItem);
                 } else {
                   if (
                     Array.isArray(anyProject[0][0]) &&
@@ -2983,7 +2997,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
         // });
         // this.cdr.detectChanges();
-        console.log(data);
       }
     });
     return data;
@@ -3034,7 +3047,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       console.log(data);
     }
-    console.log(data);
     return data;
   }
 
