@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<div id="container-stacked-group">
+<div id="container-stacked-group" *ngIf="hasFilter">
     <p-multiSelect 
       [options]="filter" 
       optionLabel="option" 

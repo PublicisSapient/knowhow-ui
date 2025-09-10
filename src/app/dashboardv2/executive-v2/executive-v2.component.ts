@@ -147,6 +147,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   sprintGoalData: any = [];
   nonUniqueNames: boolean;
   defectsBreachedSLAs;
+  defectsBreachedSLAsAllValues;
 
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
@@ -451,6 +452,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
 
         if (this.selectedTab === 'kpi-maturity') {
+          setTimeout(() => {
+            this.router.navigate([`dashboard/${this.selectedTab}`], {
+              queryParams: {
+                stateFilters: stateFiltersParam,
+                kpiFilters: kpiFiltersParam,
+                selectedTab: this.selectedTab,
+              }, // Pass the object here
+            });
+          });
+        }
+        if (this.selectedTab === 'home') {
           setTimeout(() => {
             this.router.navigate([`dashboard/${this.selectedTab}`], {
               queryParams: {
@@ -1983,6 +1995,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (kpiId === 'kpi195') {
+      this.defectsBreachedSLAsAllValues = this.allKpiArray[idx]?.trendValueList
+        ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
+        : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
 

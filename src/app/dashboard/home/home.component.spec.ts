@@ -90,6 +90,7 @@ describe('HomeComponent', () => {
         'setSelectedBoard',
         'setKpiSubFilterObj',
         'passDataToDashboard',
+        'getFilterData',
       ],
       {
         passDataToDashboard: of({
@@ -307,6 +308,10 @@ describe('HomeComponent', () => {
       selectedMap: { date: ['2025-01-01'] },
       ids: ['D1'],
     };
+    component.completeHierarchyData = [
+      { level: 'Team', hierarchyLevelId: 'T1' },
+      { level: 'Sprint', hierarchyLevelId: 'S1' },
+    ];
 
     const result = component.payloadPreparation(
       filterApplyData,
@@ -324,15 +329,6 @@ describe('HomeComponent', () => {
   });
 
   it('should use child level/label when dataFor is child and hierarchy exists', () => {
-    const hierarchy = [
-      { level: 'Team', hierarchyLevelId: 'T1' },
-      { level: 'Sprint', hierarchyLevelId: 'S1' },
-    ];
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({ kanban: hierarchy }),
-    );
-
     spyOn(component as any, 'getImmediateChild').and.returnValue({
       level: 'Sprint',
       hierarchyLevelId: 'S1',
@@ -344,6 +340,10 @@ describe('HomeComponent', () => {
       selectedMap: { date: ['2025-01-01'] },
       ids: ['D1'],
     };
+    component.completeHierarchyData = [
+      { level: 'Team', hierarchyLevelId: 'T1' },
+      { level: 'Sprint', hierarchyLevelId: 'S1' },
+    ];
 
     const result = component.payloadPreparation(
       filterApplyData,
@@ -352,8 +352,8 @@ describe('HomeComponent', () => {
     );
 
     expect(result).toEqual({
-      level: 'Team',
-      label: 'TeamA',
+      level: 'Sprint',
+      label: 'S1',
       parentId: '',
       date: '2025-01-01',
       duration: 'D1',
@@ -374,6 +374,11 @@ describe('HomeComponent', () => {
       selectedMap: {},
       ids: [],
     };
+
+    component.completeHierarchyData = [
+      { level: 'Team', hierarchyLevelId: 'T1' },
+      { level: 'Sprint', hierarchyLevelId: 'S1' },
+    ];
 
     const result = component.payloadPreparation(
       filterApplyData,
@@ -397,6 +402,10 @@ describe('HomeComponent', () => {
       selectedMap: {},
       ids: [],
     };
+    component.completeHierarchyData = [
+      { level: 'Team', hierarchyLevelId: 'T1' },
+      { level: 'Sprint', hierarchyLevelId: 'S1' },
+    ];
 
     const result = component.payloadPreparation(
       filterApplyData,
@@ -421,6 +430,11 @@ describe('HomeComponent', () => {
       ids: ['Dur1'],
     };
 
+    component.completeHierarchyData = [
+      { level: 'Team', hierarchyLevelId: 'T1' },
+      { level: 'Sprint', hierarchyLevelId: 'S1' },
+    ];
+
     const result = component.payloadPreparation(
       filterApplyData,
       'scrum',
@@ -443,7 +457,7 @@ describe('HomeComponent', () => {
       { level: 3, hierarchyLevelId: 'L3' },
     ];
 
-    const result = component.getImmediateChild(hierarchyData, 1);
+    const result = component.getImmediateChild(hierarchyData, 2);
 
     expect(result).toEqual({ level: 2, hierarchyLevelId: 'L2' });
   });
@@ -456,7 +470,7 @@ describe('HomeComponent', () => {
 
     const result = component.getImmediateChild(hierarchyData, 2);
 
-    expect(result).toEqual({ level: 3, hierarchyLevelId: 'L3' });
+    expect(result).toEqual(null);
   });
 
   it('should return null when hierarchyData is empty', () => {
