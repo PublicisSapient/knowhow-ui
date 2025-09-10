@@ -36,6 +36,7 @@ import * as d3 from 'd3';
 })
 export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   @Input() defectsBreachedSLAs: any;
+  @Input() defectsBreachedSLAsAllValues: any;
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @Input() data;
   @Input() kpiId;
@@ -266,7 +267,14 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         })
         .on('mouseover', (event, d: any) => {
           const [mouseX, mouseY] = d3.pointer(event, window);
-          const originalData = this.findOriginalData(d.data.project, sprint);
+          const projectName = d.data.project;
+          const sprintName = sprint;
+          const severityKey = event.currentTarget.parentNode.__data__.key;
+          const originalData = this.findOriginalData(
+            projectName,
+            sprintName,
+            severityKey,
+          );
           if (originalData?.hoverValue) {
             tooltip
               .style('visibility', 'visible')
@@ -545,16 +553,24 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     // }
   }
 
-  private findOriginalData(projectName: string, sprintName: string): any {
-    // Extract sprint number from sprintName (e.g., "Sprint 1" -> 1)
+  private findOriginalData(
+    projectName: string,
+    sprintName: string,
+    severityKey: string,
+  ): any {
     const sprintNumber = parseInt(sprintName.replace('Sprint ', ''), 10) - 1;
 
-    if (this.kpiId === '195') {
-      const projectData = this.defectsBreachedSLAs.find(
-        (p: any) => p.data === projectName,
+    if (this.kpiId === 'kpi195') {
+      const severityGroup = this.defectsBreachedSLAsAllValues.find(
+        (item: any) => item.filter === severityKey.toUpperCase(),
       );
-      if (projectData?.value && projectData.value.length > sprintNumber) {
-        return projectData.value[sprintNumber];
+
+      if (severityGroup?.value) {
+        const projectSprintData = severityGroup.value.find(
+          (dataItem: any) => dataItem.data === projectName,
+        );
+
+        return projectSprintData.value[sprintNumber] || null;
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
