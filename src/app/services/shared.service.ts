@@ -61,7 +61,7 @@ export class SharedService {
   public switchBoard = new BehaviorSubject<boolean>(false);
 
   // make filterdata and masterdata persistent across dashboards
-  private filterData = {};
+  private filterData: any[] = [];
   private masterdata = {};
   private chartColorList = {};
   changedMainDashboardValueSub = new Subject<any>();
@@ -152,6 +152,8 @@ export class SharedService {
 
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
+
+  private PEBData = {};
   kpiPostData: object = {};
 
   private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
@@ -913,6 +915,14 @@ export class SharedService {
     }
 
     return stateFilters.length <= 8;
+  }
+
+  setPEBData(value) {
+    this.PEBData = value;
+  }
+
+  getPEBData() {
+    return this.PEBData;
   }
   //#endregion
 

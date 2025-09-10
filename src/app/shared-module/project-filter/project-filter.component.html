@@ -80,6 +80,8 @@
         placeholder="Select {{ field.hierarchyLevelName }}"
         optionLabel="nodeDisplayName"
         class="multiselect-custom"
+        appendTo="body"
+        panelStyleClass="custom-multiselect-panel"
         [showToggleAll]="false"
         (onChange)="onSelectionOfOptions($event, field)">
         <ng-template let-hierarchy pTemplate="item">

@@ -252,12 +252,14 @@ export class RecommendationsComponent implements OnInit {
   }
 
   focusDialogHeader() {
+    document.body.style.overflow = 'hidden';
     setTimeout(() => {
       this.selectAllSprints();
     }, 300);
   }
 
   onDialogClose() {
+    document.body.style.overflow = 'auto';
     this.resetSelections();
     this.cancelCurrentRequest$.next();
   }
@@ -680,6 +682,46 @@ export class RecommendationsComponent implements OnInit {
         summary: 'PDF Generation Failed',
         detail: error.message,
       });
+    }
+  }
+
+  getIconClass(recommendation) {
+    if (!recommendation) return;
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+    return recommendationType === 'high'
+      ? 'pi-exclamation-circle high-icon'
+      : recommendationType === 'medium'
+      ? 'pi-exclamation-circle medium-icon'
+      : recommendationType === 'low'
+      ? 'pi-exclamation-circle low-icon'
+      : recommendationType === 'critical'
+      ? 'pi-exclamation-triangle critical-icon'
+      : '';
+  }
+
+  getSeverityBackgroundColor(recommendation: any) {
+    if (!recommendation) return {};
+
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+
+    switch (recommendationType) {
+      case 'high':
+        return { 'background-color': '#f68605', color: 'fff#' };
+      case 'medium':
+        return {
+          'background-color': '#fbcf5f',
+          color: '#fff',
+        };
+      case 'low':
+        return { 'background-color': '#15ba40', color: 'fff#' };
+      case 'critical':
+        return { 'background-color': '#fe414d', color: '#fff' };
+      default:
+        return { 'background-color': '#fe414d', color: '#fff' };
     }
   }
 }
