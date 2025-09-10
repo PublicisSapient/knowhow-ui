@@ -352,13 +352,16 @@
   font-weight: 400;
 }
 .critical-icon {
-  color: #ed8888;
+  color: #fe414d;
 }
 .high-icon {
-  color: #ffb688;
+  color: #f68605;
 }
 .medium-icon {
   color: #fbcf5f;
+}
+.low-icon {
+  color: #15ba40;
 }
 .top-recommendation-header {
   display: flex;
