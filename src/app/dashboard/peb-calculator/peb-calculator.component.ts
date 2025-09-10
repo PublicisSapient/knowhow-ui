@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
-import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -65,11 +64,7 @@ export class PebCalculatorComponent implements OnInit {
   @Input() showLoader: boolean = false;
   isError: boolean = false;
 
-  constructor(
-    private fb: FormBuilder,
-    public sharedService: SharedService,
-    public http: HttpService,
-  ) {
+  constructor(private fb: FormBuilder, public sharedService: SharedService) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
       devCostControl: [100000],
@@ -99,7 +94,7 @@ export class PebCalculatorComponent implements OnInit {
    * This method performs the following operations:
    * 1. Retrieves hierarchy data and selected level from localStorage
    * 2. Constructs request payload with label, level and parentId
-   * 3. Makes HTTP request to get productivity gain data
+   * 3. Gets response data after home component initializes (where the HTTP call is happening) to get productivity gain data
    * 4. Calculates ROI metrics and annual PEB based on the response
    *
    * The calculation considers:
@@ -140,7 +135,7 @@ export class PebCalculatorComponent implements OnInit {
       this.showResults = true;
       const productivityGain =
         productivityGainData['categorizedProductivityGain'];
-      const overallGain = productivityGain['overall'];
+      const overallGain = productivityGain && productivityGain['overall'];
 
       this.annualPEB = Math.round(
         this.pebForm.get('devCountControl')!.value *
