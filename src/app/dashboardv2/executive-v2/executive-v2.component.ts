@@ -4005,6 +4005,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleSelectedOption(event, kpi) {
+    console.log(event, 'event');
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
     } else if (this.selectedTab.toLowerCase() === 'backlog') {

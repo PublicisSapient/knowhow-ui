@@ -509,6 +509,7 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
+    console.log(value, 'value');
     const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
     const segments = routerUrl?.split('/');
     const hasConfig = segments.includes('Config');

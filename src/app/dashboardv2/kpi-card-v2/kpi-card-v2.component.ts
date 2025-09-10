@@ -151,10 +151,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnInit(): void {
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
+        console.log(x, 'x');
         this.filterOptions = {};
         if (x && Object.keys(x)?.length) {
           this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
           for (const key in x[this.kpiData?.kpiId]) {
+            const kpiFilterType =
+              this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
+
+            const currentFilterArray = x[this.kpiData?.kpiId][key];
+            console.log(this.kpiData?.kpiId, 'this.kpiData?.kpiId', key, 'key');
+            console.log(currentFilterArray, 'currentFilterArray');
+            console.log(
+              Array.isArray(currentFilterArray) &&
+                currentFilterArray.includes('Overall'),
+              " currentFilterArray.includes('Overall')",
+            );
+
             if (
               Array.isArray(x[this.kpiData?.kpiId][key]) &&
               x[this.kpiData?.kpiId][key]?.includes('Overall')
@@ -178,24 +191,25 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               }
             } else {
               if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1') {
-                  this.filterOptions['filter1'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter1'
-                    ][0];
-                } else if (key === 'filter2') {
-                  this.filterOptions['filter2'] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
-                      'filter2'
-                    ][0];
+                if (key === 'filter1' || key === 'filter2') {
+                  this.filterOptions[key] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
                 }
               } else {
-                this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
-                  ? { filter1: x[this.kpiData?.kpiId] }
-                  : { ...x[this.kpiData?.kpiId] };
+                if (kpiFilterType === 'multiselectdropdown') {
+                  this.filterOptions[key] =
+                    currentFilterArray?.length > 0
+                      ? [...currentFilterArray]
+                      : currentFilterArray;
+                } else {
+                  this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
+                    ? { filter1: x[this.kpiData?.kpiId] }
+                    : { ...x[this.kpiData?.kpiId] };
+                }
               }
             }
           }
+
           if (
             this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
             (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
@@ -241,6 +255,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }),
     );
+    console.log(this.filterOptions, 'filterOptions default');
   }
 
   async initializeMenu() {
@@ -498,7 +513,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
         this.optionSelected.emit(['Overall']);
       } else {
-        this.optionSelected.emit(this.filterOptions);
+        if (this.kpiData?.kpiId === 'kpi28') {
+          this.optionSelected.emit(this.filterOptions['filter1']);
+        } else {
+          if (
+            !this.filterOptions.hasOwnProperty('filter1') ||
+            this.filterOptions['filter1'].length === 0
+          ) {
+            console.log('else pasrt', this.filterOptions);
+            this.optionSelected.emit('Overall');
+          } else {
+            this.optionSelected.emit(this.filterOptions);
+          }
+        }
       }
     }
     const gaObj = {
