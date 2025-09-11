@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { delay, distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
 
@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   sharedobject = {};
   completeHierarchyData: any = {};
   sidebarVisible: boolean = false;
-  bottomTilesData: Array<any> = [];
+  bottomTilesData = signal([]);
   BottomTilesLoader: boolean = false;
 
   constructor(
@@ -72,6 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           };
           this.aggregrationDataList = [];
           this.loader = true;
+          this.BottomTilesLoader = true;
           this.selectedType = this.service.getSelectedType();
           this.sharedobject = sharedobject;
           this.completeHierarchyData = JSON.parse(
@@ -170,11 +171,42 @@ export class HomeComponent implements OnInit, OnDestroy {
               level: filterApplyData.level,
               parentId: '',
             })
+            .pipe(delay(5000))
             .subscribe({
               next: (response) => {
                 if (response['success']) {
                   this.service.setPEBData(response['data']);
-                  this.bottomTilesData = [];
+                  console.log(response);
+                  const kpiTrends = response['data']['kpiTrends'];
+                  this.bottomTilesData.set([
+                    {
+                      cssClassName: '',
+                      category: 'Top 3 Risks this Querter',
+                      value: this.calculateQuertlyRisk(this.tableData['data']),
+                      icon: '',
+                    },
+                    {
+                      cssClassName: '',
+                      category: 'Positive Trends',
+                      value: this.calculateTrendData(
+                        kpiTrends['positive'],
+                        'positive',
+                      ),
+                      icon: 'pi-sort-up-fill',
+                      color: 'green',
+                    },
+                    {
+                      cssClassName: '',
+                      category: 'Negative Trends',
+                      value: this.calculateTrendData(
+                        kpiTrends['negative'],
+                        'positive',
+                      ),
+                      icon: 'pi-sort-down-fill',
+                      color: 'red',
+                    },
+                  ]);
+                  this.BottomTilesLoader = false;
                 }
               },
             });
@@ -245,6 +277,37 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     const average = Math.round(sum / rowData.length);
     return average + '%';
+  }
+
+  calculateQuertlyRisk(data) {
+    const ascSortedData = [...data].sort((a, b) => {
+      const compA = parseInt(a.completion.replace('%', ''), 10);
+      const compB = parseInt(b.completion.replace('%', ''), 10);
+      return compA - compB;
+    });
+
+    const threshodData =
+      ascSortedData.length > 4 ? ascSortedData.slice(0, 4) : ascSortedData;
+
+    return threshodData.map((node) => {
+      return { property: node.name, value: node.completion };
+    });
+  }
+
+  calculateTrendData(data, trendType) {
+    const decendingData = [...data].sort((a, b) => {
+      if (trendType === 'positive') {
+        return b.trendValue - a.trendValue;
+      } else {
+        return a.trendValue - b.trendValue;
+      }
+    });
+    const threshodData =
+      decendingData.length > 4 ? decendingData.slice(0, 4) : decendingData;
+
+    return threshodData.map((node) => {
+      return { property: node.kpiName, value: node.trendValue };
+    });
   }
 
   calculateHealth(healthType) {
