@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReportContainerComponent } from './report-container/report-container.component';
 import { ReportsRoutingModule } from './reports.routes';
@@ -19,5 +19,6 @@ import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
   ],
   imports: [CommonModule, ReportsRoutingModule, SharedModuleModule],
   providers: [KpiHelperService],
+  schemas: [NO_ERRORS_SCHEMA],
 })
 export class ReportsModuleModule {}
