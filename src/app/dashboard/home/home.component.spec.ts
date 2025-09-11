@@ -72,7 +72,14 @@ describe('HomeComponent', () => {
       }),
     };
 
-    mockHttpService = jasmine.createSpyObj('HttpService', ['handleRestoreUrl']);
+    mockHttpService = jasmine.createSpyObj('HttpService', [
+      'handleRestoreUrl',
+      'getProductivityGain',
+    ]);
+
+    mockHttpService.getProductivityGain.and.returnValue(
+      of({ success: true, data: [] }),
+    );
 
     mockLocation = jasmine.createSpyObj('Location', ['path']);
 
@@ -91,6 +98,7 @@ describe('HomeComponent', () => {
         'setKpiSubFilterObj',
         'passDataToDashboard',
         'getFilterData',
+        'setPEBData',
       ],
       {
         passDataToDashboard: of({
