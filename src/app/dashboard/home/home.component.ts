@@ -43,6 +43,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   sharedobject = {};
   completeHierarchyData: any = {};
   sidebarVisible: boolean = false;
+  bottomTilesData: Array<any> = [];
+  BottomTilesLoader: boolean = false;
+  calculatorDataLoader: boolean = true;
 
   constructor(
     private service: SharedService,
@@ -160,6 +163,22 @@ export class HomeComponent implements OnInit, OnDestroy {
                 }
                 this.loader = false;
               }
+            });
+
+          this.httpService
+            .getProductivityGain({
+              label: filterApplyData.label,
+              level: filterApplyData.level,
+              parentId: '',
+            })
+            .subscribe({
+              next: (response) => {
+                if (response['success']) {
+                  this.calculatorDataLoader = false;
+                  this.service.setPEBData(response['data']);
+                  this.bottomTilesData = [];
+                }
+              },
             });
 
           this.filters = this.processFilterData(

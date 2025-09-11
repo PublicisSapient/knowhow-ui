@@ -153,6 +153,8 @@ export class SharedService {
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
 
+  private PEBData = {};
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -908,6 +910,14 @@ export class SharedService {
     }
 
     return stateFilters.length <= 8;
+  }
+
+  setPEBData(value) {
+    this.PEBData = value;
+  }
+
+  getPEBData() {
+    return this.PEBData;
   }
 
   //#endregion

@@ -86,7 +86,6 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
-        console.log('this.filterLevels', this.filterLevels);
         this.service.setDataForSprintGoal({ filterLevels: this.filterLevels });
         this.stateFilters =
           (this.service.getBackupOfUrlFilters() &&
