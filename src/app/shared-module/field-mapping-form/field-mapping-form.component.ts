@@ -489,12 +489,15 @@ export class FieldMappingFormComponent implements OnInit {
     }
   }
 
-  checkedEmptyValue(arr) {
-    for (const element of arr) {
-      for (let j = 0; j < element.originalValue.length; j++) {
-        for (const prop in element.originalValue[j].structuredValue) {
-          if (!element.originalValue[j].structuredValue[prop]) {
-            return true;
+  checkedEmptyValue(arr: any[]) {
+    if (arr && arr.length === 0) return false;
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] && arr[i].originalValue) {
+        for (let j = 0; j < arr[i].originalValue.length; j++) {
+          for (const prop in arr[i].originalValue[j].structuredValue) {
+            if (!arr[i].originalValue[j].structuredValue[prop]) {
+              return true;
+            }
           }
         }
       }
