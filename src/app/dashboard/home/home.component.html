@@ -140,7 +140,7 @@
                     <div
                       class="p-p-2 styled-cell"
                       [ngClass]="getMClass(row[col.field])">
-                      {{ row[col.field] }}
+                      {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </span>
 
@@ -157,21 +157,21 @@
                     <div
                       class="p-p-2 styled-cell"
                       [ngClass]="getMClass(row[col.field])">
-                      {{ row[col.field] }}
+                      {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
                   <div *ngSwitchCase="'quality'">
                     <div
                       class="p-p-2 styled-cell"
                       [ngClass]="getMClass(row[col.field])">
-                      {{ row[col.field] }}
+                      {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
                   <div *ngSwitchCase="'value'">
                     <div
                       class="p-p-2 styled-cell"
                       [ngClass]="getMClass(row[col.field])">
-                      {{ row[col.field] }}
+                      {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
                 </ng-container>
@@ -268,7 +268,9 @@
                               <div
                                 class="p-p-1 styled-cell"
                                 [ngClass]="getMClass(row[childCol.field])">
-                                {{ childRow[childCol.field] }}
+                                {{ childRow[childCol.field] === 'M0'
+                                  ? 'NA'
+                                  : childRow[childCol.field] }}
                               </div>
                             </span>
 
@@ -287,21 +289,27 @@
                             <div
                               class="p-p-1 styled-cell"
                               [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] }}
+                              {{ childRow[childCol.field] === 'M0'
+                                  ? 'NA'
+                                  : childRow[childCol.field] }}
                             </div>
                           </div>
                           <div *ngSwitchCase="'quality'">
                             <div
                               class="p-p-1 styled-cell"
                               [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] }}
+                              {{ childRow[childCol.field] === 'M0'
+                                  ? 'NA'
+                                  : childRow[childCol.field] }}
                             </div>
                           </div>
                           <div *ngSwitchCase="'value'">
                             <div
                               class="p-p-1 styled-cell"
                               [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] }}
+                              {{ childRow[childCol.field] === 'M0'
+                                  ? 'NA'
+                                  : childRow[childCol.field] }}
                             </div>
                           </div>
                         </ng-container>
@@ -381,7 +389,7 @@
     </div>
   </div>
   <div class="p-col-3 p-pl-4">
-    <app-peb-calculator></app-peb-calculator>
+    <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
   </div>
 </div>
 
@@ -457,7 +465,7 @@
                 </div>
               </ng-template>
             </p-dropdown>
-        
+
             <label class="floating-label" for="singleselectFilter">
               Select
               <ng-container>
