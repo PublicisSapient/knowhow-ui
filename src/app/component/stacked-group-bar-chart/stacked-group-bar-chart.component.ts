@@ -36,6 +36,7 @@ import * as d3 from 'd3';
 })
 export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   @Input() defectsBreachedSLAs: any;
+  @Input() defectsBreachedSLAsAllValues: any;
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @Input() data;
   @Input() kpiId;
@@ -44,7 +45,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   hasFilter: boolean = true;
 
   private filteredData: any;
-  private activeSeverityKeys = ['s1', 's2', 's3', 's4'];
+  private activeSeverityKeys = [];
   private isInitialized = false;
 
   private readonly svg: any;
@@ -266,7 +267,14 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         })
         .on('mouseover', (event, d: any) => {
           const [mouseX, mouseY] = d3.pointer(event, window);
-          const originalData = this.findOriginalData(d.data.project, sprint);
+          const projectName = d.data.project;
+          const sprintName = sprint;
+          const severityKey = event.currentTarget.parentNode.__data__.key;
+          const originalData = this.findOriginalData(
+            projectName,
+            sprintName,
+            severityKey,
+          );
           if (originalData?.hoverValue) {
             tooltip
               .style('visibility', 'visible')
@@ -363,12 +371,16 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .style('fill', '#49535e');
 
     // --- Legend ---
-    this.renderSprintsLegend(
-      this.flattenData(
-        this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
-      ),
-      'Sprints',
-    );
+    const hierachy = JSON.parse(localStorage.getItem('selectedTrend'))[0]
+      ?.labelName;
+    if (hierachy === 'project') {
+      this.renderSprintsLegend(
+        this.flattenData(
+          this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
+        ),
+        'Sprints',
+      );
+    }
   }
 
   flattenData(data) {
@@ -545,16 +557,24 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
     // }
   }
 
-  private findOriginalData(projectName: string, sprintName: string): any {
-    // Extract sprint number from sprintName (e.g., "Sprint 1" -> 1)
+  private findOriginalData(
+    projectName: string,
+    sprintName: string,
+    severityKey: string,
+  ): any {
     const sprintNumber = parseInt(sprintName.replace('Sprint ', ''), 10) - 1;
 
-    if (this.kpiId === '195') {
-      const projectData = this.defectsBreachedSLAs.find(
-        (p: any) => p.data === projectName,
+    if (this.kpiId === 'kpi195') {
+      const severityGroup = this.defectsBreachedSLAsAllValues.find(
+        (item: any) => item.filter === severityKey.toUpperCase(),
       );
-      if (projectData?.value && projectData.value.length > sprintNumber) {
-        return projectData.value[sprintNumber];
+
+      if (severityGroup?.value) {
+        const projectSprintData = severityGroup.value.find(
+          (dataItem: any) => dataItem.data === projectName,
+        );
+
+        return projectSprintData.value[sprintNumber] || null;
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
@@ -574,6 +594,11 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
 
     const sprintGroups: { [key: string]: any[] } = {};
 
+    const severitiesToUse =
+      this.activeSeverityKeys && this.activeSeverityKeys.length
+        ? this.activeSeverityKeys
+        : this.allSeverityKeys;
+
     this.defectsBreachedSLAs.forEach((project: any) => {
       if (project.value && Array.isArray(project.value)) {
         project.value.forEach((sprint: any, index: number) => {
@@ -584,7 +609,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
 
           const severityData: any = { project: project.data || 'Unknown' };
 
-          this.activeSeverityKeys.forEach((severity) => {
+          severitiesToUse.forEach((severity) => {
             if (sprint.drillDown && Array.isArray(sprint.drillDown)) {
               const found = sprint.drillDown.find(
                 (d: any) => d.severity === severity,
@@ -749,10 +774,16 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .remove();
   }
 
+  clearFilters(): void {
+    this.activeSeverityKeys = [];
+    this.updateDataAndChart();
+  }
+
   handleChange(event: any): void {
-    this.activeSeverityKeys = event.value.map((f: any) => f);
-    if (this.activeSeverityKeys.length === 0) {
-      this.activeSeverityKeys = [...this.allSeverityKeys];
+    if (event.value && event.value.length > 0) {
+      this.activeSeverityKeys = event.value;
+    } else {
+      this.activeSeverityKeys = [];
     }
     this.updateDataAndChart();
   }
