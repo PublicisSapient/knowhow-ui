@@ -1314,6 +1314,55 @@ export class HttpService {
   }
 
   getProductivityGain(payload) {
-    return this.http.post<any>(this.pebCalculateUrl, payload);
+    // return this.http.post<any>(this.pebCalculateUrl, payload);
+    const mockData = {
+      success: true,
+      data: {
+        categorizedGain: {
+          overall: 10.9,
+          speed: 2.0,
+          efficiency: 60.5,
+          productivity: 20.85,
+          quality: 40.42,
+        },
+        kpiTrends: {
+          positive: [
+            {
+              kpiName: 'Sprint Velocity',
+              trendValue: 20.0,
+              kpiCategory: 'speed',
+            },
+            {
+              kpiName: 'Sprint Velocity2',
+              trendValue: 25.0,
+              kpiCategory: 'speed',
+            },
+            {
+              kpiName: 'Sprint Velocity3',
+              trendValue: 12,
+              kpiCategory: 'speed',
+            },
+          ],
+          negative: [
+            {
+              kpiName: 'Sprint Velocity',
+              trendValue: -5.0,
+              kpiCategory: 'speed',
+            },
+            {
+              kpiName: 'Sprint Velocity2',
+              trendValue: -2,
+              kpiCategory: 'speed',
+            },
+            {
+              kpiName: 'Sprint Velocity3',
+              trendValue: -1,
+              kpiCategory: 'speed',
+            },
+          ],
+        },
+      },
+    };
+    return of(mockData);
   }
 }

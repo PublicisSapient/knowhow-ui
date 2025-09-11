@@ -348,3 +348,7 @@
 :host ::ng-deep .p-sidebar-right {
   width: 60vw;
 }
+
+:host label {
+  background-color: inherit;
+}
