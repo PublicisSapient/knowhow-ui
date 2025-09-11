@@ -70,25 +70,14 @@ export class FieldMappingFormComponent implements OnInit {
 
   @ViewChild('addValueDialog') addValueDialog!: Dialog;
 
-  private setting = {
-    element: {
-      dynamicDownload: null as HTMLElement,
-    },
-  };
-
   constructor(
-    private sharedService: SharedService,
-    private http: HttpService,
-    private messenger: MessageService,
-    private confirmationService: ConfirmationService,
+    private readonly sharedService: SharedService,
+    private readonly http: HttpService,
+    private readonly messenger: MessageService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
-    console.log(this.kpiId);
-    console.log(this.formConfig);
-    console.log(this.fieldMappingConfig);
-    console.log(this.fieldMappingMetaData);
-    // console.log(this.fieldMappingMultiSelectValues)
     this.historyList = [];
     this.filterHierarchy = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
@@ -460,6 +449,17 @@ export class FieldMappingFormComponent implements OnInit {
       }
     });
 
+    const checkForErr = this.checkedEmptyValue(finalList);
+    if (checkForErr) {
+      this.messenger.add({
+        key: 'key1',
+        severity: 'error',
+        summary:
+          'One of the values is missing. Please fill all the values and try again!',
+      });
+      return;
+    }
+
     if (
       this.selectedToolConfig[0].toolName.toLowerCase() === 'jira' ||
       this.selectedToolConfig[0].toolName.toLowerCase() === 'azure'
@@ -489,6 +489,19 @@ export class FieldMappingFormComponent implements OnInit {
     }
   }
 
+  checkedEmptyValue(arr) {
+    for (const element of arr) {
+      for (let j = 0; j < element.originalValue.length; j++) {
+        for (const prop in element.originalValue[j].structuredValue) {
+          if (!element.originalValue[j].structuredValue[prop]) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   /** Responsible for handle save */
   saveFieldMapping(mappingData, isImport?) {
     const mappingObj = {
@@ -506,7 +519,7 @@ export class FieldMappingFormComponent implements OnInit {
         if (response && response['success']) {
           this.messenger.add({
             severity: 'success',
-            summary: 'Field Mappings submitted!!',
+            summary: 'Field Mappings submitted!',
           });
           //#region Bug:39044
           this.form.markAsPristine();
