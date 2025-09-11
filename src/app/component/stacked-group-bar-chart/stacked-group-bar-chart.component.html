@@ -20,6 +20,7 @@
     <p-multiSelect 
       [options]="filter" 
       optionLabel="option" 
+      optionValue="value"
       [showHeader]="false" 
       selectedItemsLabel="{0} items selected"
       [maxSelectedLabels]="3" 
@@ -28,6 +29,9 @@
       [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
       (onChange)="handleChange($event)"
       [defaultLabel]="'All Severities'"
+      [showClear]="true"        
+      [(ngModel)]="activeSeverityKeys"
+      (onClear)="clearFilters()"  
       >
     </p-multiSelect>
   </div>
