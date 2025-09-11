@@ -163,7 +163,7 @@ export class FieldMappingFormComponent implements OnInit {
     const fieldMapping = this.formData.find(
       (data) => data.fieldName === config.fieldName,
     );
-    if (fieldMapping?.history && fieldMapping?.history?.length) {
+    if (fieldMapping?.history?.length) {
       this.historyList.push({
         fieldName: fieldMapping.fieldName,
         history: fieldMapping.history,
@@ -182,10 +182,6 @@ export class FieldMappingFormComponent implements OnInit {
     } else {
       switch (config.fieldType) {
         case 'text':
-          return new FormControl(
-            '',
-            config.mandatory ? Validators.required : [],
-          );
         case 'radiobutton':
           return new FormControl(
             '',
@@ -212,7 +208,7 @@ export class FieldMappingFormComponent implements OnInit {
       Object.keys(this.selectedFieldMapping).length
     ) {
       for (const obj in this.selectedFieldMapping) {
-        if (this.form && this.form.controls[obj]) {
+        if (this.form?.controls[obj]) {
           this.form.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
@@ -241,14 +237,14 @@ export class FieldMappingFormComponent implements OnInit {
 
     switch (type) {
       case 'fields':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.fields) {
+        if (this.fieldMappingMetaData?.fields) {
           this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.fields;
         } else {
           this.fieldMappingMultiSelectValues = [];
         }
         break;
       case 'workflow':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.workflow) {
+        if (this.fieldMappingMetaData?.workflow) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.workflow;
         } else {
@@ -256,7 +252,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'Issue_Link':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Link) {
+        if (this.fieldMappingMetaData?.Issue_Link) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.Issue_Link;
         } else {
@@ -264,7 +260,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'Issue_Type':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Type) {
+        if (this.fieldMappingMetaData?.Issue_Type) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.Issue_Type;
         } else {
@@ -272,7 +268,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'releases':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
+        if (this.fieldMappingMetaData?.releases) {
           // Set the 'disabled' property and segregate items in a single pass
           const { enabledItems, disabledItems } =
             this.fieldMappingMetaData.releases.reduce(
@@ -413,7 +409,7 @@ export class FieldMappingFormComponent implements OnInit {
     // --- focus on dialog header
     if (this.addValueDialog.contentViewChild) {
       const headerEl = document.getElementById('addValuesDialogTitle');
-      (headerEl as HTMLElement).focus();
+      headerEl.focus();
     }
   }
 
@@ -490,14 +486,11 @@ export class FieldMappingFormComponent implements OnInit {
   }
 
   checkedEmptyValue(arr: any[]) {
-    if (arr && arr.length === 0) return false;
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i] && arr[i].originalValue) {
-        for (let j = 0; j < arr[i].originalValue.length; j++) {
-          for (const prop in arr[i].originalValue[j].structuredValue) {
-            if (!arr[i].originalValue[j].structuredValue[prop]) {
-              return true;
-            }
+    for (const element of arr) {
+      if (element?.originalValue) {
+        for (let j = 0; j < element.originalValue.length; j++) {
+          for (const prop in element.originalValue[j].structuredValue) {
+            if (!element.originalValue[j].structuredValue[prop]) return true;
           }
         }
       }
