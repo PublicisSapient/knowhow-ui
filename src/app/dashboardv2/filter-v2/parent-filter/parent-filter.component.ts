@@ -121,6 +121,7 @@ export class ParentFilterComponent implements OnChanges {
           nodeId: item.nodeId,
           nodeName: item.nodeName,
           nodeDisplayName: item.nodeDisplayName,
+          projectOnHold: item.onHold,
         }));
         this.filterLevels = this.helperService.sortAlphabetically(
           this.filterLevels,
