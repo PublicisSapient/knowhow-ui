@@ -516,3 +516,61 @@
   font-size: 22px;
   cursor: pointer;
 }
+
+.isc-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 12px;
+  background: #fff;
+}
+
+.isc-metric-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  width: 70%;
+}
+
+.isc-dot {
+  width: 10px;
+  height: 10px;
+  background: #1976d2;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.separator {
+  margin: 0 6px;
+  color: #666;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+}
+
+.isc-change {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 25%;
+}
+
+.isc-change.positive {
+  color: #15ba40;
+}
+
+.isc-change.negative {
+  color: #fe414d;
+}
+.isc-change .value {
+  display: inline-flex;
+  align-items: center; /* keep + or - vertically centered with % */
+  white-space: nowrap; /* prevents wrapping in responsive */
+  font-size: 0.9rem;
+  font-weight: 600;
+}
