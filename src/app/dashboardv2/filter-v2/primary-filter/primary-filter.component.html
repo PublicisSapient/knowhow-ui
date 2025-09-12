@@ -20,7 +20,7 @@
       (onPanelHide)="handlePanelHide($event)"
       (onBlur)="handleBlur()">
       <ng-template let-option pTemplate="item">
-        <div class="filter-item">
+        <div class="filter-item" [ngClass]="{ 'italic-text': option.onHold }">
           <div>
             <span>{{ option.nodeDisplayName }}</span>
             <span
@@ -75,7 +75,7 @@
         </div>
       </ng-template>
       <ng-template let-option pTemplate="item">
-        <div class="filter-item">
+        <div class="filter-item" [ngClass]="{ 'italic-text': option.onHold }">
           <span>{{ option.nodeDisplayName }}</span>
           <span class="parent_span">
             ({{
