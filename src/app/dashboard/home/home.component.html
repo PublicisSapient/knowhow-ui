@@ -267,7 +267,7 @@
                             <span *ngSwitchCase="'dora'">
                               <div
                                 class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(row[childCol.field])">
+                                [ngClass]="getMClass(childRow[childCol.field])">
                                 {{ childRow[childCol.field] === 'M0'
                                   ? 'NA'
                                   : childRow[childCol.field] }}
