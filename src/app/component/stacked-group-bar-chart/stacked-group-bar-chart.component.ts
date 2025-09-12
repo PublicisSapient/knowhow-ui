@@ -281,8 +281,12 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
               .html(
                 this.kpiId === 'kpi195'
                   ? `
-                <div><strong>Total Resolved:</strong> ${originalData.hoverValue.totalResolvedIssues}</div>
-                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>
+                <div><strong>Total ${severityKey.toUpperCase()} Resolved:</strong> ${
+                      originalData.hoverValue.totalResolvedIssues
+                    }</div>
+                <div><strong>${severityKey.toUpperCase()} Breached:</strong> ${
+                      originalData.hoverValue.breachedPercentage
+                    }%</div>
               `
                   : `
                 <div><strong>Average execution time:</strong> ${originalData.hoverValue.TOTAL.avgExecutionTimeSec}</div>
