@@ -327,7 +327,7 @@
                       {{ recommendation.recommendationDetails }}
                     </div>
                     </div>
-                     <i class="recommendation-content-arrow pi pi-arrow-right" [style.right]="0" [style.bottom]="0"
+                     <i class="recommendation-content-arrow pi pi-arrow-right"  [ngClass]="getSeverityClass(recommendation)" [style.right]="0" [style.bottom]="0"
                       [style.margin]="'12px'"></i>
                       <div class="isc-right">
                       <div class="isc-metric" *ngFor="let kpi of recommendation.correlatedKpis">
@@ -336,8 +336,10 @@
                            <span class="kpi-name">{{ kpi.split(':')[0] }}</span>
                         </div>
                         <ng-container *ngIf="kpi.split(':')[1]">
-                           <span class="separator">-</span>
                         <div class="isc-change" [ngClass]="{ 'positive': kpi.split(':')[1] > 0, 'negative': kpi.split(':')[1] < 0 }">
+                          <i class="pi" 
+                             [ngClass]="kpi.split(':')[1] > 0 ? 'pi-sort-up-fill' : 'pi-sort-down-fill'">
+                          </i>
                          <span class="value">
                           {{ kpi.split(':')[1] > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}%
                          </span>
