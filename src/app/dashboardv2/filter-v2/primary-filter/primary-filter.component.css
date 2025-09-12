@@ -19,3 +19,7 @@
 .floating-label {
   text-transform: capitalize;
 }
+
+.italic-text {
+  font-style: italic;
+}
