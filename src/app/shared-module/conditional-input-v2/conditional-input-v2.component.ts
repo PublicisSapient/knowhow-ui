@@ -75,16 +75,13 @@ export class ConditionalInputV2Component implements OnChanges {
   }
 
   setCounter(event, option) {
-    if (
-      !this.templateData.filter((opt) => opt.labelValue === option.labelValue)
-        .length
-    ) {
+    if (!this.templateData.filter((opt) => opt.label === option.label).length) {
       const newOption = JSON.parse(JSON.stringify(option));
       newOption.structuredValue.sla = event.value;
       this.templateData.push(newOption);
     } else {
       this.templateData.filter(
-        (opt) => opt.labelValue === option.labelValue,
+        (opt) => opt.label === option.label,
       )[0].structuredValue.sla = event.value;
     }
     this.setOutput();
