@@ -20,6 +20,8 @@
   text-transform: capitalize;
 }
 
-.italic-text {
+.inactive-projects {
   font-style: italic;
+  color: var(--color-gray-9e);
+  opacity: 0.6;
 }
