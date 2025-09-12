@@ -174,10 +174,22 @@ export class HomeComponent implements OnInit, OnDestroy {
             .subscribe({
               next: (response) => {
                 if (response['success']) {
-                  this.calculatorDataLoader = false;
                   this.service.setPEBData(response['data']);
                   this.bottomTilesData = [];
+                } else {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error in fetching PEB data!',
+                  });
                 }
+                this.calculatorDataLoader = false;
+              },
+              error: () => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error in fetching PEB data!',
+                });
+                this.calculatorDataLoader = false;
               },
             });
 

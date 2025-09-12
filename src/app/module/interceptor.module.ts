@@ -130,7 +130,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           reqUrl.indexOf('kpiRecommendation') !== -1 ||
           reqUrl.indexOf('notifications') !== -1 ||
           reqUrl.indexOf('kpisearch') !== -1 ||
-          reqUrl.indexOf('executive') !== -1
+          reqUrl.indexOf('executive') !== -1 ||
+          reqUrl.indexOf('productivity') !== -1
         ) {
           // Return error as successful response instead of throwing
           return of(
