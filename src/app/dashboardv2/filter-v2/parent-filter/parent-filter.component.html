@@ -13,7 +13,7 @@
   (onChange)="onDropdownChange($event)"
 >
   <ng-template let-option pTemplate="item">
-    <div [ngClass]="{ 'italic-text': option.projectOnHold }">
+    <div [ngClass]="{ 'inactive-projects': option.projectOnHold }">
       {{ option.nodeDisplayName }}
     </div>
   </ng-template>
