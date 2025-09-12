@@ -148,9 +148,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                     {
                       cssClassName: 'exclamation',
                       category: 'Critical ' + label + ' (s)',
-                      value: this.calculateHealth('critical').count,
+                      value: this.calculateHealth('unhealthy').count,
                       icon: 'pi-exclamation-triangle',
-                      average: this.calculateHealth('critical').average,
+                      average: this.calculateHealth('unhealthy').average,
                     },
                     {
                       cssClassName: 'heart-fill',
