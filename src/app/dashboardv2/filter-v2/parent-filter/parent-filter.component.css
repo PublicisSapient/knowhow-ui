@@ -9,3 +9,7 @@
 .floating-label {
   text-transform: capitalize;
 }
+
+::ng-deep .p-dropdown-item .italic-text {
+  font-style: italic;
+}
