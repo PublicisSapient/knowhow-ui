@@ -150,9 +150,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                       {
                         cssClassName: 'exclamation',
                         category: 'Critical ' + label + ' (s)',
-                        value: this.calculateHealth('critical').count,
+                        value: this.calculateHealth('unhealthy').count,
                         icon: 'pi-exclamation-triangle',
-                        average: this.calculateHealth('critical').average,
+                        average: this.calculateHealth('unhealthy').average,
                       },
                       {
                         cssClassName: 'heart-fill',
@@ -268,12 +268,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   calculateHealth(healthType) {
     const rowData = [
-      ...this.tableData['data'].filter(
-        (data) => data.health.toLowerCase() === healthType.toLowerCase(),
-      ),
+      ...this.tableData['data'].filter((data) => {
+        return data.health.toLowerCase() === healthType.toLowerCase();
+      }),
     ];
     const sum = rowData.reduce((acc, num) => {
-      return acc + Number(num.completion);
+      return acc + parseFloat(num.completion.replace('%', ''));
     }, 0);
 
     // ✅ Handle empty case to avoid divide by zero
