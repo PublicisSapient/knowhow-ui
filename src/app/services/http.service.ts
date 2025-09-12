@@ -1314,7 +1314,7 @@ export class HttpService {
   }
 
   getProductivityGain(payload) {
-    // return this.http.post<any>(this.pebCalculateUrl, payload);
+    return this.http.post<any>(this.pebCalculateUrl, payload);
     const mockData = {
       success: true,
       data: {

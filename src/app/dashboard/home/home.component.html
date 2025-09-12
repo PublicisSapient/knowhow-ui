@@ -36,10 +36,7 @@
   <div class="p-col-9">
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
-        <div
-          class="kpi-card-name-placeholder"
-          role="region"
-          aria-label="KPI Card Header">
+        <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
           <div class="kpi-card-title-container">
             <h3 tabindex="0" [attr.aria-label]="'KPI Details'">KPI Details</h3>
           </div>
@@ -47,67 +44,36 @@
       </div>
 
       <div class="kpi-card-body">
-        <p-table
-          *ngIf="!loader"
-          [value]="tableData['data']"
-          [columns]="tableData['columns']"
-          responsiveLayout="scroll"
-          class="mt-3"
-          [expandedRowKeys]="expandedRows"
-          dataKey="id"
-          (onRowExpand)="onRowExpand($event)"
-          rowExpandMode="single">
+        <p-table *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']" responsiveLayout="scroll"
+          class="mt-3" [expandedRowKeys]="expandedRows" dataKey="id" (onRowExpand)="onRowExpand($event)"
+          rowExpandMode="single"  [rows]="10" [paginator]="true">
           <ng-template pTemplate="header" let-columns>
             <tr>
               <ng-container *ngFor="let col of columns">
-                <th
-                  style="background-color: #d9e7fe"
-                  [pSortableColumn]="sortableColumn(col.field)"
+                <th style="background-color: #d9e7fe" [pSortableColumn]="sortableColumn(col.field)"
                   id="{{ col.field }}">
                   <div class="table-head">
                     <span [ngStyle]="{ width: 'max-content' }">{{
                       col.header
-                    }}</span>
+                      }}</span>
                     <div class="p-d-flex p-ml-2">
-                      <p-columnFilter
-                        [field]="col.field"
-                        matchMode="in"
-                        [showMenu]="false"
-                        [showMatchModes]="false"
-                        [showOperator]="false"
-                        [showAddButton]="false"
-                        [showClearButton]="false"
-                        [showApplyButton]="false"
-                        [style]="{ 'margin-top': '2px' }">
-                        <ng-template
-                          pTemplate="filter"
-                          let-value
-                          let-filter="filterCallback"
-                          #filter>
-                          <p-multiSelect
-                            resetFilterOnHide="true"
-                            autofocusFilter="true"
-                            (onPanelShow)="onFilterClick(col.field)"
-                            (onPanelHide)="onFilterBlur(col.field)"
-                            [options]="tableColumnData[col.field]"
-                            [placeholder]="'Select ' + col.field"
-                            (onChange)="filter($event.value)"
-                            [optionValue]="'value'"
-                            [optionLabel]="'name'"
-                            [ngModel]="tableColumnForm[col.field]"
-                            styleClass="column-filter"
+                      <p-columnFilter [field]="col.field" matchMode="in" [showMenu]="false" [showMatchModes]="false"
+                        [showOperator]="false" [showAddButton]="false" [showClearButton]="false"
+                        [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                          <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                            (onPanelShow)="onFilterClick(col.field)" (onPanelHide)="onFilterBlur(col.field)"
+                            [options]="tableColumnData[col.field]" [placeholder]="'Select ' + col.field"
+                            (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
+                            [ngModel]="tableColumnForm[col.field]" styleClass="column-filter"
                             (keydown.enter)="handleMultiSelectEnter($event)">
                             <ng-template pTemplate="selectedItems">
-                              <i
-                                class="pi pi-filter-icon pi-filter"
-                                style="font-size: 0.8rem"></i>
+                              <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                             </ng-template>
                           </p-multiSelect>
                         </ng-template>
                       </p-columnFilter>
-                      <p-sortIcon
-                        [field]="sortableColumn(col.field)"
-                        aria-label="Sort by column"></p-sortIcon>
+                      <p-sortIcon [field]="sortableColumn(col.field)" aria-label="Sort by column"></p-sortIcon>
                     </div>
                   </div>
                 </th>
@@ -115,31 +81,18 @@
             </tr>
           </ng-template>
 
-          <ng-template
-            pTemplate="body"
-            let-row
-            let-columns="columns"
-            let-expanded="expanded">
+          <ng-template pTemplate="body" let-row let-columns="columns" let-expanded="expanded">
             <tr>
               <td *ngFor="let col of columns">
                 <ng-container [ngSwitch]="col.field">
                   <div *ngSwitchCase="'name'" class="p-d-flex p-align-center">
-                    <p-button
-                      type="button"
-                      pRipple
-                      [pRowToggler]="row"
-                      [text]="true"
-                      [rounded]="true"
-                      styleClass="expand-cta-btn"
-                      [plain]="true"
-                      [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
+                    <p-button type="button" pRipple [pRowToggler]="row" [text]="true" [rounded]="true"
+                      styleClass="expand-cta-btn" [plain]="true" [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
                     {{ row[col.field] }}
                   </div>
 
                   <span *ngSwitchCase="'dora'">
-                    <div
-                      class="p-p-2 styled-cell"
-                      [ngClass]="getMClass(row[col.field])">
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </span>
@@ -147,30 +100,22 @@
                   <span *ngSwitchCase="'completion'">{{ row[col.field] }}</span>
 
                   <div *ngSwitchCase="'health'">
-                    <div
-                      class="p-p-2 styled-cell"
-                      [ngClass]="getMClass(row[col.field])">
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] }}
                     </div>
                   </div>
                   <div *ngSwitchCase="'speed'">
-                    <div
-                      class="p-p-2 styled-cell"
-                      [ngClass]="getMClass(row[col.field])">
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
                   <div *ngSwitchCase="'quality'">
-                    <div
-                      class="p-p-2 styled-cell"
-                      [ngClass]="getMClass(row[col.field])">
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
                   <div *ngSwitchCase="'value'">
-                    <div
-                      class="p-p-2 styled-cell"
-                      [ngClass]="getMClass(row[col.field])">
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] === 'M0' ? 'NA' : row[col.field] }}
                     </div>
                   </div>
@@ -179,195 +124,109 @@
             </tr>
           </ng-template>
           <!-- Row Expansion  -->
-          <ng-template
-            pTemplate="rowexpansion"
-            let-row
-            let-columns="row.children?.columns">
+          <ng-template pTemplate="rowexpansion" let-row let-columns="row.children?.columns">
             <tr>
-              <td
-                [attr.colspan]="
+              <td [attr.colspan]="
                   row?.children?.columns?.length || tableData['columns'].length
                 ">
                 <div class="p-p-5 background-grey">
                   <!-- Child Table Example -->
-                  <p-table
-                    *ngIf="!nestedLoader && row?.children?.data"
-                    [value]="row.children?.data"
+                  <p-table *ngIf="!nestedLoader && row?.children?.data" [value]="row.children?.data"
                     styleClass="expanded-table-wrapper p-datatable-striped p-datatable-gridlines"
-                    tableStyleClass="expanded-table"
-                    responsiveLayout="scroll">
+                    tableStyleClass="expanded-table" responsiveLayout="scroll">
                     <ng-template pTemplate="header">
-                      <tr>
-                        <ng-container
-                          *ngFor="let childCol of row.children?.columns">
-                          <th
-                            [pSortableColumn]="sortableColumn(childCol.field)"
-                            id="{{ childCol.field }}">
-                            <div class="table-head">
-                              <span [ngStyle]="{ width: 'max-content' }">{{
-                                childCol.header
-                              }}</span>
-                              <div class="p-d-flex p-ml-2">
-                                <p-columnFilter
-                                  [field]="childCol.field"
-                                  matchMode="in"
-                                  [showMenu]="false"
-                                  [showMatchModes]="false"
-                                  [showOperator]="false"
-                                  [showAddButton]="false"
-                                  [showClearButton]="false"
-                                  [showApplyButton]="false"
-                                  [style]="{ 'margin-top': '2px' }">
-                                  <ng-template
-                                    pTemplate="filter"
-                                    let-value
-                                    let-filter="filterCallback"
-                                    #filter>
-                                    <p-multiSelect
-                                      resetFilterOnHide="true"
-                                      autofocusFilter="true"
-                                      (onPanelShow)="onFilterClick(childCol.field)"
-                                      (onPanelHide)="onFilterBlur(childCol.field)"
-                                      [options]="
+            <tr>
+              <ng-container *ngFor="let childCol of row.children?.columns">
+                <th [pSortableColumn]="sortableColumn(childCol.field)" id="{{ childCol.field }}">
+                  <div class="table-head">
+                    <span [ngStyle]="{ width: 'max-content' }">{{
+                      childCol.header
+                      }}</span>
+                    <div class="p-d-flex p-ml-2">
+                      <p-columnFilter [field]="childCol.field" matchMode="in" [showMenu]="false"
+                        [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        [showClearButton]="false" [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                          <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                            (onPanelShow)="onFilterClick(childCol.field)" (onPanelHide)="onFilterBlur(childCol.field)"
+                            [options]="
                                         row?.children?.tableColumnData[
                                           childCol.field
                                         ]
-                                      "
-                                      [placeholder]="'Select ' + childCol.field"
-                                      (onChange)="filter($event.value)"
-                                      [optionValue]="'value'"
-                                      [optionLabel]="'name'"
-                                      [ngModel]="
+                                      " [placeholder]="'Select ' + childCol.field" (onChange)="filter($event.value)"
+                            [optionValue]="'value'" [optionLabel]="'name'" [ngModel]="
                                         row?.children?.tableColumnForm[
                                           childCol.field
                                         ]
-                                      "
-                                      styleClass="column-filter">
-                                      <ng-template pTemplate="selectedItems">
-                                        <i
-                                          class="pi pi-filter-icon pi-filter"
-                                          style="font-size: 0.8rem"></i>
-                                      </ng-template>
-                                    </p-multiSelect>
-                                  </ng-template>
-                                </p-columnFilter>
-                                <p-sortIcon
-                                  [field]="sortableColumn(childCol.field)"
-                                  aria-label="Sort by column"></p-sortIcon>
-                              </div>
-                            </div>
-                          </th>
-                        </ng-container>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-childRow>
-                      <tr>
-                        <td *ngFor="let childCol of row.children?.columns">
-                          <ng-container [ngSwitch]="childCol.field">
-                            <span *ngSwitchCase="'dora'">
-                              <div
-                                class="p-p-1 styled-cell"
-                                [ngClass]="getMClass(row[childCol.field])">
-                                {{ childRow[childCol.field] === 'M0'
-                                  ? 'NA'
-                                  : childRow[childCol.field] }}
-                              </div>
-                            </span>
+                                      " styleClass="column-filter">
+                            <ng-template pTemplate="selectedItems">
+                              <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                            </ng-template>
+                          </p-multiSelect>
+                        </ng-template>
+                      </p-columnFilter>
+                      <p-sortIcon [field]="sortableColumn(childCol.field)" aria-label="Sort by column"></p-sortIcon>
+                    </div>
+                  </div>
+                </th>
+              </ng-container>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-childRow>
+            <tr>
+              <td *ngFor="let childCol of row.children?.columns">
+                <ng-container [ngSwitch]="childCol.field">
+                  <span *ngSwitchCase="'dora'">
+                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(row[childCol.field])">
+                      {{ childRow[childCol.field] === 'M0'
+                      ? 'NA'
+                      : childRow[childCol.field] }}
+                    </div>
+                  </span>
 
-                            <span *ngSwitchDefault>{{
-                              childRow[childCol.field]
-                            }}</span>
+                  <span *ngSwitchDefault>{{
+                    childRow[childCol.field]
+                    }}</span>
 
-                          <div *ngSwitchCase="'health'">
-                            <div
-                              class="p-p-1 styled-cell"
-                              [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] }}
-                            </div>
-                          </div>
-                          <div *ngSwitchCase="'speed'">
-                            <div
-                              class="p-p-1 styled-cell"
-                              [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] === 'M0'
-                                  ? 'NA'
-                                  : childRow[childCol.field] }}
-                            </div>
-                          </div>
-                          <div *ngSwitchCase="'quality'">
-                            <div
-                              class="p-p-1 styled-cell"
-                              [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] === 'M0'
-                                  ? 'NA'
-                                  : childRow[childCol.field] }}
-                            </div>
-                          </div>
-                          <div *ngSwitchCase="'value'">
-                            <div
-                              class="p-p-1 styled-cell"
-                              [ngClass]="getMClass(childRow[childCol.field])">
-                              {{ childRow[childCol.field] === 'M0'
-                                  ? 'NA'
-                                  : childRow[childCol.field] }}
-                            </div>
-                          </div>
-                        </ng-container>
-                      </td>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage" let-columns>
-                    <tr>
-                      <td
-                        [attr.colspan]="tableData['columns'].length"
-                        role="cell"
-                        tabindex="0">
-                        <h3>Data not found. </h3>
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-                <p-table
-                  *ngIf="nestedLoader"
-                  [value]="products"
-                  [tableStyle]="{ 'min-width': '50rem' }">
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th><p-skeleton /></th>
-                      <th><p-skeleton /></th>
-                      <th><p-skeleton /></th>
-                      <th><p-skeleton /></th>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-product>
-                    <tr>
-                      <td><p-skeleton /></td>
-                      <td><p-skeleton /></td>
-                      <td><p-skeleton /></td>
-                      <td><p-skeleton /></td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns>
-          <tr>
-            <td
-              [attr.colspan]="tableData['columns'].length"
-              role="cell"
-              tabindex="0">
-              <h3>Data not found. </h3>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-
-        <p-table
-          *ngIf="loader"
-          [value]="products"
-          [tableStyle]="{ 'min-width': '50rem' }">
+                  <div *ngSwitchCase="'health'">
+                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                      {{ childRow[childCol.field] }}
+                    </div>
+                  </div>
+                  <div *ngSwitchCase="'speed'">
+                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                      {{ childRow[childCol.field] === 'M0'
+                      ? 'NA'
+                      : childRow[childCol.field] }}
+                    </div>
+                  </div>
+                  <div *ngSwitchCase="'quality'">
+                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                      {{ childRow[childCol.field] === 'M0'
+                      ? 'NA'
+                      : childRow[childCol.field] }}
+                    </div>
+                  </div>
+                  <div *ngSwitchCase="'value'">
+                    <div class="p-p-1 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                      {{ childRow[childCol.field] === 'M0'
+                      ? 'NA'
+                      : childRow[childCol.field] }}
+                    </div>
+                  </div>
+                </ng-container>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
+                <h3>Data not found. </h3>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <p-table *ngIf="nestedLoader" [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
           <ng-template pTemplate="header">
             <tr>
               <th><p-skeleton /></th>
@@ -386,99 +245,130 @@
           </ng-template>
         </p-table>
       </div>
+      </td>
+      </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+          <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
+            <h3>Data not found. </h3>
+          </td>
+        </tr>
+      </ng-template>
+      </p-table>
+
+      <p-table *ngIf="loader" [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+            <th><p-skeleton /></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
-  <div class="p-col-3 p-pl-4">
-    <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
-  </div>
-</div>
+  <div>
 
-<!-- TOP/BOTTOM TREND SECTION -->
-<div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
-  @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items) {
-      <div class="p-d-flex p-flex-column data-item p-col-2">
-        <p><label>{{ items.category }}</label></p>
+    <!-- BOTTOM TREND SECTION -->
+    <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
+      @if(!BottomTilesLoader){
+      @for (items of bottomTilesData; track items) {
+      <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
+        <p class="form-title">{{ items.category }}</p>
         <div class="data p-px-2">
           @for (item of items.value; track item) {
-            <!-- Row with 3 columns -->
-            <div class="p-grid p-ai-center p-py-1">
-              <div class="p-col">
-                {{ item.property }}
-              </div>
-              <div class="p-col-fixed" style="width: 30px; text-align: center;">
-                <i class="pi"
-                   [ngClass]="items.icon"
-                   [ngStyle]="{'color': items.color}"
-                   style="font-size: 0.9rem;"></i>
-              </div>
-              <div class="p-col-fixed" style="width: 40px; text-align: right;">
-                {{ item.value }}
-              </div>
-            
+          <!-- Row with 3 columns -->
+          <div class="p-grid p-ai-center p-py-1">
+            <div class="p-col">
+              {{ item.property }}
             </div>
+            <div class="p-col-fixed" style="width: 30px; text-align: center;">
+              <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
+            </div>
+            <div style="width: 40px; text-align: right;">
+              {{ item.value }}
+            </div>
+
+          </div>
           }
         </div>
       </div>
-    }
-  } @else {
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
+      }
+      } @else {
+      <div class="p-d-flex p-flex-column data-item p-col-2">
+        <p-skeleton width="100%" height="7rem" />
+      </div>
+      <div class="p-d-flex p-flex-column data-item p-col-2">
+        <p-skeleton width="100%" height="7rem" />
+      </div>
+      <div class="p-d-flex p-flex-column data-item p-col-2">
+        <p-skeleton width="100%" height="7rem" />
+      </div>
+      }
+
     </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-  }
+  </div>
+  <div>
+    <!-- MATURITY WHEEL -->
+    <div class="kpi-details-table-container p-mt-5">
+      <div class="kpi-card-container">
+        <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+          <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
+            <div class="kpi-card-title-container">
+              <!-- <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Maturity Wheel</h3> -->
+              <span class="p-float-label">
+                <p-dropdown inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
+                  placeholder="Select" optionLabel="nodeDisplayName"
+                  [style]="{ width: '300px', 'max-width': '100%', height: '40px' }" (onChange)="onDropdownChange($event)"
+                  [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" appendTo="body" [filter]="true">
+                  <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">
+                    <div class="filter-item-selected">
+                      <span>{{ selectedFilters[0].nodeDisplayName }}</span>
+                    </div>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <div class="filter-item">
+                      <span>{{ option.nodeDisplayName }}</span>
+                      <span class="parent_span">
+                        ({{getImmediateParentDisplayName(option) ?? ''}})
+                      </span>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
   
-</div>
-
-
-<!-- MATURITY WHEEL -->
-<div class="kpi-details-table-container p-mx-5 p-mt-5">
-  <div class="kpi-card-container">
-    <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
-      <div
-        class="kpi-card-name-placeholder"
-        role="region"
-        aria-label="KPI Card Header">
-        <div class="kpi-card-title-container">
-          <!-- <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Maturity Wheel</h3> -->
-          <span class="p-float-label">
-            <p-dropdown inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]" placeholder="Select"
-              optionLabel="nodeDisplayName" [style]="{ width: '300px', 'max-width': '100%', height: '40px' }"
-              (onChange)="onDropdownChange($event)" [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" appendTo="body"
-              [filter]="true">
-              <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">
-                <div class="filter-item-selected">
-                  <span>{{ selectedFilters[0].nodeDisplayName }}</span>
-                </div>
-              </ng-template>
-              <ng-template let-option pTemplate="item">
-                <div class="filter-item">
-                  <span>{{ option.nodeDisplayName }}</span>
-                  <span class="parent_span">
-                    ({{getImmediateParentDisplayName(option) ?? ''}})
-                  </span>
-                </div>
-              </ng-template>
-            </p-dropdown>
-
-            <label class="floating-label" for="singleselectFilter">
-              Select
-              <ng-container>
-                {{ selectedHierarchy?.hierarchyLevelName }}
-              </ng-container>
-            </label>
-          </span>
+                <label class="floating-label" for="singleselectFilter">
+                  Select
+                  <ng-container>
+                    {{ selectedHierarchy?.hierarchyLevelName }}
+                  </ng-container>
+                </label>
+              </span>
+            </div>
+          </div>
+        </div>
+  
+        <div class="kpi-card-body">
+          <app-maturity #maturityComponent></app-maturity>
         </div>
       </div>
     </div>
-
-    <div class="kpi-card-body">
-      <app-maturity #maturityComponent></app-maturity>
-    </div>
   </div>
 </div>
+<div class="p-col-3 p-pl-4">
+  <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
+</div>
+</div>
+
+
+
+

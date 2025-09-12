@@ -4,8 +4,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
-import { delay, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription, forkJoin } from 'rxjs';
+import { distinctUntilChanged, tap } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
 
@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   sharedobject = {};
   completeHierarchyData: any = {};
   sidebarVisible: boolean = false;
-  bottomTilesData = signal([]);
+  bottomTilesData: Array<any> = [];
   BottomTilesLoader: boolean = false;
   calculatorDataLoader: boolean = true;
 
@@ -86,132 +86,149 @@ export class HomeComponent implements OnInit, OnDestroy {
             'parent',
           );
 
-          this.httpService
-            .getExecutiveBoardData(
-              filterApplyData,
-              this.selectedType !== 'scrum',
-            )
-            .subscribe((res: any) => {
-              if (res?.error) {
-                this.messageService.add({
-                  severity: 'error',
-                  summary:
-                    res.message || 'Looks some problem in fetching the data!',
-                });
-                this.loader = false;
-              } else {
-                if (res?.data) {
-                  this.tableData['data'] = res.data.matrix.rows.map((row) => {
-                    return { ...row, ...row?.boardMaturity };
-                  });
+          forkJoin([
+            this.httpService
+              .getExecutiveBoardData(
+                filterApplyData,
+                this.selectedType !== 'scrum',
+              )
+              .pipe(
+                tap((executiveBoard) => {
+                  /** ---------- Handle executive summery API ---------- */
+                  if (executiveBoard?.error) {
+                    this.messageService.add({
+                      severity: 'error',
+                      summary:
+                        executiveBoard.message || 'Error in fetching the data!',
+                    });
+                  } else if (executiveBoard?.data) {
+                    this.tableData['data'] =
+                      executiveBoard.data.matrix.rows.map((row) => ({
+                        ...row,
+                        ...row?.boardMaturity,
+                      }));
 
-                  this.tableData['columns'] = res.data.matrix.columns.filter(
-                    (col) => col.field !== 'id',
-                  );
+                    this.tableData['columns'] =
+                      executiveBoard.data.matrix.columns.filter(
+                        (col) => col.field !== 'id',
+                      );
 
-                  const { tableColumnData, tableColumnForm } =
-                    this.generateColumnFilterData(
-                      this.tableData['data'],
-                      this.tableData['columns'],
-                    );
+                    const { tableColumnData, tableColumnForm } =
+                      this.generateColumnFilterData(
+                        this.tableData['data'],
+                        this.tableData['columns'],
+                      );
 
-                  this.tableColumnData = tableColumnData;
-                  this.tableColumnForm = tableColumnForm;
+                    this.tableColumnData = tableColumnData;
+                    this.tableColumnForm = tableColumnForm;
 
-                  this.expandedRows = this.tableData['data']
-                    .filter((p) => p.children && p.children.length > 0) // only rows with children
-                    .reduce((acc, curr) => {
-                      acc[curr.id] = true; // mark as expanded
-                      return acc;
-                    }, {} as { [key: string]: boolean });
+                    this.expandedRows = this.tableData['data']
+                      .filter((p) => p.children && p.children.length > 0)
+                      .reduce((acc, curr) => {
+                        acc[curr.id] = true;
+                        return acc;
+                      }, {} as { [key: string]: boolean });
 
-                  const hierarchy = this.completeHierarchyData;
+                    const hierarchy = this.completeHierarchyData;
+                    const label = hierarchy?.find(
+                      (hi) => hi.level === filterApplyData.level,
+                    ).hierarchyLevelName;
 
-                  const label = hierarchy?.find(
-                    (hi) => hi.level === filterApplyData.level,
-                  ).hierarchyLevelName;
-
-                  this.aggregrationDataList = [
-                    {
-                      cssClassName: 'users',
-                      category: 'Active ' + label + ' (s)',
-                      value: this.tableData['data'].length,
-                      icon: 'pi-users',
-                      average: 'NA',
-                    },
-                    {
-                      cssClassName: 'gauge',
-                      category: 'Avg. Efficiency',
-                      value: this.tableData['data'].length,
-                      icon: 'pi-gauge',
-                      average: this.calculateEfficiency(),
-                    },
-                    {
-                      cssClassName: 'exclamation',
-                      category: 'Critical ' + label + ' (s)',
-                      value: this.calculateHealth('critical').count,
-                      icon: 'pi-exclamation-triangle',
-                      average: this.calculateHealth('critical').average,
-                    },
-                    {
-                      cssClassName: 'heart-fill',
-                      category: 'Healthy ' + label + ' (s)',
-                      value: this.calculateHealth('healthy').count,
-                      icon: 'pi-heart-fill',
-                      average: this.calculateHealth('healthy').average,
-                    },
-                  ];
-                }
-                this.loader = false;
-              }
-            });
-
-          this.httpService
-            .getProductivityGain({
+                    this.aggregrationDataList = [
+                      {
+                        cssClassName: 'users',
+                        category: 'Active ' + label + ' (s)',
+                        value: this.tableData['data'].length,
+                        icon: 'pi-users',
+                        average: 'NA',
+                      },
+                      {
+                        cssClassName: 'gauge',
+                        category: 'Avg. Efficiency',
+                        value: this.tableData['data'].length,
+                        icon: 'pi-gauge',
+                        average: this.calculateEfficiency(),
+                      },
+                      {
+                        cssClassName: 'exclamation',
+                        category: 'Critical ' + label + ' (s)',
+                        value: this.calculateHealth('critical').count,
+                        icon: 'pi-exclamation-triangle',
+                        average: this.calculateHealth('critical').average,
+                      },
+                      {
+                        cssClassName: 'heart-fill',
+                        category: 'Healthy ' + label + ' (s)',
+                        value: this.calculateHealth('healthy').count,
+                        icon: 'pi-heart-fill',
+                        average: this.calculateHealth('healthy').average,
+                      },
+                    ];
+                  }
+                  this.loader = false;
+                }),
+              ),
+            this.httpService.getProductivityGain({
               label: filterApplyData.label,
               level: filterApplyData.level,
               parentId: '',
-            })
-            .pipe(delay(5000))
-            .subscribe({
-              next: (response) => {
-                if (response['success']) {
-                  this.calculatorDataLoader = false;
-                  this.service.setPEBData(response['data']);
-                  console.log(response);
-                  const kpiTrends = response['data']['kpiTrends'];
-                  this.bottomTilesData.set([
-                    {
-                      cssClassName: '',
-                      category: 'Top 3 Risks this Querter',
-                      value: this.calculateQuertlyRisk(this.tableData['data']),
-                      icon: '',
-                    },
-                    {
-                      cssClassName: '',
-                      category: 'Positive Trends',
-                      value: this.calculateTrendData(
-                        kpiTrends['positive'],
-                        'positive',
-                      ),
-                      icon: 'pi-sort-up-fill',
-                      color: 'green',
-                    },
-                    {
-                      cssClassName: '',
-                      category: 'Negative Trends',
-                      value: this.calculateTrendData(
-                        kpiTrends['negative'],
-                        'positive',
-                      ),
-                      icon: 'pi-sort-down-fill',
-                      color: 'red',
-                    },
-                  ]);
-                  this.BottomTilesLoader = false;
-                }
-              },
-            });
+            }),
+          ]).subscribe({
+            next: ([executiveBoard, productivityGain]) => {
+              /** ---------- Handle PEB API ---------- */
+              if (productivityGain['success']) {
+                this.service.setPEBData(productivityGain['data']);
+                this.calculatorDataLoader = false;
+                const kpiTrends = productivityGain['data']['kpiTrends'];
+
+                this.bottomTilesData = [
+                  {
+                    cssClassName: '',
+                    category: 'Top 3 Risks this Quarter',
+                    value: this.calculateQuertlyRisk(this.tableData['data']),
+                    icon: '',
+                  },
+                  {
+                    cssClassName: '',
+                    category: 'Positive Trends',
+                    value: this.calculateTrendData(
+                      kpiTrends['positive'],
+                      'positive',
+                    ),
+                    icon: 'pi-sort-up-fill',
+                    color: 'green',
+                  },
+                  {
+                    cssClassName: '',
+                    category: 'Negative Trends',
+                    value: this.calculateTrendData(
+                      kpiTrends['negative'],
+                      'negative',
+                    ),
+                    icon: 'pi-sort-down-fill',
+                    color: 'red',
+                  },
+                ];
+              } else {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error in fetching PEB data!',
+                });
+              }
+              this.loader = false;
+              this.BottomTilesLoader = false;
+              this.calculatorDataLoader = false;
+            },
+            error: () => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error in fetching PEB data!',
+              });
+              this.loader = false;
+              this.BottomTilesLoader = false;
+              this.calculatorDataLoader = false;
+            },
+          });
 
           this.filters = this.processFilterData(
             this.service.getFilterData(),
