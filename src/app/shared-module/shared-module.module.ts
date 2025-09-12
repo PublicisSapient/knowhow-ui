@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -210,5 +210,6 @@ import { ConditionalInputV2Component } from './conditional-input-v2/conditional-
     ConditionalInputV2Component,
   ],
   providers: [ConfirmationService, KpiHelperService],
+  schemas: [NO_ERRORS_SCHEMA],
 })
 export class SharedModuleModule {}
