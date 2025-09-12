@@ -70,25 +70,14 @@ export class FieldMappingFormComponent implements OnInit {
 
   @ViewChild('addValueDialog') addValueDialog!: Dialog;
 
-  private setting = {
-    element: {
-      dynamicDownload: null as HTMLElement,
-    },
-  };
-
   constructor(
-    private sharedService: SharedService,
-    private http: HttpService,
-    private messenger: MessageService,
-    private confirmationService: ConfirmationService,
+    private readonly sharedService: SharedService,
+    private readonly http: HttpService,
+    private readonly messenger: MessageService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
-    console.log(this.kpiId);
-    console.log(this.formConfig);
-    console.log(this.fieldMappingConfig);
-    console.log(this.fieldMappingMetaData);
-    // console.log(this.fieldMappingMultiSelectValues)
     this.historyList = [];
     this.filterHierarchy = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
@@ -174,7 +163,7 @@ export class FieldMappingFormComponent implements OnInit {
     const fieldMapping = this.formData.find(
       (data) => data.fieldName === config.fieldName,
     );
-    if (fieldMapping?.history && fieldMapping?.history?.length) {
+    if (fieldMapping?.history?.length) {
       this.historyList.push({
         fieldName: fieldMapping.fieldName,
         history: fieldMapping.history,
@@ -193,10 +182,6 @@ export class FieldMappingFormComponent implements OnInit {
     } else {
       switch (config.fieldType) {
         case 'text':
-          return new FormControl(
-            '',
-            config.mandatory ? Validators.required : [],
-          );
         case 'radiobutton':
           return new FormControl(
             '',
@@ -223,7 +208,7 @@ export class FieldMappingFormComponent implements OnInit {
       Object.keys(this.selectedFieldMapping).length
     ) {
       for (const obj in this.selectedFieldMapping) {
-        if (this.form && this.form.controls[obj]) {
+        if (this.form?.controls[obj]) {
           this.form.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
@@ -252,14 +237,14 @@ export class FieldMappingFormComponent implements OnInit {
 
     switch (type) {
       case 'fields':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.fields) {
+        if (this.fieldMappingMetaData?.fields) {
           this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.fields;
         } else {
           this.fieldMappingMultiSelectValues = [];
         }
         break;
       case 'workflow':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.workflow) {
+        if (this.fieldMappingMetaData?.workflow) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.workflow;
         } else {
@@ -267,7 +252,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'Issue_Link':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Link) {
+        if (this.fieldMappingMetaData?.Issue_Link) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.Issue_Link;
         } else {
@@ -275,7 +260,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'Issue_Type':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Type) {
+        if (this.fieldMappingMetaData?.Issue_Type) {
           this.fieldMappingMultiSelectValues =
             this.fieldMappingMetaData.Issue_Type;
         } else {
@@ -283,7 +268,7 @@ export class FieldMappingFormComponent implements OnInit {
         }
         break;
       case 'releases':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
+        if (this.fieldMappingMetaData?.releases) {
           // Set the 'disabled' property and segregate items in a single pass
           const { enabledItems, disabledItems } =
             this.fieldMappingMetaData.releases.reduce(
@@ -424,7 +409,7 @@ export class FieldMappingFormComponent implements OnInit {
     // --- focus on dialog header
     if (this.addValueDialog.contentViewChild) {
       const headerEl = document.getElementById('addValuesDialogTitle');
-      (headerEl as HTMLElement).focus();
+      headerEl.focus();
     }
   }
 
@@ -460,6 +445,17 @@ export class FieldMappingFormComponent implements OnInit {
       }
     });
 
+    const checkForErr = this.checkedEmptyValue(finalList);
+    if (checkForErr) {
+      this.messenger.add({
+        key: 'key1',
+        severity: 'error',
+        summary:
+          'One of the values is missing. Please fill all the values and try again!',
+      });
+      return;
+    }
+
     if (
       this.selectedToolConfig[0].toolName.toLowerCase() === 'jira' ||
       this.selectedToolConfig[0].toolName.toLowerCase() === 'azure'
@@ -489,6 +485,19 @@ export class FieldMappingFormComponent implements OnInit {
     }
   }
 
+  checkedEmptyValue(arr: any[]) {
+    for (const element of arr) {
+      if (element?.originalValue) {
+        for (let j = 0; j < element.originalValue.length; j++) {
+          for (const prop in element.originalValue[j].structuredValue) {
+            if (!element.originalValue[j].structuredValue[prop]) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   /** Responsible for handle save */
   saveFieldMapping(mappingData, isImport?) {
     const mappingObj = {
@@ -506,7 +515,7 @@ export class FieldMappingFormComponent implements OnInit {
         if (response && response['success']) {
           this.messenger.add({
             severity: 'success',
-            summary: 'Field Mappings submitted!!',
+            summary: 'Field Mappings submitted!',
           });
           //#region Bug:39044
           this.form.markAsPristine();
