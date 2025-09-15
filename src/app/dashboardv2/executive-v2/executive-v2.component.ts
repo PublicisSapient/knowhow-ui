@@ -4051,7 +4051,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       } else if (
         kpi?.kpiDetail?.kpiFilter &&
-        kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters'
+        (kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters' ||
+          kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multiSelectDropDown')
       ) {
         this.kpiSelectedFilterObj[kpi?.kpiId] = event;
       } else {
@@ -4949,7 +4950,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       ? this.durationFilter[0]
       : this.durationFilter;
     return {
-      duration: durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+      duration: durationFilter?.includes('Week') ? 'WEEKS' : 'MONTHS',
       value: !isNaN(+durationFilter.split(' ')[1])
         ? +durationFilter.split(' ')[1]
         : 1,
