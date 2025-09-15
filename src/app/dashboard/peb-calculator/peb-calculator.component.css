@@ -185,3 +185,13 @@
 :host ::ng-deep .dev-ai-bar {
   width: 75%;
 }
+
+:host ::ng-deep .retry-link-btn .p-button {
+  padding: 0;
+  text-decoration: none;
+}
+
+:host ::ng-deep .retry-link-btn .p-button:hover {
+  text-decoration: underline;
+  background-color: transparent;
+}

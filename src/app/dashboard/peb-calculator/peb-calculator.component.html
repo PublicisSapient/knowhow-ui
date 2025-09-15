@@ -72,10 +72,14 @@
     </form>
     @if (showLoader) { <div class="loader"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div> }
     @if (isError) {
-      <p-messages severity="info">
+      <p-messages severity="error">
           <ng-template pTemplate>
               <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
-              <div class="ml-2">There was some error calculating PEB. Please try again.</div>
+              <div class="p-ml-3">There was some error calculating PEB.<br />
+                <!-- <a (onClick)="retryCalculatorCall()"><i class="pi pi-refresh"></i> Please retry.</a> -->
+                <!-- <button pButton type="button" (onClick)="retryCalculatorCall()"><i class="pi pi-refresh"></i> Please retry.</button> -->
+                <p-button icon="pi pi-refresh" label="Please retry." [loading]="loading" [link]="true" class="retry-link-btn" (onClick)="retryCalculatorCall()" />
+              </div>
           </ng-template>
       </p-messages>
     }
