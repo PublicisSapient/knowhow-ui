@@ -112,7 +112,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  async ngOnInit() {
+  ngOnInit(): void {
+    this.initializeComponent();
+  }
+
+  private async initializeComponent(): Promise<void> {
     const shared_link =
       localStorage.getItem('shared_link') ?? localStorage.getItem('last_link');
     const queryParams = new URLSearchParams(shared_link?.split('?')[1]);
@@ -2442,7 +2446,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
     console.log('groupedKpiOptions ', this.groupedKpiOptions);
     event.query = event.query.replace(/[^a-zA-Z0-9\s]/g, '');
-    // (event.target as HTMLInputElement).value = event.query;
 
     const query = event.query.toLowerCase();
 
