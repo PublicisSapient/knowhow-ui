@@ -281,8 +281,6 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
           const projectName = d.data.project;
           const sprintName = sprint;
           const severityKey = event.currentTarget.parentNode.__data__.key;
-          console.log(event);
-          console.log(event.currentTarget.parentNode.__data__);
           const originalData = this.findOriginalData(
             projectName,
             sprintName,
