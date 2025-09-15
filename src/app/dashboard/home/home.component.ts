@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.products = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.tableData = {
       columns: [],
       data: [],
@@ -71,6 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             columns: [],
             data: [],
           };
+          this.calculatorDataLoader = true;
           this.aggregrationDataList = [];
           this.loader = true;
           this.BottomTilesLoader = true;
@@ -331,12 +332,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   calculateHealth(healthType) {
     const rowData = [
-      ...this.tableData['data'].filter(
-        (data) => data.health.toLowerCase() === healthType.toLowerCase(),
-      ),
+      ...this.tableData['data'].filter((data) => {
+        return data.health.toLowerCase() === healthType.toLowerCase();
+      }),
     ];
     const sum = rowData.reduce((acc, num) => {
-      return acc + Number(num.completion);
+      return acc + parseFloat(num.completion.replace('%', ''));
     }, 0);
 
     // ✅ Handle empty case to avoid divide by zero
