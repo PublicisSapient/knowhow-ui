@@ -1584,4 +1584,20 @@ export class HelperService {
     });
     return finalOutput;
   }
+
+  getPEBData(payload) {
+    this.httpService.getProductivityGain(payload).subscribe({
+      next: (productivityGain) => {
+        /** ---------- Handle PEB API ---------- */
+        if (productivityGain['success']) {
+          this.sharedService.setPEBData(productivityGain['data']);
+        } else {
+          this.sharedService.setPEBData({});
+        }
+      },
+      error: () => {
+        this.sharedService.setPEBData({});
+      },
+    });
+  }
 }
