@@ -63,6 +63,7 @@ export class PebCalculatorComponent implements OnInit {
   messages: Message[] | undefined;
   @Input() showLoader: boolean = false;
   isError: boolean = false;
+  loading: boolean;
 
   constructor(private fb: FormBuilder, public sharedService: SharedService) {
     this.pebForm = this.fb.group({
@@ -130,7 +131,8 @@ export class PebCalculatorComponent implements OnInit {
 
     this.showLoader = true;
     const productivityGainData = this.sharedService.getPEBData();
-    if (productivityGainData) {
+    console.log('productivityGainData', productivityGainData);
+    if (Object.keys(productivityGainData).length > 0) {
       this.showLoader = false;
       this.showResults = true;
       const productivityGain =
@@ -164,5 +166,13 @@ export class PebCalculatorComponent implements OnInit {
       this.isError = true;
       console.error('Failed to fetch productivity gain data');
     }
+  }
+
+  retryCalculatorCall() {
+    console.log('Retrying PEB calculation...');
+    // this.loading = true;
+    // this.showLoader = true;
+    // this.isError = false;
+    // this.calculatePEB();
   }
 }
