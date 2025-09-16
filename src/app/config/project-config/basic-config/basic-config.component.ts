@@ -255,7 +255,7 @@ export class BasicConfigComponent implements OnInit {
     const selectedNodeId = selectedItem.nodeId;
     const selectedParentId = selectedItem.parentId;
     const currentIndex = this.formData.findIndex(
-      (level) => level.level == selectedItem.level,
+      (level) => level.level === selectedItem.level,
     );
 
     // Step 1: Filter current level based on selected item

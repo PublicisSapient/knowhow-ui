@@ -74,7 +74,7 @@ export class AccessMgmtComponent implements OnInit {
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
   isOpenSource: boolean = false;
-  uniqueArrUserData = <any>[];
+  uniqueArrUserData = [];
 
   constructor(
     private service: SharedService,
