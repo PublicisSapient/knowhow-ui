@@ -35,7 +35,7 @@
 }
 
 ::ng-deep .p-overflow-hidden {
-  overflow: unset;
+  overflow: hidden !important;
 }
 
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th.dragged {
