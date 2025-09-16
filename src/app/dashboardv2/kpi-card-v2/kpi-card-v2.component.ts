@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -145,6 +146,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     private helperService: HelperService,
     private messageService: MessageService,
     private featureFlagService: FeatureFlagsService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -173,7 +175,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
                 }
               } else {
                 if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions[key] = [...currentFilterArray];
+                  this.filterOptions =
+                    Array.isArray(currentFilterArray) &&
+                    currentFilterArray.includes('Overall')
+                      ? { filter1: null }
+                      : [...currentFilterArray];
                 } else {
                   this.filterOptions = { ...this.filterOptions };
                 }
@@ -186,7 +192,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
                 }
               } else {
                 if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions[key] = [...currentFilterArray];
+                  this.filterOptions = {
+                    filter1:
+                      currentFilterArray !== 'Overall'
+                        ? Array.isArray(x[this.kpiData?.kpiId])
+                          ? [...x[this.kpiData?.kpiId]]
+                          : x[this.kpiData?.kpiId]
+                        : null,
+                  };
                 } else {
                   this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
                     ? { filter1: x[this.kpiData?.kpiId] }
@@ -226,6 +239,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               }
             }
           }
+          this.cdr.detectChanges();
         }
         this.selectedTab = this.service.getSelectedTab()
           ? this.service.getSelectedTab().toLowerCase()
@@ -520,7 +534,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         if (this.kpiData?.kpiId === 'kpi28') {
           this.optionSelected.emit(this.filterOptions['filter1']);
         } else {
-          this.optionSelected.emit(this.filterOptions);
+          if (
+            !this.filterOptions.hasOwnProperty('filter1') ||
+            this.filterOptions['filter1'].length === 0
+          ) {
+            this.optionSelected.emit('Overall');
+          } else {
+            this.optionSelected.emit(this.filterOptions);
+          }
         }
       }
     }
