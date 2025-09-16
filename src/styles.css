@@ -2350,7 +2350,6 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
   margin: 5px 0 0;
   word-wrap: break-word;
-  font-size: 11px;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
   color: #3f51b5;
@@ -2456,7 +2455,9 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .p-button.p-button-warning.p-button:hover {
   border: none;
 }
-
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+  font-size: 11px;
+}
 .p-datatable .p-datatable-tbody > tr:focus {
   outline: none;
 }
