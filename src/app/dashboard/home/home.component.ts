@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             columns: [],
             data: [],
           };
-          this.calculatorDataLoader = true;
+          this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
@@ -168,35 +168,36 @@ export class HomeComponent implements OnInit, OnDestroy {
               }),
           );
 
-          this.subscription.push(
-            this.httpService
-              .getProductivityGain({
-                label: filterApplyData.label,
-                level: filterApplyData.level,
-                parentId: '',
-              })
-              .subscribe({
-                next: (response) => {
-                  if (response['success']) {
-                    this.service.setPEBData(response['data']);
-                    this.bottomTilesData = [];
-                  } else {
-                    this.messageService.add({
-                      severity: 'error',
-                      summary: 'Error in fetching PEB data!',
-                    });
-                  }
-                  this.calculatorDataLoader = false;
-                },
-                error: () => {
-                  this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error in fetching PEB data!',
-                  });
-                  this.calculatorDataLoader = false;
-                },
-              }),
-          );
+          // Temporary Commened for 14.00
+          // this.subscription.push(
+          //   this.httpService
+          //     .getProductivityGain({
+          //       label: filterApplyData.label,
+          //       level: filterApplyData.level,
+          //       parentId: '',
+          //     })
+          //     .subscribe({
+          //       next: (response) => {
+          //         if (response['success']) {
+          //           this.service.setPEBData(response['data']);
+          //           this.bottomTilesData = [];
+          //         } else {
+          //           this.messageService.add({
+          //             severity: 'error',
+          //             summary: 'Error in fetching PEB data!',
+          //           });
+          //         }
+          //         this.calculatorDataLoader = false;
+          //       },
+          //       error: () => {
+          //         this.messageService.add({
+          //           severity: 'error',
+          //           summary: 'Error in fetching PEB data!',
+          //         });
+          //         this.calculatorDataLoader = false;
+          //       },
+          //     }),
+          // );
 
           this.filters = this.processFilterData(
             this.service.getFilterData(),
