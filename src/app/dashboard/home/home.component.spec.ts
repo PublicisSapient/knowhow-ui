@@ -652,7 +652,7 @@ describe('HomeComponent', () => {
 
     component.ngOnInit();
 
-    expect(component.products.length).toBe(3);
+    expect(component.products.length).toBe(4);
     expect(component.payloadPreparation).toHaveBeenCalled();
     expect(component['httpService'].getExecutiveBoardData).toHaveBeenCalled();
     expect(component.tableData['data'][0].maturity).toBe('high');
