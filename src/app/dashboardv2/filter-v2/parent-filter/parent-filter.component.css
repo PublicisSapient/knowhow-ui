@@ -9,3 +9,9 @@
 .floating-label {
   text-transform: capitalize;
 }
+
+::ng-deep .p-dropdown-item .inactive-projects {
+  font-style: italic;
+  color: var(--color-gray-9e);
+  opacity: 0.6;
+}

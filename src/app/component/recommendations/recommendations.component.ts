@@ -724,4 +724,24 @@ export class RecommendationsComponent implements OnInit {
         return { 'background-color': '#fe414d', color: '#fff' };
     }
   }
+  getSeverityClass(recommendation: any) {
+    if (!recommendation) return '';
+
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+
+    switch (recommendationType) {
+      case 'high':
+        return 'high-icon';
+      case 'medium':
+        return 'medium-icon';
+      case 'low':
+        return 'low-icon';
+      case 'critical':
+        return 'critical-icon';
+      default:
+        return 'critical-icon';
+    }
+  }
 }
