@@ -8,12 +8,11 @@
             <label for="devCount">Total No. of Developers</label>
           </div>
           <div class="p-col-12">
-              <p-inputNumber
-                class="input-field-calc"
-                formControlName="devCountControl"
-                inputId="devCount"
-                ngDefaultControl
-              ></p-inputNumber>
+            <p-inputNumber
+              class="input-field-calc"
+              formControlName="devCountControl"
+              inputId="devCount"
+              ngDefaultControl></p-inputNumber>
           </div>
           <div class="p-col-12">
             <p-slider
@@ -21,7 +20,8 @@
               class="w-full"
               [step]="10"
               [min]="10"
-              [max]="300" ngDefaultControl ></p-slider>
+              [max]="300"
+              ngDefaultControl></p-slider>
           </div>
         </div>
         <div class="p-col-4 grid-flex-wrap-100">
@@ -29,15 +29,14 @@
             <label for="devCost">Avg. Cost Per Developer</label>
           </div>
           <div class="p-col-12">
-              <p-inputNumber
-                class="input-field-calc"
-                formControlName="devCostControl"
-                inputId="devCost"
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-                ngDefaultControl
-              ></p-inputNumber>
+            <p-inputNumber
+              class="input-field-calc"
+              formControlName="devCostControl"
+              inputId="devCost"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              ngDefaultControl></p-inputNumber>
           </div>
           <div class="p-col-12">
             <p-slider
@@ -45,7 +44,8 @@
               class="w-full"
               [step]="100"
               [min]="100000"
-              [max]="500000" ngDefaultControl ></p-slider>
+              [max]="500000"
+              ngDefaultControl></p-slider>
           </div>
         </div>
         <div class="p-col-4 grid-flex-wrap-100">
@@ -58,7 +58,8 @@
               class="input-field-calc"
               [options]="durationOptions"
               formControlName="durationControl"
-              placeholder="Time Duration" ngDefaultControl></p-dropdown>
+              placeholder="Time Duration"
+              ngDefaultControl></p-dropdown>
           </div>
         </div>
       </div>
@@ -70,65 +71,68 @@
           class="calc-btn"></button>
       </div>
     </form>
-    @if (showLoader) { <div class="loader"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div> }
-    @if (isError) {
-      <p-messages severity="info">
-          <ng-template pTemplate>
-              <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
-              <div class="ml-2">There was some error calculating PEB. Please try again.</div>
-          </ng-template>
-      </p-messages>
+    @if (showLoader) {
+    <div class="loader">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+    } @if (isError) {
+    <p-messages severity="error">
+      <ng-template pTemplate>
+        <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
+        <div class="p-ml-3">
+          {{ errorMessage }}
+        </div>
+      </ng-template>
+    </p-messages>
     }
   </p-card>
 
-
-
   @if (showResults) {
-    <p-card class="p-mb-3 executive-summary-card">
-      <div class="exec-title p-mb-4 p-px-3">Executive Summary</div>
-      <div class="roi-impact-title p-mb-4 p-px-3">
-        <span class="green-text pi pi-dollar"></span> Expected ROI Impact
-      </div>
-      <div class="p-grid metric-row p-px-3">
-        @for (roi of roiMetrics; track roi.label) {
-        <div class="p-col-3 grid-flex-wrap-50">
-          <div
-            class="roi-card p-d-flex p-flex-column"
-            [ngStyle]="{
-              background: roi.color
-            }">
-            <span
-              [class]="roi.icon + ' roi-icon'"
-              class="item"
-              [ngStyle]="{ color: roi.elemColor }"></span>
-            <div class="roi-label item">{{ roi.label }}</div>
-            <div class="roi-percent item" [ngStyle]="{ color: roi.elemColor }">
-              {{ roi.percent }}%
-            </div>
-          </div>
-          <div class="center-text p-mt-5 p-mb-2">
-            <div class="small-text">{{ roi.estValueSavingsLabel }}</div>
-            <div class="est-value">
-              <strong>{{ roi.value | currency : 'USD' }}</strong>
-            </div>
+  <p-card class="p-mb-3 executive-summary-card">
+    <div class="exec-title p-mb-4 p-px-3">Executive Summary</div>
+    <div class="roi-impact-title p-mb-4 p-px-3">
+      <span class="green-text pi pi-dollar"></span> Expected ROI Impact
+    </div>
+    <div class="p-grid metric-row p-px-3">
+      @for (roi of roiMetrics; track roi.label) {
+      <div class="p-col-3 grid-flex-wrap-50">
+        <div
+          class="roi-card p-d-flex p-flex-column"
+          [ngStyle]="{
+            background: roi.color
+          }">
+          <span
+            [class]="roi.icon + ' roi-icon'"
+            class="item"
+            [ngStyle]="{ color: roi.elemColor }"></span>
+          <div class="roi-label item">{{ roi.label }}</div>
+          <div class="roi-percent item" [ngStyle]="{ color: roi.elemColor }">
+            {{ roi.percent }}%
           </div>
         </div>
-        }
-      </div>
-      <p-divider></p-divider>
-      <div class="overall-benefit center-text p-mt-6 p-px-3">
-        <div class="p-mb-2">
-          <strong>Overall Potential Economic Benefit</strong>
+        <div class="center-text p-mt-5 p-mb-2">
+          <div class="small-text">{{ roi.estValueSavingsLabel }}</div>
+          <div class="est-value">
+            <strong>{{ roi.value | currency : 'USD' }}</strong>
+          </div>
         </div>
-        <div class="benefit-value blue-text">
-          {{ annualPEB | currency : 'USD' }}
-        </div>
-        <div class="p-mt-2 small-text">Sum total of all cost savings above</div>
       </div>
-    </p-card>
+      }
+    </div>
+    <p-divider></p-divider>
+    <div class="overall-benefit center-text p-mt-6 p-px-3">
+      <div class="p-mb-2">
+        <strong>Overall Potential Economic Benefit</strong>
+      </div>
+      <div class="benefit-value blue-text">
+        {{ annualPEB | currency : 'USD' }}
+      </div>
+      <div class="p-mt-2 small-text">Sum total of all cost savings above</div>
+    </div>
+  </p-card>
 
-    <!-- THIS SECTION IS COMMENTED FOR FUTURE IMPLEMENTATION -->
-    <!-- <p-card class="colored-card-block">
+  <!-- THIS SECTION IS COMMENTED FOR FUTURE IMPLEMENTATION -->
+  <!-- <p-card class="colored-card-block">
       <div class="ai-section-title">Additional Cost Savings from AI Adoption <i class="pi pi-sparkles"></i></div>
       <div class="colored-card-block_container p-p-3">
         <div class="ai-comparison-title center-text p-my-3"><strong>Current vs AI-Assisted Development</strong></div>
