@@ -184,7 +184,6 @@
 //   });
 // });
 
-
 // NOTE --> Added the below test cases for the recent changes, will remove it once the component demo is done.
 import {
   ComponentFixture,
