@@ -274,9 +274,10 @@
     <!-- BOTTOM TREND SECTION -->
     <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
       @if(!BottomTilesLoader){
-      @for (items of bottomTilesData; track items) {
+      @for (items of bottomTilesData(); track items) {
       <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
         <p class="form-title">{{ items.category }}</p>
+      @if(items.value.length){
         <div class="data p-px-2">
           @for (item of items.value; track item) {
           <!-- Row with 3 columns -->
@@ -294,6 +295,9 @@
           </div>
           }
         </div>
+      } @else {
+        <p-skeleton width="100%" height="7rem" />
+      }
       </div>
       }
       } @else {
