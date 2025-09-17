@@ -189,9 +189,11 @@
 :host ::ng-deep .retry-link-btn .p-button {
   padding: 0;
   text-decoration: none;
+  margin-top: 10px;
+  color: #0b4bc8;
 }
 
 :host ::ng-deep .retry-link-btn .p-button:hover {
-  text-decoration: underline;
-  background-color: transparent;
+  background: transparent !important;
+  color: #0b4bc8 !important;
 }

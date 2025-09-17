@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
@@ -64,6 +64,8 @@ export class PebCalculatorComponent implements OnInit {
   @Input() showLoader: boolean = false;
   isError: boolean = false;
   loading: boolean;
+
+  @Output() retryCalcCall = new EventEmitter<boolean>();
 
   constructor(private fb: FormBuilder, public sharedService: SharedService) {
     this.pebForm = this.fb.group({
@@ -170,9 +172,10 @@ export class PebCalculatorComponent implements OnInit {
 
   retryCalculatorCall() {
     console.log('Retrying PEB calculation...');
-    // this.loading = true;
-    // this.showLoader = true;
-    // this.isError = false;
-    // this.calculatePEB();
+    this.loading = true;
+    this.showLoader = true;
+    this.isError = false;
+    this.retryCalcCall.emit(true);
+    this.calculatePEB();
   }
 }
