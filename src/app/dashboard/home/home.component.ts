@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.products = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.tableData = {
       columns: [],
       data: [],
@@ -71,6 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             columns: [],
             data: [],
           };
+          this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
           this.loader = true;
           this.selectedType = this.service.getSelectedType();
@@ -85,101 +86,118 @@ export class HomeComponent implements OnInit, OnDestroy {
             'parent',
           );
 
-          this.httpService
-            .getExecutiveBoardData(
-              filterApplyData,
-              this.selectedType !== 'scrum',
-            )
-            .subscribe((res: any) => {
-              if (res?.error) {
-                this.messageService.add({
-                  severity: 'error',
-                  summary:
-                    res.message || 'Looks some problem in fetching the data!',
-                });
-                this.loader = false;
-              } else {
-                if (res?.data) {
-                  this.tableData['data'] = res.data.matrix.rows.map((row) => {
-                    return { ...row, ...row?.boardMaturity };
+          this.subscription.push(
+            this.httpService
+              .getExecutiveBoardData(
+                filterApplyData,
+                this.selectedType !== 'scrum',
+              )
+              .subscribe((res: any) => {
+                if (res?.error) {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary:
+                      res.message || 'Looks some problem in fetching the data!',
                   });
+                  this.loader = false;
+                } else {
+                  if (res?.data) {
+                    this.tableData['data'] = res.data.matrix.rows.map((row) => {
+                      return { ...row, ...row?.boardMaturity };
+                    });
 
-                  this.tableData['columns'] = res.data.matrix.columns.filter(
-                    (col) => col.field !== 'id',
-                  );
-
-                  const { tableColumnData, tableColumnForm } =
-                    this.generateColumnFilterData(
-                      this.tableData['data'],
-                      this.tableData['columns'],
+                    this.tableData['columns'] = res.data.matrix.columns.filter(
+                      (col) => col.field !== 'id',
                     );
 
-                  this.tableColumnData = tableColumnData;
-                  this.tableColumnForm = tableColumnForm;
+                    const { tableColumnData, tableColumnForm } =
+                      this.generateColumnFilterData(
+                        this.tableData['data'],
+                        this.tableData['columns'],
+                      );
 
-                  this.expandedRows = this.tableData['data']
-                    .filter((p) => p.children && p.children.length > 0) // only rows with children
-                    .reduce((acc, curr) => {
-                      acc[curr.id] = true; // mark as expanded
-                      return acc;
-                    }, {} as { [key: string]: boolean });
+                    this.tableColumnData = tableColumnData;
+                    this.tableColumnForm = tableColumnForm;
 
-                  const hierarchy = this.completeHierarchyData;
+                    this.expandedRows = this.tableData['data']
+                      .filter((p) => p.children && p.children.length > 0) // only rows with children
+                      .reduce((acc, curr) => {
+                        acc[curr.id] = true; // mark as expanded
+                        return acc;
+                      }, {} as { [key: string]: boolean });
 
-                  const label = hierarchy?.find(
-                    (hi) => hi.level === filterApplyData.level,
-                  ).hierarchyLevelName;
+                    const hierarchy = this.completeHierarchyData;
 
-                  this.aggregrationDataList = [
-                    {
-                      cssClassName: 'users',
-                      category: 'Active ' + label + ' (s)',
-                      value: this.tableData['data'].length,
-                      icon: 'pi-users',
-                      average: 'NA',
-                    },
-                    {
-                      cssClassName: 'gauge',
-                      category: 'Avg. Efficiency',
-                      value: this.tableData['data'].length,
-                      icon: 'pi-gauge',
-                      average: this.calculateEfficiency(),
-                    },
-                    {
-                      cssClassName: 'exclamation',
-                      category: 'Critical ' + label + ' (s)',
-                      value: this.calculateHealth('critical').count,
-                      icon: 'pi-exclamation-triangle',
-                      average: this.calculateHealth('critical').average,
-                    },
-                    {
-                      cssClassName: 'heart-fill',
-                      category: 'Healthy ' + label + ' (s)',
-                      value: this.calculateHealth('healthy').count,
-                      icon: 'pi-heart-fill',
-                      average: this.calculateHealth('healthy').average,
-                    },
-                  ];
+                    const label = hierarchy?.find(
+                      (hi) => hi.level === filterApplyData.level,
+                    ).hierarchyLevelName;
+
+                    this.aggregrationDataList = [
+                      {
+                        cssClassName: 'users',
+                        category: 'Active ' + label + ' (s)',
+                        value: this.tableData['data'].length,
+                        icon: 'pi-users',
+                        average: 'NA',
+                      },
+                      {
+                        cssClassName: 'gauge',
+                        category: 'Avg. Efficiency',
+                        value: this.tableData['data'].length,
+                        icon: 'pi-gauge',
+                        average: this.calculateEfficiency(),
+                      },
+                      {
+                        cssClassName: 'exclamation',
+                        category: 'Critical ' + label + ' (s)',
+                        value: this.calculateHealth('unhealthy').count,
+                        icon: 'pi-exclamation-triangle',
+                        average: this.calculateHealth('unhealthy').average,
+                      },
+                      {
+                        cssClassName: 'heart-fill',
+                        category: 'Healthy ' + label + ' (s)',
+                        value: this.calculateHealth('healthy').count,
+                        icon: 'pi-heart-fill',
+                        average: this.calculateHealth('healthy').average,
+                      },
+                    ];
+                  }
+                  this.loader = false;
                 }
-                this.loader = false;
-              }
-            });
+              }),
+          );
 
-          this.httpService
-            .getProductivityGain({
-              label: filterApplyData.label,
-              level: filterApplyData.level,
-              parentId: '',
-            })
-            .subscribe({
-              next: (response) => {
-                if (response['success']) {
-                  this.calculatorDataLoader = false;
-                  this.service.setPEBData(response['data']);
-                  this.bottomTilesData = [];
-                }
-              },
-            });
+          // Temporary Commened for 14.00
+          // this.subscription.push(
+          //   this.httpService
+          //     .getProductivityGain({
+          //       label: filterApplyData.label,
+          //       level: filterApplyData.level,
+          //       parentId: '',
+          //     })
+          //     .subscribe({
+          //       next: (response) => {
+          //         if (response['success']) {
+          //           this.service.setPEBData(response['data']);
+          //           this.bottomTilesData = [];
+          //         } else {
+          //           this.messageService.add({
+          //             severity: 'error',
+          //             summary: 'Error in fetching PEB data!',
+          //           });
+          //         }
+          //         this.calculatorDataLoader = false;
+          //       },
+          //       error: () => {
+          //         this.messageService.add({
+          //           severity: 'error',
+          //           summary: 'Error in fetching PEB data!',
+          //         });
+          //         this.calculatorDataLoader = false;
+          //       },
+          //     }),
+          // );
 
           this.filters = this.processFilterData(
             this.service.getFilterData(),
@@ -251,12 +269,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   calculateHealth(healthType) {
     const rowData = [
-      ...this.tableData['data'].filter(
-        (data) => data.health.toLowerCase() === healthType.toLowerCase(),
-      ),
+      ...this.tableData['data'].filter((data) => {
+        return data.health.toLowerCase() === healthType.toLowerCase();
+      }),
     ];
     const sum = rowData.reduce((acc, num) => {
-      return acc + Number(num.completion);
+      return acc + parseFloat(num.completion.replace('%', ''));
     }, 0);
 
     // ✅ Handle empty case to avoid divide by zero

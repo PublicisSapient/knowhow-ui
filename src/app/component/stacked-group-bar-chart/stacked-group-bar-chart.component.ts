@@ -47,6 +47,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   private filteredData: any;
   private activeSeverityKeys = [];
   private isInitialized = false;
+  private yAxisLabel;
 
   private readonly svg: any;
   private readonly width: number = 0;
@@ -85,8 +86,10 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   private createChart(): void {
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
     const sprintGroups: { [key: string]: any[] } = {};
+    let chartYRange = 0;
     let severityKeys;
     if (this.kpiId === 'kpi195') {
+      this.yAxisLabel = 'Breached %';
       severityKeys = this.activeSeverityKeys.length
         ? this.activeSeverityKeys
         : this.allSeverityKeys;
@@ -113,14 +116,18 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         });
       });
     } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+      this.yAxisLabel = 'Avg. Execution Time';
       this.data.forEach((elem: any) => {
         elem.value.forEach((val: any, index: number) => {
+          let temp = 0;
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
           const obj = {};
           for (const prop in val.hoverValue) {
-            obj[prop] = val.hoverValue[prop].avgExecutionTimeSec;
+            obj[prop] = val.hoverValue[prop].count;
+            temp += val.hoverValue[prop].count;
           }
+          if (temp > chartYRange) chartYRange = temp;
           const data = {
             project: elem.data,
             ...obj,
@@ -170,7 +177,11 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .domain(projects)
       .range([0, x0.bandwidth()])
       .padding(0.1);
-    const y = d3.scaleLinear().domain([0, 500]).range([height, 0]).clamp(true);
+    const y = d3
+      .scaleLinear()
+      .domain([0, chartYRange ? chartYRange + 50 : 500])
+      .range([height, 0])
+      .clamp(true);
 
     const xGrid = d3
       .axisBottom(x0)
@@ -281,8 +292,12 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
               .html(
                 this.kpiId === 'kpi195'
                   ? `
-                <div><strong>Total Resolved:</strong> ${originalData.hoverValue.totalResolvedIssues}</div>
-                <div><strong>Breached:</strong> ${originalData.hoverValue.breachedPercentage}%</div>
+                <div><strong>Total ${severityKey.toUpperCase()} Resolved:</strong> ${
+                      originalData.hoverValue.totalResolvedIssues
+                    }</div>
+                <div><strong>${severityKey.toUpperCase()} Breached:</strong> ${
+                      originalData.hoverValue.breachedPercentage
+                    }%</div>
               `
                   : `
                 <div><strong>Average execution time:</strong> ${originalData.hoverValue.TOTAL.avgExecutionTimeSec}</div>
@@ -366,7 +381,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .attr('x', -height / 2)
       .attr('y', -margin.left + 15)
       .attr('text-anchor', 'middle')
-      .text('Breached %')
+      .text(this.yAxisLabel)
       .style('font-size', '16px')
       .style('fill', '#49535e');
 
