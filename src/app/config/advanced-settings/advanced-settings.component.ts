@@ -34,7 +34,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class AdvancedSettingsComponent implements OnInit {
   items: MenuItem[];
   selectedView: string;
-  dataLoading = <boolean>false;
+  dataLoading: boolean = false;
   showPreCalculatedDataForScrum = <boolean>false;
   showPreCalculatedDataForKanban = <boolean>false;
   showPrecalculatedConfigSection = <boolean>false;
