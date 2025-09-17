@@ -59,11 +59,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
-    this.tableData = {
-      columns: [],
-      data: [],
-    };
-    this.initializeBottomData();
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(distinctUntilChanged())
@@ -72,6 +67,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             columns: [],
             data: [],
           };
+          this.initializeBottomData('ALL');
           this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
           this.loader = true;
@@ -176,10 +172,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                           this.tableData['data'],
                         ),
                       };
-                      console.log(riskData);
                       return riskData;
                     });
-                    console.log('bottom panel data - ', this.bottomTilesData());
                   }
                   this.loader = false;
                   // this.BottomTilesLoader = false;
@@ -209,29 +203,50 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
-  initializeBottomData() {
-    this.bottomTilesData.set([
-      {
-        cssClassName: '',
-        category: 'Top 3 Risks this Quarter',
-        value: [],
-        icon: '',
-      },
-      {
-        cssClassName: '',
-        category: 'Positive Trends',
-        value: [],
-        icon: 'pi-sort-up-fill',
-        color: 'green',
-      },
-      {
-        cssClassName: '',
-        category: 'Negative Trends',
-        value: [],
-        icon: 'pi-sort-down-fill',
-        color: 'red',
-      },
-    ]);
+  initializeBottomData(typeOfReset) {
+    if (typeOfReset === 'ALL') {
+      this.bottomTilesData.set([
+        {
+          cssClassName: '',
+          category: 'Top 3 Risks this Quarter',
+          value: [],
+          icon: '',
+        },
+        {
+          cssClassName: '',
+          category: 'Positive Trends',
+          value: [],
+          icon: 'pi-sort-up-fill',
+          color: 'green',
+        },
+        {
+          cssClassName: '',
+          category: 'Negative Trends',
+          value: [],
+          icon: 'pi-sort-down-fill',
+          color: 'red',
+        },
+      ]);
+    } else {
+      this.bottomTilesData.update((state) => {
+        const tempState = [...state];
+        tempState[1] = {
+          cssClassName: '',
+          category: 'Positive Trends',
+          value: [],
+          icon: 'pi-sort-up-fill',
+          color: 'green',
+        };
+        tempState[2] = {
+          cssClassName: '',
+          category: 'Negative Trends',
+          value: [],
+          icon: 'pi-sort-down-fill',
+          color: 'red',
+        };
+        return tempState;
+      });
+    }
   }
   getMaturityWheelData(sharedobject) {
     this.maturityComponent.receiveSharedData({
@@ -519,7 +534,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               summary: 'Failed to load PEBa data. Please try again.',
             });
             this.BottomTilesLoader = false;
-            this.initializeBottomData();
+            this.initializeBottomData('ONLYTRENDS');
           }
           this.calculatorDataLoader = false;
         },
@@ -527,6 +542,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           console.error('Failed to load PEBa data:', error);
           this.BottomTilesLoader = false;
           this.calculatorDataLoader = false;
+          this.initializeBottomData('ONLYTRENDS');
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -539,7 +555,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   processPEBData(data) {
     const kpiTrends = data['kpiTrends'];
-    // this.initializeBottomData();
     this.bottomTilesData.update((value) => {
       const data = [...value];
       data[1] = {
@@ -550,7 +565,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         ...data[2],
         value: this.calculateTrendData(kpiTrends['positive'], 'negative'),
       };
-      // console.log(data);
       return data;
     });
     this.BottomTilesLoader = false;
