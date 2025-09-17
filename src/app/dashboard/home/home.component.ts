@@ -72,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             columns: [],
             data: [],
           };
-          this.calculatorDataLoader = true;
+          this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
           this.loader = true;
           this.BottomTilesLoader = true;
