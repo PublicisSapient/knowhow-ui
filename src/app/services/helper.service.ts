@@ -27,8 +27,8 @@ import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
 import { UtcToLocalUserPipe } from '../shared-module/pipes/utc-to-local-user/utc-to-local-user.pipe';
 
 interface KpiOption {
@@ -1585,19 +1585,17 @@ export class HelperService {
     return finalOutput;
   }
 
-  getPEBData(payload) {
-    this.httpService.getProductivityGain(payload).subscribe({
-      next: (productivityGain) => {
-        /** ---------- Handle PEB API ---------- */
-        if (productivityGain['success']) {
-          this.sharedService.setPEBData(productivityGain['data']);
-        } else {
-          this.sharedService.setPEBData({});
+  fetchPEBaData(payload: any): Observable<any> {
+    return this.httpService.getProductivityGain(payload).pipe(
+      tap((response) => {
+        if (response?.success) {
+          this.sharedService.setPEBData(response.data);
         }
-      },
-      error: () => {
-        this.sharedService.setPEBData({});
-      },
-    });
+      }),
+      catchError((error) => {
+        console.error('Error fetching PEBa data:', error);
+        return throwError(() => error);
+      }),
+    );
   }
 }
