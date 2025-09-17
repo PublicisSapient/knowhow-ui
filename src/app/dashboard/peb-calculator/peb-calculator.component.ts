@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
+import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -63,8 +64,13 @@ export class PebCalculatorComponent implements OnInit {
   messages: Message[] | undefined;
   @Input() showLoader: boolean = false;
   isError: boolean = false;
+  errorMessage: String = '';
 
-  constructor(private fb: FormBuilder, public sharedService: SharedService) {
+  constructor(
+    private fb: FormBuilder,
+    public sharedService: SharedService,
+    public httpService: HttpService,
+  ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
       devCostControl: [100000],
@@ -129,7 +135,9 @@ export class PebCalculatorComponent implements OnInit {
     });
 
     this.showLoader = true;
-    const productivityGainData = this.sharedService.getPEBData();
+
+    // TODO --> Will handle the logic later. After demo is done.
+    /* const productivityGainData = this.sharedService.getPEBData();
     if (productivityGainData) {
       this.showLoader = false;
       this.showResults = true;
@@ -163,6 +171,58 @@ export class PebCalculatorComponent implements OnInit {
       this.showLoader = false;
       this.isError = true;
       console.error('Failed to fetch productivity gain data');
-    }
+    } */
+
+    // IMPORTANT --> Added back just to unblock for demo. Will remove later.
+    this.httpService.getProductivityGain(reqPayload).subscribe({
+      next: (response) => {
+        if (response['success']) {
+          this.showLoader = false;
+          this.showResults = true;
+          const productivityGain =
+            response['data']['categorizedProductivityGain'];
+          // console.log('productivityGain', productivityGain);
+          const overallGain = productivityGain['overall'];
+
+          this.annualPEB = Math.round(
+            this.pebForm.get('devCountControl')!.value *
+              this.pebForm.get('devCostControl')!.value *
+              (overallGain / 100) *
+              (this.pebForm.get('durationControl')!.value === 'month'
+                ? 1 / 12
+                : this.pebForm.get('durationControl')!.value === 'quarter'
+                ? 1 / 4
+                : 1),
+          );
+          this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+
+          this.roiMetrics = this.roiMetrics.map((metric) => {
+            const key = metric.label.toLowerCase();
+            const percent = productivityGain[key]; // CHANGE: Calculate percent directly
+            const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
+            return {
+              ...metric,
+              percent,
+              value: value <= 0 ? 0 : value,
+            };
+          });
+        } else {
+          this.showLoader = false;
+          this.isError = true;
+          console.error(
+            'Server returned unsuccessful response:',
+            response['message'],
+          );
+          this.errorMessage = response['message'];
+          return;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch productivity gain data', err.message);
+        this.showLoader = false;
+        this.isError = true;
+        this.errorMessage = err['message'];
+      },
+    });
   }
 }
