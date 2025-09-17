@@ -323,6 +323,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   calculateTrendData(data, trendType) {
+    if (!data) {
+      return [];
+    }
     const decendingData = [...data].sort((a, b) => {
       if (trendType === 'positive') {
         return b.trendValue - a.trendValue;
@@ -520,7 +523,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  private fetchPEBaData(filterApplyData: any): void {
+  public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
 
     this.subscription.push(
@@ -563,7 +566,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       };
       data[2] = {
         ...data[2],
-        value: this.calculateTrendData(kpiTrends['positive'], 'negative'),
+        value: this.calculateTrendData(kpiTrends['negative'], 'negative'),
       };
       return data;
     });
