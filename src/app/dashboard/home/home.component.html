@@ -280,7 +280,7 @@
   <!-- BOTTOM TREND SECTION -->
   <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
     @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items) {
+    @for (items of bottomTilesData(); track items ; let isFirst = $first) {
     <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
       <p class="form-title">{{ items.category }}</p>
       @if(items.value.length){
@@ -301,8 +301,14 @@
         </div>
         }
       </div>
+      } @else if(isFirst && !loader && items.value.length === 0){
+        <h3>Data not found.</h3>
+      } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
+       <h3>Data not found.</h3>
       } @else {
-      <p-skeleton width="100%" height="7rem" />
+      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
       }
     </div>
     }
