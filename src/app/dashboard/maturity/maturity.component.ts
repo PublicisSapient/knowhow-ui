@@ -747,7 +747,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
         board?.boardName.toLowerCase() !== 'developer' &&
         board?.boardName.toLowerCase() !== 'dora' &&
         board?.boardName.toLowerCase() !== 'release' &&
-        board?.boardName.toLowerCase() !== 'backlog',
+        board?.boardName.toLowerCase() !== 'backlog' &&
+        board?.boardName.toLowerCase() !== 'home',
     );
     this.selectedTabKpis = this.tabs[index].kpis
       .filter(
@@ -930,7 +931,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     group: this.maturityValue[kpi].group
                       ? this.maturityValue[kpi].group
                       : 1,
-                    kpiDefinition: this.maturityValue[kpi].kpiInfo.definition,
+                    kpiDefinition: this.maturityValue[kpi]?.kpiInfo?.definition,
                     kpiId: kpi,
                   });
                   maturiyRangeValue = maturiyRangeValue + 5;
@@ -963,7 +964,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
               group: this.maturityValue[kpi].group
                 ? this.maturityValue[kpi].group
                 : 1,
-              kpiDefinition: this.maturityValue[kpi].kpiInfo.definition,
+              kpiDefinition: this.maturityValue[kpi]?.kpiInfo?.definition,
               kpiId: kpi,
             });
             sumOfMatirity += +getMaturityValueForChart(
