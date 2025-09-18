@@ -187,7 +187,6 @@
 }
 
 :host ::ng-deep .calculator-header {
-  position: relative;
   margin-top: -15px;
   margin-bottom: 15px;
   padding-bottom: 15px;
@@ -197,14 +196,17 @@
   line-height: 2rem;
 }
 
+:host ::ng-deep .calculator-header-label {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
 :host ::ng-deep .tag {
+  display: inline-block;
   padding: 5px 10px;
   margin-left: 15px;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 0.75rem;
-  position: absolute;
-  top: -20px;
-  right: 0;
   line-height: initial;
 }
 

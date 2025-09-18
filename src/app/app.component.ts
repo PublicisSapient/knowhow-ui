@@ -40,7 +40,7 @@ import { throwError } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   loadingRouteConfig: boolean;
-  authorized = <boolean>true;
+  authorized: boolean = true;
   refreshCounter = 0;
   self: any = this;
   selectedTab = '';
