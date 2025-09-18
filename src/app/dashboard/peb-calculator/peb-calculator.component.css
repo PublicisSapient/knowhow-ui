@@ -185,3 +185,34 @@
 :host ::ng-deep .dev-ai-bar {
   width: 75%;
 }
+
+:host ::ng-deep .calculator-header {
+  position: relative;
+  margin-top: -15px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #c0c0c0;
+  margin-left: -17.5px;
+  margin-right: -17.5px;
+  line-height: 2rem;
+}
+
+:host ::ng-deep .tag {
+  padding: 5px 10px;
+  margin-left: 15px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  position: absolute;
+  top: -20px;
+  right: 0;
+  line-height: initial;
+}
+
+:host ::ng-deep .tag.beta {
+  background-color: #ffecdf;
+  color: #f68605;
+}
+
+:host ::ng-deep label {
+  background-color: transparent !important;
+}
