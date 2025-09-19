@@ -4143,7 +4143,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
-    component.postJiraKpi(postData, 'Jira');
+    component.postJiraKpi(postData, 'Jira', false);
     component.jiraKpiData = {};
     tick();
     expect(spy).toHaveBeenCalled();
@@ -8227,6 +8227,7 @@ describe('ExecutiveV2Component', () => {
         kpiList: [{ kpiId: 'kpi141' }],
       },
       'jira',
+      false,
     );
     tick();
     expect(spy).toHaveBeenCalled();
@@ -10325,7 +10326,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'removeLoaderFromKPIs');
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
-    component.postJiraKpi(postData, 'Jira');
+    component.postJiraKpi(postData, 'Jira', false);
     component.jiraKpiData = {};
     tick();
     expect(spy).toHaveBeenCalled();
@@ -12818,7 +12819,7 @@ describe('ExecutiveV2Component', () => {
       component,
       'createAllKpiArrayForBacklog',
     );
-    component.postJiraKpi(fakeJiraPayload, 'jira');
+    component.postJiraKpi(fakeJiraPayload, 'jira', false);
     tick();
     // expect(spycreateKpiWiseId).toHaveBeenCalled();
     expect(spycreateAllKpiArray).toHaveBeenCalledWith(jiraKpiData);
