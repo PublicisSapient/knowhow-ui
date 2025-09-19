@@ -744,4 +744,12 @@ export class RecommendationsComponent implements OnInit {
         return 'critical-icon';
     }
   }
+  formatKpiLabel(kpi: string): string {
+    if (!kpi) return '';
+    return kpi
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
 }
