@@ -921,7 +921,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               Object.keys(element['hoverValue'])?.length > 0
             ) {
               tempObj['params'] = Object.entries(element['hoverValue'])
-                .map(([key, value]) => `${key} : ${value}`)
+                .map(([key, value]) => {
+                  if (value && typeof value === 'object' && 'count' in value) {
+                    const kpiValue = value as {
+                      count: number;
+                      avgExecutionTimeSec?: number;
+                    };
+                    return `${key} : ${kpiValue.count} (${
+                      kpiValue.avgExecutionTimeSec ?? 0
+                    } ms)`;
+                  }
+                  return `${key} : ${value}`;
+                })
                 .join(', ');
             }
             hoverObjectListTemp.push(tempObj);
