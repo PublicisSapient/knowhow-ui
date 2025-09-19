@@ -546,3 +546,14 @@
   font-size: 0.9rem;
   font-weight: 600;
 }
+
+.arrow-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.recommendation-content-arrow {
+  font-size: 22px;
+  color: #f57c00;
+  cursor: pointer;
+}
