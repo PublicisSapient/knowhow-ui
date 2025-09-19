@@ -327,8 +327,11 @@
                       {{ recommendation.recommendationDetails }}
                     </div>
                     </div>
-                     <i class="recommendation-content-arrow pi pi-arrow-right"  [ngClass]="getSeverityClass(recommendation)" [style.right]="0" [style.bottom]="0"
+                    <div class="arrow-wrapper">
+                     <i class="recommendation-content-arrow pi pi-arrow-right"  [ngClass]="getSeverityClass(recommendation)" pTooltip="depends" tooltipPosition="top"
+                       [style.right]="0" [style.bottom]="0"
                       [style.margin]="'12px'"></i>
+                      </div>
                       <div class="isc-right">
                       <div class="isc-metric" *ngFor="let kpi of recommendation.correlatedKpis">
                         <div class="isc-metric-left">
