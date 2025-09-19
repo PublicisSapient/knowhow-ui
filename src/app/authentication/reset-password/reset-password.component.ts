@@ -40,9 +40,9 @@ export class ResetPasswordComponent implements OnInit {
   resetToken = '';
   isPasswordUpdated = false;
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private httpService: HttpService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly httpService: HttpService,
   ) {}
 
   ngOnInit() {
