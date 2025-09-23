@@ -1,11 +1,14 @@
 <div class="dashboard-container">
   <p-card class="p-mb-3 peb-calculator-card">
-    <div class="form-title p-px-3">Potential Economic Benefits Calculator</div>
+    <div class="form-title p-px-4 calculator-header">
+      <span class="calculator-header-label">Potential Economic Benefits Calculator</span>
+      <small class="tag beta">BETA</small>
+    </div>
     <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
       <div class="p-d-flex p-flex-wrap">
         <div class="p-col-4 grid-flex-wrap-100">
           <div class="p-col-12">
-            <label for="devCount">Total No. of Developers</label>
+            <label for="devCount">Total No. of Developers <i class="pi pi-exclamation-triangle" pTooltip="You can edit the no. of developers" tooltipPosition="top"></i></label>
           </div>
           <div class="p-col-12">
             <p-inputNumber
@@ -26,7 +29,7 @@
         </div>
         <div class="p-col-4 grid-flex-wrap-100">
           <div class="p-col-12">
-            <label for="devCost">Avg. Cost Per Developer</label>
+            <label for="devCost">Avg. Cost Per Developer <i class="pi pi-exclamation-triangle" pTooltip="You can edit the avg cost per developer" tooltipPosition="top"></i></label>
           </div>
           <div class="p-col-12">
             <p-inputNumber

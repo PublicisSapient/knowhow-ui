@@ -67,7 +67,8 @@
                                             [releaseEndDate]="releaseEndDate" [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' || selectedTab === 'backlog' || selectedTab === 'developer' ? hieararchy : null"
                                             [xAxisLabel]="kpi?.kpiDetail?.xaxisLabel"
                                             [yAxisLabel]="kpi?.kpiDetail?.yaxisLabel"
-                                            [xCaption]="this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel">
+                                            [xCaption]="this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                            [kpiTitle]="kpi?.kpiName">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 
