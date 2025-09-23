@@ -343,7 +343,7 @@ export class DashboardconfigComponent implements OnInit {
         );
         that.selectedProject = that.userProjects[0];
         this.getKpisData(that.selectedProject?.['id']);
-        if (!this.userProjects || this.userProjects?.length == 0) {
+        if (!this.userProjects || this.userProjects?.length === 0) {
           this.noProjectsForSelectedCategory = true;
           this.loader = false;
         }

@@ -35,9 +35,9 @@ export class AdvancedSettingsComponent implements OnInit {
   items: MenuItem[];
   selectedView: string;
   dataLoading: boolean = false;
-  showPreCalculatedDataForScrum = <boolean>false;
-  showPreCalculatedDataForKanban = <boolean>false;
-  showPrecalculatedConfigSection = <boolean>false;
+  showPreCalculatedDataForScrum: boolean = false;
+  showPreCalculatedDataForKanban: boolean = false;
+  showPrecalculatedConfigSection: boolean = false;
   processorData = {};
   userProjects = [];
   selectedProject = {};
@@ -51,8 +51,8 @@ export class AdvancedSettingsComponent implements OnInit {
   dataMismatchObj: object = {};
   pid: string;
   configuredToolList: any;
-  azureSnapshotToggleTooltip =
-    'Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning. Subsequent changes will be tracked as scope changes. Applies to active sprints only-use with caution.';
+  azureSnapshotToggleTooltip = `Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning.
+    Subsequent changes will be tracked as scope changes.Applies to active sprints only - use with caution.`;
 
   constructor(
     private httpService: HttpService,
@@ -241,16 +241,16 @@ export class AdvancedSettingsComponent implements OnInit {
       return this.processorsTracelogs[jiraInd];
     } else {
       return this.processorsTracelogs.find(
-        (ptl) => ptl['processorName'] == processorName,
+        (ptl) => ptl['processorName'] === processorName,
       );
     }
   }
 
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
-    return traceLog == undefined ||
+    return traceLog === undefined ||
       traceLog == null ||
-      traceLog.executionEndedAt == 0
+      traceLog.executionEndedAt === 0
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionEndedAt,
@@ -261,9 +261,9 @@ export class AdvancedSettingsComponent implements OnInit {
   showProcessorLastState(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
     if (
-      traceLog == undefined ||
-      traceLog == null ||
-      traceLog.executionEndedAt == 0
+      traceLog === undefined ||
+      traceLog === null ||
+      traceLog.executionEndedAt === 0
     ) {
       return 'NA';
     } else if (traceLog.executionWarning) {
@@ -274,7 +274,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   isProjectSelected() {
-    return this.selectedProject != null || this.selectedProject != undefined;
+    return this.selectedProject !== null || this.selectedProject !== undefined;
   }
 
   endTimeConversion(time) {
@@ -459,17 +459,17 @@ export class AdvancedSettingsComponent implements OnInit {
 
   findCorrectJiraDetails(processorName?) {
     const jiraCount = this.processorsTracelogs.filter(
-      (ptl) => ptl['processorName'] == processorName,
+      (ptl) => ptl['processorName'] === processorName,
     ).length;
 
     if (jiraCount === 1) {
       return this.processorsTracelogs.findIndex(
-        (ptl) => ptl['processorName'] == processorName,
+        (ptl) => ptl['processorName'] === processorName,
       );
     } else if (jiraCount >= 1) {
       return this.processorsTracelogs.findIndex(
         (ptl) =>
-          ptl['processorName'] == processorName &&
+          ptl['processorName'] === processorName &&
           ptl['progressStats'] === true,
       );
     } else {
@@ -541,8 +541,8 @@ export class AdvancedSettingsComponent implements OnInit {
   getSCMToolTimeDetails(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
     return traceLog == undefined ||
-      traceLog == null ||
-      traceLog.executionResumesAt == 0
+      traceLog === null ||
+      traceLog.executionResumesAt === 0
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionResumesAt,
