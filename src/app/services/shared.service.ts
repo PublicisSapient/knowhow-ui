@@ -159,6 +159,7 @@ export class SharedService {
   private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
   // Observable for components to subscribe to
   flag$ = this.flagMultilineChartSubject.asObservable();
+  appendKpiList: Array<any> = [];
 
   constructor(
     private router: Router,
@@ -927,7 +928,16 @@ export class SharedService {
   //#endregion
 
   setKPIPostData(data) {
-    this.kpiPostData = data;
+    const argumentData = data;
+    this.appendKpiList.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    console.log('argumentData ', argumentData);
+    this.kpiPostData = argumentData;
   }
 
   getKPIPostData() {

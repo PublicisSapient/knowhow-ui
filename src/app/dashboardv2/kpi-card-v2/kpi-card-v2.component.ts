@@ -138,6 +138,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() xCaption: string;
 
   @Input() kpiTitle: string = '';
+  chartType: String = '';
 
   constructor(
     public service: SharedService,
@@ -154,6 +155,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.chartType = this.kpiData.kpiDetail?.chartType;
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
@@ -455,28 +457,29 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
-      this.selectedTab === 'my-knowhow' ||
-      // this.selectedTab === 'speed' ||
-      // this.selectedTab === 'quality' ||
-      this.selectedTab === 'value'
+      (this.selectedTab === 'my-knowhow' ||
+        this.selectedTab === 'speed' ||
+        this.selectedTab === 'quality' ||
+        this.selectedTab === 'value') &&
+      this.chartType === 'line'
     ) {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
       // console.log(this.kpiTitle, 'kpi title in card');
-      if (
-        this.kpiTitle === 'Release Frequency' ||
-        this.kpiTitle === 'Value Delivery (Cost of Delay)'
-      ) {
-        this.menuItems.push({
-          label: 'Embed KPI',
-          icon: 'pi pi-external-link',
-          command: ($event) => {
-            this.exportDataToConfluence($event);
-          },
-          disabled: false,
-        });
-      }
+      // if (
+      //   this.kpiTitle === 'Release Frequency' ||
+      //   this.kpiTitle === 'Value Delivery (Cost of Delay)'
+      // ) {
+      this.menuItems.push({
+        label: 'Embed KPI',
+        icon: 'pi pi-external-link',
+        command: ($event) => {
+          this.exportDataToConfluence($event);
+        },
+        disabled: false,
+      });
+      // }
       // this.service.flag$.subscribe((flag) => {
       //   console.log('recieving flag > ', flag);
       //   if (flag) {
