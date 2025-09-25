@@ -35,7 +35,7 @@ export class AccessMgmtComponent implements OnInit {
   users = [];
   allUsers = [];
   userData: any;
-  rolesRequest = <any>'';
+  rolesRequest: any = '';
   rolesData: any;
   roleList: any;
   projectsData = {};
@@ -43,22 +43,22 @@ export class AccessMgmtComponent implements OnInit {
   projects: any;
   displayDialog: boolean;
   displayDuplicateProject: boolean;
-  selectedProjects = <any>[];
-  addedProjectsOrNodes = <any>[];
+  selectedProjects: any = [];
+  addedProjectsOrNodes: any = [];
   selectedProjectAccess = {};
   selectedProjectAccessIndex = 0;
   searchRole: any;
   searchProject: any;
   searchRoleList: any;
-  dataLoading = <any>[];
-  submitValidationMessage = <string>'';
-  projectHierarchyData = <any>[];
-  subscription = <any>{};
-  toolTipHtml = <string>'';
-  top = <string>'';
-  left = <string>'';
-  showToolTip = <boolean>false;
-  allProjectsData = <any>[];
+  dataLoading: any = [];
+  submitValidationMessage: string = '';
+  projectHierarchyData: any = [];
+  subscription: any = {};
+  toolTipHtml: string = '';
+  top: string = '';
+  left: string = '';
+  showToolTip: boolean = false;
+  allProjectsData: any = [];
   enableAddBtn = false;
   accessConfirm: boolean;
   showAddUserForm = false;
@@ -74,7 +74,7 @@ export class AccessMgmtComponent implements OnInit {
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
   llidInput = '';
   isOpenSource: boolean = false;
-  uniqueArrUserData = <any>[];
+  uniqueArrUserData: any = [];
 
   constructor(
     private service: SharedService,
@@ -416,7 +416,7 @@ export class AccessMgmtComponent implements OnInit {
       const accessIndex = this.addedProjectsOrNodes.findIndex(
         (x) => x.accessLevel === accessItem.accessType,
       );
-      if (accessIndex != -1) {
+      if (accessIndex !== -1) {
         this.addedProjectsOrNodes[accessIndex]['accessItems'] = [
           ...this.addedProjectsOrNodes[accessIndex].accessItems,
           ...accessItem.value,
@@ -431,7 +431,7 @@ export class AccessMgmtComponent implements OnInit {
       const accessIndex = this.addedProjectsOrNodes.findIndex(
         (x) => x.accessLevel === accessItem.accessType,
       );
-      if (accessIndex != -1) {
+      if (accessIndex !== -1) {
         this.addedProjectsOrNodes[accessIndex]['accessItems'] = [
           ...accessItem.value,
         ];
@@ -470,7 +470,7 @@ export class AccessMgmtComponent implements OnInit {
 
   onRoleChange(event, index, access) {
     const idx = access.findIndex((x) => x.role === event.value);
-    if (idx != -1 && idx != index) {
+    if (idx !== -1 && idx !== index) {
       this.submitValidationMessage = `A row for ${event.value} already exists, please add accesses there.`;
       this.displayDuplicateProject = true;
     }

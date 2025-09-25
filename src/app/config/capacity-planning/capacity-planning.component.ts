@@ -92,11 +92,11 @@ export class CapacityPlanningComponent implements OnInit {
   selectedSprintDetails: any;
   selectedSprintId: any;
   selectedSprintName: any;
-  filter_kpiRequest = <any>'';
-  selectedFilterData = <any>{};
+  filter_kpiRequest: any = '';
+  selectedFilterData: any = {};
   selectedFilterCount = 0;
-  filterData = <any>[];
-  masterData = <any>{};
+  filterData: any = [];
+  masterData: any = {};
   projectAssigneeEmails = [];
   projectAssigneeEmailsCopy = [];
   isToggleEnableForSelectedProject = false;
@@ -208,6 +208,7 @@ export class CapacityPlanningComponent implements OnInit {
 
   // called when user switches the "Scrum/Kanban" switch
   kanbanActivation(type) {
+    const btnActive = 'btn-active';
     this.selectedSprintAssigneValidator = [];
     const scrumTarget = document.querySelector(
       '.horizontal-tabs .btn-tab.pi-scrum-button',
@@ -216,11 +217,11 @@ export class CapacityPlanningComponent implements OnInit {
       '.horizontal-tabs .btn-tab.pi-kanban-button',
     );
     if (type === 'scrum') {
-      scrumTarget?.classList?.add('btn-active');
-      kanbanTarget?.classList?.remove('btn-active');
+      scrumTarget?.classList?.add(btnActive);
+      kanbanTarget?.classList?.remove(btnActive);
     } else {
-      scrumTarget?.classList?.remove('btn-active');
-      kanbanTarget?.classList?.add('btn-active');
+      scrumTarget?.classList?.remove(btnActive);
+      kanbanTarget?.classList?.add(btnActive);
     }
     this.kanban = type === 'scrum' ? false : true;
     this.startDate = '';
@@ -257,7 +258,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.filterData = filterData['data'];
           this.projectListArr = this.sortAlphabetically(
             this.filterData.filter(
-              (x) => x.labelName.toLowerCase() == 'project',
+              (x) => x.labelName.toLowerCase() === 'project',
             ),
           );
           this.squadListArr = this.getSortedAdditonalFilter(
@@ -312,14 +313,14 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   handleIterationFilters(level) {
-    if (this.filterForm?.get('selectedProjectValue')?.value != '') {
+    if (this.filterForm?.get('selectedProjectValue')?.value !== '') {
       this.isToggleEnableForSelectedProject = false;
       this.tableLoader = true;
       this.noData = false;
       this.selectedSprintDetails = {};
       this.capacityScrumData = [];
       this.capacityKanbanData = [];
-      if (level?.toLowerCase() == 'project') {
+      if (level?.toLowerCase() === 'project') {
         const selectedProject = this.filterForm?.get(
           'selectedProjectValue',
         )?.value;

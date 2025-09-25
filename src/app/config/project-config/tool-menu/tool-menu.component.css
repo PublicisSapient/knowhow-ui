@@ -500,3 +500,9 @@ small {
 :host::ng-deep.p-dataview .p-dataview-header {
   background-color: #fff;
 }
+
+::ng-deep .p-dropdown-item .inactive-projects {
+  font-style: italic;
+  color: var(--color-gray-9e);
+  opacity: 0.6;
+}

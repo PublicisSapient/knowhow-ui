@@ -30,7 +30,7 @@ declare let $: any;
 })
 export class ConfigComponent implements OnInit {
   items = [];
-  hasAccess = <boolean>false;
+  hasAccess: boolean = false;
   activeTab: any;
 
   constructor(
