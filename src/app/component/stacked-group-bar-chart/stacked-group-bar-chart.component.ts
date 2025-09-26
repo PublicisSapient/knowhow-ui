@@ -94,7 +94,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         ? this.activeSeverityKeys
         : this.allSeverityKeys;
 
-      this.defectsBreachedSLAs.forEach((project: any) => {
+      this.defectsBreachedSLAs?.forEach((project: any) => {
         project.value.forEach((sprint: any, index: number) => {
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
@@ -104,7 +104,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
             rate: project.data,
             value: 0,
             ...severityKeys.reduce((acc, severity) => {
-              const found = sprint.drillDown.find(
+              const found = sprint?.drillDown?.find(
                 (d: any) => d.severity === severity,
               );
               acc[severity] = found ? found.breachedPercentage : 0;
@@ -117,15 +117,15 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       });
     } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.yAxisLabel = 'Avg. Execution Time';
-      this.data.forEach((elem: any) => {
+      this.data?.forEach((elem: any) => {
         elem.value.forEach((val: any, index: number) => {
           let temp = 0;
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
           const obj = {};
           for (const prop in val.hoverValue) {
-            obj[prop] = val.hoverValue[prop].count;
-            temp += val.hoverValue[prop].count;
+            obj[prop] = val.hoverValue[prop].avgExecutionTimeSec;
+            temp += val.hoverValue[prop].avgExecutionTimeSec;
           }
           if (temp > chartYRange) chartYRange = temp;
           const data = {
@@ -300,8 +300,12 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
                     }%</div>
               `
                   : `
-                <div><strong>Average execution time:</strong> ${originalData.hoverValue.TOTAL.avgExecutionTimeSec}</div>
-                <div><strong>Total test cases:</strong> ${originalData.hoverValue.TOTAL.count}</div>
+                <div><strong>Average execution time:</strong> ${originalData.hoverValue[
+                  severityKey
+                ]?.avgExecutionTimeSec?.toFixed(2)}</div>
+                <div><strong>Total ${severityKey.toLocaleLowerCase()} test cases:</strong> ${
+                      originalData.hoverValue[severityKey]?.count
+                    }</div>
               `,
               )
               .style('left', `${mouseX + 15}px`)
