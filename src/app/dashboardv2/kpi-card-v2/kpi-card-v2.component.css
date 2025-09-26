@@ -521,3 +521,19 @@
 :host::ng-deep.p-button-label {
   background-color: transparent !important;
 }
+
+:host::ng-deep .kpi-card-body {
+  padding: 0;
+}
+
+:host::ng-deep .kpi-table {
+  width: 100%;
+
+  .p-datatable-thead > tr > th {
+    padding: 0.5rem;
+  }
+
+  .p-datatable-tbody > tr > td {
+    padding: 0.5rem;
+  }
+}

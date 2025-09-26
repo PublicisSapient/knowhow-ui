@@ -101,7 +101,10 @@
 
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
       *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
-      [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
+         [ngClass]="{
+    'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
+    'table-layout-fix': kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
+  }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr; let k = index">
@@ -187,6 +190,37 @@
         </div>
       </ng-container>
 
+      <ng-container *ngIf="kpiData?.kpiDetail?.kpiFilter === 'table'" class="new-table-wrapper">
+        <div class="kpi-card-body p-pr-5 p-pl-5 new-table">
+          <p-table
+            [columns]="tableColumns"
+            [value]="tableData"
+            [scrollable]="true"
+            [sortable]="true"
+            [sortMode]="'multiple'"
+            styleClass="p-datatable-gridlines p-w-100"
+            [style]="{'width':'100%'}">
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngFor="let col of columns; let i = index"
+                    class="p-text-center"
+                    [pSortableColumn]="i > 0 ? col.field : null"
+                    [ngClass]="{'non-sortable': i === 0}">
+                  {{ col.header }}
+                  <p-sortIcon *ngIf="i > 0" [field]="col.field"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+              <tr>
+                <td *ngFor="let col of columns" class="p-text-center">
+                  {{ rowData[col.field] }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </ng-container>
     </div>
     <div class="kpi-card-body p-pr-5 p-pl-5" [ngClass]="{'smallChart':board == 'dora'}">
       <!--place for chart to be rendered-->
@@ -195,7 +229,7 @@
       <ng-template #noData>
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
-          <div class="p-w-100  p-d-flex p-justify-center">
+          <div class="p-w-100 1 p-d-flex p-justify-center">
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
@@ -216,7 +250,7 @@
         </div>
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
-          <div class="p-w-100  p-d-flex p-justify-center">
+          <div class="p-w-100 2 p-d-flex p-justify-center">
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
@@ -365,7 +399,7 @@
 
 <ng-template #noDataRawDataKPIs>
   <div class="min-ht" *ngIf="!loader && (!currentChartData?.chartData?.length || !currentChartData?.chartData?.data?.length || !currentChartData?.chartData?.chartData?.length) else defaultMessage">
-    <div class="p-w-100  p-d-flex p-justify-center">
+    <div class="p-w-100 3 p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
@@ -378,7 +412,7 @@
 
 <ng-template #defaultMessage>
   <div class="min-ht">
-    <div class="p-w-100  p-d-flex p-justify-center">
+    <div class="p-w-100 4 p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>

@@ -1,0 +1,13 @@
+:host::ng-deep.table-layout-fix {
+  height: auto !important;
+}
+
+:host::ng-deep.kpi-card-body img {
+  border: 2px solid red;
+  display: none !important;
+}
+
+:host::ng-deep.non-sortable {
+  cursor: default !important;
+  user-select: none;
+}

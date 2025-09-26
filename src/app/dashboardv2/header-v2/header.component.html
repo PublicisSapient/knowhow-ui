@@ -50,12 +50,19 @@
             aria-label="Return to Dashboard"></button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{active: router.url.indexOf('Report') === -1,disablePointer:router.url.indexOf('Report') === -1 }" (click)="navigateToDashboard(true)" label="DASHBOARD" tabindex="0" role="tab"
+          <button [ngClass]="{
+      active: router.url.indexOf('Analysis') === -1 && router.url.indexOf('Report') === -1,
+      disablePointer: router.url.indexOf('Analysis') === -1 && router.url.indexOf('Report') === -1
+    }" (click)="navigateToDashboard(true)" label="DASHBOARD" tabindex="0" role="tab"
           aria-selected="{{ router.url.indexOf('Report') === -1 }}">Dashboard</button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{active: router.url.indexOf('Report') !== -1,disablePointer:router.url.indexOf('Report') !== -1  }"  (click)="goToReports()" label="REPORTS"
-          tabindex="0" role="tab" aria-selected="{{ router.url.indexOf('Report') !== -1 }}">Reports</button>
+          <button [ngClass]="{active: router.url.indexOf('Analysis') !== -1,disablePointer:router.url.indexOf('Analysis') !== -1  }" (click)="goToAnalysis()" label="ANALYSIS"
+          tabindex="0" role="tab" aria-selected="{{ router.url.indexOf('Analysis') !== -1 }}">Analysis</button>
+        </div>
+        <div class="tab-button">
+          <button [ngClass]="{active: router.url.indexOf('Report') !== -1,disablePointer:router.url.indexOf('Report') !== -1  }" (click)="goToReports()" label="REPORTS" tabindex="0" role="tab"
+          aria-selected="{{ router.url.indexOf('Report') !== -1 }}">Reports</button>
         </div>
       </div>
     </div>
