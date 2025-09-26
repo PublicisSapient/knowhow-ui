@@ -300,12 +300,8 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
                     }%</div>
               `
                   : `
-                 <div><strong>Average execution time:</strong> ${originalData.hoverValue[
-                  severityKey
-                ]?.avgExecutionTimeSec?.toFixed(2)}</div>
-                <div><strong>Total ${severityKey.toLocaleLowerCase()} test cases:</strong> ${
-                      originalData.hoverValue[severityKey]?.count
-                    }</div>
+                <div><strong>Average execution time:</strong> ${originalData.hoverValue[severityKey]?.avgExecutionTimeSec?.toFixed(2)}</div>
+                <div><strong>Total ${severityKey.toLocaleLowerCase()} test cases:</strong> ${originalData.hoverValue[severityKey]?.count}</div>
               `,
               )
               .style('left', `${mouseX + 15}px`)
