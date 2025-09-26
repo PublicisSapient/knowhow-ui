@@ -29,7 +29,7 @@ on:
 
 # Define environment variables
 env:
-  IMAGE_NAME: ${{ secrets.KNH_UI_IMAGE_NAME }}
+  IMAGE_NAME: knowhow-ui
   ACR_NAME: ${{ secrets.SPEEDTOOLS_ACR_NAME }}  # without .azurecr.io
   ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}  # e.g. myacr.azurecr.io
   BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }} # HTTPS clone URL (without creds)
