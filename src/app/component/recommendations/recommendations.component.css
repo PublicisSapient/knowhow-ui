@@ -470,6 +470,9 @@
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
+  border: 1px solid #ececec;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .recommendation-content {
