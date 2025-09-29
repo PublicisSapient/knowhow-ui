@@ -717,7 +717,7 @@ export class RecommendationsComponent implements OnInit {
           color: '#fff',
         };
       case 'low':
-        return { 'background-color': '#15ba40', color: 'fff#' };
+        return { 'background-color': '#49535e', color: 'fff#' };
       case 'critical':
         return { 'background-color': '#fe414d', color: '#fff' };
       default:
@@ -743,5 +743,13 @@ export class RecommendationsComponent implements OnInit {
       default:
         return 'critical-icon';
     }
+  }
+  formatKpiLabel(kpi: string): string {
+    if (!kpi) return '';
+    return kpi
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
   }
 }
