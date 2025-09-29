@@ -155,6 +155,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    console.log('this.kpiData ', this.kpiData);
     this.chartType = this.kpiData.kpiDetail?.chartType;
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -1561,7 +1562,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   exportDataToConfluence(event) {
     console.log('kpiData > ', this.kpiData);
-    const payloadDataFromKPIGroup = this.service.getKPIPostData();
+    let payloadDataFromKPIGroup;
+    if (this.kpiData.kpiDetail.kpiSource === 'Jira') {
+      payloadDataFromKPIGroup = this.service.getKPIPostData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Jenkins') {
+      payloadDataFromKPIGroup = this.service.getKPIPostJenkinsData();
+    }
     console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),

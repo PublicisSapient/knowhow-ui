@@ -358,6 +358,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
           this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
           this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
+          console.log('361');
           this.receiveSharedData(sharedobject);
           this.getSprintGoalData();
           this.noTabAccess = false;
@@ -612,6 +613,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   click apply and call kpi
    **/
   receiveSharedData($event) {
+    console.log('event ', $event);
     this.sprintsOverlayVisible =
       this.service.getSelectedLevel()['hierarchyLevelId'] === 'project'
         ? true
@@ -763,6 +765,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
               this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
             } else {
+              console.log('766');
               this.groupJiraKpi(kpiIdsForCurrentBoard);
               this.groupSonarKpi(kpiIdsForCurrentBoard);
               this.groupJenkinsKpi(kpiIdsForCurrentBoard);
@@ -1228,6 +1231,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
+    this.service.setKPIPostJenkinsData(postData);
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
@@ -1335,6 +1339,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   // post request of Jira(scrum)
   postJiraKpi(postData, source, bool): void {
     console.log('postData', postData);
+    console.log('source ', source);
     if (bool) this.service.setKPIPostData(postData);
     if (
       this.selectedTab !== 'release' &&
@@ -4568,6 +4573,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 (kpi) => kpi.kpiDetail.groupId === event.kpiDetail.groupId,
               )
               .map((kpiDetails) => kpiDetails.kpiId);
+            console.log('4571');
             this.groupJiraKpi(kpiIdsForCurrentBoard);
         }
       }
