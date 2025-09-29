@@ -530,6 +530,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.setDataForSprintGoal({
       filterDataArr: this.filterDataArr[this.selectedType],
     });
+
+    console.log('selectedType', this.selectedType);
+    console.log(this.filterDataArr['scrum']['Project']);
   }
 
   setCategories() {
@@ -1758,6 +1761,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else if (typeof event[0] === 'string') {
         selectedProjectIds = [...new Set(event)];
       }
+      console.log(this.additionalFilterConfig);
       this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
 

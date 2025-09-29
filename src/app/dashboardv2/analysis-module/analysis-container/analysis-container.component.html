@@ -1,0 +1,55 @@
+<p-toast
+  [style]="{ marginTop: '80px' }"
+  aria-live="polite"
+  role="status"></p-toast>
+
+<div class="selections-container p-mb-4" *ngIf="selectedProjects?.length > 0">
+  <div class="selections-header p-d-flex p-ai-center p-mb-2">
+    <div class="p-text-bold">Selected Projects:</div>
+    <div class="p-ml-2">({{ selectedProjects.length }} {{ selectedProjects.length === 1 ? 'project' : 'projects' }} selected)</div>
+  </div>
+
+  <div class="p-d-flex p-flex-wrap p-gap-2">
+    @for (project of selectedProjects; track project.id) {
+      <div class="selected-project-tag p-d-flex p-ai-center p-px-2 p-py-1">
+        <span>{{ project.name }}</span>
+        <i class="pi pi-times p-ml-2 cursor-pointer"
+           (click)="removeProject(project)"
+           aria-label="Remove {{ project.name }}">
+        </i>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="text-center board-menu p-d-flex p-jc-left p-pt-4 p-pb-4 p-pl-5">
+  <app-primary-filter
+    class="analysis-class"
+    [filterData]="projectData"
+    [primaryFilterConfig]="projectFilterConfig"
+    [selectedLevel]="'Project'"
+    (onPrimaryFilterChange)="handleProjectFilterChange($event)">
+  </app-primary-filter>
+
+  <app-parent-filter
+    [filterData]="sprintData"
+    [parentFilterConfig]="sprintFilterConfig"
+    (onSelectedLevelChange)="handleSprintFilterChange($event)">
+  </app-parent-filter>
+</div>
+
+
+<div class="p-d-flex p-jc-center p-ai-center p-mt-4">
+  <div class="p-card p-p-0 kpi-card-container-wrapper">
+    <div class="p-card-content p-p-0">
+      <app-kpi-card-v2
+        [kpiData]="kpiSettingsForTable"
+        [tableData]="kpiTableData"
+        [loader]="false"
+        [immediateLoader]="false"
+        [tableColumns]="kpiTableColumns">
+      </app-kpi-card-v2>
+    </div>
+
+  </div>
+</div>
