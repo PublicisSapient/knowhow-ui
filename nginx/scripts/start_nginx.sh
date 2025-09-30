@@ -52,5 +52,5 @@ if [ ! -e $CERT_LOC/knowhow_ssl_passphrase.txt ]; then
     echo "Passphrase file created"
 fi
 
-envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
+envsubst < $UI2_LOC/assets/env.template.json > $UI2_LOC/assets/env.json 
 nginx -g "daemon off;"
