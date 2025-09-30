@@ -535,11 +535,11 @@
   font-weight: 600;
 }
 
-.isc-change.positive {
+:host ::ng-deep .isc-change.positive {
   color: #15ba40;
 }
 
-.isc-change.negative {
+:host ::ng-deep .isc-change.negative {
   color: #fe414d;
 }
 .isc-change .value {

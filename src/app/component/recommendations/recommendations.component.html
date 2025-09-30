@@ -300,7 +300,7 @@
           <i
           class="pi pi-exclamation-circle info-icon"
           style="font-size: 1.5rem; margin-left: 27px; cursor: pointer;"
-          pTooltip="Link strength indicates the correlation level between KPIs, from 0 (none) to 1 (perfect)"
+          pTooltip="Link strength indicates the correlation level between KPIs, from 0 (none) to 100 (perfect)"
           tooltipPosition="top" ></i>
         </h2>
       
@@ -341,9 +341,10 @@
                             <span class="kpi-name">{{ formatKpiLabel(kpi.split(':')[0]) }}</span>
                         </div>
                         <ng-container *ngIf="kpi.split(':')[1]">
-                        <div class="isc-change" [ngClass]="{ 'positive': kpi.split(':')[1] > 0, 'negative': kpi.split(':')[1] < 0 }">
-                         <span class="value">
-                          {{ kpi.split(':')[1] > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}%
+                        <div class="isc-change" 
+                          [ngClass]="{ 'positive': kpi.split(':')[1] > 0, 'negative': kpi.split(':')[1] < 0 }">
+                          <span class="value">
+                           {{ kpi.split(':')[1] > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}
                          </span>
                         </div>
                         </ng-container>
