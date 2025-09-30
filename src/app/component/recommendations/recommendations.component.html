@@ -342,10 +342,10 @@
                         </div>
                         <ng-container *ngIf="kpi.split(':')[1]">
                         <div class="isc-change" 
-                          [ngClass]="{ 'positive': kpi.split(':')[1] > 0, 'negative': kpi.split(':')[1] < 0 }">
+                          [ngClass]="{ 'positive': getNumericValue(kpi) > 0, 'negative': getNumericValue(kpi) < 0 }">
                           <span class="value">
-                           {{ kpi.split(':')[1] > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}
-                         </span>
+                           {{ getNumericValue(kpi) > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}
+                          </span>
                         </div>
                         </ng-container>
                       </div>

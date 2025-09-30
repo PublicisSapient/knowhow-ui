@@ -752,4 +752,9 @@ export class RecommendationsComponent implements OnInit {
       .trim()
       .replace(/\b\w/g, (c) => c.toUpperCase());
   }
+
+  getNumericValue(kpi: string): number {
+    const value = kpi.split(':')[1]?.replace('%', '') || '0';
+    return parseFloat(value);
+  }
 }
