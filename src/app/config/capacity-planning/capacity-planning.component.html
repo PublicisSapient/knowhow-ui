@@ -44,6 +44,7 @@
                   class="p-pb-0">
                   <ng-option
                     *ngFor="let item of trendLineValueList"
+                    [ngClass]="{ 'inactive-projects': item.onHold }"
                     [value]="item.nodeId"
                     >{{ item.nodeDisplayName }}
                   </ng-option>
