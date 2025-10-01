@@ -86,15 +86,7 @@ export class PrimaryFilterComponent implements OnChanges {
         changes['selectedTab'].previousValue &&
       !changes['selectedTab']?.firstChange;
 
-    const filterDataChanged =
-      changes['filterData'] && changes['filterData'].currentValue;
-
-    if (
-      selectedLevelChanged ||
-      primaryFilterConfigChanged ||
-      selectedTypeChanged ||
-      filterDataChanged
-    ) {
+    if (selectedLevelChanged || primaryFilterConfigChanged) {
       // || selectedTabChanged)
       this.applyDefaultFilters();
       return;
@@ -281,59 +273,54 @@ export class PrimaryFilterComponent implements OnChanges {
 
   populateFilters() {
     if (typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
-      const filterArray = this.filterData?.[this.selectedLevel];
-      if (filterArray && Array.isArray(filterArray)) {
-        this.filters = this.helperService.sortAlphabetically(filterArray);
-        if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
-          if (this.selectedTab.toLowerCase() === 'iteration') {
-            this.filters = this.helperService.sortByField(
-              filterArray.filter(
-                (filter) => filter.parentId === this.selectedLevel.nodeId,
-              ),
-              [
-                this.primaryFilterConfig['defaultLevel'].sortBy,
-                'sprintStartDate',
-              ],
-            );
-          } else if (this.selectedTab.toLowerCase() === 'release') {
-            this.filters = this.helperService.releaseSorting(
-              filterArray.filter(
-                (filter) => filter.parentId === this.selectedLevel.nodeId,
-              ),
-            );
-          } else {
-            this.filters = this.helperService.sortByField(filterArray, [
+      this.filters = this.helperService.sortAlphabetically(
+        this.filterData[this.selectedLevel],
+      );
+      if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
+        if (this.selectedTab.toLowerCase() === 'iteration') {
+          this.filters = this.helperService.sortByField(
+            this.filterData[this.selectedLevel].filter(
+              (filter) => filter.parentId === this.selectedLevel.nodeId,
+            ),
+            [
               this.primaryFilterConfig['defaultLevel'].sortBy,
-            ]);
-          }
+              'sprintStartDate',
+            ],
+          );
+        } else if (this.selectedTab.toLowerCase() === 'release') {
+          this.filters = this.helperService.releaseSorting(
+            this.filterData[this.selectedLevel].filter(
+              (filter) => filter.parentId === this.selectedLevel.nodeId,
+            ),
+          );
         } else {
-          this.filters = this.helperService.sortAlphabetically(filterArray);
+          this.filters = this.helperService.sortByField(
+            this.filterData[this.selectedLevel],
+            [this.primaryFilterConfig['defaultLevel'].sortBy],
+          );
         }
       } else {
-        this.filters = [];
+        this.filters = this.helperService.sortAlphabetically(
+          this.filterData[this.selectedLevel],
+        );
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
       let selectedLevel = this.selectedLevel.emittedLevel;
       selectedLevel = selectedLevel[0].toUpperCase() + selectedLevel.slice(1);
-      const secondFilterArray = this.filterData?.[selectedLevel];
-
-      if (
-        secondFilterArray &&
-        Array.isArray(secondFilterArray) &&
-        secondFilterArray.length
-      ) {
+      // check for iterations and releases
+      if (this.filterData[selectedLevel]?.length) {
         if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
           if (this.selectedTab.toLowerCase() === 'iteration') {
             this.filters = this.setDropdownWithMoreActiveOption(selectedLevel);
           } else if (this.selectedTab.toLowerCase() === 'release') {
             this.filters = this.helperService.releaseSorting(
-              secondFilterArray.filter(
+              this.filterData[selectedLevel]?.filter(
                 (filter) => filter.parentId === this.selectedLevel.nodeId,
               ),
             );
           } else {
             this.filters = this.helperService.sortByField(
-              secondFilterArray.filter(
+              this.filterData[selectedLevel]?.filter(
                 (filter) => filter.parentId === this.selectedLevel.nodeId,
               ),
               [this.primaryFilterConfig['defaultLevel'].sortBy],
@@ -341,7 +328,7 @@ export class PrimaryFilterComponent implements OnChanges {
           }
         } else {
           this.filters = this.helperService.sortAlphabetically(
-            secondFilterArray.filter(
+            this.filterData[selectedLevel]?.filter(
               (filter) => filter.parentId === this.selectedLevel.nodeId,
             ),
           );
@@ -351,9 +338,10 @@ export class PrimaryFilterComponent implements OnChanges {
       }
     } else {
       this.selectedLevel = 'Project';
-      const projectArray = this.filterData?.[this.selectedLevel];
-      if (projectArray && Array.isArray(projectArray)) {
-        this.filters = this.helperService.sortAlphabetically(projectArray);
+      if (this.filterData && this.filterData[this.selectedLevel]) {
+        this.filters = this.helperService.sortAlphabetically(
+          this.filterData[this.selectedLevel],
+        );
       } else {
         this.filters = [];
       }
