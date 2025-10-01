@@ -757,4 +757,8 @@ export class RecommendationsComponent implements OnInit {
     const value = kpi.split(':')[1]?.replace('%', '') || '0';
     return parseFloat(value);
   }
+
+  getDisplayValue(kpi: string): string {
+    return kpi.split(':')[1]?.trim() || '';
+  }
 }

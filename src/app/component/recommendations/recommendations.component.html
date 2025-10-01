@@ -344,7 +344,7 @@
                         <div class="isc-change" 
                           [ngClass]="{ 'positive': getNumericValue(kpi) > 0, 'negative': getNumericValue(kpi) < 0 }">
                           <span class="value">
-                           {{ getNumericValue(kpi) > 0 ? '+' : ''}}{{ kpi.split(':')[1] }}
+                           {{ getNumericValue(kpi) > 0 ? '+' : ''}}{{getDisplayValue(kpi)}}
                           </span>
                         </div>
                         </ng-container>
