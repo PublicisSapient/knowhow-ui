@@ -27,7 +27,6 @@ import { DropdownModule } from 'primeng/dropdown';
     DropdownModule,
     NgClass,
     NgIf,
-    NgIf,
   ],
 })
 export class PrimaryFilterComponent implements OnChanges {

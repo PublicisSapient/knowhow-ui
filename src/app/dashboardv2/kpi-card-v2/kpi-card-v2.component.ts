@@ -1537,4 +1537,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     });
     return copyFilters;
   }
+
+  openProjectSettings(projectName) {
+    console.log('click');
+  }
 }

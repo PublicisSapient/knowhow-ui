@@ -6,8 +6,6 @@ import { ToastModule } from 'primeng/toast';
 import { NgIf } from '@angular/common';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
-import { FilterNewComponent } from '../../filter-v2/filter-new.component';
-import { AdditionalFilterComponent } from '../../filter-v2/additional-filter/additional-filter.component';
 
 @Component({
   selector: 'app-analysis-container',
@@ -20,8 +18,6 @@ import { AdditionalFilterComponent } from '../../filter-v2/additional-filter/add
     KpiCardV2Component,
     ToastModule,
     NgIf,
-    FilterNewComponent,
-    AdditionalFilterComponent,
   ],
 })
 export class AnalysisContainerComponent implements OnInit {
@@ -33,9 +29,11 @@ export class AnalysisContainerComponent implements OnInit {
   public kpiSettingsForTable: any;
   public kpiTableData: any[];
   public kpiTableColumns: any[];
-  selectedProjects: any;
+  selectedProjects: string[];
   subscriptions: any[] = [];
   public selectedFilterLevel = 'Project';
+  newAPIData: any;
+  private projectHeaders: { name: string, cleanName: string }[] = [];
 
   constructor(
     private httpService: HttpService,
@@ -48,20 +46,15 @@ export class AnalysisContainerComponent implements OnInit {
       labelName: 'Project',
     };
 
-    this.sprintFilterConfig = [
-      {
-        filterId: 'sprint',
-        labelName: 'Sprint',
-        inputType: 'singleSelect',
-        defaultLevel: { labelName: 'Sprint' },
-      },
-    ];
+    this.sprintFilterConfig = {
+      labelName: 'Sprint',
+      inputType: 'singleSelect',
+    };
 
     this.sprintData = {
       Sprint: [
         { nodeId: 'sprint1', nodeDisplayName: 'Sprint 1' },
         { nodeId: 'sprint2', nodeDisplayName: 'Sprint 2' },
-        //... alte sprinturi
       ],
     };
 
@@ -76,112 +69,38 @@ export class AnalysisContainerComponent implements OnInit {
         data: this.kpiTableData,
       },
       kpiName: 'AI Usage Analytics',
+      projectHeaders: this.projectHeaders,
     };
 
-    this.kpiTableColumns = [
-      { field: 'usageType', header: 'Usage Type' },
-      { field: 'buyAndDeliver', header: 'Buy & Deliver' },
-      { field: 'asoMobileApp', header: 'ASO Mobile App' },
-      { field: 'careerGrowthTool', header: 'Career Growth Tool' },
-      { field: 'dotcom', header: 'Dotcom' },
-      { field: 'total', header: 'Total' },
-    ];
+    this.selectedProjects = ['Project 1', 'Project 2', 'Project 3'];
 
-    this.kpiTableData = [
-      {
-        usageType: 'Content usage Test Practice',
-        buyAndDeliver: 89,
-        asoMobileApp: 156,
-        careerGrowthTool: 67,
-        dotcom: 92,
-        total: 404,
+    this.newAPIData = {
+      "aggregations": {
+        "averageEfficiencyGainPerAiUsageType": 0,
+        "averageEfficiencyGainPerProject": 0,
+        "usageTypesNumber": 0,
+        "projectsNumber": 0
       },
-      {
-        usageType: 'Refactoring and Optimization',
-        buyAndDeliver: 78,
-        asoMobileApp: 45,
-        careerGrowthTool: 123,
-        dotcom: 34,
-        total: 280,
-      },
-      {
-        usageType: 'Refactoring and Documentation',
-        buyAndDeliver: 45,
-        asoMobileApp: 67,
-        careerGrowthTool: 23,
-        dotcom: 89,
-        total: 224,
-      },
-      {
-        usageType: 'Unit Coverage',
-        buyAndDeliver: 34,
-        asoMobileApp: 78,
-        careerGrowthTool: 56,
-        dotcom: 45,
-        total: 213,
-      },
-      {
-        usageType: 'Bug Fixes',
-        buyAndDeliver: 67,
-        asoMobileApp: 23,
-        careerGrowthTool: 89,
-        dotcom: 34,
-        total: 213,
-      },
-      {
-        usageType: 'Generate New Code',
-        buyAndDeliver: 23,
-        asoMobileApp: 45,
-        careerGrowthTool: 34,
-        dotcom: 67,
-        total: 169,
-      },
-      {
-        usageType: 'Creating New Code',
-        buyAndDeliver: 56,
-        asoMobileApp: 34,
-        careerGrowthTool: 45,
-        dotcom: 23,
-        total: 158,
-      },
-      {
-        usageType: 'Understanding Code Config',
-        buyAndDeliver: 34,
-        asoMobileApp: 56,
-        careerGrowthTool: 23,
-        dotcom: 45,
-        total: 158,
-      },
-      {
-        usageType: 'Debugging and Error Handling',
-        buyAndDeliver: 45,
-        asoMobileApp: 23,
-        careerGrowthTool: 56,
-        dotcom: 34,
-        total: 158,
-      },
-      {
-        usageType: 'Test Coverage',
-        buyAndDeliver: 23,
-        asoMobileApp: 34,
-        careerGrowthTool: 45,
-        dotcom: 56,
-        total: 158,
-      },
-      {
-        usageType: 'Total',
-        buyAndDeliver: 494,
-        asoMobileApp: 561,
-        careerGrowthTool: 561,
-        dotcom: 519,
-        total: 2135,
-      },
-    ];
+      "aiUsageTypeAnalytics": [
+        {
+          "aiUsageType": "Usage type 1",
+          "projectsAiUsageAnalytics": [
+            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" }
+          ]
+        },
+        {
+          "aiUsageType": "Usage type 2",
+          "projectsAiUsageAnalytics": [
+            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" }
+          ]
+        }
+      ]
+    };
 
-    // console.log(this.kpiTableColumns);
-    // console.log(this.kpiTableData);
+    this.processAnalyticsData(this.newAPIData);
     this.getProjectData();
-    console.log(this.sprintData);
   }
 
   getProjectData() {
@@ -204,8 +123,6 @@ export class AnalysisContainerComponent implements OnInit {
               Project: filteredProjects,
             };
 
-            console.log('Datele au sosit:', this.projectData);
-
             this.processProjectData(this.projectData);
           }
         }),
@@ -213,8 +130,97 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   processProjectData(data) {
-    // Aici poți face sortări, mapări, sau orice logică complexă
-    // de care are nevoie app-parent-filter.
+  }
+
+  processAnalyticsData(apiData: any) {
+    if (!apiData || !apiData.aiUsageTypeAnalytics) {
+      this.kpiTableData = [];
+      this.kpiTableColumns = [{ field: 'usageType', header: 'Usage Type' }];
+      this.projectHeaders = [];
+      return;
+    }
+
+    this.kpiTableData = [];
+    this.kpiTableColumns = [{ field: 'usageType', header: 'Usage Type' }];
+    this.projectHeaders = [];
+
+    const allHeaders = [...this.selectedProjects, 'Total'];
+
+    allHeaders.forEach(projectName => {
+      const cleanName = this.cleanName(projectName);
+
+      this.projectHeaders.push({
+        name: projectName === 'Total' ? 'Total' : projectName,
+        cleanName: cleanName
+      });
+
+      if (projectName !== 'Total') {
+        this.kpiTableColumns.push(
+          { field: `${cleanName}_efficiencyGain`, header: `${projectName} (Efficiency gain)` },
+          { field: `${cleanName}_issueCount`, header: 'Issue count' }
+        );
+      }
+    });
+
+    this.kpiTableColumns.push(
+      { field: 'totalEfficiencyGain', header: 'Total (Efficiency gain)' },
+      { field: 'totalIssueCount', header: 'Total (Issue count)' }
+    );
+
+    this.kpiSettingsForTable = { ...this.kpiSettingsForTable, projectHeaders: this.projectHeaders };
+
+    let finalTotalEfficiencyGain = 0;
+    let finalTotalIssueCount = 0;
+
+    apiData.aiUsageTypeAnalytics.forEach((usageTypeData: any) => {
+      const row: any = {
+        usageType: usageTypeData.aiUsageType,
+        totalEfficiencyGain: 0,
+        totalIssueCount: 0
+      };
+
+      const projectsMap = new Map<string, any>();
+      usageTypeData.projectsAiUsageAnalytics.forEach((projectData: any) => {
+        projectsMap.set(projectData.projectName, projectData);
+      });
+
+      this.selectedProjects.forEach(projectName => {
+        const projectData = projectsMap.get(projectName);
+        const fieldNamePrefix = this.cleanName(projectName);
+
+        const efficiencyGain = projectData?.efficiencyGain || 0;
+        const issueCount = projectData?.issueCount || 0;
+
+        row[`${fieldNamePrefix}_efficiencyGain`] = efficiencyGain;
+        row[`${fieldNamePrefix}_issueCount`] = issueCount;
+
+        row.totalEfficiencyGain += efficiencyGain;
+        row.totalIssueCount += issueCount;
+      });
+
+      this.kpiTableData.push(row);
+
+      finalTotalEfficiencyGain += row.totalEfficiencyGain;
+      finalTotalIssueCount += row.totalIssueCount;
+    });
+
+    const totalRow: any = {
+      usageType: 'Total',
+      totalEfficiencyGain: finalTotalEfficiencyGain,
+      totalIssueCount: finalTotalIssueCount,
+    };
+
+    this.selectedProjects.forEach(projectName => {
+      const fieldNamePrefix = this.cleanName(projectName);
+
+      const projectEfficiencyTotal = this.kpiTableData.reduce((sum, row) => sum + (row[`${fieldNamePrefix}_efficiencyGain`] || 0), 0);
+      const projectIssuesTotal = this.kpiTableData.reduce((sum, row) => sum + (row[`${fieldNamePrefix}_issueCount`] || 0), 0);
+
+      totalRow[`${fieldNamePrefix}_efficiencyGain`] = projectEfficiencyTotal;
+      totalRow[`${fieldNamePrefix}_issueCount`] = projectIssuesTotal;
+    });
+
+    this.kpiTableData.push(totalRow);
   }
 
   handleProjectFilterChange($event: any) {}
@@ -222,4 +228,13 @@ export class AnalysisContainerComponent implements OnInit {
   handleSprintFilterChange($event: any) {}
 
   removeProject(project: any) {}
+
+
+  cleanName(name: string): string {
+    if (!name) {
+      return '';
+    }
+
+    return name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  }
 }
