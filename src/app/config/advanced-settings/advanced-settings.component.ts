@@ -102,6 +102,7 @@ export class AdvancedSettingsComponent implements OnInit {
             that.userProjects = response.data.map((proj) => ({
               name: proj.projectDisplayName,
               id: proj.id,
+              onHold: proj.projectOnHold,
             }));
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data
@@ -111,6 +112,7 @@ export class AdvancedSettingsComponent implements OnInit {
               .map((filteredProj) => ({
                 name: filteredProj.projectDisplayName,
                 id: filteredProj.id,
+                onHold: filteredProj.projectOnHold,
               }));
           }
         } else {
