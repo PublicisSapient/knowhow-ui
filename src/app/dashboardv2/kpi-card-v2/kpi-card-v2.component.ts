@@ -36,6 +36,7 @@ import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import * as LZString from 'lz-string';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -162,6 +163,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
+
+  @Input() kpiTitle: string = '';
 
   constructor(
     public service: SharedService,
@@ -476,6 +479,38 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     //#endregion
+
+    console.log('kpicard onchanges called');
+    // -- export widget to confluence
+    if (
+      this.selectedTab === 'my-knowhow' ||
+      // this.selectedTab === 'speed' ||
+      // this.selectedTab === 'quality' ||
+      this.selectedTab === 'value'
+    ) {
+      this.menuItems = this.menuItems.filter(
+        (item) => item.label !== 'Export to Confluence',
+      );
+      // console.log(this.kpiTitle, 'kpi title in card');
+      if (
+        this.kpiTitle === 'Release Frequency' ||
+        this.kpiTitle === 'Value Delivery (Cost of Delay)'
+      ) {
+        this.menuItems.push({
+          label: 'Embed KPI',
+          icon: 'pi pi-external-link',
+          command: ($event) => {
+            this.exportDataToConfluence($event);
+          },
+          disabled: false,
+        });
+      }
+      // this.service.flag$.subscribe((flag) => {
+      //   console.log('recieving flag > ', flag);
+      //   if (flag) {
+      //   }
+      // });
+    }
   }
 
   openCommentModal = () => {
@@ -914,7 +949,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               Object.keys(element['hoverValue'])?.length > 0
             ) {
               tempObj['params'] = Object.entries(element['hoverValue'])
-                .map(([key, value]) => `${key} : ${value}`)
+                .map(([key, value]) => {
+                  if (value && typeof value === 'object' && 'count' in value) {
+                    const kpiValue = value as {
+                      count: number;
+                      avgExecutionTimeSec?: number;
+                    };
+                    return `${key} : ${kpiValue.count} (${
+                      kpiValue.avgExecutionTimeSec ?? 0
+                    } ms)`;
+                  }
+                  return `${key} : ${value}`;
+                })
                 .join(', ');
             }
             hoverObjectListTemp.push(tempObj);
@@ -1538,7 +1584,64 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return copyFilters;
   }
 
+  exportDataToConfluence(event) {
+    console.log('kpiData > ', this.kpiData);
+    const payloadDataFromKPIGroup = this.service.getKPIPostData();
+    console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
+    const shared_link = window.location.href,
+      queryParams = new URLSearchParams(shared_link.split('?')[1]),
+      stateFilters = JSON.stringify(queryParams.get('stateFilters')),
+      kpiFilters = JSON.stringify(queryParams.get('kpiFilters'));
+
+    // APPROACH 1
+    const payload = {
+      longStateFiltersString: stateFilters || '',
+      longKPIFiltersString: kpiFilters || '',
+    };
+    /* this.http.handleUrlShortener(payload).subscribe((response: any) => {
+      const shortStateFilterString = response.data.shortStateFiltersString;
+      const shortKPIFilterString = response.data.shortKPIFilterString;
+      const shortUrl = `stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}&kpiName=${this.kpiData.kpiId}`;
+      navigator.clipboard
+        .writeText(shortUrl)
+        .then(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary:
+              'Embed link copied. Paste the link in the confluence page.',
+          });
+        })
+        .catch((err) => {
+          console.error('Failed to copy URL: ', err);
+        });
+    }); */
+
+    // APPROACH 2
+    const infoLink = {
+      kpiData: this.kpiData,
+      kpiGroupPayload: payloadDataFromKPIGroup,
+      stateFilters: queryParams.get('stateFilters'),
+      kpiFilters: queryParams.get('kpiFilters'),
+    };
+    const compressedInfo = btoa(
+      LZString.compressToEncodedURIComponent(JSON.stringify(infoLink)),
+    );
+
+    navigator.clipboard
+      .writeText(compressedInfo)
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Embed link copied. Paste the link in the confluence page.',
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to copy URL: ', err);
+      });
+  }
+
   openProjectSettings(projectName) {
-    console.log('click');
+    console.log(projectName);
+    this.getKPIFieldMappingConfig();
   }
 }

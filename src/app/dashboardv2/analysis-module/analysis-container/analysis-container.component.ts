@@ -72,7 +72,7 @@ export class AnalysisContainerComponent implements OnInit {
       projectHeaders: this.projectHeaders,
     };
 
-    this.selectedProjects = ['Project 1', 'Project 2', 'Project 3'];
+    this.selectedProjects = ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5'];
 
     this.newAPIData = {
       "aggregations": {
@@ -86,14 +86,27 @@ export class AnalysisContainerComponent implements OnInit {
           "aiUsageType": "Usage type 1",
           "projectsAiUsageAnalytics": [
             { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" }
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
           ]
         },
         {
           "aiUsageType": "Usage type 2",
           "projectsAiUsageAnalytics": [
             { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" }
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
+          ]
+        },
+        {
+          "aiUsageType": "Usage type 3",
+          "projectsAiUsageAnalytics": [
+            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
+            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
           ]
         }
       ]

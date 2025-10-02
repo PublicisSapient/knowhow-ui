@@ -11,3 +11,28 @@
   cursor: default !important;
   user-select: none;
 }
+
+:host::ng-deep.kpi-menu-container {
+  display: none;
+}
+
+:host::ng-deep.kpi-card-container-wrapper {
+  border-radius: 10px;
+}
+
+:host::ng-deep.kpi-card-header {
+  background-color: #0b4bc8;
+  color: white !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+:host::ng-deep.p-datatable-thead th,
+:host::ng-deep.p-datatable-tbody tr:last-child {
+  background-color: #f5f9ff !important;
+}
+
+:host::ng-deep.kpi-filter,
+:host::ng-deep.kpi-card-body {
+  padding: 0 !important;
+}
