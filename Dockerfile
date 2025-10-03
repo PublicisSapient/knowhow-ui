@@ -15,7 +15,7 @@ RUN apk add openssl --no-cache \
 ENV PID_LOC="/run/nginx" \
     CONF_LOC="/etc/nginx" \
     HTML_LOC="/var/lib/nginx/" \
-    UI2_LOC="/var/lib/nginx/ui2/knowhow" \
+    UI2_LOC="/var/lib/nginx/ui2" \
     START_SCRIPT_LOC="/etc/init.d" \
     UI2_ASSETS_ARCHIVE="ui2.tar" \
     ERRORPAGE_ASSETS_ARCHIVE="ErrorPage.tar" \
