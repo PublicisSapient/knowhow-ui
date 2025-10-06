@@ -44,8 +44,10 @@
                   class="p-pb-0">
                   <ng-option
                     *ngFor="let item of trendLineValueList"
-                    [value]="item.nodeId"
-                    >{{ item.nodeDisplayName }}
+                    [value]="item.nodeId">
+                    <div [ngClass]="{ 'inactive-projects': item.onHold }">
+                      {{ item.nodeDisplayName }}
+                    </div>
                   </ng-option>
                 </ng-select>
               </div>
