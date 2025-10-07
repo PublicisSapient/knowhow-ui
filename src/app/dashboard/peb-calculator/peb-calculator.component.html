@@ -1,0 +1,161 @@
+<div class="dashboard-container">
+  <p-card class="p-mb-3 peb-calculator-card">
+    <div class="form-title p-px-4 calculator-header">
+      <span class="calculator-header-label">Potential Economic Benefits Calculator</span>
+      <small class="tag beta">BETA</small>
+    </div>
+    <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
+      <div class="p-d-flex p-flex-wrap">
+        <div class="p-col-4 grid-flex-wrap-100">
+          <div class="p-col-12">
+            <label for="devCount">Total No. of Developers <i class="pi pi-exclamation-triangle" pTooltip="You can edit the no. of developers" tooltipPosition="top"></i></label>
+          </div>
+          <div class="p-col-12">
+            <p-inputNumber
+              class="input-field-calc"
+              formControlName="devCountControl"
+              inputId="devCount"
+              ngDefaultControl></p-inputNumber>
+          </div>
+          <div class="p-col-12">
+            <p-slider
+              formControlName="devCountControl"
+              class="w-full"
+              [step]="10"
+              [min]="10"
+              [max]="300"
+              ngDefaultControl></p-slider>
+          </div>
+        </div>
+        <div class="p-col-4 grid-flex-wrap-100">
+          <div class="p-col-12">
+            <label for="devCost">Avg. Cost Per Developer <i class="pi pi-exclamation-triangle" pTooltip="You can edit the avg cost per developer" tooltipPosition="top"></i></label>
+          </div>
+          <div class="p-col-12">
+            <p-inputNumber
+              class="input-field-calc"
+              formControlName="devCostControl"
+              inputId="devCost"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              ngDefaultControl></p-inputNumber>
+          </div>
+          <div class="p-col-12">
+            <p-slider
+              formControlName="devCostControl"
+              class="w-full"
+              [step]="100"
+              [min]="100000"
+              [max]="500000"
+              ngDefaultControl></p-slider>
+          </div>
+        </div>
+        <div class="p-col-4 grid-flex-wrap-100">
+          <div class="p-col-12">
+            <label for="duration">Time Duration</label>
+          </div>
+          <div class="p-col-12">
+            <p-dropdown
+              id="duration"
+              class="input-field-calc"
+              [options]="durationOptions"
+              formControlName="durationControl"
+              placeholder="Time Duration"
+              ngDefaultControl></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="p-col-12">
+        <button
+          pButton
+          type="submit"
+          label="Calculate PEB"
+          class="calc-btn"></button>
+      </div>
+    </form>
+    @if (showLoader) {
+    <div class="loader">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+    } @if (isError) {
+    <p-messages severity="error">
+      <ng-template pTemplate>
+        <i class="pi pi-exclamation-circle" style="font-size: 2rem"></i>
+        <div class="p-ml-3">
+          {{ errorMessage }}
+        </div>
+      </ng-template>
+    </p-messages>
+    }
+  </p-card>
+
+  @if (showResults) {
+  <p-card class="p-mb-3 executive-summary-card">
+    <div class="exec-title p-mb-4 p-px-3">Executive Summary</div>
+    <div class="roi-impact-title p-mb-4 p-px-3">
+      <span class="green-text pi pi-dollar"></span> Expected ROI Impact
+    </div>
+    <div class="p-grid metric-row p-px-3">
+      @for (roi of roiMetrics; track roi.label) {
+      <div class="p-col-3 grid-flex-wrap-50">
+        <div
+          class="roi-card p-d-flex p-flex-column"
+          [ngStyle]="{
+            background: roi.color
+          }">
+          <span
+            [class]="roi.icon + ' roi-icon'"
+            class="item"
+            [ngStyle]="{ color: roi.elemColor }"></span>
+          <div class="roi-label item">{{ roi.label }}</div>
+          <div class="roi-percent item" [ngStyle]="{ color: roi.elemColor }">
+            {{ roi.percent }}%
+          </div>
+        </div>
+        <div class="center-text p-mt-5 p-mb-2">
+          <div class="small-text">{{ roi.estValueSavingsLabel }}</div>
+          <div class="est-value">
+            <strong>{{ roi.value | currency : 'USD' }}</strong>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    <p-divider></p-divider>
+    <div class="overall-benefit center-text p-mt-6 p-px-3">
+      <div class="p-mb-2">
+        <strong>Overall Potential Economic Benefit</strong>
+      </div>
+      <div class="benefit-value blue-text">
+        {{ annualPEB | currency : 'USD' }}
+      </div>
+      <div class="p-mt-2 small-text">Sum total of all cost savings above</div>
+    </div>
+  </p-card>
+
+  <!-- THIS SECTION IS COMMENTED FOR FUTURE IMPLEMENTATION -->
+  <!-- <p-card class="colored-card-block">
+      <div class="ai-section-title">Additional Cost Savings from AI Adoption <i class="pi pi-sparkles"></i></div>
+      <div class="colored-card-block_container p-p-3">
+        <div class="ai-comparison-title center-text p-my-3"><strong>Current vs AI-Assisted Development</strong></div>
+        <div class="p-grid mb-2 dev-comparison">
+          <div class="p-col-6">
+            <div class="dev-current-bar gray-bar"><span class="bar-percent">Current</span></div>
+            <div class="mb-1">Traditional Methods</div>
+          </div>
+          <div class="p-col-6">
+            <div class="dev-ai-bar blue-bar"><span class="bar-percent">+22%</span></div>
+            <div class="mb-1">AI-Enhanced</div>
+          </div>
+        </div>
+        <div class="ai-summary center-text p-p-5">
+          <div class="p-my-3"><span class="bold-text">80% AI recommendation adoption</span> could yield an additional</div>
+          <div class="p-my-3"><span class="ai-value blue-text">{{aiBenefit | currency:'USD'}}</span></div>
+          <div class="p-my-3">in potential economic benefits through AI-assisted development practices.</div>
+        </div>
+        <div class="p-mt-5 p-mb-3 small-text center-text">AI adoption estimates based on industry benchmarks and your organizational parameters</div>
+      </div>
+    </p-card> -->
+  }
+</div>

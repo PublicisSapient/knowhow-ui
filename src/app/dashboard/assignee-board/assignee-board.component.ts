@@ -45,8 +45,8 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   selectedTaskStatusFilter: string;
   currentIssueIndex = 0;
   currentSprint;
-  showIssueDetails: boolean = false;
-  graphWidth: number = 100;
+  showIssueDetails = false;
+  graphWidth = 100;
 
   @Output() reloadKPITab = new EventEmitter<any>();
   filteredIssueDataList: any[];

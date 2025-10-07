@@ -396,13 +396,16 @@ describe('BasicConfigComponent', () => {
       hierarchyLevelId: 'project',
       list: [{ nodeId: '123', parentId: '456' }],
       filteredSuggestions: [],
+      level: 'project',
     };
+
     component.formData = [
       currentLevel,
-      { hierarchyLevelId: 'parent', list: [] },
+      { hierarchyLevelId: 'parent', list: [], level: 'parent' },
     ];
+
     component.onSelectOfDropdown(
-      { nodeId: '123', parentId: '456' },
+      { value: { nodeId: '123', parentId: '456', level: 'project' } },
       currentLevel,
     );
     expect(currentLevel.filteredSuggestions.length).toBe(0);

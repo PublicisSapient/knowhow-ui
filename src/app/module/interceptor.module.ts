@@ -54,7 +54,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const requestArea = req.headers.get('requestArea') || 'internal';
 
     if (environment.AUTHENTICATION_SERVICE) {
-      let cookie = document.cookie?.split(';');
+      const cookie = document.cookie?.split(';');
       let authCookie_EXPIRY = cookie?.find((x) =>
         x.includes('authCookie_EXPIRY'),
       );
@@ -129,7 +129,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         if (
           reqUrl.indexOf('kpiRecommendation') !== -1 ||
           reqUrl.indexOf('notifications') !== -1 ||
-          reqUrl.indexOf('kpisearch') !== -1
+          reqUrl.indexOf('kpisearch') !== -1 ||
+          reqUrl.indexOf('executive') !== -1 ||
+          reqUrl.indexOf('productivity') !== -1
         ) {
           // Return error as successful response instead of throwing
           return of(
@@ -230,7 +232,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
 
   redirectToLogin() {
     /** redirect to central login url*/
-    let redirect_uri = window.location.href;
+    const redirect_uri = window.location.href;
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
     if (environment.CENTRAL_LOGIN_URL) {
       window.location.href =

@@ -21,6 +21,7 @@ import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.c
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
+import { HomeComponent } from '../dashboard/home/home.component';
 
 @Injectable({
   providedIn: 'root',
@@ -52,6 +53,15 @@ export class AppInitializerService {
       canActivate: [AccessGuard],
       data: {
         feature: 'Maturity',
+      },
+    },
+    {
+      path: 'home',
+      component: HomeComponent,
+      pathMatch: 'full',
+      canActivate: [AccessGuard],
+      data: {
+        feature: 'Home',
       },
     },
   ];
@@ -158,7 +168,7 @@ export class AppInitializerService {
   ];
 
   async checkFeatureFlag() {
-    let loc = window.location.hash
+    const loc = window.location.hash
       ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
       : '';
     // loc = decodeURIComponent(loc);
@@ -217,7 +227,7 @@ export class AppInitializerService {
       }
 
       // load google Analytics script on all instances except local and if customAPI property is true
-      let addGAScript = await this.featureToggleService.isFeatureEnabled(
+      const addGAScript = await this.featureToggleService.isFeatureEnabled(
         'GOOGLE_ANALYTICS',
       );
       if (addGAScript) {
@@ -258,7 +268,7 @@ export class AppInitializerService {
             }
 
             if (location) {
-              let redirect_uri = JSON.parse(
+              const redirect_uri = JSON.parse(
                 localStorage.getItem('redirect_uri'),
               );
               if (redirect_uri) {

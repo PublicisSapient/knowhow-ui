@@ -92,11 +92,11 @@ export class CapacityPlanningComponent implements OnInit {
   selectedSprintDetails: any;
   selectedSprintId: any;
   selectedSprintName: any;
-  filter_kpiRequest = <any>'';
-  selectedFilterData = <any>{};
+  filter_kpiRequest: any = '';
+  selectedFilterData: any = {};
   selectedFilterCount = 0;
-  filterData = <any>[];
-  masterData = <any>{};
+  filterData: any = [];
+  masterData: any = {};
   projectAssigneeEmails = [];
   projectAssigneeEmailsCopy = [];
   isToggleEnableForSelectedProject = false;
@@ -208,6 +208,7 @@ export class CapacityPlanningComponent implements OnInit {
 
   // called when user switches the "Scrum/Kanban" switch
   kanbanActivation(type) {
+    const btnActive = 'btn-active';
     this.selectedSprintAssigneValidator = [];
     const scrumTarget = document.querySelector(
       '.horizontal-tabs .btn-tab.pi-scrum-button',
@@ -216,11 +217,11 @@ export class CapacityPlanningComponent implements OnInit {
       '.horizontal-tabs .btn-tab.pi-kanban-button',
     );
     if (type === 'scrum') {
-      scrumTarget?.classList?.add('btn-active');
-      kanbanTarget?.classList?.remove('btn-active');
+      scrumTarget?.classList?.add(btnActive);
+      kanbanTarget?.classList?.remove(btnActive);
     } else {
-      scrumTarget?.classList?.remove('btn-active');
-      kanbanTarget?.classList?.add('btn-active');
+      scrumTarget?.classList?.remove(btnActive);
+      kanbanTarget?.classList?.add(btnActive);
     }
     this.kanban = type === 'scrum' ? false : true;
     this.startDate = '';
@@ -257,7 +258,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.filterData = filterData['data'];
           this.projectListArr = this.sortAlphabetically(
             this.filterData.filter(
-              (x) => x.labelName.toLowerCase() == 'project',
+              (x) => x.labelName.toLowerCase() === 'project',
             ),
           );
           this.squadListArr = this.getSortedAdditonalFilter(
@@ -312,14 +313,14 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   handleIterationFilters(level) {
-    if (this.filterForm?.get('selectedProjectValue')?.value != '') {
+    if (this.filterForm?.get('selectedProjectValue')?.value !== '') {
       this.isToggleEnableForSelectedProject = false;
       this.tableLoader = true;
       this.noData = false;
       this.selectedSprintDetails = {};
       this.capacityScrumData = [];
       this.capacityKanbanData = [];
-      if (level?.toLowerCase() == 'project') {
+      if (level?.toLowerCase() === 'project') {
         const selectedProject = this.filterForm?.get(
           'selectedProjectValue',
         )?.value;
@@ -345,8 +346,8 @@ export class CapacityPlanningComponent implements OnInit {
 
   getSquadsOfSelectedProject(projectNodeId) {
     if (projectNodeId) {
-      let sprintData = this.getGridData();
-      let sprintNodeIdList = new Set(
+      const sprintData = this.getGridData();
+      const sprintNodeIdList = new Set(
         sprintData.map((sprint) => sprint.sprintNodeId),
       );
       this.selectedSquad = [
@@ -439,12 +440,10 @@ export class CapacityPlanningComponent implements OnInit {
                   this.projectAssigneeEmails = response.data;
                   this.projectAssigneeEmailsCopy = [
                     ...this.projectAssigneeEmails,
-                  ].map((x) => {
-                    return {
-                      name: x,
-                      value: x,
-                    };
-                  });
+                  ].map((x) => ({
+                    name: x,
+                    value: x,
+                  }));
                 } else {
                   this.messageService.add({
                     severity: 'error',
@@ -638,7 +637,7 @@ export class CapacityPlanningComponent implements OnInit {
           Validators.max(assignee.plannedCapacity),
         ]);
         assigneeFormControls.leaves.enable();
-        let totalCapacity = assignee.plannedCapacity - assignee.leaves;
+        const totalCapacity = assignee.plannedCapacity - assignee.leaves;
         assignee.availableCapacity = Math.round(totalCapacity * 100) / 100;
       } else {
         assigneeFormControls.leaves.setValue(0);
@@ -756,7 +755,6 @@ export class CapacityPlanningComponent implements OnInit {
           ) {
             this.isCapacitySaveDisabled = true;
             this.capacityErrorMessage = 'Please enter Capacity';
-            return;
           }
         });
       } else {
@@ -838,7 +836,7 @@ export class CapacityPlanningComponent implements OnInit {
           });
         } else {
           this.selectedSquad.forEach((squad) => {
-            let control = new UntypedFormControl();
+            const control = new UntypedFormControl();
             if (this.squadForm.get(squad.nodeId)) {
               // Update existing control
               this.squadForm.get(squad.nodeId).setValue(control);
@@ -1040,17 +1038,15 @@ export class CapacityPlanningComponent implements OnInit {
 
     for (const labelName in squadCapacityMap) {
       const nodeCapacityList = Object.keys(squadCapacityMap[labelName]).map(
-        (nodeId) => {
-          return {
-            additionalFilterId: nodeId,
-            additionalFilterCapacity: squadCapacityMap[labelName][nodeId],
-          };
-        },
+        (nodeId) => ({
+          additionalFilterId: nodeId,
+          additionalFilterCapacity: squadCapacityMap[labelName][nodeId],
+        }),
       );
 
       additionalFilterCapacityList.push({
         filterId: labelName,
-        nodeCapacityList: nodeCapacityList,
+        nodeCapacityList,
       });
     }
 
@@ -1067,7 +1063,7 @@ export class CapacityPlanningComponent implements OnInit {
 
   getSortedAdditonalFilter(projectListArr) {
     //Get the levels of the projects in projectListArr
-    let projectMap = projectListArr.map((project) => project.level);
+    const projectMap = projectListArr.map((project) => project.level);
     // Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
     return this.sortAlphabetically(
       this.filterData.filter((data) => projectMap.includes(data.level - 2)),

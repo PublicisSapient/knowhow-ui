@@ -17,7 +17,11 @@
  ******************************************************************************/
 
 /******************* Modules   ***********************/
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  CUSTOM_ELEMENTS_SCHEMA,
+  NgModule,
+} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -37,6 +41,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { SliderModule } from 'primeng/slider';
+import { SidebarModule } from 'primeng/sidebar';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MessagesModule } from 'primeng/messages';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -132,12 +142,13 @@ import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
+import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
+import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
+import { HomeComponent } from './dashboard/home/home.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
-  return (): Promise<any> => {
-    return appInitializerService.checkFeatureFlag();
-  };
+  return (): Promise<any> => appInitializerService.checkFeatureFlag();
 }
 
 @NgModule({
@@ -192,6 +203,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     RecommendationsComponent,
     StickyHeaderV2Component,
     AddToReportPopUpComponent,
+    PebCalculatorComponent,
+    StackedGroupBarChartComponent,
+    HomeComponent,
   ],
   imports: [
     SharedModuleModule,
@@ -232,6 +246,12 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     ProgressBarModule,
     AutoCompleteModule,
     ChipsModule,
+    CardModule,
+    DividerModule,
+    SliderModule,
+    SidebarModule,
+    InputNumberModule,
+    MessagesModule,
   ],
   providers: [
     ExcelService,
@@ -255,6 +275,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
       multi: true,
     },
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

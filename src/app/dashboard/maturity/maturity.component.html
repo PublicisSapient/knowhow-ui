@@ -15,15 +15,18 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container *ngIf="!noProjects else noProjectsTemplate">
+<ng-container *ngIf="!noProjects; else noProjectsTemplate">
   <div class="maturity-container">
-    <ng-container *ngIf="!showNoDataMsg">
+    <!-- <ng-container *ngIf="showNoDataMsg"> -->
       <div class="tabs-container">
-        <div class="tab" *ngFor="let board of tabs; let i=index"
+        <div
+          class="tab"
+          *ngFor="let board of tabs; let i = index"
           [ngClass]="{
-              'is-selected' : selectedTabIndex === i
-            }" (click)="handleTabChange(i)">
-          {{ i===0 ?  'Overall' : (board.boardName) }}
+            'is-selected': selectedTabIndex === i
+          }"
+          (click)="handleTabChange(i)">
+          {{ i === 0 ? 'Overall' : board.boardName }}
         </div>
       </div>
       <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
@@ -33,20 +36,30 @@
           </div>
         </div>
       </div>
-    </ng-container>
+    <!-- </ng-container> -->
     <div *ngIf="showNoDataMsg && !loader && noDataForFilter">
       <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
-        <h2 class="msg" tabindex="0">The selected organization level need to have atleast one value available for the KPI's to show
-          up</h2>
+        <h2 class="msg" tabindex="0">
+          The selected organization level need to have atleast one value
+          available for the KPI's to show up
+        </h2>
       </div>
     </div>
   </div>
 </ng-container>
 <ng-template #noProjectsTemplate>
   <div class="p-d-flex p-align-center p-justify-center no-projects">
-    <h2 tabindex="0">You do not have access to any {{isKanban ? 'Kanban' : 'Scrum'}} project</h2>
+    <h2 tabindex="0">
+      You do not have access to any {{ isKanban ? 'Kanban' : 'Scrum' }} project
+    </h2>
   </div>
 </ng-template>
 <app-page-loader
-  *ngIf="loader && (loaderJira || loaderSonar || loaderZypher || loaderBitBucket || loaderJenkins)"></app-page-loader>
-
+  *ngIf="
+    loader &&
+    (loaderJira ||
+      loaderSonar ||
+      loaderZypher ||
+      loaderBitBucket ||
+      loaderJenkins)
+  "></app-page-loader>

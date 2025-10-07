@@ -4143,7 +4143,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
-    component.postJiraKpi(postData, 'Jira');
+    component.postJiraKpi(postData, 'Jira', false);
     component.jiraKpiData = {};
     tick();
     expect(spy).toHaveBeenCalled();
@@ -5008,11 +5008,11 @@ describe('ExecutiveV2Component', () => {
           aggregationCriteria: 'average',
           maturityRange: ['5', '4', '3', '2', '1'],
           yaxisOrder: {
-            '1': 'A',
-            '2': 'B',
-            '3': 'C',
-            '4': 'D',
-            '5': 'E',
+            1: 'A',
+            2: 'B',
+            3: 'C',
+            4: 'D',
+            5: 'E',
           },
           trendCalculative: false,
           xaxisLabel: 'Months',
@@ -8227,6 +8227,7 @@ describe('ExecutiveV2Component', () => {
         kpiList: [{ kpiId: 'kpi141' }],
       },
       'jira',
+      false,
     );
     tick();
     expect(spy).toHaveBeenCalled();
@@ -8692,11 +8693,11 @@ describe('ExecutiveV2Component', () => {
     const returnedObj = {
       AddingIterationProject: [
         {
-          '1': '122.6',
-          '2': '126.9',
-          '3': '176.5',
-          '4': '83.3',
-          '5': '57.7',
+          1: '122.6',
+          2: '126.9',
+          3: '176.5',
+          4: '83.3',
+          5: '57.7',
           kpiId: 'kpi14',
           kpiName: 'Defect Injection Rate',
           frequency: 'Sprints',
@@ -10128,11 +10129,11 @@ describe('ExecutiveV2Component', () => {
     const returnedObj = {
       AddingIterationProject: [
         {
-          '1': '122.6',
-          '2': '126.9',
-          '3': '176.5',
-          '4': '83.3',
-          '5': '57.7',
+          1: '122.6',
+          2: '126.9',
+          3: '176.5',
+          4: '83.3',
+          5: '57.7',
           kpiId: 'kpi172',
           kpiName: 'Defect Injection Rate',
           frequency: 'Sprints',
@@ -10325,7 +10326,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'removeLoaderFromKPIs');
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
-    component.postJiraKpi(postData, 'Jira');
+    component.postJiraKpi(postData, 'Jira', false);
     component.jiraKpiData = {};
     tick();
     expect(spy).toHaveBeenCalled();
@@ -11181,11 +11182,11 @@ describe('ExecutiveV2Component', () => {
     const returnedObj = {
       AddingIterationProject: [
         {
-          '1': '122.6',
-          '2': '126.9',
-          '3': '176.5',
-          '4': '83.3',
-          '5': '57.7',
+          1: '122.6',
+          2: '126.9',
+          3: '176.5',
+          4: '83.3',
+          5: '57.7',
           kpiId: 'kpi14',
           kpiName: 'Defect Injection Rate',
           frequency: 'Sprints',
@@ -12818,7 +12819,7 @@ describe('ExecutiveV2Component', () => {
       component,
       'createAllKpiArrayForBacklog',
     );
-    component.postJiraKpi(fakeJiraPayload, 'jira');
+    component.postJiraKpi(fakeJiraPayload, 'jira', false);
     tick();
     // expect(spycreateKpiWiseId).toHaveBeenCalled();
     expect(spycreateAllKpiArray).toHaveBeenCalledWith(jiraKpiData);
@@ -13452,7 +13453,7 @@ describe('ExecutiveV2Component', () => {
   });
 
   it('should create kpi array when trendvalueList is object', () => {
-    let kpi = [
+    const kpi = [
       {
         kpiId: 'kpi141',
         trendValueList: {

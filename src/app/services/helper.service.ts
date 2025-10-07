@@ -535,13 +535,21 @@ export class HelperService {
 
         if (a.releaseState === 'Unreleased') {
           // For Unreleased, sort by ascending releaseEndDate, keeping null dates last
-          if (dateA === null) return 1;
-          if (dateB === null) return -1;
+          if (dateA === null) {
+            return 1;
+          }
+          if (dateB === null) {
+            return -1;
+          }
           return dateA - dateB;
         } else {
           // For Released, sort by descending releaseEndDate, keeping null dates last
-          if (dateA === null) return 1;
-          if (dateB === null) return -1;
+          if (dateA === null) {
+            return 1;
+          }
+          if (dateB === null) {
+            return -1;
+          }
           return dateB - dateA;
         }
       });
@@ -591,7 +599,7 @@ export class HelperService {
           aggArr[idx].hasOwnProperty('aggregationValue') &&
           obj[key][i]?.hasOwnProperty('aggregationValue')
         ) {
-          let tempArr = aggArr[idx]['aggregationValue']
+          const tempArr = aggArr[idx]['aggregationValue']
             ? [
                 ...aggArr[idx]['aggregationValue'],
                 obj[key][i]['aggregationValue'],
@@ -883,7 +891,7 @@ export class HelperService {
   }
 
   createCombinations(arr1, arr2) {
-    let arr = [];
+    const arr = [];
     for (let i = 0; i < arr1?.length; i++) {
       for (let j = 0; j < arr2?.length; j++) {
         arr.push({ filter1: arr1[i], filter2: arr2[j] });
@@ -927,10 +935,10 @@ export class HelperService {
     updatedConfigGlobalData,
     kpiId,
   ) {
-    let requestObj = {
+    const requestObj = {
       nodes: [...nodes],
-      level: level,
-      nodeChildId: nodeChildId,
+      level,
+      nodeChildId,
       kpiIds: [],
     };
     if (kpiId) {
@@ -1032,8 +1040,7 @@ export class HelperService {
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
         localStorage.removeItem('shared_link');
-        localStorage.removeItem('last_link');
-        let redirect_uri = window.location.href;
+        const redirect_uri = window.location.href;
         window.location.href =
           environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
       }
@@ -1162,17 +1169,20 @@ export class HelperService {
   }
 
   isDropdownElementSelected($event: any): boolean {
-    try {
-      if (
-        $event.originalEvent.type === 'click' ||
-        $event.originalEvent.type === 'keydown'
-      ) {
-        return true;
-      } else {
-        return false;
+    if (
+      $event &&
+      typeof $event.value !== 'undefined' &&
+      $event.value !== null
+    ) {
+      if ($event.originalEvent) {
+        return (
+          $event.originalEvent.type === 'click' ||
+          $event.originalEvent.type === 'keydown'
+        );
       }
-    } catch (ex) {
-      console.error(ex, 'Not a Browser event');
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -1273,7 +1283,7 @@ export class HelperService {
       const kpiFilters = queryParams.get('kpiFilters');
       const selectedTab = queryParams.get('selectedTab');
       if (stateFilters) {
-        let decodedStateFilters: string = '';
+        let decodedStateFilters = '';
 
         if (stateFilters?.length <= 8) {
           this.httpService
@@ -1356,7 +1366,6 @@ export class HelperService {
 
     if (hasAccessToAll) {
       this.router.navigate([url]);
-      localStorage.removeItem('shared_link');
     } else {
       this.router.navigate(['/dashboard/Error']);
       setTimeout(() => {
