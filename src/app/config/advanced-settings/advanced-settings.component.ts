@@ -21,9 +21,9 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin, interval, Subscription } from 'rxjs';
+import { forkJoin, interval, of, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { switchMap, takeWhile } from 'rxjs/operators';
+import { catchError, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -34,25 +34,25 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class AdvancedSettingsComponent implements OnInit {
   items: MenuItem[];
   selectedView: string;
-  dataLoading = <boolean>false;
-  showPreCalculatedDataForScrum = <boolean>false;
-  showPreCalculatedDataForKanban = <boolean>false;
-  showPrecalculatedConfigSection = <boolean>false;
+  dataLoading: boolean = false;
+  showPreCalculatedDataForScrum: boolean = false;
+  showPreCalculatedDataForKanban: boolean = false;
+  showPrecalculatedConfigSection: boolean = false;
   processorData = {};
   userProjects = [];
   selectedProject = {};
   processorsTracelogs = [];
   toolConfigsDetails = [];
   ssoLogin = environment.SSO_LOGIN;
-  jirsStepsPopup: boolean = false;
+  jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
   subscription: Subscription;
   dataMismatchObj: object = {};
   pid: string;
   configuredToolList: any;
-  azureSnapshotToggleTooltip =
-    'Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning. Subsequent changes will be tracked as scope changes. Applies to active sprints only-use with caution.';
+  azureSnapshotToggleTooltip = `Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning.
+    Subsequent changes will be tracked as scope changes.Applies to active sprints only - use with caution.`;
 
   constructor(
     private httpService: HttpService,
@@ -102,6 +102,7 @@ export class AdvancedSettingsComponent implements OnInit {
             that.userProjects = response.data.map((proj) => ({
               name: proj.projectDisplayName,
               id: proj.id,
+              onHold: proj.projectOnHold,
             }));
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data
@@ -111,6 +112,7 @@ export class AdvancedSettingsComponent implements OnInit {
               .map((filteredProj) => ({
                 name: filteredProj.projectDisplayName,
                 id: filteredProj.id,
+                onHold: filteredProj.projectOnHold,
               }));
           }
         } else {
@@ -241,16 +243,16 @@ export class AdvancedSettingsComponent implements OnInit {
       return this.processorsTracelogs[jiraInd];
     } else {
       return this.processorsTracelogs.find(
-        (ptl) => ptl['processorName'] == processorName,
+        (ptl) => ptl['processorName'] === processorName,
       );
     }
   }
 
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
-    return traceLog == undefined ||
+    return traceLog === undefined ||
       traceLog == null ||
-      traceLog.executionEndedAt == 0
+      traceLog.executionEndedAt === 0
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionEndedAt,
@@ -261,9 +263,9 @@ export class AdvancedSettingsComponent implements OnInit {
   showProcessorLastState(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
     if (
-      traceLog == undefined ||
-      traceLog == null ||
-      traceLog.executionEndedAt == 0
+      traceLog === undefined ||
+      traceLog === null ||
+      traceLog.executionEndedAt === 0
     ) {
       return 'NA';
     } else if (traceLog.executionWarning) {
@@ -274,7 +276,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   isProjectSelected() {
-    return this.selectedProject != null || this.selectedProject != undefined;
+    return this.selectedProject !== null || this.selectedProject !== undefined;
   }
 
   endTimeConversion(time) {
@@ -286,7 +288,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    let runProcessorInput = {
+    const runProcessorInput = {
       processor: processorName,
       projects: [],
     };
@@ -386,31 +388,34 @@ export class AdvancedSettingsComponent implements OnInit {
           ),
         );
       });
-      forkJoin(toolDetailSubscription).subscribe(
-        (response) => {
-          if (response.find((res) => !res['success'])) {
+      forkJoin(toolDetailSubscription)
+        .pipe(
+          tap((response) => {
+            if (response.find((res) => !res['success'])) {
+              this.messageService.add({
+                severity: 'error',
+                summary:
+                  'Error in deleting project data. Please try after some time.',
+              });
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Data deleted Successfully.',
+                detail: '',
+              });
+              this.getAllToolConfigs(selectedProject?.id);
+              this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
+            }
+          }),
+          catchError((error) => {
             this.messageService.add({
               severity: 'error',
-              summary:
-                'Error in deleting project data. Please try after some time.',
+              summary: 'Something went wrong. Please try again after sometime.',
             });
-          } else {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Data deleted Successfully.',
-              detail: '',
-            });
-            this.getAllToolConfigs(selectedProject?.id);
-            this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
-          }
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Something went wrong. Please try again after sometime.',
-          });
-        },
-      );
+            return of();
+          }),
+        )
+        .subscribe();
     } else {
       this.messageService.add({
         severity: 'error',
@@ -456,17 +461,17 @@ export class AdvancedSettingsComponent implements OnInit {
 
   findCorrectJiraDetails(processorName?) {
     const jiraCount = this.processorsTracelogs.filter(
-      (ptl) => ptl['processorName'] == processorName,
+      (ptl) => ptl['processorName'] === processorName,
     ).length;
 
     if (jiraCount === 1) {
       return this.processorsTracelogs.findIndex(
-        (ptl) => ptl['processorName'] == processorName,
+        (ptl) => ptl['processorName'] === processorName,
       );
     } else if (jiraCount >= 1) {
       return this.processorsTracelogs.findIndex(
         (ptl) =>
-          ptl['processorName'] == processorName &&
+          ptl['processorName'] === processorName &&
           ptl['progressStats'] === true,
       );
     } else {
@@ -491,7 +496,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length - 1].endTime;
       const currentTime = new Date().getTime();
-      let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      const differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if (differenceInMilliseconds > 600000) {
         return false;
       } else {
@@ -538,8 +543,8 @@ export class AdvancedSettingsComponent implements OnInit {
   getSCMToolTimeDetails(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
     return traceLog == undefined ||
-      traceLog == null ||
-      traceLog.executionResumesAt == 0
+      traceLog === null ||
+      traceLog.executionResumesAt === 0
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionResumesAt,

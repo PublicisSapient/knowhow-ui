@@ -29,6 +29,8 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { KeyValue } from '@angular/common';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 declare const require: any;
 
 @Component({
@@ -115,8 +117,8 @@ export class JiraConfigComponent implements OnInit {
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
   isGitlabToolFieldEnabled: boolean;
-  isConfigureTool: boolean = false;
-  showAddNewBtn: boolean = true;
+  isConfigureTool = false;
+  showAddNewBtn = true;
   jiraConfigurationTypeOptions;
   jiraQueryEnabled = true;
   activeIndex: number = 0;
@@ -139,16 +141,14 @@ export class JiraConfigComponent implements OnInit {
       this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
-    )[selectedType].map((x) => {
-      return {
-        id: x['hierarchyLevelId'],
-        name: x['hierarchyLevelName'],
-      };
-    });
+    )[selectedType].map((x) => ({
+      id: x['hierarchyLevelId'],
+      name: x['hierarchyLevelName'],
+    }));
 
     Object.keys(this.selectedProject).forEach((key) => {
       if (levelDetails.map((x) => x.id).includes(key)) {
-        let propertyName = levelDetails.filter((x) => x.id === key)[0].name;
+        const propertyName = levelDetails.filter((x) => x.id === key)[0].name;
         this.selectedProject[propertyName] = this.selectedProject[key];
         delete this.selectedProject[key];
       }
@@ -191,51 +191,58 @@ export class JiraConfigComponent implements OnInit {
       this.selectedProject,
     );
 
-    this.http.getSonarVersionList().subscribe(
-      (data) => {
-        if (this.urlParam !== 'Sonar') {
-          return;
-        }
-        try {
-          if (data.success) {
-            this.versionList = [...data.data];
-            data.data.forEach((el) => {
-              if (el.type === 'Sonar Server') {
-                el.versions.forEach((version) =>
-                  this.sonarVersionList.push(version),
-                );
-              } else if (el.type === 'Sonar Cloud') {
-                el.versions.forEach((version) =>
-                  this.sonarCloudVersionList.push(version),
+    this.http
+      .getSonarVersionList()
+      .pipe(
+        tap((data) => {
+          if (this.urlParam !== 'Sonar') {
+            return;
+          }
+
+          try {
+            if (data.success) {
+              this.versionList = [...data.data];
+
+              data.data.forEach((el) => {
+                if (el.type === 'Sonar Server') {
+                  el.versions.forEach((version) =>
+                    this.sonarVersionList.push(version),
+                  );
+                } else if (el.type === 'Sonar Cloud') {
+                  el.versions.forEach((version) =>
+                    this.sonarCloudVersionList.push(version),
+                  );
+                }
+              });
+
+              if (this.selectedToolConfig?.length > 0) {
+                this.updateSonarConnectionTypeAndVersionList(
+                  this.selectedToolConfig[0].cloudEnv,
                 );
               }
-            });
-            if (this.selectedToolConfig?.length > 0) {
-              this.updateSonarConnectionTypeAndVersionList(
-                this.selectedToolConfig[0].cloudEnv,
-              );
+            } else {
+              this.messenger.add({
+                severity: 'error',
+                summary: 'Some error occurred. Please try again later.',
+              });
             }
-          } else {
+          } catch (error: any) {
             this.messenger.add({
               severity: 'error',
-              summary: 'Some error occurred. Please try again later.',
+              summary: error.message,
             });
           }
-        } catch (error) {
+        }),
+        catchError((err) => {
+          console.log(err);
           this.messenger.add({
             severity: 'error',
-            summary: error.message,
+            summary: err.error?.message || 'Unknown error occurred',
           });
-        }
-      },
-      (err) => {
-        console.log(err);
-        this.messenger.add({
-          severity: 'error',
-          summary: err.error.message,
-        });
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   getPlansForBamboo(connectionId) {
@@ -271,7 +278,9 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getDeploymentProjects(connectionId) {
-    if (!connectionId) return;
+    if (!connectionId) {
+      return;
+    }
 
     const self = this;
     this.showLoadingOnFormElement('deploymentProject');
@@ -316,44 +325,48 @@ export class JiraConfigComponent implements OnInit {
 
   getJenkinsJobNames(connectionId) {
     this.showLoadingOnFormElement('jobName');
-    this.http.getJenkinsJobNameList(connectionId).subscribe(
-      (data) => {
-        try {
-          if (data.success) {
-            this.jenkinsJobNameList = [];
-            data.data.forEach((element) => {
-              this.jenkinsJobNameList.push({
-                name: element,
-                code: element,
+    this.http
+      .getJenkinsJobNameList(connectionId)
+      .pipe(
+        tap((data) => {
+          try {
+            if (data.success) {
+              this.jenkinsJobNameList = [];
+              data.data.forEach((element) => {
+                this.jenkinsJobNameList.push({
+                  name: element,
+                  code: element,
+                });
               });
-            });
-          } else {
+            } else {
+              this.jenkinsJobNameList = [];
+              this.messenger.add({
+                severity: 'error',
+                summary: data.message,
+              });
+            }
+            this.hideLoadingOnFormElement('jobName');
+          } catch (error: any) {
+            console.log('getJenkinsJobNames in catch block ', error);
             this.jenkinsJobNameList = [];
+            this.hideLoadingOnFormElement('jobName');
             this.messenger.add({
               severity: 'error',
-              summary: data.message,
+              summary: error.message,
             });
           }
-          this.hideLoadingOnFormElement('jobName');
-        } catch (error) {
-          console.log('getJenkinsJobNames in catch block ', error);
+        }),
+        catchError((err) => {
           this.jenkinsJobNameList = [];
           this.hideLoadingOnFormElement('jobName');
           this.messenger.add({
             severity: 'error',
-            summary: error.message,
+            summary: err?.error?.message ? err.error.message : err?.statusText,
           });
-        }
-      },
-      (err) => {
-        this.jenkinsJobNameList = [];
-        this.hideLoadingOnFormElement('jobName');
-        this.messenger.add({
-          severity: 'error',
-          summary: err?.error.message ? err.error.message : err?.statusText,
-        });
-      },
-    );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   onConnectionSelect(connection: any) {
@@ -556,9 +569,7 @@ export class JiraConfigComponent implements OnInit {
     return false;
   };
 
-  checkTeams = () => {
-    return false;
-  };
+  checkTeams = () => false;
 
   fetchBoards(self) {
     if (
@@ -597,6 +608,7 @@ export class JiraConfigComponent implements OnInit {
       self.boardsData.forEach((board) => {
         board['projectKey'] = self.toolForm.controls['projectKey'].value;
       });
+      self.toolForm.controls['boards'].setValue([]);
 
       // If boards already has value
       if (self.toolForm.controls['boards']?.value?.length) {
@@ -614,7 +626,7 @@ export class JiraConfigComponent implements OnInit {
   fetchTeams(self) {
     if (self.selectedConnection && self.selectedConnection.id) {
       self.isLoading = true;
-      let connectionId = self.selectedConnection.id;
+      const connectionId = self.selectedConnection.id;
       self.http.getAzureTeams(connectionId).subscribe((response) => {
         if (response && response['success']) {
           self.teamData = response['data'];
@@ -895,8 +907,8 @@ export class JiraConfigComponent implements OnInit {
       if (version && selectedConnectionId) {
         this.http
           .getProjectKeyList(selectedConnectionId, organizationKey)
-          .subscribe(
-            (data) => {
+          .pipe(
+            tap((data) => {
               if (data.success) {
                 this.projectKeyList = [];
                 data.data.forEach((element) => {
@@ -917,15 +929,17 @@ export class JiraConfigComponent implements OnInit {
                 });
                 this.hideLoadingOnFormElement('projectKey');
               }
-            },
-            (err) => {
+            }),
+            catchError((err) => {
               console.log(err);
               this.messenger.add({
                 severity: 'error',
-                summary: err.error.message,
+                summary: err.error?.message || 'Unknown error',
               });
-            },
-          );
+              return of();
+            }),
+          )
+          .subscribe();
       }
     } catch (error) {
       this.projectKeyList = [];
@@ -3047,9 +3061,9 @@ export class JiraConfigComponent implements OnInit {
   deleteTool(tool) {
     this.http
       .deleteProjectToolConfig(tool.basicProjectConfigId, tool.id)
-      .subscribe(
-        (response) => {
-          if (response && response['success']) {
+      .pipe(
+        tap((response) => {
+          if (response['success']) {
             this.configuredTools = this.configuredTools.filter(
               (configuredTool) => configuredTool.id !== tool.id,
             );
@@ -3067,17 +3081,19 @@ export class JiraConfigComponent implements OnInit {
               summary: 'Some error occurred. Please try again later.',
             });
           }
-        },
-        (errorResponse) => {
-          const error = errorResponse['error'];
+        }),
+        catchError((errorResponse) => {
+          const error = errorResponse?.error;
           const msg =
-            error['message'] || 'Some error occurred. Please try again later.';
+            error?.message || 'Some error occurred. Please try again later.';
           this.messenger.add({
             severity: 'error',
             summary: msg,
           });
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   // Preserve original property order
@@ -3182,6 +3198,14 @@ export class JiraConfigComponent implements OnInit {
       this.jiraConfigurationTypeOptions = resp.data.filter(
         (temp) => temp.tool?.toLowerCase() === 'jira',
       );
+
+      if (this.jiraConfigurationTypeOptions.length) {
+        if (this.toolForm) {
+          this.toolForm
+            .get('jiraConfigurationType')
+            ?.setValue(this.jiraConfigurationTypeOptions[0].templateCode);
+        }
+      }
     });
   }
 
@@ -3207,9 +3231,10 @@ export class JiraConfigComponent implements OnInit {
     };
     self.http.getGitActionWorkFlowName(postJson).subscribe((resp) => {
       if (resp && resp['success']) {
-        self.gitActionWorkflowNameList = resp['data'].map((option) => {
-          return { name: option['workflowName'], code: option['workflowID'] };
-        });
+        self.gitActionWorkflowNameList = resp['data'].map((option) => ({
+          name: option['workflowName'],
+          code: option['workflowID'],
+        }));
         self.hideLoadingOnFormElement('workflowID');
       } else {
         self.hideLoadingOnFormElement('workflowID');

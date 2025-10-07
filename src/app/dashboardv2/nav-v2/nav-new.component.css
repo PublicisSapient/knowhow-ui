@@ -6,7 +6,8 @@
   font-size: 12px !important;
 }
 
-::ng-deep
+:host
+  ::ng-deep
   .board-menu
   .p-tabmenu
   .p-tabmenu-nav
@@ -18,15 +19,57 @@
   padding: 0.5rem 0.75rem;
   margin: 0 1rem 0 0;
   font-size: 12px;
+  font-weight: 500;
 }
-::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav {
+
+:host
+  ::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link
+  .nav-anchor {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+:host::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link:hover {
+  background-color: #f5f9ff;
+  border: 1px solid #d5dbe1;
+}
+
+:host
+  ::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link
+  .nav-anchor:hover {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+:host ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav {
   border: none;
   background: #f5f9ff;
 }
-::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar {
+
+:host ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar {
   display: none;
 }
-::ng-deep
+
+:host
+  ::ng-deep
   .board-menu
   .p-tabmenu
   .p-tabmenu-nav
@@ -35,9 +78,11 @@
   background: #0b4bc8;
   color: #fff;
   border-color: #d5dbe1;
+  font-weight: 500;
 }
 
-::ng-deep
+:host
+  ::ng-deep
   .board-menu
   .p-tabmenu
   .p-tabmenu-nav
@@ -46,6 +91,20 @@
   border: 3px solid #0b4bc8;
 }
 
-::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight {
+:host
+  ::ng-deep
+  .board-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem.p-highlight {
   pointer-events: none;
+}
+
+:host
+  ::ng-deep
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem
+  .p-menuitem-link:not(.p-disabled):focus {
+  box-shadow: none;
 }

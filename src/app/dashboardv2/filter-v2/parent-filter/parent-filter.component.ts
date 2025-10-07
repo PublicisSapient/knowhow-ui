@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
-import { DropdownFilterOptions } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-parent-filter',
@@ -18,15 +17,15 @@ import { DropdownFilterOptions } from 'primeng/dropdown';
 export class ParentFilterComponent implements OnChanges {
   @Input() filterData = null;
   @Input() parentFilterConfig: {};
-  @Input() selectedType: string = '';
-  @Input() selectedTab: string = '';
+  @Input() selectedType = '';
+  @Input() selectedTab = '';
   filterLevels = [];
   options: any[] = [];
   selectedLevel: any;
-  stateFilters: string = '';
+  stateFilters = '';
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
-  filterValue: string = '';
+  filterValue = '';
   constructor(
     public service: SharedService,
     public helperService: HelperService,
@@ -47,6 +46,29 @@ export class ParentFilterComponent implements OnChanges {
         )) ||
       selectedTabChanged
     ) {
+      const hierarchy = JSON.parse(
+        localStorage.getItem('completeHierarchyData'),
+      )[this.selectedType];
+
+      const projectLevelObj = hierarchy?.find(
+        (level) => level.hierarchyLevelName.toLowerCase() === 'project',
+      );
+      const projectLevel = projectLevelObj ? projectLevelObj.level : null;
+      let result = [];
+
+      if (projectLevel !== null) {
+        // --> Filter for everyone except for project level-1 and project level-2
+        result = hierarchy
+          .filter(
+            (item) =>
+              !(
+                item.level === projectLevel - 1 ||
+                item.level === projectLevel - 2
+              ),
+          )
+          .map((item) => item.hierarchyLevelName.toLowerCase());
+      }
+
       if (this.parentFilterConfig['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData).map((item) => {
@@ -56,6 +78,11 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
+        if (this.selectedTab.toLowerCase() === 'home') {
+          this.filterLevels = this.filterLevels.filter((e) => {
+            return !result.includes(e.nodeName.toLowerCase());
+          });
+        }
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
@@ -66,32 +93,18 @@ export class ParentFilterComponent implements OnChanges {
           this.service.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId.toLowerCase() === this.stateFilters.toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters.toLowerCase());
           } else if (
             this.stateFilters &&
             typeof this.stateFilters !== 'string' &&
             this.stateFilters['labelName']
           ) {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId.toLowerCase() ===
-                this.stateFilters['labelName'].toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters['labelName']);
           } else if (
             this.stateFilters &&
             typeof this.stateFilters !== 'string'
           ) {
-            this.selectedLevel = this.filterLevels.filter((level) => {
-              return (
-                level.nodeId?.toLowerCase() ===
-                this.stateFilters['nodeId']?.toLowerCase()
-              );
-            })[0];
+            this.assignParentLevelHomeVSOther(this.stateFilters['nodeId']);
           } else {
             this.selectedLevel =
               this.filterLevels[this.filterLevels.length - 1];
@@ -104,13 +117,12 @@ export class ParentFilterComponent implements OnChanges {
       } else {
         this.filterLevels = this.filterData[
           this.parentFilterConfig['labelName']
-        ]?.map((item) => {
-          return {
-            nodeId: item.nodeId,
-            nodeName: item.nodeName,
-            nodeDisplayName: item.nodeDisplayName,
-          };
-        });
+        ]?.map((item) => ({
+          nodeId: item.nodeId,
+          nodeName: item.nodeName,
+          nodeDisplayName: item.nodeDisplayName,
+          projectOnHold: item.onHold,
+        }));
         this.filterLevels = this.helperService.sortAlphabetically(
           this.filterLevels,
         );
@@ -127,16 +139,16 @@ export class ParentFilterComponent implements OnChanges {
               this.stateFilters['labelName']?.toLowerCase() ===
               this.parentFilterConfig['labelName']?.toLowerCase()
             ) {
-              this.selectedLevel = this.filterLevels.filter((level) => {
-                return level.nodeId === this.stateFilters['nodeId'];
-              })[0];
+              this.selectedLevel = this.filterLevels.filter(
+                (level) => level.nodeId === this.stateFilters['nodeId'],
+              )[0];
             } else if (
               this.stateFilters['labelName']?.toLowerCase() === 'sprint' ||
               this.stateFilters['labelName']?.toLowerCase() === 'release'
             ) {
-              this.selectedLevel = this.filterLevels.filter((level) => {
-                return level.nodeId === this.stateFilters['parentId'];
-              })[0];
+              this.selectedLevel = this.filterLevels.filter(
+                (level) => level.nodeId === this.stateFilters['parentId'],
+              )[0];
             } else {
               this.selectedLevel = this.filterLevels?.length
                 ? this.filterLevels[0]
@@ -160,7 +172,7 @@ export class ParentFilterComponent implements OnChanges {
 
   fillAdditionalFilterLevels() {
     if (this.filterData['Project']?.length) {
-      let projectLevel = this.filterData['Project'][0].level;
+      const projectLevel = this.filterData['Project'][0].level;
       Object.keys(this.filterData).forEach((key) => {
         if (this.filterData[key] !== undefined) {
           if (this.filterData[key][0].level > projectLevel) {
@@ -175,8 +187,8 @@ export class ParentFilterComponent implements OnChanges {
    * Handles the change of the selected level in the filter configuration.
    * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
    *
-   * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
-   * @returns {void}
+   * @param parentLevelChanged - Indicates if the parent level has changed.
+   * @returns
    */
   handleSelectedLevelChange(parentLevelChanged = false) {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
@@ -192,7 +204,7 @@ export class ParentFilterComponent implements OnChanges {
         });
       }
     } else {
-      let selectedNode = this.filterData[
+      const selectedNode = this.filterData[
         this['parentFilterConfig']['labelName']
       ]?.filter((filter) => filter.nodeId === this.selectedLevel?.nodeId);
       if (selectedNode && selectedNode[0]) {
@@ -217,12 +229,54 @@ export class ParentFilterComponent implements OnChanges {
     this.service.setDataForSprintGoal({ selectedLevel: this.selectedLevel });
   }
 
+  assignParentLevelHomeVSOther(valueToSet) {
+    let tempStateFilters;
+    if (this.stateFilters && typeof this.stateFilters === 'string') {
+      tempStateFilters = this.stateFilters;
+    } else if (
+      this.stateFilters &&
+      typeof this.stateFilters !== 'string' &&
+      this.stateFilters['labelName']
+    ) {
+      tempStateFilters = this.stateFilters['labelName'];
+    } else if (this.stateFilters && typeof this.stateFilters !== 'string') {
+      tempStateFilters = this.stateFilters['nodeId'];
+    }
+    if (
+      this.selectedTab.toLowerCase() === 'home' &&
+      tempStateFilters.toLowerCase() === 'project'
+    ) {
+      const hierarchy = JSON.parse(
+        localStorage.getItem('completeHierarchyData') || '{}',
+      )[this.selectedType];
+      const projectHierarchyDetails = hierarchy.find(
+        (hi) => hi.hierarchyLevelId === 'project',
+      );
+      if (projectHierarchyDetails) {
+        const leafNodePlusOneDetails = hierarchy.find(
+          (item) => item.level === projectHierarchyDetails.level - 1,
+        );
+
+        this.selectedLevel = this.filterLevels.filter((level) => {
+          return (
+            level.nodeId.toLowerCase() ===
+            leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
+          );
+        })[0];
+      }
+    } else {
+      this.selectedLevel = this.filterLevels.filter((level) => {
+        return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
+      })[0];
+    }
+  }
+
   /**
    * Handles the change event of a dropdown element.
    * If a dropdown element is selected, it triggers the level change handling.
    *
-   * @param {any} $event - The event object from the dropdown change.
-   * @returns {void}
+   * @param $event - The event object from the dropdown change.
+   * @returns
    */
   onDropdownChange($event: any) {
     if (this.helperService.isDropdownElementSelected($event)) {

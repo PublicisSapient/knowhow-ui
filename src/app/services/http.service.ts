@@ -199,6 +199,9 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
+  private executivePageURL = this.baseUrl + '/api/executive';
+
+  private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
 
   constructor(
     private router: Router,
@@ -1252,7 +1255,7 @@ export class HttpService {
   }
 
   fetchReports(): Observable<object> {
-    let userId = this.currentUserDetails['user_name'];
+    const userId = this.currentUserDetails['user_name'];
     //Pagination to be handled
     return this.http.get<object>(
       this.fetchReportsUrl + userId + '&page=0&limit=9999',
@@ -1301,5 +1304,16 @@ export class HttpService {
 
   shareViaEmail(payload) {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
+  }
+
+  getExecutiveBoardData(payload, selectedType) {
+    return this.http.post<any>(
+      `${this.executivePageURL}?iskanban=${selectedType}`,
+      payload,
+    );
+  }
+
+  getProductivityGain(payload) {
+    return this.http.post<any>(this.pebCalculateUrl, payload);
   }
 }

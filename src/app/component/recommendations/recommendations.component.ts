@@ -14,7 +14,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./recommendations.component.css'],
 })
 export class RecommendationsComponent implements OnInit {
-  displayModal: boolean = false;
+  displayModal = false;
   modalDetails = {
     tableHeadings: [],
     tableValues: [],
@@ -27,7 +27,7 @@ export class RecommendationsComponent implements OnInit {
   filteredMaturity;
   @Input() filterData = {};
   @Input() kpiList = [];
-  noRecommendations: boolean = false;
+  noRecommendations = false;
   selectedSprint: object = {};
   loading: boolean = false;
   aiRecommendations: boolean = true;
@@ -252,12 +252,14 @@ export class RecommendationsComponent implements OnInit {
   }
 
   focusDialogHeader() {
+    document.body.style.overflow = 'hidden';
     setTimeout(() => {
       this.selectAllSprints();
     }, 300);
   }
 
   onDialogClose() {
+    document.body.style.overflow = 'auto';
     this.resetSelections();
     this.cancelCurrentRequest$.next();
   }
@@ -681,5 +683,82 @@ export class RecommendationsComponent implements OnInit {
         detail: error.message,
       });
     }
+  }
+
+  getIconClass(recommendation) {
+    if (!recommendation) return;
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+    return recommendationType === 'high'
+      ? 'pi-exclamation-circle high-icon'
+      : recommendationType === 'medium'
+      ? 'pi-exclamation-circle medium-icon'
+      : recommendationType === 'low'
+      ? 'pi-exclamation-circle low-icon'
+      : recommendationType === 'critical'
+      ? 'pi-exclamation-triangle critical-icon'
+      : '';
+  }
+
+  getSeverityBackgroundColor(recommendation: any) {
+    if (!recommendation) return {};
+
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+
+    switch (recommendationType) {
+      case 'high':
+        return { 'background-color': '#f68605', color: 'fff#' };
+      case 'medium':
+        return {
+          'background-color': '#fbcf5f',
+          color: '#fff',
+        };
+      case 'low':
+        return { 'background-color': '#49535e', color: 'fff#' };
+      case 'critical':
+        return { 'background-color': '#fe414d', color: '#fff' };
+      default:
+        return { 'background-color': '#fe414d', color: '#fff' };
+    }
+  }
+  getSeverityClass(recommendation: any) {
+    if (!recommendation) return '';
+
+    const recommendationType = this.getCleanRecommendationType(
+      recommendation.recommendationType,
+    ).trim();
+
+    switch (recommendationType) {
+      case 'high':
+        return 'high-icon';
+      case 'medium':
+        return 'medium-icon';
+      case 'low':
+        return 'low-icon';
+      case 'critical':
+        return 'critical-icon';
+      default:
+        return 'critical-icon';
+    }
+  }
+  formatKpiLabel(kpi: string): string {
+    if (!kpi) return '';
+    return kpi
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  getNumericValue(kpi: string): number {
+    const value = kpi.split(':')[1]?.replace('%', '') || '0';
+    return parseFloat(value);
+  }
+
+  getDisplayValue(kpi: string): string {
+    return kpi.split(':')[1]?.trim() || '';
   }
 }

@@ -70,24 +70,14 @@
       "Dev Due Date": "09-Sep-2024",
       "Assignee": "Michael Doerman",
       "Change Date": "2024-09-11",
-      "Labels": [
-        "BMCR",
-        "Roadmap_Priority_2024",
-        "SEO"
-      ],
+      "Labels": ["BMCR", "Roadmap_Priority_2024", "SEO"],
       "Created Date": "2024-08-21",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Michael Doerman"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Michael Doerman"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-11",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 540
     },
     {
@@ -107,24 +97,14 @@
       "Dev Due Date": "11-Sep-2024",
       "Assignee": "Charu Chopra",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "RTIOff_Nissan",
-        "Roadmap_Priority_2024",
-        "DesignExploration"
-      ],
+      "Labels": ["RTIOff_Nissan", "Roadmap_Priority_2024", "DesignExploration"],
       "Created Date": "2024-08-06",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Charu Chopra"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Charu Chopra"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 4680
     },
     {
@@ -144,23 +124,14 @@
       "Dev Due Date": "-",
       "Assignee": "Charu Chopra",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "RTIOff_Nissan",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["RTIOff_Nissan", "Roadmap_Priority_2024"],
       "Created Date": "2024-07-23",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Charu Chopra"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Charu Chopra"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 960
     },
     {
@@ -180,24 +151,14 @@
       "Dev Due Date": "10-Sep-2024",
       "Assignee": "Michael Doerman",
       "Change Date": "2024-09-12",
-      "Labels": [
-        "BMCR",
-        "Roadmap_Priority_2024",
-        "SEO"
-      ],
+      "Labels": ["BMCR", "Roadmap_Priority_2024", "SEO"],
       "Created Date": "2024-08-21",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Michael Doerman"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Michael Doerman"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-12",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 540
     },
     {
@@ -217,24 +178,14 @@
       "Dev Due Date": "06-Sep-2024",
       "Assignee": "Michael Doerman",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "BMCR",
-        "Roadmap_Priority_2024",
-        "SEO"
-      ],
+      "Labels": ["BMCR", "Roadmap_Priority_2024", "SEO"],
       "Created Date": "2024-08-21",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Michael Doerman"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Michael Doerman"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 540
     },
     {
@@ -254,22 +205,14 @@
       "Dev Due Date": "06-Sep-2024",
       "Assignee": "Sindhu Jayaprakash",
       "Change Date": "2024-09-10",
-      "Labels": [
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["Roadmap_Priority_2024"],
       "Created Date": "2024-07-02",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Sindhu Jayaprakash"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Sindhu Jayaprakash"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-10",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 840
     },
     {
@@ -289,23 +232,14 @@
       "Dev Due Date": "29-Aug-2024",
       "Assignee": "Parijatham Soundararajan",
       "Change Date": "2024-09-13",
-      "Labels": [
-        "mustfixa11y",
-        "a11y"
-      ],
+      "Labels": ["mustfixa11y", "a11y"],
       "Created Date": "2024-08-06",
-      "Root Cause List": [
-        "dev – code"
-      ],
-      "Owner Full Name": [
-        "Parijatham Soundararajan"
-      ],
+      "Root Cause List": ["dev – code"],
+      "Owner Full Name": ["Parijatham Soundararajan"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "-",
       "Updated Date": "2024-09-13",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 240
     },
     {
@@ -325,23 +259,14 @@
       "Dev Due Date": "06-Sep-2024",
       "Assignee": "Akshay Agarwal",
       "Change Date": "2024-09-14",
-      "Labels": [
-        "BMCR",
-        "Roadmap_Priority_2024"
-      ],
+      "Labels": ["BMCR", "Roadmap_Priority_2024"],
       "Created Date": "2024-08-26",
-      "Root Cause List": [
-        "None"
-      ],
-      "Owner Full Name": [
-        "Akshay Agarwal"
-      ],
+      "Root Cause List": ["None"],
+      "Owner Full Name": ["Akshay Agarwal"],
       "Sprint Name": "BAU Sprint 36",
       "Release Name": "Nissan_18_Sep",
       "Updated Date": "2024-09-14",
-      "Testing Phase": [
-        "Undefined"
-      ],
+      "Testing Phase": ["Undefined"],
       "Value": 1920
     }
   ],

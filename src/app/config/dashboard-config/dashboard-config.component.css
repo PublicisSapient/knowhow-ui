@@ -189,3 +189,12 @@
   min-width: inherit;
   max-width: inherit;
 }
+:host::ng-deep.p-overlay.p-component {
+  width: -webkit-fill-available;
+}
+
+::ng-deep .p-dropdown-item .inactive-projects {
+  font-style: italic;
+  color: var(--color-gray-9e);
+  opacity: 0.6;
+}

@@ -118,7 +118,7 @@ export class BarchartComponent implements OnInit {
       .range(this.data.map((d) => d.color));
 
     // Add Y-axis label
-    let unitSet = new Set(this.data.map((d) => d.unit));
+    const unitSet = new Set(this.data.map((d) => d.unit));
     if (unitSet.size === 1) {
       this.svg
         .append('text')
@@ -172,9 +172,7 @@ export class BarchartComponent implements OnInit {
           return ``;
         }
       })
-      .attr('transform', (d) => {
-        return `translate(${margin.left - 15}, ${0})`;
-      })
+      .attr('transform', (d) => `translate(${margin.left - 15}, ${0})`)
       .attr('fill', (d) => d.color)
       .on('mouseover', (event, d) => {
         this.tooltip

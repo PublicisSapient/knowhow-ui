@@ -1,0 +1,111 @@
+<!--
+  ~   Copyright 2014 CapitalOne, LLC.
+  ~   Further development Copyright 2022 Sapient Corporation.
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+  <p-multiSelect
+  [id]="fieldConfig?.fieldName"
+  [options]="fieldConfig?.options"
+  [placeholder]="fieldConfig?.placeHolderText || fieldConfig?.fieldLabel"
+  styleClass="p-w-100"
+  [showHeader]="false"
+  [(ngModel)]="finalValue"
+  optionLabel="label"
+  (onChange)="setValue($event)"
+  role="listbox"
+ panelStyleClass="ms-checkbox-only"
+  [attr.aria-label]="fieldConfig?.fieldLabel + ' Multi-Select'"
+  [attr.aria-multiselectable]="true"
+  [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
+  [attr.aria-describedby]="fieldConfig?.fieldName + '_description'"
+  tabindex="0">
+  <!-- Selected Items Template -->
+  <ng-template let-value pTemplate="selectedItems">
+    <span
+      class="country-item country-item-value"
+      role="list"
+      aria-label="Selected Items"
+      tabindex="0">
+      <ng-container *ngFor="let option of templateData; let i = index">
+        <span
+          role="listitem"
+          [attr.aria-label]="
+            'Selected item ' + (i + 1) + ': ' + option.label
+          "
+          tabindex="0">
+          <ng-container *ngIf="option?.structuredValue?.sla">
+            {{
+              option.label +
+                ' ' +
+                option.structuredValue.sla +
+                ' ' +
+                option.structuredValue.timeUnit
+            }}&nbsp;,&nbsp;
+          </ng-container>
+          <ng-container *ngIf="!option.structuredValue.sla">
+            {{ option.label }}&nbsp;,&nbsp;
+          </ng-container>
+        </span>
+      </ng-container>
+
+      <div
+        *ngIf="!templateData || templateData.length === 0"
+        class="country-placeholder"
+        role="status"
+        aria-live="polite"
+        tabindex="0">
+        {{ fieldConfig?.placeHolderText || fieldConfig?.fieldLabel }}
+      </div>
+    </span>
+  </ng-template>
+
+  <!-- Dropdown Item Template -->
+  <ng-template let-option pTemplate="item">
+    <div class="country-item">
+      <div>
+        <span>{{ option.label }}</span>
+
+        <p-inputNumber
+        (click)="$event.stopPropagation()"
+          class="count-box"
+          [(ngModel)]="option.structuredValue.sla"
+          [inputStyle]="{ width: '80px' }"
+          spinnerMode="horizontal"
+          [min]="0"
+       [disabled]="!finalValue?.includes(option)"
+          (onInput)="setCounter($event, option)"
+          role="spinbutton"
+          [attr.aria-label]="'Count input for ' + option.label"
+          tabindex="0">
+        </p-inputNumber>
+       
+<div class="pill-dropdown" 
+     (click)="toggleDropdown($event,option)" 
+     [class.disabled]="!finalValue?.includes(option)">
+
+  <span>{{ option.structuredValue.timeUnit || 'Select' }}</span>
+  <span class="arrow"></span>
+
+  <ul class="pill-dropdown-options" *ngIf="option.show">
+    <li *ngFor="let item of templateDropValues" [class.selected]="option.structuredValue.timeUnit === item.name"
+        (click)="selectOption($event,item, option)">
+      {{ item.name }}
+    </li>
+  </ul>
+</div>     
+      </div>
+    </div>
+  </ng-template>
+</p-multiSelect>

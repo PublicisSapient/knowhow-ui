@@ -51,16 +51,16 @@ export class MultilineV2Component implements OnChanges {
   @Input() unit?: string;
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
-  @Input() board: string = '';
-  @Input() source: string = '';
+  @Input() board = '';
+  @Input() source = '';
   elem;
   sliderLimit = <any>'750';
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart';
+  @Input() viewType = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
-  hierarchyLevel: string = '';
+  hierarchyLevel = '';
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
 
@@ -68,9 +68,9 @@ export class MultilineV2Component implements OnChanges {
     this.draw();
   });
 
-  height: number = 0;
-  width: number = 400;
-  counter: number = 0;
+  height = 0;
+  width = 400;
+  counter = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -82,6 +82,8 @@ export class MultilineV2Component implements OnChanges {
   }
 
   ngOnInit(): void {
+    console.log('MultilineV2Component initialized');
+    this.service.setMultilineChartFlag(true);
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
@@ -122,7 +124,7 @@ export class MultilineV2Component implements OnChanges {
   }
 
   flattenData(data) {
-    let sprintMap = new Map();
+    const sprintMap = new Map();
     let sprintCounter = 1;
 
     data.forEach((project) => {
@@ -166,12 +168,10 @@ export class MultilineV2Component implements OnChanges {
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
-      const legendData = data.map((item) => {
-        return {
-          sprintNumber: item.sprintNumber,
-          sprintLabel: item.sprints.join(', '),
-        };
-      });
+      const legendData = data.map((item) => ({
+        sprintNumber: item.sprintNumber,
+        sprintLabel: item.sprints.join(', '),
+      }));
 
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
@@ -527,7 +527,7 @@ export class MultilineV2Component implements OnChanges {
           .join('div')
           .attr('class', (d) => {
             let cssClass = 'tooltip2';
-            let value = Math.round(d.value * 100) / 100;
+            const value = Math.round(d.value * 100) / 100;
             if (
               thresholdValue &&
               thresholdValue !== 0 &&
@@ -544,7 +544,7 @@ export class MultilineV2Component implements OnChanges {
             return cssClass;
           })
           .style('left', (d, i) => {
-            let left = d.date || d.sortSprint;
+            const left = d.date || d.sortSprint;
             if (
               viewType === 'large' ||
               (board === 'dora' && viewType === 'chart') ||
@@ -555,9 +555,10 @@ export class MultilineV2Component implements OnChanges {
               return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
             }
           })
-          .style('top', (d) => {
-            return yScale(Math.round(d.value * 100) / 100) + 10 + 'px';
-          })
+          .style(
+            'top',
+            (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
+          )
           .text(
             (d) =>
               Math.round(d.value * 100) / 100 +
@@ -841,6 +842,7 @@ export class MultilineV2Component implements OnChanges {
         });
 
       /* Add circles (data) on the line */
+      // console.log('data ', data);
       lines
         .selectAll('circle-group')
         .data(data)
@@ -992,7 +994,7 @@ export class MultilineV2Component implements OnChanges {
           .style('opacity', 1)
           .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
-        let colorArr = [];
+        const colorArr = [];
         for (let i = 0; i < color?.length; i++) {
           if (!colorArr.includes(color[i])) {
             colorArr.push(color[i]);
@@ -1000,7 +1002,7 @@ export class MultilineV2Component implements OnChanges {
         }
 
         if (colorArr?.length > 0) {
-          let htmlString =
+          const htmlString =
             '<div class="legend_item" style="display:flex; align-items:center;"><div>';
 
           // colorArr.forEach((d, i) => {
@@ -1028,6 +1030,13 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi184'
       ) {
         // Render Sprint Legend
+        // console.log('data ', data);
+        // console.log(
+        //   'xCaption ',
+        //   'flatten data ',
+        //   this.xCaption,
+        //   this.flattenData(data),
+        // );
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
       }
     }
@@ -1035,20 +1044,20 @@ export class MultilineV2Component implements OnChanges {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr('y'),
-        dy = parseFloat(text.attr('dy')),
-        tspan = text
-          .text(null)
-          .append('tspan')
-          .attr('x', 0)
-          .attr('y', y)
-          .attr('dy', dy + 'em');
+      const text = d3.select(this);
+      const words = text.text().split(/\s+/).reverse();
+      let word;
+      let line = [];
+      let lineNumber = 0;
+      const lineHeight = 1.1; // ems
+      const y = text.attr('y');
+      const dy = parseFloat(text.attr('dy'));
+      let tspan = text
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(' '));

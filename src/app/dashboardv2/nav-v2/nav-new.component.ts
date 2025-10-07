@@ -4,6 +4,9 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-nav-new',
@@ -13,12 +16,13 @@ import { Router } from '@angular/router';
 export class NavNewComponent implements OnInit, OnDestroy {
   items: any;
   activeItem: any;
-  selectedTab: string = '';
-  selectedType: string = '';
+  selectedTab = '';
+  selectedType = '';
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
   previousSelectedTrend: any;
+  previousSelectedType: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   @Input() kpiSearchQuery!: string;
@@ -29,6 +33,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     public router: Router,
     public helperService: HelperService,
+    private authorizationService: GetAuthorizationService,
   ) {}
 
   ngOnInit(): void {
@@ -54,10 +59,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
           !this.helperService.deepEqual(
             this.previousSelectedTrend,
             this.sharedService.getSelectedTrends()[0],
-          )
+          ) ||
+          this.previousSelectedType !== this.selectedType
         ) {
           this.previousSelectedTrend =
             this.sharedService.getSelectedTrends()[0];
+          this.previousSelectedType = this.selectedType;
           this.getBoardConfig([
             ...this.sharedService
               .getSelectedTrends()
@@ -85,22 +92,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
         basicProjectConfigIds:
           projectList?.length && projectList[0] ? projectList : [],
       })
-      .subscribe(
-        (response) => {
+      .pipe(
+        tap((response) => {
           this.setBoards(response);
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           this.messageService.add({
             severity: 'error',
             summary: error.message,
           });
-        },
-      );
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   setBoards(response) {
     if (response.success === true) {
-      let data = response.data.userBoardConfigDTO;
+      const data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(
           localStorage.getItem('completeHierarchyData'),
@@ -215,6 +224,15 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 },
               };
             });
+
+          // Home tab will visible for superadmin only
+          // this.items = this.items.filter((board: any) => {
+          //   if (!this.authorizationService.checkIfSuperUser()) {
+          //     return board.slug !== 'home';
+          //   }
+          //   return true;
+          // });
+
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];
@@ -234,17 +252,23 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   handleMenuTabFunctionality(obj) {
-    this.selectedTab = obj['boardSlug'];
-    if (this.selectedTab !== 'unauthorized access') {
+    const selectedTab = obj?.value?.boardSlug || obj?.boardSlug;
+
+    if (!selectedTab) {
+      console.warn('❌ selectedTab (boardSlug) is missing in object:', obj);
+      return;
+    }
+
+    this.selectedTab = selectedTab;
+
+    if (selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab) {
       if (
-        this.selectedTab === 'iteration' ||
-        this.selectedTab === 'release' ||
-        this.selectedTab === 'backlog' ||
-        this.selectedTab === 'dora' ||
-        this.selectedTab === 'kpi-maturity'
+        ['iteration', 'release', 'backlog', 'dora', 'kpi-maturity'].includes(
+          selectedTab,
+        )
       ) {
         this.sharedService.setBackupOfFilterSelectionState({
           additional_level: null,
@@ -252,9 +276,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
       }
     }
     this.sharedService.setBackupOfFilterSelectionState({
-      selected_tab: obj['boardSlug'],
+      selected_tab: selectedTab,
     });
-    this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+    this.router.navigate(['/dashboard/' + selectedTab]);
   }
 
   updateDataDirectly(searchQuery) {
