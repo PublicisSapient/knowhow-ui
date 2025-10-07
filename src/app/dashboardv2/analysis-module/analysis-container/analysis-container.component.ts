@@ -1,39 +1,58 @@
-import { Component, OnInit } from '@angular/core';
-import { PrimaryFilterComponent } from '../../filter-v2/primary-filter/primary-filter.component';
-import { ParentFilterComponent } from '../../filter-v2/parent-filter/parent-filter.component';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { KpiCardV2Component } from '../../kpi-card-v2/kpi-card-v2.component';
 import { ToastModule } from 'primeng/toast';
-import { NgIf } from '@angular/common';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
+import { DynamicKpiTableComponent } from '../../../component/dynamic-kpi-table/dynamic-kpi-table.component';
+import { Subscription } from 'rxjs';
+
+interface SubColumn {
+  label: string;
+  dataSuffix: string;
+  pipe?: string;
+  isSortable: boolean;
+  totalDataKey: string;
+}
+
+interface SelectedTrend {
+  nodeId: string;
+  nodeName: string;
+  basicProjectConfigId: string;
+}
+
+interface KpiCardV2ComponentType {
+  onOpenFieldMappingDialog: () => void;
+  selectedTrendObject: SelectedTrend | null;
+}
+
+export interface AnalyticsSummary {
+  number: string;
+  summaryName: string;
+}
 
 @Component({
   selector: 'app-analysis-container',
   templateUrl: './analysis-container.component.html',
   styleUrls: ['./analysis-container.component.css'],
   standalone: true,
-  imports: [
-    PrimaryFilterComponent,
-    ParentFilterComponent,
-    KpiCardV2Component,
-    ToastModule,
-    NgIf,
-  ],
+  imports: [KpiCardV2Component, ToastModule, DynamicKpiTableComponent],
 })
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
-  sprintData: any;
   selectedProject: any;
-  projectFilterConfig: any;
-  sprintFilterConfig: any;
   public kpiSettingsForTable: any;
-  public kpiTableData: any[];
-  public kpiTableColumns: any[];
-  selectedProjects: string[];
-  subscriptions: any[] = [];
-  public selectedFilterLevel = 'Project';
+  public kpiTableData: any[] = [];
+  selectedProjects: string[] = [];
+  subscriptions: Subscription[] = [];
   newAPIData: any;
-  private projectHeaders: { name: string, cleanName: string }[] = [];
+
+  // Used by DynamicKpiTableComponent
+  projectHeaders: { name: string; cleanName: string }[] = [];
+  subColumns: SubColumn[] = [];
+  baseColumnHeader: string = '';
+  summaryDisplayData: any;
+  analyticsSummary: any;
+  @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
 
   constructor(
     private httpService: HttpService,
@@ -41,28 +60,94 @@ export class AnalysisContainerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.projectFilterConfig = {
-      name: 'Project',
-      labelName: 'Project',
-    };
-
-    this.sprintFilterConfig = {
-      labelName: 'Sprint',
-      inputType: 'singleSelect',
-    };
-
-    this.sprintData = {
-      Sprint: [
-        { nodeId: 'sprint1', nodeDisplayName: 'Sprint 1' },
-        { nodeId: 'sprint2', nodeDisplayName: 'Sprint 2' },
+    this.newAPIData = {
+      summary: {
+        averageEfficiencyGainPerAiUsageType: 214,
+        averageEfficiencyGainPerProject: 534,
+        usageTypesNumber: 10,
+        projectsNumber: 5,
+      },
+      analytics: [
+        {
+          aiUsageType: 'Usage type 1',
+          projects: [
+            { issueCount: 20, efficiencyGain: 5.1, name: 'Project 1' },
+            { issueCount: 30, efficiencyGain: 0.1, name: 'KnowHow' },
+            {
+              issueCount: 50,
+              efficiencyGain: 2.2,
+              name: 'Travel Insurance',
+            },
+          ],
+        },
+        {
+          aiUsageType: 'Usage type 2',
+          projects: [
+            { issueCount: 80, efficiencyGain: 4.2, name: 'Project 1' },
+            { issueCount: 40, efficiencyGain: 2.1, name: 'Project 2' },
+          ],
+        },
+        {
+          aiUsageType: 'Usage type 3',
+          projects: [
+            { issueCount: 70, efficiencyGain: 2.4, name: 'Project 1' },
+            { issueCount: 50, efficiencyGain: 0.6, name: 'Project 2' },
+          ],
+        },
       ],
     };
 
+    const projectNames = new Set<string>();
+    this.newAPIData.analytics.forEach((type: any) => {
+      type.projects.forEach((project: any) => {
+        projectNames.add(project.name);
+      });
+    });
+    this.selectedProjects = Array.from(projectNames);
+
+    this.analyticsSummary = this.newAPIData.summary;
+
+    this.processAnalyticsData(this.newAPIData);
+    this.updateKpiSettings();
+    this.getProjectData();
+  }
+
+  private processSummaryData(summary: any): AnalyticsSummary[] {
+    if (!summary) {
+      return [];
+    }
+
+    const summaryArray: AnalyticsSummary[] = [];
+
+    for (const key in summary) {
+      if (summary.hasOwnProperty(key)) {
+        const value = summary[key];
+        const displayName = this.camelCaseToTitleCase(key);
+
+        summaryArray.push({
+          number: value,
+          summaryName: displayName,
+        });
+      }
+    }
+
+    return summaryArray;
+  }
+
+  private camelCaseToTitleCase(camelCase: string): string {
+    if (!camelCase) return '';
+
+    const result = camelCase.replace(/([A-Z])/g, ' $1');
+    return result.charAt(0).toUpperCase() + result.slice(1).trim();
+  }
+
+  updateKpiSettings() {
     this.kpiSettingsForTable = {
+      kpiId: 'kpi198',
+      kpiFilter: 'table',
       kpiDetail: {
-        kpiFilter: 'table',
-        kpiId: '12345',
         kpiInfo: 'Info here',
+        kpiSource: 'Jira',
       },
       currentChartData: {
         chartData: this.kpiTableData,
@@ -71,49 +156,6 @@ export class AnalysisContainerComponent implements OnInit {
       kpiName: 'AI Usage Analytics',
       projectHeaders: this.projectHeaders,
     };
-
-    this.selectedProjects = ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5'];
-
-    this.newAPIData = {
-      "aggregations": {
-        "averageEfficiencyGainPerAiUsageType": 0,
-        "averageEfficiencyGainPerProject": 0,
-        "usageTypesNumber": 0,
-        "projectsNumber": 0
-      },
-      "aiUsageTypeAnalytics": [
-        {
-          "aiUsageType": "Usage type 1",
-          "projectsAiUsageAnalytics": [
-            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
-          ]
-        },
-        {
-          "aiUsageType": "Usage type 2",
-          "projectsAiUsageAnalytics": [
-            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
-          ]
-        },
-        {
-          "aiUsageType": "Usage type 3",
-          "projectsAiUsageAnalytics": [
-            { "issueCount": 20, "efficiencyGain": 0.2, "projectName": "Project 1" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 2" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 3" },
-            { "issueCount": 30, "efficiencyGain": 0.1, "projectName": "Project 4" }
-          ]
-        }
-      ]
-    };
-
-    this.processAnalyticsData(this.newAPIData);
-    this.getProjectData();
   }
 
   getProjectData() {
@@ -127,10 +169,10 @@ export class AnalysisContainerComponent implements OnInit {
           if (filterApiData['success']) {
             const allData = filterApiData['data'];
             const filteredProjects = allData.filter(
-              (item) => item.labelName === 'project',
+              (item: any) => item.labelName === 'project',
             );
             this.service.setFilterData({
-              Project: filteredProjects['Project'],
+              Project: filteredProjects,
             });
             this.projectData = {
               Project: filteredProjects,
@@ -142,112 +184,192 @@ export class AnalysisContainerComponent implements OnInit {
     );
   }
 
-  processProjectData(data) {
-  }
+  processProjectData(data: any) {}
 
   processAnalyticsData(apiData: any) {
-    if (!apiData || !apiData.aiUsageTypeAnalytics) {
+    if (!apiData || !apiData.analytics) {
       this.kpiTableData = [];
-      this.kpiTableColumns = [{ field: 'usageType', header: 'Usage Type' }];
       this.projectHeaders = [];
+      this.subColumns = [];
+      this.baseColumnHeader = '';
+      this.summaryDisplayData = [];
       return;
     }
 
+    // 0. Process the summary for display, generating names dynamically
+    this.summaryDisplayData = this.processSummaryData(apiData.summary);
+
+    // 1. Define the Base Column
+    this.baseColumnHeader = 'usageType'; // The key in the final row will be 'usageType'
+
+    // 2. Define the Sub-Columns (Two-level metrics)
+    this.subColumns = [
+      {
+        label: 'Efficiency gain',
+        dataSuffix: '_efficiencyGain',
+        pipe: '1.2-2',
+        isSortable: true,
+        totalDataKey: 'totalEfficiencyGain',
+      },
+      {
+        label: 'Issue count',
+        dataSuffix: '_issueCount',
+        pipe: undefined,
+        isSortable: true,
+        totalDataKey: 'totalIssueCount',
+      },
+    ];
+
     this.kpiTableData = [];
-    this.kpiTableColumns = [{ field: 'usageType', header: 'Usage Type' }];
     this.projectHeaders = [];
 
+    // 3. Generate Project Headers (including "Total")
     const allHeaders = [...this.selectedProjects, 'Total'];
 
-    allHeaders.forEach(projectName => {
+    allHeaders.forEach((projectName) => {
       const cleanName = this.cleanName(projectName);
-
       this.projectHeaders.push({
         name: projectName === 'Total' ? 'Total' : projectName,
-        cleanName: cleanName
+        cleanName: cleanName,
       });
-
-      if (projectName !== 'Total') {
-        this.kpiTableColumns.push(
-          { field: `${cleanName}_efficiencyGain`, header: `${projectName} (Efficiency gain)` },
-          { field: `${cleanName}_issueCount`, header: 'Issue count' }
-        );
-      }
     });
-
-    this.kpiTableColumns.push(
-      { field: 'totalEfficiencyGain', header: 'Total (Efficiency gain)' },
-      { field: 'totalIssueCount', header: 'Total (Issue count)' }
-    );
-
-    this.kpiSettingsForTable = { ...this.kpiSettingsForTable, projectHeaders: this.projectHeaders };
 
     let finalTotalEfficiencyGain = 0;
     let finalTotalIssueCount = 0;
 
-    apiData.aiUsageTypeAnalytics.forEach((usageTypeData: any) => {
+    // 4. Flatten the Data (Creating Rows)
+    apiData.analytics.forEach((usageTypeData: any) => {
       const row: any = {
-        usageType: usageTypeData.aiUsageType,
+        [this.baseColumnHeader]: usageTypeData.aiUsageType,
         totalEfficiencyGain: 0,
-        totalIssueCount: 0
+        totalIssueCount: 0,
       };
 
       const projectsMap = new Map<string, any>();
-      usageTypeData.projectsAiUsageAnalytics.forEach((projectData: any) => {
-        projectsMap.set(projectData.projectName, projectData);
+      usageTypeData.projects.forEach((projectData: any) => {
+        projectsMap.set(projectData.name, projectData);
       });
 
-      this.selectedProjects.forEach(projectName => {
+      this.selectedProjects.forEach((projectName) => {
         const projectData = projectsMap.get(projectName);
         const fieldNamePrefix = this.cleanName(projectName);
 
-        const efficiencyGain = projectData?.efficiencyGain || 0;
-        const issueCount = projectData?.issueCount || 0;
+        const efficiencyGainValue = projectData?.efficiencyGain;
+        const issueCountValue = projectData?.issueCount;
 
-        row[`${fieldNamePrefix}_efficiencyGain`] = efficiencyGain;
-        row[`${fieldNamePrefix}_issueCount`] = issueCount;
+        // Numeric value for calculation (0 if missing/null/undefined)
+        const efficiencyGainNumeric =
+          this.getNumericValueForTotal(efficiencyGainValue);
+        const issueCountNumeric = this.getNumericValueForTotal(issueCountValue);
 
-        row.totalEfficiencyGain += efficiencyGain;
-        row.totalIssueCount += issueCount;
+        // Value for display ('N/A' if missing/null/undefined)
+        // Use strict check for null and undefined to allow valid 0
+        const efficiencyGainDisplay =
+          efficiencyGainValue !== null && efficiencyGainValue !== undefined
+            ? efficiencyGainValue
+            : 'N/A';
+        const issueCountDisplay =
+          issueCountValue !== null && issueCountValue !== undefined
+            ? issueCountValue
+            : 'N/A';
+
+        // Populate the row with the display value
+        row[`${fieldNamePrefix}_efficiencyGain`] = efficiencyGainDisplay;
+        row[`${fieldNamePrefix}_issueCount`] = issueCountDisplay;
+
+        // Calculate the row total (horizontal) using the numeric value
+        row.totalEfficiencyGain += efficiencyGainNumeric;
+        row.totalIssueCount += issueCountNumeric;
       });
 
       this.kpiTableData.push(row);
 
+      // Calculate the grand total (for the "Total" row)
       finalTotalEfficiencyGain += row.totalEfficiencyGain;
       finalTotalIssueCount += row.totalIssueCount;
     });
 
+    // 5. Create the "Total" Row (Vertical)
     const totalRow: any = {
-      usageType: 'Total',
+      [this.baseColumnHeader]: 'Total', // Key becomes 'usageType': 'Total'
       totalEfficiencyGain: finalTotalEfficiencyGain,
       totalIssueCount: finalTotalIssueCount,
     };
 
-    this.selectedProjects.forEach(projectName => {
+    this.selectedProjects.forEach((projectName) => {
       const fieldNamePrefix = this.cleanName(projectName);
 
-      const projectEfficiencyTotal = this.kpiTableData.reduce((sum, row) => sum + (row[`${fieldNamePrefix}_efficiencyGain`] || 0), 0);
-      const projectIssuesTotal = this.kpiTableData.reduce((sum, row) => sum + (row[`${fieldNamePrefix}_issueCount`] || 0), 0);
+      // Calculate the column total for each project
+      const projectEfficiencyTotal = this.kpiTableData.reduce(
+        (sum, row) =>
+          sum +
+          this.getNumericValueForTotal(
+            row[`${fieldNamePrefix}_efficiencyGain`],
+          ),
+        0,
+      );
+      const projectIssuesTotal = this.kpiTableData.reduce(
+        (sum, row) =>
+          sum +
+          this.getNumericValueForTotal(row[`${fieldNamePrefix}_issueCount`]),
+        0,
+      );
 
+      // Populate the Total row with column totals (which are purely numeric)
       totalRow[`${fieldNamePrefix}_efficiencyGain`] = projectEfficiencyTotal;
       totalRow[`${fieldNamePrefix}_issueCount`] = projectIssuesTotal;
     });
 
     this.kpiTableData.push(totalRow);
+
+    console.log('Final Headers (projectHeaders):', this.projectHeaders);
+    console.log('Final SubColumns (subColumns):', this.subColumns);
+    console.log('Final Table Data (kpiTableData):', this.kpiTableData);
+    console.log('Base Column Header:', this.baseColumnHeader);
+    console.log('Summary Data for Display:', this.summaryDisplayData);
   }
-
-  handleProjectFilterChange($event: any) {}
-
-  handleSprintFilterChange($event: any) {}
-
-  removeProject(project: any) {}
-
 
   cleanName(name: string): string {
     if (!name) {
       return '';
     }
-
     return name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  }
+
+  private getNumericValueForTotal(value: any): number {
+    if (typeof value === 'number') {
+      return value;
+    }
+    return 0;
+  }
+
+  openProjectSettings(projectName: string) {
+    console.log(`Settings for project: ${projectName}`);
+
+    const lowerCaseProjectName = projectName?.toLowerCase();
+
+    const projectObject = this.projectData['Project']?.find(
+      (p: any) =>
+        p.nodeName?.toLowerCase() === lowerCaseProjectName ||
+        p.nodeDisplayName?.toLowerCase() === lowerCaseProjectName,
+    );
+
+    if (projectObject) {
+      if (
+        this.kpiCardComponent &&
+        this.kpiCardComponent.onOpenFieldMappingDialog
+      ) {
+        this.kpiCardComponent.selectedTrendObject = projectObject;
+        this.kpiCardComponent.onOpenFieldMappingDialog();
+      } else {
+        console.error(
+          'Reference to kpiCardComponent or onOpenFieldMappingDialog method is missing!',
+        );
+      }
+    } else {
+      console.error(
+        `The complete object for project "${projectName}" was not found in the available project list.`,
+      );
+    }
   }
 }

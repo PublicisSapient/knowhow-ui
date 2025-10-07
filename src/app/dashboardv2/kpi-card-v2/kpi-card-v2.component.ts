@@ -38,6 +38,12 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
 
+interface SelectedTrend {
+  nodeId: string;
+  nodeName: string;
+  basicProjectConfigId: string;
+}
+
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',
@@ -163,8 +169,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
-
   @Input() kpiTitle: string = '';
+  public selectedTrendObject: SelectedTrend | null = null;
 
   constructor(
     public service: SharedService,
@@ -656,8 +662,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
-    const selectedTrend = this.service.getSelectedTrends();
-    if (selectedTrend.length == 1 || selectedTab === 'release') {
+    let selectedTrend = this.service.getSelectedTrends();
+
+    let currentTrendList: SelectedTrend[] = [];
+
+    if (this.selectedTrendObject) {
+      currentTrendList = [this.selectedTrendObject];
+    } else {
+      currentTrendList = selectedTrend;
+    }
+
+    if (currentTrendList.length == 1 || selectedTab === 'release') {
+      console.log(JSON.stringify(currentTrendList));
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
@@ -668,7 +684,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       );
       this.http
         .getKPIFieldMappingConfig(
-          `${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
+          `${currentTrendList[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
         )
         .subscribe((data) => {
           if (data?.success) {
@@ -680,15 +696,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             ];
             if (this.fieldMappingConfig.length > 0) {
               this.selectedConfig = {
-                ...selectedTrend[0],
-                id: selectedTrend[0]?.basicProjectConfigId,
+                ...currentTrendList[0],
+                id: currentTrendList[0]?.basicProjectConfigId,
               };
               this.getFieldMapping();
               const metaDataList = this.service.getFieldMappingMetaData();
               if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
                 const metaData = metaDataList.find(
                   (data) =>
-                    data.projectID === selectedTrend[0]?.basicProjectConfigId &&
+                    data.projectID ===
+                      currentTrendList[0]?.basicProjectConfigId &&
                     data.kpiSource === kpiSource,
                 );
                 if (metaData?.metaData) {
@@ -745,16 +762,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getFieldMappingMetaData(kpiSource) {
     this.http
       .getKPIConfigMetadata(
-        this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-        this.kpiData?.kpiId,
+        this.selectedTrendObject.basicProjectConfigId,
+        this.kpiData?.kpiDetail.kpiId,
       )
       .pipe(
         tap((Response) => {
           if (Response.success) {
             this.fieldMappingMetaData = Response.data;
             this.service.setFieldMappingMetaData({
-              projectID:
-                this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+              projectID: this.selectedTrendObject.basicProjectConfigId,
               kpiSource,
               metaData: Response.data,
             });
@@ -1638,10 +1654,5 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       .catch((err) => {
         console.error('Failed to copy URL: ', err);
       });
-  }
-
-  openProjectSettings(projectName) {
-    console.log(projectName);
-    this.getKPIFieldMappingConfig();
   }
 }

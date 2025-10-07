@@ -190,96 +190,15 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="kpiData?.kpiDetail?.kpiFilter === 'table'" class="new-table-wrapper">
-        <div class="kpi-card-body p-pr-5 p-pl-5 new-table">
-          <p-table
-            [columns]="tableColumns"
-            [value]="tableData"
-            [scrollable]="true"
-            [sortable]="true"
-            [sortMode]="'multiple'"
-            styleClass="p-datatable-gridlines p-w-100"
-            [style]="{'width':'100%'}">
-
-            <ng-template pTemplate="header">
-              <tr>
-                <th rowspan="2" class="p-text-center non-sortable p-p-2">Usage Type</th>
-
-                <th *ngFor="let header of kpiData?.projectHeaders"
-                    [attr.colspan]="2"
-                    class="p-text-center p-p-2">
-
-                  <div class="p-flex p-align-center p-justify-center p-gap-1">
-                    <span class="p-text-bold">{{ header.name }}</span>
-                    <i *ngIf="header.cleanName !== 'total'"
-                       class="fas fa-cog p-ml-1 p-cursor-pointer"
-                       style="font-size: 14px;"
-                       (click)="openProjectSettings(header.name)"
-                       title="Project Settings"
-                       role="button"
-                       tabindex="0">
-                    </i>
-                  </div>
-
-                </th>
-              </tr>
-
-              <tr>
-                <ng-container *ngFor="let header of kpiData?.projectHeaders">
-                  <th class="p-text-center p-p-2" [pSortableColumn]="header.cleanName + '_efficiencyGain'">
-                    Efficiency gain
-                    <p-sortIcon [field]="header.cleanName + '_efficiencyGain'"></p-sortIcon>
-                  </th>
-                  <th class="p-text-center p-p-2" [pSortableColumn]="header.cleanName + '_issueCount'">
-                    Issue count
-                    <p-sortIcon [field]="header.cleanName + '_issueCount'"></p-sortIcon>
-                  </th>
-                </ng-container>
-              </tr>
-
-            </ng-template>
-
-            <ng-template pTemplate="body" let-rowData>
-              <tr>
-                <td class="p-text-left p-text-bold p-p-2">
-                  {{ rowData['usageType'] }}
-                </td>
-
-                <ng-container *ngFor="let header of kpiData?.projectHeaders">
-
-                  <ng-container *ngIf="header.cleanName !== 'total'; else totalColumns">
-
-                    <td class="p-text-center p-p-2" [ngClass]="{'p-text-bold': rowData['usageType'] === 'Total'}">
-                      {{ rowData[header.cleanName + '_efficiencyGain'] | number: '1.2-2' }}
-                    </td>
-
-                    <td class="p-text-center p-p-2" [ngClass]="{'p-text-bold': rowData['usageType'] === 'Total'}">
-                      {{ rowData[header.cleanName + '_issueCount'] }}
-                    </td>
-                  </ng-container>
-
-                  <ng-template #totalColumns>
-                    <td class="p-text-center p-p-2 p-text-bold">
-                      {{ rowData['totalEfficiencyGain'] | number: '1.2-2' }}
-                    </td>
-                    <td class="p-text-center p-p-2 p-text-bold">
-                      {{ rowData['totalIssueCount'] }}
-                    </td>
-                  </ng-template>
-
-                </ng-container>
-              </tr>
-
-            </ng-template>
-          </p-table>
-
-        </div>
-      </ng-container>
     </div>
     <div class="kpi-card-body p-pr-5 p-pl-5" [ngClass]="{'smallChart':board == 'dora'}">
+      <ng-container *ngIf="kpiData?.kpiFilter?.toLowerCase() === 'table'">
+        <ng-content select="[kpiTable]"></ng-content>
+      </ng-container>
       <!--place for chart to be rendered-->
       <ng-content
-        *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+        *ngIf="kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'table' && !loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData">
+      </ng-content>
       <ng-template #noData>
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
