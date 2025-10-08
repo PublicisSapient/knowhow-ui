@@ -36,7 +36,12 @@ export interface AnalyticsSummary {
   templateUrl: './analysis-container.component.html',
   styleUrls: ['./analysis-container.component.css'],
   standalone: true,
-  imports: [KpiCardV2Component, ToastModule, DynamicKpiTableComponent,GenericFilterComponent,],
+  imports: [
+    KpiCardV2Component,
+    ToastModule,
+    DynamicKpiTableComponent,
+    GenericFilterComponent,
+  ],
 })
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
@@ -47,8 +52,8 @@ export class AnalysisContainerComponent implements OnInit {
   subscriptions: Subscription[] = [];
   newAPIData: any;
   filterData: any = null;
-  projectFilterConfig : any = null;
-  sprintFilterConfig : any = null;
+  projectFilterConfig: any = null;
+  sprintFilterConfig: any = null;
 
   // Used by DynamicKpiTableComponent
   projectHeaders: { name: string; cleanName: string }[] = [];
@@ -188,6 +193,11 @@ export class AnalysisContainerComponent implements OnInit {
             const filteredProjects = allData.filter(
               (item: any) => item.labelName === 'project',
             );
+
+            this.projectData = {
+              Project: filteredProjects,
+            };
+
             this.filterData = {
               Project: filteredProjects,
               Sprint: [
@@ -370,7 +380,6 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   removeProject(project: any) {}
-
 
   cleanName(name: string): string {
     if (!name) {
