@@ -62,6 +62,7 @@ export class AnalysisContainerComponent implements OnInit {
   summaryDisplayData: any;
   analyticsSummary: any;
   @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
+  selectedSprint : any = {}
 
   constructor(
     private httpService: HttpService,
@@ -194,8 +195,14 @@ export class AnalysisContainerComponent implements OnInit {
               (item: any) => item.labelName === 'project',
             );
 
+            const filteredSprint = allData.filter(
+              (item: any) => item.labelName === 'sprint',
+            );
+
+
             this.projectData = {
               Project: filteredProjects,
+              Sprint : filteredSprint
             };
 
             this.filterData = {
@@ -424,9 +431,54 @@ export class AnalysisContainerComponent implements OnInit {
       );
     }
   }
-  handleFilterSelect(event) {
-    if (Array.isArray(event)) {
-      this.selectedProject = event;
+  handleFilterSelect(event : any) {
+    if (event.type === 'Project') {
+      this.selectedProject = event['value'];
+      this.payloadPreparasation(event.type)
     }
+    else{
+      this.selectedSprint = event['value'];
+      this.payloadPreparasation(event.type)
+    }
+  }
+
+  payloadPreparasation(changeType){
+    const proejctAlongWithSprint = {};
+    this.selectedProject.forEach(project => {
+      const allSprintsForAProject = this.projectData['Sprint'].filter(sprintDetails=>sprintDetails.parentId === project.nodeId)
+      proejctAlongWithSprint[project.nodeId] = allSprintsForAProject;
+    });
+
+    const latestClosedSprintsPerProject = Object.fromEntries(
+      Object.entries(proejctAlongWithSprint).map(([projectId, sprints]) => {
+        const latestClosed = (sprints as any[])
+          .filter((s: any) => s.sprintState === 'CLOSED')
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.sprintEndDate).getTime() -
+              new Date(a.sprintEndDate).getTime()
+          )
+          .slice(0, (this.selectedSprint.nodeId || 2))
+          .map((s: any) => s.nodeId);
+        return [projectId, latestClosed];
+      })
+    );
+
+    const paylod = {
+      project : Object.keys(latestClosedSprintsPerProject),
+      sprint : Object.values(latestClosedSprintsPerProject).flat()
+    }
+
+    // GET Matrics Table Data
+    this.httpService.getAlalyticsMatricesTableData(paylod).subscribe({
+      next : (response)=>{},
+      error : (error)=>{}
+    })
+
+    // GET AI analytics Data
+    this.httpService.getAIAnalyticsData(paylod).subscribe({
+      next : (response)=>{},
+      error : (error)=>{}
+    })
   }
 }
