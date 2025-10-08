@@ -1,0 +1,157 @@
+<div class="kpi-table-container">
+  <p-table
+    [value]="tableData"
+    [scrollable]="true"
+    [sortMode]="'multiple'"
+    styleClass="p-datatable-gridlines p-w-100 kpi-analytics-table"
+    [style]="{'width':'100%'}">
+
+    <!-- TWO-LEVEL HEADER (UPDATED) -->
+
+    <ng-template pTemplate="header">
+
+      <!-- CASE 1: TABLE WITH PROJECT GROUPINGS AND SUB-COLUMNS (Your current structure) -->
+      <ng-container *ngIf="projectHeaders?.length">
+        <tr>
+          <!-- LEVEL 1: BASE COLUMN (E.g.: Usage Type) -->
+          <th rowspan="2"
+              class="p-text-center non-sortable p-p-2"
+              [ngStyle]="{'min-width': '150px'}">
+            {{ baseColumnHeader === 'usageType' ? 'Usage Type' : baseColumnHeader }}
+          </th>
+
+          <!-- LEVEL 1: DYNAMIC HEADER (Projects + Total) -->
+          <th *ngFor="let header of projectHeaders"
+              [attr.colspan]="subColumns.length"
+              class="p-text-center p-p-2">
+
+            <div class="p-flex p-align-center p-justify-center p-gap-1">
+              <span class="p-text-bold">{{ header.name }}</span>
+
+              <!-- Settings Button (only on projects, not on 'Total') -->
+              <i *ngIf="header.cleanName !== 'total'"
+                 class="fas fa-cog p-ml-1 p-cursor-pointer"
+                 style="font-size: 14px;"
+                 (click)="openProjectSettings(header.name)"
+                 title="Project Settings"
+                 role="button"
+                 tabindex="0">
+              </i>
+            </div>
+          </th>
+        </tr>
+
+        <!-- LEVEL 2: METRICS (Efficiency Gain, Issue Count, etc.) -->
+        <tr>
+          <ng-container *ngFor="let header of projectHeaders">
+            <th *ngFor="let subColumn of subColumns"
+                class="p-text-center p-p-2"
+                [ngStyle]="{'min-width': '100px'}"
+                [pSortableColumn]="subColumn.isSortable ? header.cleanName + subColumn.dataSuffix : null">
+
+              {{ subColumn.label }}
+              <p-sortIcon *ngIf="subColumn.isSortable" [field]="header.cleanName + subColumn.dataSuffix"></p-sortIcon>
+            </th>
+          </ng-container>
+        </tr>
+      </ng-container>
+
+      <!-- CASE 2: TABLE WITHOUT PROJECT GROUPINGS (Simple structure: Sprints + simple columns) -->
+      <ng-container *ngIf="!projectHeaders?.length">
+        <tr>
+          <!-- Base Column (Sprints / Metrics) -->
+          <th class="p-text-center non-sortable p-p-2"
+              [pSortableColumn]="baseColumnHeader"
+              [ngStyle]="{'min-width': '150px'}">
+            {{ baseColumnHeader === 'usageType' ? 'Usage Type' : baseColumnHeader }}
+            <p-sortIcon [field]="baseColumnHeader"></p-sortIcon>
+          </th>
+
+          <!-- Simple Metric Columns -->
+          <th *ngFor="let subColumn of subColumns"
+              class="p-text-center p-p-2"
+              [ngStyle]="{'min-width': '100px'}"
+              [pSortableColumn]="subColumn.isSortable ? subColumn.dataSuffix : null">
+            {{ subColumn.label }}
+            <p-sortIcon *ngIf="subColumn.isSortable" [field]="subColumn.dataSuffix"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-container>
+
+    </ng-template>
+
+    <!-- TABLE BODY (UPDATED) -->
+
+    <ng-template pTemplate="body" let-rowData>
+      <tr [ngClass]="{'total-row-bg': rowData[baseColumnHeader] === 'Total'}">
+
+        <!-- BASE COLUMN (E.g.: Usage Type / Sprint Name) -->
+        <td class="p-text-left p-text-bold p-p-2" [ngStyle]="{'min-width': '150px'}">
+          {{ rowData[baseColumnHeader] }}
+        </td>
+
+        <!-- CASE 1: DYNAMIC DATA WITH PROJECT GROUPINGS (Your existing logic) -->
+        <ng-container *ngIf="projectHeaders?.length">
+          <ng-container *ngFor="let header of projectHeaders">
+            <ng-container *ngFor="let subColumn of subColumns">
+
+              <td class="p-text-center p-p-2"
+                  [ngStyle]="{'min-width': '100px'}"
+                  [ngClass]="{
+          'p-text-bold': rowData[baseColumnHeader] === 'Total',
+          'total-column-bg': header.cleanName === 'total'
+        }">
+
+                <!-- VALUE DISPLAY -->
+                <!-- Project_Suffix or Total_Row_Key Logic -->
+                <ng-container *ngIf="header.cleanName !== 'total'; else totalCell">
+
+                  <!-- Project Value (E.g.: project1_efficiencyGain) -->
+                  <ng-container *ngIf="rowData[header.cleanName + subColumn.dataSuffix] === 'N/A'">
+                    <!-- Display N/A directly, without pipe -->
+                    {{ rowData[header.cleanName + subColumn.dataSuffix] }}
+                  </ng-container>
+                  <ng-container *ngIf="rowData[header.cleanName + subColumn.dataSuffix] !== 'N/A'">
+                    <!-- Display numeric value with pipe (if defined) -->
+                    {{ rowData[header.cleanName + subColumn.dataSuffix] | number: subColumn.pipe }}
+                  </ng-container>
+                </ng-container>
+
+                <ng-template #totalCell>
+                  <!-- Row Total Value (E.g.: totalEfficiencyGain) - Always numeric -->
+                  {{ rowData[subColumn.totalDataKey] | number: subColumn.pipe }}
+                </ng-template>
+
+              </td>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <!-- CASE 2: SIMPLE DATA WITHOUT PROJECT GROUPINGS -->
+        <ng-container *ngIf="!projectHeaders?.length">
+          <td *ngFor="let subColumn of subColumns"
+              class="p-text-center p-p-2"
+              [ngStyle]="{'min-width': '100px'}">
+            <!-- Display value directly from data row using dataSuffix as key (E.g.: 'issueCount', 'efficiencyGain') -->
+            {{ rowData[subColumn.dataSuffix] }}
+          </td>
+        </ng-container>
+
+      </tr>
+
+    </ng-template>
+  </p-table>
+
+  <div *ngIf="summary && summary.length"
+       class="p-p-4 p-mt-4 p-grid p-jc-between p-gap-3">
+    <div *ngFor="let item of summary"
+         class="p-col p-d-flex p-flex-column p-ai-center p-jc-center p-text-center summary-card">
+      <div class="text-blue p-text-bold">
+        {{ item.number }}
+      </div>
+      <div class="font-small">
+        {{ item.summaryName }}
+      </div>
+    </div>
+  </div>
+</div>
