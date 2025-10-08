@@ -1319,11 +1319,11 @@ export class HttpService {
     return this.http.post<any>(this.pebCalculateUrl, payload);
   }
 
-  getAlalyticsMatricesTableData(payLoad){
+  getAlalyticsMatricesTableData(payLoad) {
     return this.http.post<any>(this.alalyticsMatricesTableDataURL, payLoad);
   }
 
-  getAIAnalyticsData(payLoad){
+  getAIAnalyticsData(payLoad) {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
   }
 }

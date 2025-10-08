@@ -7,7 +7,7 @@ describe('GenericFilterComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [GenericFilterComponent]
+      imports: [GenericFilterComponent],
     });
     fixture = TestBed.createComponent(GenericFilterComponent);
     component = fixture.componentInstance;

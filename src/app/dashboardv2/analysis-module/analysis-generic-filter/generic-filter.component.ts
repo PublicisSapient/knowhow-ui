@@ -34,13 +34,19 @@ export class GenericFilterComponent {
 
   onSelectionChange(event: any) {
     if (this.config?.type === 'singleSelect') {
-      this.selectionChange.emit({value :event.value,type : this.config?.defaultLevel?.labelName});
+      this.selectionChange.emit({
+        value: event.value,
+        type: this.config?.defaultLevel?.labelName,
+      });
     }
   }
 
   applyFilters() {
     if (this.config?.type === 'multiSelect') {
-      this.selectionChange.emit({value :this.selectedValue,type : this.config?.defaultLevel?.labelName});
+      this.selectionChange.emit({
+        value: this.selectedValue,
+        type: this.config?.defaultLevel?.labelName,
+      });
     }
   }
 }
