@@ -1,6 +1,7 @@
 <div class="generic-filter-container">
   <span class="p-float-label p-mx-2" *ngIf="config?.type === 'multiSelect'">
     <p-multiSelect
+      #multiSelect
       inputId="multiselectFilter"
       [options]="options"
       [(ngModel)]="selectedValue"
@@ -22,7 +23,7 @@
         <div class="p-p-3 p-text-right">
           <p-button
             label="Apply"
-            (onClick)="applyFilters()"
+            (onClick)="applyFilters($event)"
             [style]="{ backgroundColor: '#0B4BC8', width: '100%' }"
             [disabled]="!selectedValue?.length">
           </p-button>

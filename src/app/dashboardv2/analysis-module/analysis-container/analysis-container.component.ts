@@ -293,7 +293,9 @@ export class AnalysisContainerComponent implements OnInit {
             const allData = filterApiData['data'];
             const filteredProjects = allData.filter(
               (item: any) => item.labelName === 'project',
-            );
+            ).sort((a, b) =>
+            a.nodeDisplayName.localeCompare(b.nodeDisplayName, 'en', { sensitivity: 'base' })
+          );
 
             const filteredSprint = allData.filter(
               (item: any) => item.labelName === 'sprint',
@@ -333,7 +335,8 @@ export class AnalysisContainerComponent implements OnInit {
                 },
               ],
             };
-
+             this.selectedProject = [filteredProjects[0]]
+             this.selectedSprint = this.filterData['Sprint'][0]
             this.processProjectData(this.projectData);
           }
         }),

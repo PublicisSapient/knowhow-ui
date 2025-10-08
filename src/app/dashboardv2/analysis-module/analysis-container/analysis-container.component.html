@@ -5,12 +5,14 @@
 
 <div class="filter-container p-pt-4">
   <div class="p-d-flex p-jc-center p-ai-center ">
-    <app-generic-filter [config]="projectFilterConfig" [data]="filterData"
+    <app-generic-filter [config]="projectFilterConfig" [selectedFilters]="selectedProject" [data]="filterData"
       (selectionChange)="handleFilterSelect($event)"></app-generic-filter>
     <app-generic-filter [config]="sprintFilterConfig" [data]="filterData"
-      (selectionChange)="handleFilterSelect($event)"></app-generic-filter>
+      (selectionChange)="handleFilterSelect($event)" [selectedFilters]="selectedSprint"></app-generic-filter>
   </div>
   <div class="selected-project-container p-pt-3">
+    <div class="p-d-flex">
+    <label for="" style="line-height: 2;margin: 10px;">Selected Projects: </label>
     <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
         @for(item of selectedProject;track item){
           <li class="selectedfilter cursor-pointer p-mr-3" role="listitem">
@@ -24,6 +26,7 @@
           </li>
         }
     </ul>
+    </div>
   </div>
 </div>
 
