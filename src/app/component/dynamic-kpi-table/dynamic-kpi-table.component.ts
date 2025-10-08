@@ -5,12 +5,13 @@ import { TableModule } from 'primeng/table';
 export interface ProjectHeader {
   name: string;
   cleanName: string;
+  isTotalColumn?: boolean;
 }
 
 export interface SubColumn {
   label: string; // displayed name (ex: 'Efficiency gain')
   dataSuffix: string; //  ex: '_efficiencyGain'
-  pipe: string | undefined;
+  pipe?: string | undefined;
   isSortable: boolean;
   totalDataKey?: string; // Total key used to display Total on the row.
   // Ex: for '_efficiencyGain', total key will be 'totalEfficiencyGain'.
@@ -28,6 +29,7 @@ export class DynamicKpiTableComponent {
   @Input() projectHeaders: ProjectHeader[] = [];
   @Input() subColumns: SubColumn[] = [];
   @Input() baseColumnHeader: string = '';
+  @Input() baseColumnHeader2?: string;
   @Input() summary: any;
   @Output() onProjectSettingsClick = new EventEmitter<string>();
 

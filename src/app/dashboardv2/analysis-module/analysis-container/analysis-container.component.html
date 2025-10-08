@@ -27,26 +27,44 @@
   </div>
 </div>
 
+<div class="p-d-flex p-jc-center p-ai-center">
+  <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 80%;">
+    <div class="p-card-content p-p-0">
+      <app-kpi-card-v2
+        [kpiData]="metricsKpiSettings"
+        [loader]="false"
+        [immediateLoader]="false">
+        <app-dynamic-kpi-table
+          kpiTable
+          [tableData]="metricsTableData"
+          [projectHeaders]="metricsProjectHeaders"
+          [subColumns]="metricsSubColumns"
+          [baseColumnHeader]="metricsBaseColumnHeader"
+          (onProjectSettingsClick)="openProjectSettings($event)">
+        </app-dynamic-kpi-table>
+      </app-kpi-card-v2>
+    </div>
+  </div>
+</div>
 
 
-<div class="p-d-flex p-jc-center p-ai-center p-mt-4">
-  <div class="p-card p-p-0 kpi-card-container-wrapper">
-      <div class="p-card-content p-p-0">
-          <app-kpi-card-v2 #kpiCard
-                  [kpiData]="kpiSettingsForTable"
-                  [loader]="false"
-                  [immediateLoader]="false">
-              <app-dynamic-kpi-table
-                      kpiTable
-                      [tableData]="kpiTableData"
-                      [projectHeaders]="projectHeaders"
-                      [subColumns]="subColumns"
-                      [baseColumnHeader]="baseColumnHeader"
-                      [summary]="summaryDisplayData"
-                      (onProjectSettingsClick)="openProjectSettings($event)">
-              </app-dynamic-kpi-table>
-          </app-kpi-card-v2>
-      </div>
-
+<div class="p-d-flex p-jc-center p-ai-center">
+  <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 80%;">
+    <div class="p-card-content p-p-0">
+      <app-kpi-card-v2 #kpiCard
+                       [kpiData]="aiUsageKpiSettings"
+                       [loader]="false"
+                       [immediateLoader]="false">
+        <app-dynamic-kpi-table
+          kpiTable
+          [tableData]="aiUsageTableData"
+          [projectHeaders]="aiUsageProjectHeaders"
+          [subColumns]="aiUsageSubColumns"
+          [baseColumnHeader]="aiUsageBaseColumnHeader"
+          [summary]="aiUsageSummaryDisplayData"
+          (onProjectSettingsClick)="openProjectSettings($event)">
+        </app-dynamic-kpi-table>
+      </app-kpi-card-v2>
+    </div>
   </div>
 </div>
