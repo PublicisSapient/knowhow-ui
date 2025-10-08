@@ -1,0 +1,15 @@
+.generic-filter-container {
+  width: 100%;
+}
+
+.filter-item {
+  padding: 8px;
+}
+
+.filter-item-selected {
+  padding: 4px;
+}
+
+.floating-label {
+  font-size: 12px;
+}

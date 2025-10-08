@@ -36,3 +36,24 @@
 :host::ng-deep.kpi-card-body {
   padding: 0 !important;
 }
+
+ul li.selectedfilter {
+  font-size: 0.8rem;
+  display: flex;
+  line-height: 2;
+  margin: 10px;
+}
+
+.selectedfilter {
+  padding: 0 8px;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.remove-node {
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 5px;
+}

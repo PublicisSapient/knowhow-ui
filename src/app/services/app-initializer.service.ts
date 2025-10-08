@@ -162,6 +162,9 @@ export class AppInitializerService {
         {
           path: 'Analysis',
           component: AnalysisContainerComponent,
+          data: {
+            feature: 'Analysis',
+          },
         },
         {
           path: ':boardName',

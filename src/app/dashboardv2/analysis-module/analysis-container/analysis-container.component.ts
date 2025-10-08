@@ -5,6 +5,7 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { DynamicKpiTableComponent } from '../../../component/dynamic-kpi-table/dynamic-kpi-table.component';
 import { Subscription } from 'rxjs';
+import { GenericFilterComponent } from '../analysis-generic-filter/generic-filter.component';
 
 interface SubColumn {
   label: string;
@@ -35,7 +36,7 @@ export interface AnalyticsSummary {
   templateUrl: './analysis-container.component.html',
   styleUrls: ['./analysis-container.component.css'],
   standalone: true,
-  imports: [KpiCardV2Component, ToastModule, DynamicKpiTableComponent],
+  imports: [KpiCardV2Component, ToastModule, DynamicKpiTableComponent,GenericFilterComponent,],
 })
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
@@ -45,6 +46,9 @@ export class AnalysisContainerComponent implements OnInit {
   selectedProjects: string[] = [];
   subscriptions: Subscription[] = [];
   newAPIData: any;
+  filterData: any = null;
+  projectFilterConfig : any = null;
+  sprintFilterConfig : any = null;
 
   // Used by DynamicKpiTableComponent
   projectHeaders: { name: string; cleanName: string }[] = [];
@@ -110,6 +114,19 @@ export class AnalysisContainerComponent implements OnInit {
     this.processAnalyticsData(this.newAPIData);
     this.updateKpiSettings();
     this.getProjectData();
+    this.projectFilterConfig = {
+      type: 'multiSelect',
+      defaultLevel: {
+        labelName: 'Project',
+      },
+    };
+
+    this.sprintFilterConfig = {
+      type: 'singleSelect',
+      defaultLevel: {
+        labelName: 'Sprint',
+      },
+    };
   }
 
   private processSummaryData(summary: any): AnalyticsSummary[] {
@@ -171,11 +188,34 @@ export class AnalysisContainerComponent implements OnInit {
             const filteredProjects = allData.filter(
               (item: any) => item.labelName === 'project',
             );
-            this.service.setFilterData({
+            this.filterData = {
               Project: filteredProjects,
-            });
-            this.projectData = {
-              Project: filteredProjects,
+              Sprint: [
+                {
+                  nodeId: '2',
+                  nodeName: 'Last 2 Sprint',
+                  nodeDisplayName: 'Last 2 Sprint',
+                  labelName: 'sprint',
+                },
+                {
+                  nodeId: '4',
+                  nodeName: 'Last 4 Sprint',
+                  nodeDisplayName: 'Last 4 Sprint',
+                  labelName: 'sprint',
+                },
+                {
+                  nodeId: '6',
+                  nodeName: 'Last 6 Sprint',
+                  nodeDisplayName: 'Last 6 Sprint',
+                  labelName: 'sprint',
+                },
+                {
+                  nodeId: '8',
+                  nodeName: 'Last 8 Sprint',
+                  nodeDisplayName: 'Last 8 Sprint',
+                  labelName: 'sprint',
+                },
+              ],
             };
 
             this.processProjectData(this.projectData);
@@ -329,6 +369,9 @@ export class AnalysisContainerComponent implements OnInit {
     console.log('Summary Data for Display:', this.summaryDisplayData);
   }
 
+  removeProject(project: any) {}
+
+
   cleanName(name: string): string {
     if (!name) {
       return '';
@@ -370,6 +413,11 @@ export class AnalysisContainerComponent implements OnInit {
       console.error(
         `The complete object for project "${projectName}" was not found in the available project list.`,
       );
+    }
+  }
+  handleFilterSelect(event) {
+    if (Array.isArray(event)) {
+      this.selectedProject = event;
     }
   }
 }
