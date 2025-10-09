@@ -145,6 +145,8 @@ import { SharelinkService } from './services/share-link.service';
 import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
 import { HomeComponent } from './dashboard/home/home.component';
+import { IndicatorsComponent } from './dashboard/indicators/indicators.component';
+import { ListBlockComponent } from './dashboard/list-block/list-block.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -206,6 +208,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     PebCalculatorComponent,
     StackedGroupBarChartComponent,
     HomeComponent,
+    IndicatorsComponent,
+    ListBlockComponent,
   ],
   imports: [
     SharedModuleModule,

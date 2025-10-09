@@ -1,0 +1,18 @@
+<p-card styleClass="metric-card">
+  <div class="card-header">
+    <span class="card-title">{{ title }}</span>
+    <i [class]="'pi ' + icon + ' icon-style'" [style]="'color:' + iconColor"></i>
+  </div>
+
+  <div class="metric-value">
+    <span class="value">{{ metricValue }}</span>
+    <span class="unit">{{ metricUnit }}</span>
+  </div>
+
+  <div class="trend-container">
+    <div [class]="'trend ' + (isPositiveTrend ? 'positive' : 'negative')">
+      <i [class]="'pi ' + trendIcon + ' trend-icon'"></i>
+      <span class="trend-text">{{ absoluteTrendValue }}% {{ trendLabel }}</span>
+    </div>
+  </div>
+</p-card>

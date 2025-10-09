@@ -41,6 +41,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 import { ExcelService } from 'src/app/services/excel.service';
 import { Subject, throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
+import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
 
 @Component({
   selector: 'app-executive-v2',
@@ -153,6 +154,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
+
+  monthlyMetrics: MetricItem[] = [
+    { label: 'Total PRs', value: 35, trend: 'neutral' },
+    { label: 'Avg Review Time', value: '1.8 days', trend: 'neutral' },
+    { label: 'Lines of Code', value: '12,450', trend: 'neutral' },
+  ];
+  qualityIndicators: MetricItem[] = [
+    { label: 'Test Coverage', value: '94%', trend: 'positive' },
+    { label: 'Code Duplication', value: '3%', trend: 'positive' },
+    { label: 'Technical Debt', value: 'Medium', trend: 'negative' },
+  ];
+  goalsTargets: MetricItem[] = [
+    { label: 'Sprint Velocity', value: 'On Track', trend: 'positive' },
+    { label: 'Feature Completion', value: '89%', trend: 'positive' },
+    { label: 'Bug Resolution', value: '85%', trend: 'negative' },
+  ];
 
   constructor(
     public service: SharedService,

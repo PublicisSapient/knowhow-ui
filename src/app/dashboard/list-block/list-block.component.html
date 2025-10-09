@@ -1,0 +1,9 @@
+<div class="metrics-card">
+  <h3 class="metrics-title">{{ title }}</h3>
+  <div class="metrics-list">
+    <div class="metric-item" *ngFor="let metric of metrics">
+      <span class="metric-label">{{ metric.label }}</span>
+      <span class="metric-value" [ngClass]="metric.trend">{{ metric.value }}</span>
+    </div>
+  </div>
+</div>
