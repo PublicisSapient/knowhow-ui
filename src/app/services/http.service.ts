@@ -203,7 +203,8 @@ export class HttpService {
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
   private alalyticsMatricesTableDataURL = this.baseUrl + '/api/';
-  private AIAnalyticsDataURL = this.baseUrl + '/api/';
+  private AIAnalyticsDataURL =
+    this.baseUrl + '/api/analysis/analytics/ai-usage/query';
 
   constructor(
     private router: Router,

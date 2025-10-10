@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter, ViewChild, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
@@ -24,24 +31,29 @@ export class GenericFilterComponent {
   @Input() optionLabel: string = 'nodeDisplayName';
   @Input() optionValue: string = 'nodeId';
   @Input() placeholder: string = 'Select...';
-  @Input() selectedFilters : any;
+  @Input() selectedFilters: any;
   @Output() selectionChange = new EventEmitter<any>();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   selectedValue: any;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.config.type === 'multiSelect' && this.selectedFilters?.length) {
+    if (
+      changes['data'] &&
+      this.config.type === 'multiSelect' &&
+      this.selectedFilters?.length
+    ) {
       // match by label or value after data arrives
-      this.selectedValue = this.data[this.config.defaultLevel.labelName]?.filter((opt: any) =>
-        this.selectedFilters.some((sel: any) => sel.nodeId === opt.nodeId)
+      this.selectedValue = this.data[
+        this.config.defaultLevel.labelName
+      ]?.filter((opt: any) =>
+        this.selectedFilters.some((sel: any) => sel.nodeId === opt.nodeId),
       );
     }
-  
+
     if (changes['selectedFilters'] && this.config.type === 'singleSelect') {
       this.selectedValue = this.selectedFilters;
     }
-    
   }
 
   get options() {

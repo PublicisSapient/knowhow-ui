@@ -29,8 +29,11 @@ interface SelectedTrend {
   basicProjectConfigId: string;
 }
 
+// Interfața actualizată pentru referința la KpiCardV2Component
 interface KpiCardV2ComponentType {
+  // Metoda care deschide modalul de setări (presupunem că e aceeași)
   onOpenFieldMappingDialog: () => void;
+  // Obiectul care definește trendul/proiectul pentru care se deschid setările
   selectedTrendObject: SelectedTrend | null;
 }
 
@@ -84,64 +87,21 @@ export class AnalysisContainerComponent implements OnInit {
   analyticsSummary: any;
   @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
 
-
   constructor(
     private httpService: HttpService,
     public service: SharedService,
   ) {}
 
   ngOnInit() {
-    this.newAPIData = {
-      summary: {
-        averageEfficiencyGainPerAiUsageType: 214,
-        averageEfficiencyGainPerProject: 534,
-        usageTypesNumber: 10,
-        projectsNumber: 5,
-      },
-      analytics: [
-        {
-          aiUsageType: 'Usage type 1',
-          projects: [
-            { issueCount: 20, efficiencyGain: 5.1, name: 'Project 1' },
-            { issueCount: 30, efficiencyGain: 0.1, name: 'KnowHow' },
-            {
-              issueCount: 50,
-              efficiencyGain: 2.2,
-              name: 'Travel Insurance',
-            },
-          ],
-        },
-        {
-          aiUsageType: 'Usage type 2',
-          projects: [
-            { issueCount: 80, efficiencyGain: 4.2, name: 'Project 1' },
-            { issueCount: 40, efficiencyGain: 2.1, name: 'Project 2' },
-          ],
-        },
-        {
-          aiUsageType: 'Usage type 3',
-          projects: [
-            { issueCount: 70, efficiencyGain: 2.4, name: 'Project A' },
-            { issueCount: 50, efficiencyGain: 0.6, name: 'Project D' },
-          ],
-        },
-      ],
-    };
-
     const projectNames = new Set<string>();
-    this.newAPIData.analytics.forEach((type: any) => {
-      type.projects.forEach((project: any) => {
-        projectNames.add(project.name);
-      });
-    });
     this.selectedProjects = Array.from(projectNames);
 
-    this.processAiUsageTableData(this.newAPIData);
+    // this.processAiUsageTableData(this.newAPIData);
 
     this.getProjectData();
-    this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG
+    this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
 
-    this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG
+    this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
   }
 
   private processSummaryData(summary: any): AnalyticsSummary[] {
@@ -175,6 +135,7 @@ export class AnalysisContainerComponent implements OnInit {
 
   updateKpiSettings(type: 'aiUsage' | 'metrics') {
     const kpiSettings = {
+      issueData: 'JIRA',
       kpiId: 'kpi198',
       kpiFilter: 'table',
       kpiDetail: {
@@ -217,11 +178,13 @@ export class AnalysisContainerComponent implements OnInit {
         .subscribe((filterApiData) => {
           if (filterApiData['success']) {
             const allData = filterApiData['data'];
-            const filteredProjects = allData.filter(
-              (item: any) => item.labelName === 'project',
-            ).sort((a, b) =>
-            a.nodeDisplayName.localeCompare(b.nodeDisplayName, 'en', { sensitivity: 'base' })
-          );
+            const filteredProjects = allData
+              .filter((item: any) => item.labelName === 'project')
+              .sort((a, b) =>
+                a.nodeDisplayName.localeCompare(b.nodeDisplayName, 'en', {
+                  sensitivity: 'base',
+                }),
+              );
 
             const filteredSprint = allData.filter(
               (item: any) => item.labelName === 'sprint',
@@ -234,12 +197,12 @@ export class AnalysisContainerComponent implements OnInit {
 
             this.filterData = {
               Project: filteredProjects,
-              Sprint: analysisConstant.SPRINT_FILTER_OPTIONS
+              Sprint: analysisConstant.SPRINT_FILTER_OPTIONS,
             };
-             this.selectedProject = [this.filterData['Project'][0]]
-             this.selectedSprint = this.filterData['Sprint'][0]
+            this.selectedProject = [this.filterData['Project'][0]];
+            this.selectedSprint = this.filterData['Sprint'][0];
             this.processProjectData(this.projectData);
-            this.payloadPreparasation()
+            //  this.payloadPreparasation();
           }
         }),
     );
@@ -248,6 +211,15 @@ export class AnalysisContainerComponent implements OnInit {
   processProjectData(data: any) {}
 
   private processAiUsageTableData(apiData: any) {
+    const projectNames = new Set<string>();
+    apiData?.analytics?.forEach((type: any) => {
+      type.projects?.forEach((project: any) => {
+        projectNames.add(project.name);
+      });
+    });
+
+    this.selectedProjects = Array.from(projectNames);
+
     // 1. Define the Base Column
     this.aiUsageBaseColumnHeader = 'Usage Type';
 
@@ -374,12 +346,13 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   private processMetricsTableData(apiData: any) {
-    const allProjects = this.selectedProject.map(data => data.nodeDisplayName) || [];
-    const allSprints =  [
+    const allProjects =
+      this.selectedProject.map((data) => data.nodeDisplayName) || [];
+    const allSprints = [
       ...new Set(
-        apiData.analytics.flatMap(a =>
-          a.projects.flatMap(p => p.sprints.map(s => s.sprint))
-        )
+        apiData.analytics.flatMap((a) =>
+          a.projects.flatMap((p) => p.sprints.map((s) => s.sprint)),
+        ),
       ),
     ];
 
@@ -448,16 +421,18 @@ export class AnalysisContainerComponent implements OnInit {
 
           const dataKey = `${projectPrefix}${this.metricsSubColumns[0].dataSuffix}`;
           const projectData = projectsDataMap.get(projectName);
-          if(projectData){
-            const sprintData = projectData.find((sprint: any) => sprint.sprint === sprintName);
+          if (projectData) {
+            const sprintData = projectData.find(
+              (sprint: any) => sprint.sprint === sprintName,
+            );
             if (sprintData) {
-              newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`
-           }else{
-            newRow[dataKey] = 'NA'
-           }
-        }else{
-          newRow[dataKey] = 'NA'
-        }
+              newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`;
+            } else {
+              newRow[dataKey] = 'NA';
+            }
+          } else {
+            newRow[dataKey] = 'NA';
+          }
         });
 
         finalTableData.push(newRow);
@@ -495,7 +470,7 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   openProjectSettings(projectName: string) {
-    console.log(`Settings for project: ${projectName}`);
+    console.log(`Settings for project: ${projectName} clicked.`);
 
     const lowerCaseProjectName = projectName?.toLowerCase();
 
@@ -505,13 +480,34 @@ export class AnalysisContainerComponent implements OnInit {
         p.nodeDisplayName?.toLowerCase() === lowerCaseProjectName,
     );
 
-    if (projectObject) {
-      console.warn(
-        'Project settings are open, but we do not know which kpiCard to use.',
-      );
+    const trendObject: SelectedTrend = projectObject
+      ? {
+          nodeId: projectObject.nodeId,
+          nodeName: projectObject.nodeName,
+          basicProjectConfigId: projectObject.basicProjectConfigId,
+        }
+      : null;
+
+    if (trendObject) {
+      this.kpiCardComponent.selectedTrendObject = trendObject;
+
+      if (
+        this.kpiCardComponent &&
+        this.kpiCardComponent.onOpenFieldMappingDialog
+      ) {
+        console.warn(
+          'SUCCESS: S-a setat selectedTrendObject. Apelare onOpenFieldMappingDialog pe kpiCardComponent.',
+        );
+        this.kpiCardComponent.onOpenFieldMappingDialog();
+      } else {
+        console.error(
+          'FATAL ERROR: KpiCardV2 component reference is missing or does not have onOpenFieldMappingDialog method.',
+        );
+        this.kpiCardComponent.selectedTrendObject = null;
+      }
     } else {
       console.error(
-        `The complete object for project "${projectName}" was not found in the available project list.`,
+        `FAILURE: The complete object for project "${projectName}" was not found in the available project list.`,
       );
     }
   }
@@ -550,25 +546,51 @@ export class AnalysisContainerComponent implements OnInit {
       }),
     );
 
+    const projectBasicConfigIds = this.selectedProject.map(
+      (p: any) => p.basicProjectConfigId,
+    );
+
     const payload = {
       project: Object.keys(latestClosedSprintsPerProject),
       sprint: Object.values(latestClosedSprintsPerProject).flat(),
     };
 
-    console.log("api will hit from here",payload)
+    const aiPayload = {
+      numberOfSprintsToInclude: parseInt(this.selectedSprint.nodeId || '2'),
+      projectBasicConfigIds: projectBasicConfigIds,
+    };
+
+    console.log('api will hit from here', payload);
 
     // GET Matrics Table Data
     this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
       next: (response) => {
-        this.processMetricsTableData(response)
+        this.processMetricsTableData(response);
       },
       error: (error) => {},
     });
 
     // GET AI analytics Data
-    this.httpService.getAIAnalyticsData(payload).subscribe({
-      next: (response) => {},
-      error: (error) => {},
-    });
+    this.subscriptions.push(
+      this.httpService.getAIAnalyticsData(aiPayload).subscribe({
+        next: (response) => {
+          const apiData = response?.data;
+          if (apiData && apiData.analytics?.length > 0) {
+            this.processAiUsageTableData(apiData);
+          } else {
+            console.warn(
+              'AI Analytics API returned empty data or was not in the expected format.',
+            );
+            this.aiUsageTableData = [];
+            this.updateKpiSettings('aiUsage');
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching AI Analytics Data:', error);
+          this.aiUsageTableData = [];
+          this.updateKpiSettings('aiUsage');
+        },
+      }),
+    );
   }
 }
