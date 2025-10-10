@@ -34,8 +34,9 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (
-      route.url[0].path === 'GrantRequests' &&
-      this.getAuthorization.checkIfProjectAdmin()
+      route.url[0].path === 'GrantRequests' ||
+      (route.url[0].path === 'AccessMgmt' &&
+        this.getAuthorization.checkIfProjectAdmin())
     ) {
       return true;
     }

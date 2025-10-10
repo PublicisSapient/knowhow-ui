@@ -189,11 +189,14 @@
                   <tr *ngFor="let access of rowData.projectsAccess">
                     <td class="nested-td">
                       <div *ngFor="let node of access.accessNodes">
-                        <div class="info-block" *ngFor="let item of node.accessItems"
-                          (mouseenter)="mouseEnter($event, item, node)" (mouseleave)="mouseLeave()" id="projectAccess">
-                          {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
-                          item.itemName.substring(0,24) + "..." : item.itemName }}
-                        </div>
+                        <ng-container *ngFor="let item of node.accessItems">
+
+                          <div class="info-block" 
+                            (mouseenter)="mouseEnter($event, item, node)" (mouseleave)="mouseLeave()" id="projectAccess">
+                            {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
+                            item.itemName.substring(0,24) + "..." : item.itemName }}
+                          </div>
+                        </ng-container>
                       </div>
 
                     </td>
@@ -216,7 +219,7 @@
                 [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" tabindex="0"></button>
 
 
-              <button type="button" pRipple pButton [disabled]="rowData.authorities.includes('ROLE_SUPERADMIN')"
+              <button *ngIf="!isProjectAdmin" type="button" pRipple pButton [disabled]="rowData.authorities.includes('ROLE_SUPERADMIN')"
                 class="p-button-text p-button-plain btn-toggle p-ml-1" [icon]="'pi pi-trash'" tabindex="0"
                 (click)="deleteUser(rowData?.username,rowData?.authorities)"></button>
 
@@ -238,15 +241,18 @@
                   <tr *ngFor="let access of rowData.projectsAccess; let i = index" [attr.data-index]="i" role="row">
                     <td class="nested-td" role="cell">
                       <span *ngFor="let node of access.accessNodes">
-                        <div class="info-block cross" *ngFor="let item of node.accessItems">
-                          <span (click)="removeProject(item.itemName, node.accessItems)">
-                            <div class="crossbtn" tabindex="0">✕</div>
-                            <div class="selected-data" tabindex="0">
-                              {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
-                              item.itemName.substring(0,24) + "..." : item.itemName }}
-                            </div>
-                          </span>
-                        </div>
+                        <ng-container *ngFor="let item of node.accessItems">
+
+                          <div class="info-block cross" >
+                            <span (click)="removeProject(item.itemName, node.accessItems)">
+                              <div class="crossbtn" tabindex="0" *ngIf="checkProjectAvailability(item.itemName)">✕</div>
+                              <div class="selected-data" tabindex="0">
+                                {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
+                                item.itemName.substring(0,24) + "..." : item.itemName }}
+                              </div>
+                            </span>
+                          </div>
+                        </ng-container>
                       </span>
                       <button pButton pRipple type="button"
                         class="p-button-sm p-button-success p-button-raised p-mt-2 p-ml-2" icon="pi pi-plus"
