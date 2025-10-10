@@ -38,3 +38,6 @@ export const SPRINT_FILTER_CONFIG = {
     labelName: 'Sprint',
   },
 };
+
+export const PROJECT_KEY = 'Project';
+export const SPRINT_KEY = 'Sprint';

@@ -29,11 +29,8 @@ interface SelectedTrend {
   basicProjectConfigId: string;
 }
 
-// Interfața actualizată pentru referința la KpiCardV2Component
 interface KpiCardV2ComponentType {
-  // Metoda care deschide modalul de setări (presupunem că e aceeași)
   onOpenFieldMappingDialog: () => void;
-  // Obiectul care definește trendul/proiectul pentru care se deschid setările
   selectedTrendObject: SelectedTrend | null;
 }
 
@@ -57,7 +54,6 @@ export interface AnalyticsSummary {
 })
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
-  selectedProject: any;
   selectedSprint: any = {};
 
   // --- VARIABLES FOR AI USAGE TABLE ---
@@ -77,9 +73,8 @@ export class AnalysisContainerComponent implements OnInit {
   metricsBaseColumnHeader2: string = '';
   metricsSummaryDisplayData: AnalyticsSummary[] = [];
 
-  selectedProjects: string[] = [];
+  selectedProjects: any = [];
   subscriptions: Subscription[] = [];
-  newAPIData: any;
   filterData: any = null;
   projectFilterConfig: any = null;
   sprintFilterConfig: any = null;
@@ -95,12 +90,8 @@ export class AnalysisContainerComponent implements OnInit {
   ngOnInit() {
     const projectNames = new Set<string>();
     this.selectedProjects = Array.from(projectNames);
-
-    // this.processAiUsageTableData(this.newAPIData);
-
     this.getProjectData();
     this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
-
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
   }
 
@@ -199,8 +190,11 @@ export class AnalysisContainerComponent implements OnInit {
               Project: filteredProjects,
               Sprint: analysisConstant.SPRINT_FILTER_OPTIONS,
             };
-            this.selectedProject = [this.filterData['Project'][0]];
-            this.selectedSprint = this.filterData['Sprint'][0];
+            this.selectedProjects = [
+              this.filterData[analysisConstant.PROJECT_KEY][1],
+            ];
+            this.selectedSprint =
+              this.filterData[analysisConstant.SPRINT_KEY][2];
             this.processProjectData(this.projectData);
             //  this.payloadPreparasation();
           }
@@ -218,7 +212,7 @@ export class AnalysisContainerComponent implements OnInit {
       });
     });
 
-    this.selectedProjects = Array.from(projectNames);
+    // this.selectedProjects = Array.from(projectNames);
 
     // 1. Define the Base Column
     this.aiUsageBaseColumnHeader = 'Usage Type';
@@ -249,11 +243,13 @@ export class AnalysisContainerComponent implements OnInit {
     const allHeaders = [...this.selectedProjects, 'Total'];
 
     allHeaders.forEach((projectName) => {
-      const cleanName = this.cleanName(projectName);
       const isTotal = projectName === 'Total';
+      const displayName = isTotal ? 'Total' : projectName.nodeDisplayName;
+
+      const cleanName = this.cleanName(displayName);
 
       this.aiUsageProjectHeaders.push({
-        name: projectName === 'Total' ? 'Total' : projectName,
+        name: displayName,
         cleanName: cleanName,
         isTotalColumn: isTotal,
       });
@@ -276,8 +272,8 @@ export class AnalysisContainerComponent implements OnInit {
       });
 
       this.selectedProjects.forEach((projectName) => {
-        const projectData = projectsMap.get(projectName);
-        const fieldNamePrefix = this.cleanName(projectName);
+        const projectData = projectsMap.get(projectName.nodeName);
+        const fieldNamePrefix = this.cleanName(projectName.nodeDisplayName);
 
         const efficiencyGainValue = projectData?.efficiencyGain;
         const issueCountValue = projectData?.issueCount;
@@ -317,7 +313,7 @@ export class AnalysisContainerComponent implements OnInit {
     };
 
     this.selectedProjects.forEach((projectName) => {
-      const fieldNamePrefix = this.cleanName(projectName);
+      const fieldNamePrefix = this.cleanName(projectName.nodeDisplayName);
 
       const projectEfficiencyTotal = this.aiUsageTableData.reduce(
         (sum, row) =>
@@ -347,7 +343,7 @@ export class AnalysisContainerComponent implements OnInit {
 
   private processMetricsTableData(apiData: any) {
     const allProjects =
-      this.selectedProject.map((data) => data.nodeDisplayName) || [];
+      this.selectedProjects.map((data) => data.nodeDisplayName) || [];
     const allSprints = [
       ...new Set(
         apiData.analytics.flatMap((a) =>
@@ -452,10 +448,27 @@ export class AnalysisContainerComponent implements OnInit {
     this.processAiUsageTableData(apiData);
   }
 
-  removeProject(project: any) {}
+  removeProject(project: any) {
+    if (this.selectedProjects.length === 1) {
+      return;
+    }
+
+    this.selectedProjects = [
+      ...this.selectedProjects.filter(
+        (item: any) => item.nodeId !== project.nodeId,
+      ),
+    ];
+
+    this.payloadPreparasation();
+  }
 
   cleanName(name: string): string {
     if (!name) {
+      return '';
+    }
+
+    if (typeof name !== 'string') {
+      console.error('cleanName received non-string input:', name);
       return '';
     }
     let cleaned = name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '');
@@ -474,7 +487,7 @@ export class AnalysisContainerComponent implements OnInit {
 
     const lowerCaseProjectName = projectName?.toLowerCase();
 
-    const projectObject = this.projectData['Project']?.find(
+    const projectObject = this.projectData[analysisConstant.PROJECT_KEY]?.find(
       (p: any) =>
         p.nodeName?.toLowerCase() === lowerCaseProjectName ||
         p.nodeDisplayName?.toLowerCase() === lowerCaseProjectName,
@@ -495,9 +508,6 @@ export class AnalysisContainerComponent implements OnInit {
         this.kpiCardComponent &&
         this.kpiCardComponent.onOpenFieldMappingDialog
       ) {
-        console.warn(
-          'SUCCESS: S-a setat selectedTrendObject. Apelare onOpenFieldMappingDialog pe kpiCardComponent.',
-        );
         this.kpiCardComponent.onOpenFieldMappingDialog();
       } else {
         console.error(
@@ -507,14 +517,14 @@ export class AnalysisContainerComponent implements OnInit {
       }
     } else {
       console.error(
-        `FAILURE: The complete object for project "${projectName}" was not found in the available project list.`,
+        `The complete object for project "${projectName}" was not found in the available project list.`,
       );
     }
   }
 
   handleFilterSelect(event: any) {
-    if (event.type === 'Project') {
-      this.selectedProject = event['value'];
+    if (event.type === analysisConstant.PROJECT_KEY) {
+      this.selectedProjects = event['value'];
       this.payloadPreparasation();
     } else {
       this.selectedSprint = event['value'];
@@ -524,10 +534,10 @@ export class AnalysisContainerComponent implements OnInit {
 
   payloadPreparasation() {
     const proejctAlongWithSprint = {};
-    this.selectedProject.forEach((project) => {
-      const allSprintsForAProject = this.projectData['Sprint'].filter(
-        (sprintDetails) => sprintDetails.parentId === project.nodeId,
-      );
+    this.selectedProjects.forEach((project) => {
+      const allSprintsForAProject = this.projectData[
+        analysisConstant.SPRINT_KEY
+      ].filter((sprintDetails) => sprintDetails.parentId === project.nodeId);
       proejctAlongWithSprint[project.nodeId] = allSprintsForAProject;
     });
 
@@ -546,7 +556,7 @@ export class AnalysisContainerComponent implements OnInit {
       }),
     );
 
-    const projectBasicConfigIds = this.selectedProject.map(
+    const projectBasicConfigIds = this.selectedProjects.map(
       (p: any) => p.basicProjectConfigId,
     );
 
@@ -563,12 +573,12 @@ export class AnalysisContainerComponent implements OnInit {
     console.log('api will hit from here', payload);
 
     // GET Matrics Table Data
-    this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
-      next: (response) => {
-        this.processMetricsTableData(response);
-      },
-      error: (error) => {},
-    });
+    // this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
+    //   next: (response) => {
+    //     this.processMetricsTableData(response);
+    //   },
+    //   error: (error) => {},
+    // });
 
     // GET AI analytics Data
     this.subscriptions.push(
