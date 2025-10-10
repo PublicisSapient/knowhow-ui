@@ -55,6 +55,7 @@ export interface AnalyticsSummary {
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
   selectedSprint: any = {};
+  selectedTab: any;
 
   // --- VARIABLES FOR AI USAGE TABLE ---
   public aiUsageKpiSettings: any;
@@ -93,6 +94,7 @@ export class AnalysisContainerComponent implements OnInit {
     this.getProjectData();
     this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
+    this.selectedTab = analysisConstant.SELECTED_TAB_ANALYSIS_KEY;
   }
 
   private processSummaryData(summary: any): AnalyticsSummary[] {

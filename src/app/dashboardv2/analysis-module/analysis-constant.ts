@@ -63,3 +63,5 @@ export const MATRICS_TABLE_DUMMY_KPI = {
   },
   kpiName: 'Metrics Analytics',
 };
+
+export const SELECTED_TAB_ANALYSIS_KEY = 'analysis';

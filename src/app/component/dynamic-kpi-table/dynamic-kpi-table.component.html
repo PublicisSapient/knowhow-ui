@@ -23,8 +23,10 @@
             <!-- Base Column 1 (Metrics) -->
             <th rowspan="1"
                 class="p-text-center non-sortable p-p-2"
-                [ngStyle]="{'min-width': '150px'}">
+                [ngStyle]="{'min-width': '150px'}"
+                [pSortableColumn]="baseColumnHeader">
               {{ baseColumnHeader }}
+              <p-sortIcon [field]="baseColumnHeader"></p-sortIcon>
             </th>
 
             <!-- Base Column 2 (rowId) - Invisible, to enforce row uniqueness -->
@@ -39,7 +41,8 @@
             <!-- LEVEL 1: DYNAMIC HEADER (Sprint + Projects) -->
             <th *ngFor="let header of projectHeaders"
                 [attr.colspan]="1"
-                class="p-text-center p-p-2">
+                class="p-text-center p-p-2"
+                [pSortableColumn]="header.cleanName + subColumns[0].dataSuffix">
 
               <div class="p-flex p-align-center p-justify-center p-gap-1">
                 <span class="p-text-bold">{{ header.name }}</span>
@@ -53,6 +56,7 @@
                    role="button"
                    tabindex="0">
                 </i>
+                <p-sortIcon [field]="header.cleanName + subColumns[0].dataSuffix"></p-sortIcon>
               </div>
             </th>
           </tr>
@@ -65,7 +69,8 @@
             <!-- LEVEL 1: BASE COLUMN 1 (E.g.: Usage Type) -->
             <th rowspan="2"
                 class="p-text-center non-sortable p-p-2"
-                [ngStyle]="{'min-width': '150px'}">
+                [ngStyle]="{'min-width': '150px'}"
+                [pSortableColumn]="baseColumnHeader">
               {{ baseColumnHeader }}
             </th>
 
