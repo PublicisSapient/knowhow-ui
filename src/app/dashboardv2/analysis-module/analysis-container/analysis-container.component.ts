@@ -7,6 +7,7 @@ import { DynamicKpiTableComponent } from '../../../component/dynamic-kpi-table/d
 import { Subscription } from 'rxjs';
 import { GenericFilterComponent } from '../analysis-generic-filter/generic-filter.component';
 import { ButtonModule } from 'primeng/button';
+import * as analysisConstant from '../analysis-constant';
 
 interface SubColumn {
   label: string;
@@ -83,70 +84,6 @@ export class AnalysisContainerComponent implements OnInit {
   analyticsSummary: any;
   @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
 
-  metricsAPIData = {
-    analytics: [
-      {
-        metricDescription:
-          'Stories still in Grooming status on Day 1 of current sprint',
-        metricKey: 'groomingStories',
-        projects: [
-          {
-            projectName: 'Buy & Deliver',
-            sprint45Value: '3',
-            sprint44Value: '2',
-          },
-          {
-            projectName: 'ASO Mobile App',
-            sprint45Value: '1',
-            sprint44Value: '0',
-          },
-          {
-            projectName: 'Career Growth Tool',
-            sprint45Value: '5',
-            sprint44Value: '6',
-          },
-          {
-            projectName: 'Dotcom',
-            sprint45Value: '2',
-            sprint44Value: '1',
-          },
-        ],
-      },
-      {
-        metricDescription: '% of Stories that are not dev completed',
-        metricKey: 'devCompletionDelay',
-        projects: [
-          {
-            projectName: 'Buy & Deliver',
-            sprint45Value: '15',
-            sprint44Value: '12',
-          },
-          {
-            projectName: 'ASO Mobile App',
-            sprint45Value: '8',
-            sprint44Value: '5',
-          },
-          {
-            projectName: 'Career Growth Tool',
-            sprint45Value: '22',
-            sprint44Value: '20',
-          },
-          {
-            projectName: 'Dotcom',
-            sprint45Value: '18',
-            sprint44Value: '14',
-          },
-        ],
-      },
-    ],
-    sprintNames: ['Sprint 45', 'Sprint 44'],
-    projectNames: [
-      'Buy & Deliver',
-      'ASO Mobile App',
-      'Career Growth Tool',
-      'Dotcom',
-    ],
-  };
 
   constructor(
     private httpService: HttpService,
@@ -199,23 +136,12 @@ export class AnalysisContainerComponent implements OnInit {
     });
     this.selectedProjects = Array.from(projectNames);
 
-    this.processMetricsTableData(this.metricsAPIData);
     this.processAiUsageTableData(this.newAPIData);
 
     this.getProjectData();
-    this.projectFilterConfig = {
-      type: 'multiSelect',
-      defaultLevel: {
-        labelName: 'Project',
-      },
-    };
+    this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG
 
-    this.sprintFilterConfig = {
-      type: 'singleSelect',
-      defaultLevel: {
-        labelName: 'Sprint',
-      },
-    };
+    this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG
   }
 
   private processSummaryData(summary: any): AnalyticsSummary[] {
@@ -308,36 +234,12 @@ export class AnalysisContainerComponent implements OnInit {
 
             this.filterData = {
               Project: filteredProjects,
-              Sprint: [
-                {
-                  nodeId: '2',
-                  nodeName: 'Last 2 Sprint',
-                  nodeDisplayName: 'Last 2 Sprint',
-                  labelName: 'sprint',
-                },
-                {
-                  nodeId: '4',
-                  nodeName: 'Last 4 Sprint',
-                  nodeDisplayName: 'Last 4 Sprint',
-                  labelName: 'sprint',
-                },
-                {
-                  nodeId: '6',
-                  nodeName: 'Last 6 Sprint',
-                  nodeDisplayName: 'Last 6 Sprint',
-                  labelName: 'sprint',
-                },
-                {
-                  nodeId: '8',
-                  nodeName: 'Last 8 Sprint',
-                  nodeDisplayName: 'Last 8 Sprint',
-                  labelName: 'sprint',
-                },
-              ],
+              Sprint: analysisConstant.SPRINT_FILTER_OPTIONS
             };
-             this.selectedProject = [filteredProjects[0]]
+             this.selectedProject = [this.filterData['Project'][0]]
              this.selectedSprint = this.filterData['Sprint'][0]
             this.processProjectData(this.projectData);
+            this.payloadPreparasation()
           }
         }),
     );
@@ -472,8 +374,14 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   private processMetricsTableData(apiData: any) {
-    const allProjects = apiData.projectNames || [];
-    const allSprints = apiData.sprintNames || [];
+    const allProjects = this.selectedProject.map(data => data.nodeDisplayName) || [];
+    const allSprints =  [
+      ...new Set(
+        apiData.analytics.flatMap(a =>
+          a.projects.flatMap(p => p.sprints.map(s => s.sprint))
+        )
+      ),
+    ];
 
     // 1. Set the dynamic headers: Projects
     let projectHeaders: ProjectHeader[] = allProjects.map(
@@ -514,11 +422,11 @@ export class AnalysisContainerComponent implements OnInit {
 
     // 4. Data Transformation (Creating Rows)
     apiData.analytics.forEach((metricData: any) => {
-      const metricDescription = metricData.metricDescription;
+      const metricDescription = metricData.metric;
 
       const projectsDataMap = new Map<string, any>();
       metricData.projects.forEach((projectData: any) => {
-        projectsDataMap.set(projectData.projectName, projectData);
+        projectsDataMap.set(projectData.name, projectData.sprints);
       });
 
       // Iterate through each Sprint to create distinct rows
@@ -538,13 +446,18 @@ export class AnalysisContainerComponent implements OnInit {
         allProjects.forEach((projectName) => {
           const projectPrefix = this.cleanName(projectName);
 
-          // Value key from the API data (e.g., 'sprint45Value')
-          const valueKey = `${sprintPrefix}Value`;
-          const projectData = projectsDataMap.get(projectName);
-
           const dataKey = `${projectPrefix}${this.metricsSubColumns[0].dataSuffix}`;
-
-          newRow[dataKey] = projectData ? projectData[valueKey] : 'N/A';
+          const projectData = projectsDataMap.get(projectName);
+          if(projectData){
+            const sprintData = projectData.find((sprint: any) => sprint.sprint === sprintName);
+            if (sprintData) {
+              newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`
+           }else{
+            newRow[dataKey] = 'NA'
+           }
+        }else{
+          newRow[dataKey] = 'NA'
+        }
         });
 
         finalTableData.push(newRow);
@@ -606,14 +519,14 @@ export class AnalysisContainerComponent implements OnInit {
   handleFilterSelect(event: any) {
     if (event.type === 'Project') {
       this.selectedProject = event['value'];
-      this.payloadPreparasation(event.type);
+      this.payloadPreparasation();
     } else {
       this.selectedSprint = event['value'];
-      this.payloadPreparasation(event.type);
+      this.payloadPreparasation();
     }
   }
 
-  payloadPreparasation(changeType) {
+  payloadPreparasation() {
     const proejctAlongWithSprint = {};
     this.selectedProject.forEach((project) => {
       const allSprintsForAProject = this.projectData['Sprint'].filter(
@@ -642,9 +555,13 @@ export class AnalysisContainerComponent implements OnInit {
       sprint: Object.values(latestClosedSprintsPerProject).flat(),
     };
 
+    console.log("api will hit from here",payload)
+
     // GET Matrics Table Data
     this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
-      next: (response) => {},
+      next: (response) => {
+        this.processMetricsTableData(response)
+      },
       error: (error) => {},
     });
 
