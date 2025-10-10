@@ -5,7 +5,7 @@
 
 <div class="filter-container p-pt-4">
   <div class="p-d-flex p-jc-center p-ai-center ">
-    <app-generic-filter [config]="projectFilterConfig" [selectedFilters]="selectedProject" [data]="filterData"
+    <app-generic-filter [config]="projectFilterConfig" [selectedFilters]="selectedProjects" [data]="filterData"
       (selectionChange)="handleFilterSelect($event)"></app-generic-filter>
     <app-generic-filter [config]="sprintFilterConfig" [data]="filterData"
       (selectionChange)="handleFilterSelect($event)" [selectedFilters]="selectedSprint"></app-generic-filter>
@@ -14,12 +14,12 @@
     <div class="p-d-flex">
     <label for="" style="line-height: 2;margin: 10px;">Selected Projects: </label>
     <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-        @for(item of selectedProject;track item){
+        @for(item of selectedProjects;track item){
           <li class="selectedfilter cursor-pointer p-mr-3" role="listitem">
             <div class="selected-node">
               <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
                 <span class="p-l-1"> {{ item?.nodeDisplayName?.length<= 20 ?item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
-                   tabindex="0" (click)="removeProject(item?.nodeId)">&times;</span>
+                   tabindex="0" (click)="removeProject(item)">&times;</span>
                 </span>
               </div>
             </div>
@@ -51,7 +51,7 @@
 </div>
 
 
-<div class="p-d-flex p-jc-center p-ai-center">
+<!-- <div class="p-d-flex p-jc-center p-ai-center">
   <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 80%;">
     <div class="p-card-content p-p-0">
       <app-kpi-card-v2 #kpiCard
@@ -70,4 +70,4 @@
       </app-kpi-card-v2>
     </div>
   </div>
-</div>
+</div> -->

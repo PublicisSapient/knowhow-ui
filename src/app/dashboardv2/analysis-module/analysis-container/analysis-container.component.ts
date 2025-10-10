@@ -54,7 +54,6 @@ export interface AnalyticsSummary {
 })
 export class AnalysisContainerComponent implements OnInit {
   projectData: any;
-  selectedProject: any;
   selectedSprint: any = {};
 
   // --- VARIABLES FOR AI USAGE TABLE ---
@@ -74,7 +73,7 @@ export class AnalysisContainerComponent implements OnInit {
   metricsBaseColumnHeader2: string = '';
   metricsSummaryDisplayData: AnalyticsSummary[] = [];
 
-  selectedProjects: string[] = [];
+  selectedProjects: any = [];
   subscriptions: Subscription[] = [];
   newAPIData: any;
   filterData: any = null;
@@ -134,7 +133,7 @@ export class AnalysisContainerComponent implements OnInit {
         projectNames.add(project.name);
       });
     });
-    this.selectedProjects = Array.from(projectNames);
+    // this.selectedProjects = Array.from(projectNames);
 
     this.processAiUsageTableData(this.newAPIData);
 
@@ -236,8 +235,8 @@ export class AnalysisContainerComponent implements OnInit {
               Project: filteredProjects,
               Sprint: analysisConstant.SPRINT_FILTER_OPTIONS
             };
-             this.selectedProject = [this.filterData['Project'][0]]
-             this.selectedSprint = this.filterData['Sprint'][0]
+             this.selectedProjects = [this.filterData[analysisConstant.PROJECT_KEY][1]]
+             this.selectedSprint = this.filterData[analysisConstant.SPRINT_KEY][2]
             this.processProjectData(this.projectData);
             this.payloadPreparasation()
           }
@@ -374,7 +373,7 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   private processMetricsTableData(apiData: any) {
-    const allProjects = this.selectedProject.map(data => data.nodeDisplayName) || [];
+    const allProjects = this.selectedProjects.map(data => data.nodeDisplayName) || [];
     const allSprints =  [
       ...new Set(
         apiData.analytics.flatMap(a =>
@@ -477,7 +476,18 @@ export class AnalysisContainerComponent implements OnInit {
     this.processAiUsageTableData(apiData);
   }
 
-  removeProject(project: any) {}
+  removeProject(project: any) {
+    if(this.selectedProjects.length === 1){
+      return ;
+    }
+    
+    this.selectedProjects = [...this.selectedProjects.filter(
+      (item: any) => item.nodeId !== project.nodeId
+    )];
+
+    this.payloadPreparasation()
+  
+  }
 
   cleanName(name: string): string {
     if (!name) {
@@ -499,7 +509,7 @@ export class AnalysisContainerComponent implements OnInit {
 
     const lowerCaseProjectName = projectName?.toLowerCase();
 
-    const projectObject = this.projectData['Project']?.find(
+    const projectObject = this.projectData[analysisConstant.PROJECT_KEY]?.find(
       (p: any) =>
         p.nodeName?.toLowerCase() === lowerCaseProjectName ||
         p.nodeDisplayName?.toLowerCase() === lowerCaseProjectName,
@@ -517,8 +527,8 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   handleFilterSelect(event: any) {
-    if (event.type === 'Project') {
-      this.selectedProject = event['value'];
+    if (event.type === analysisConstant.PROJECT_KEY) {
+      this.selectedProjects = event['value'];
       this.payloadPreparasation();
     } else {
       this.selectedSprint = event['value'];
@@ -528,8 +538,8 @@ export class AnalysisContainerComponent implements OnInit {
 
   payloadPreparasation() {
     const proejctAlongWithSprint = {};
-    this.selectedProject.forEach((project) => {
-      const allSprintsForAProject = this.projectData['Sprint'].filter(
+    this.selectedProjects.forEach((project) => {
+      const allSprintsForAProject = this.projectData[analysisConstant.SPRINT_KEY].filter(
         (sprintDetails) => sprintDetails.parentId === project.nodeId,
       );
       proejctAlongWithSprint[project.nodeId] = allSprintsForAProject;

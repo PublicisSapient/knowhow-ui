@@ -31,7 +31,7 @@ export class GenericFilterComponent {
   selectedValue: any;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.config.type === 'multiSelect' && this.selectedFilters?.length) {
+    if (this.config.type === 'multiSelect' && this.selectedFilters?.length) {
       // match by label or value after data arrives
       this.selectedValue = this.data[this.config.defaultLevel.labelName]?.filter((opt: any) =>
         this.selectedFilters.some((sel: any) => sel.nodeId === opt.nodeId)
