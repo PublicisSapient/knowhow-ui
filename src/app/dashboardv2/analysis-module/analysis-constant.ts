@@ -41,3 +41,25 @@ export const SPRINT_FILTER_CONFIG = {
 
 export const PROJECT_KEY = 'Project';
 export const SPRINT_KEY = 'Sprint';
+
+export const AI_USES_TABLE_DUMMY_KPI = {
+  issueData: 'JIRA',
+  kpiId: 'kpi198',
+  kpiFilter: 'table',
+  kpiDetail: {
+    kpiInfo: 'Info here',
+    kpiSource: 'Jira',
+  },
+  kpiName: 'AI Usage Analytics',
+};
+
+export const MATRICS_TABLE_DUMMY_KPI = {
+  issueData: 'JIRA',
+  kpiId: 'kpi199',
+  kpiFilter: 'table',
+  kpiDetail: {
+    kpiInfo: 'Info here',
+    kpiSource: 'Jira',
+  },
+  kpiName: 'Metrics Analytics',
+};

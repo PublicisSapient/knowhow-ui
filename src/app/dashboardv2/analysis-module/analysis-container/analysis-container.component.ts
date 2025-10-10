@@ -88,8 +88,8 @@ export class AnalysisContainerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const projectNames = new Set<string>();
-    this.selectedProjects = Array.from(projectNames);
+    // const projectNames = new Set<string>();
+    // this.selectedProjects = Array.from(projectNames);
     this.getProjectData();
     this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
@@ -124,39 +124,9 @@ export class AnalysisContainerComponent implements OnInit {
     return result.charAt(0).toUpperCase() + result.slice(1).trim();
   }
 
-  updateKpiSettings(type: 'aiUsage' | 'metrics') {
-    const kpiSettings = {
-      issueData: 'JIRA',
-      kpiId: 'kpi198',
-      kpiFilter: 'table',
-      kpiDetail: {
-        kpiInfo: 'Info here',
-        kpiSource: 'Jira',
-      },
-      kpiName: type === 'aiUsage' ? 'AI Usage Analytics' : 'Metrics Analytics',
-    };
-
-    if (type === 'aiUsage') {
-      this.aiUsageKpiSettings = {
-        ...kpiSettings,
-        currentChartData: {
-          chartData: this.aiUsageTableData,
-          data: this.aiUsageTableData,
-        },
-        projectHeaders: this.aiUsageProjectHeaders,
-      };
-    } else if (type === 'metrics') {
-      this.metricsKpiSettings = {
-        ...kpiSettings,
-        currentChartData: {
-          chartData: this.metricsTableData,
-          data: this.metricsTableData,
-        },
-        projectHeaders: this.metricsProjectHeaders,
-        baseColumnHeader2: this.metricsBaseColumnHeader2,
-        subColumns: this.metricsSubColumns,
-      };
-    }
+  updateKpiSettings(type) {
+    this.aiUsageKpiSettings = analysisConstant.AI_USES_TABLE_DUMMY_KPI;
+    this.metricsKpiSettings = analysisConstant.MATRICS_TABLE_DUMMY_KPI;
   }
 
   getProjectData() {
@@ -196,7 +166,7 @@ export class AnalysisContainerComponent implements OnInit {
             this.selectedSprint =
               this.filterData[analysisConstant.SPRINT_KEY][2];
             this.processProjectData(this.projectData);
-            //  this.payloadPreparasation();
+            this.payloadPreparasation();
           }
         }),
     );
@@ -573,17 +543,27 @@ export class AnalysisContainerComponent implements OnInit {
     console.log('api will hit from here', payload);
 
     // GET Matrics Table Data
-    // this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
-    //   next: (response) => {
-    //     this.processMetricsTableData(response);
-    //   },
-    //   error: (error) => {},
-    // });
+    this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.processMetricsTableData(response.data);
+        } else {
+          console.warn('Did not get data from API');
+          this.metricsTableData = [];
+          this.updateKpiSettings('');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching Matrix Data:', error);
+        this.metricsTableData = [];
+        this.updateKpiSettings('');
+      },
+    });
 
-    // GET AI analytics Data
+    //GET AI analytics Data
     this.subscriptions.push(
       this.httpService.getAIAnalyticsData(aiPayload).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           const apiData = response?.data;
           if (apiData && apiData.analytics?.length > 0) {
             this.processAiUsageTableData(apiData);
