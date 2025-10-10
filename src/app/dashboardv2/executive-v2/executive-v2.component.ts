@@ -429,9 +429,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (this.refreshCounter) return;
+        if (this.refreshCounter) {
+          return;
+        }
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
+        const kpiFiltersParam = params['kpiFilters'];
         let tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {

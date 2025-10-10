@@ -75,6 +75,7 @@ export class AccessMgmtComponent implements OnInit {
   llidInput = '';
   isOpenSource: boolean = false;
   uniqueArrUserData: any = [];
+  userProjects: any = [];
 
   constructor(
     private service: SharedService,
@@ -96,10 +97,34 @@ export class AccessMgmtComponent implements OnInit {
       },
     );
   }
+  checkProjectAvailability(item: string): boolean {
+    const lcItem = item.toLowerCase();
+    return (
+      !this.userProjects.length ||
+      this.userProjects.some((project) =>
+        project.toLowerCase().includes(lcItem),
+      )
+    );
+  }
 
   // fetches all users
   getUsers() {
     this.uniqueArrUserData = [];
+    const currentUserProjects =
+      JSON.parse(localStorage.getItem('currentUserDetails') || '{}')
+        ?.projectsAccess || [];
+
+    this.userProjects = [
+      ...new Set(
+        currentUserProjects
+          .filter((access: any) => access.role === 'ROLE_PROJECT_ADMIN')
+          .flatMap((access: any) =>
+            access.projects.map((proj: any) =>
+              proj.projectName === 'PSknowHOW' ? 'knowHOW' : proj.projectName,
+            ),
+          ),
+      ),
+    ];
     this.httpService.getAllUsers().subscribe((userData) => {
       if (userData[0] !== 'error' && !userData.error) {
         this.users = userData.data;
@@ -197,10 +222,15 @@ export class AccessMgmtComponent implements OnInit {
     this.rolesRequest = this.httpService.getRolesList().subscribe((roles) => {
       this.rolesData = roles;
       if (this.rolesData['success']) {
-        this.roleList = roles.data.map((role) => ({
-          label: role.displayName,
-          value: role.roleName,
-        }));
+        this.roleList = roles.data
+          .filter(
+            (role) =>
+              !(this.isProjectAdmin && role.displayName === 'Super Admin'),
+          )
+          .map((role) => ({
+            label: role.displayName,
+            value: role.roleName,
+          }));
         this.searchRoleList = [
           {
             label: 'Select Role',

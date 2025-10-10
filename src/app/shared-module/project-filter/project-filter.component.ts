@@ -21,6 +21,8 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { MessageService } from 'primeng/api';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-filter',
@@ -54,10 +56,38 @@ export class ProjectFilterComponent implements OnInit {
     private service: SharedService,
     private messageService: MessageService,
     private helper: HelperService,
+    private authService: GetAuthorizationService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.getProjects();
+  }
+
+  filterHierarchy(userRoles: any[], hierarchyData: any[]): any[] {
+    const allowedNodeIds = new Set(
+      userRoles
+        ?.flatMap((role) =>
+          role?.projects?.flatMap((project) =>
+            project?.hierarchy?.map(
+              (hierarchyItem: any) => hierarchyItem?.orgHierarchyNodeId,
+            ),
+          ),
+        )
+        .filter(Boolean),
+    );
+
+    return hierarchyData
+      ?.map((level) => ({
+        ...level,
+        list:
+          level.hierarchyLevelId === 'project'
+            ? level.list
+            : level.list.filter((node: any) =>
+                allowedNodeIds.has(node?.nodeId),
+              ),
+      }))
+      .filter((level) => level.list?.length);
   }
 
   // fetches all projects
@@ -75,12 +105,73 @@ export class ProjectFilterComponent implements OnInit {
           (elem) => elem.hierarchyLevel.hierarchyLevelId,
         );
 
-        const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
-        this.formData = JSON.parse(JSON.stringify(formFieldData));
+        const allProjects = this.service.getProjectList() ?? [];
+        const hierarchyData =
+          JSON.parse(localStorage.getItem('hierarchyData') || '[]') ?? [];
 
-        for (const level of this.formData) {
-          this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
+        if (Array.isArray(hierarchyData) && Array.isArray(allProjects)) {
+          hierarchyData.forEach((level) =>
+            level?.list?.forEach((node) => {
+              const project = allProjects.find(
+                (projectItem) => projectItem.name === node.nodeName,
+              );
+              if (project) node.projectOnHold = project.projectOnHold;
+            }),
+          );
+
+          if (allProjects.length) {
+            localStorage.setItem(
+              'hierarchyData',
+              JSON.stringify(hierarchyData),
+            );
+          }
         }
+
+        const formFieldData = hierarchyData;
+
+        const currentUser = JSON.parse(
+          localStorage.getItem('currentUserDetails') || '{}',
+        );
+        const filteredProjectData = this.filterHierarchy(
+          currentUser?.projectsAccess,
+          formFieldData,
+        );
+
+        const currentUrl = this.router.url;
+        const isAccessMgmtPage = currentUrl.includes(
+          '/dashboard/Config/Profile/AccessMgmt',
+        );
+        const isRaiseRequestPage = currentUrl.includes(
+          '/dashboard/Config/Profile/RaiseRequest',
+        );
+        const isProjectAdmin = this.authService.checkIfProjectAdmin();
+
+        this.formData =
+          isProjectAdmin && isAccessMgmtPage
+            ? filteredProjectData
+            : JSON.parse(JSON.stringify(formFieldData));
+
+        const userProjects =
+          currentUser?.projectsAccess
+            ?.filter((access) => access.role === 'ROLE_PROJECT_ADMIN')
+            ?.flatMap((access) =>
+              access.projects.map((proj: any) =>
+                proj.projectName.toLowerCase(),
+              ),
+            ) ?? [];
+
+        this.formData.forEach((level) => {
+          if (
+            isAccessMgmtPage &&
+            isProjectAdmin &&
+            level.hierarchyLevelId === 'project'
+          ) {
+            level.list = level.list.filter((project) =>
+              userProjects.includes(project.nodeName.toLowerCase()),
+            );
+          }
+          this.filteredSuggestions[level.hierarchyLevelId] = level.list ?? [];
+        });
 
         this.service.sendProjectData(this.data);
       } else {
@@ -93,8 +184,16 @@ export class ProjectFilterComponent implements OnInit {
       }
     });
   }
+  getData() {
+    this.httpService.getProjectListData().subscribe((responseList) => {
+      if (responseList[0].success) {
+        const responce = responseList[0]?.data;
+      }
+    });
+  }
 
   resetFiltersSuggestionsToAll() {
+    if (!Array.isArray(this.formData)) return;
     for (const level of this.formData) {
       this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
     }
@@ -208,6 +307,7 @@ export class ProjectFilterComponent implements OnInit {
                         parentId,
                         createdDate,
                         modifiedDate,
+                        projectOnHold,
                       }) => ({
                         level: index + 1,
                         hierarchyLevelName: hierarchyLevelIdName,
@@ -218,6 +318,7 @@ export class ProjectFilterComponent implements OnInit {
                         hierarchyLevelId,
                         parentId,
                         createdDate,
+                        projectOnHold: projectOnHold,
                         ...(modifiedDate && { modifiedDate }),
                       }),
                     ),
@@ -288,6 +389,11 @@ export class ProjectFilterComponent implements OnInit {
     const selected = this.selectedItems[currentLevelId] || [];
 
     // --- IF NOTHING is selected in this field --- //
+    if (event?.value?.length === 0) {
+      this.resetLevelsFrom(0);
+      this.clearSelectionsFrom(0);
+      return;
+    }
     if (selected.length === 0) {
       this.filtersApplied = false;
       // Case 1: If a parent level is deselected (levels 1, 2, 3, or 4)
@@ -346,6 +452,7 @@ export class ProjectFilterComponent implements OnInit {
     );
 
     this.filteredSuggestions[parentField.hierarchyLevelId] = filteredParentList;
+    this.selectedItems[parentField.hierarchyLevelId] = filteredParentList;
 
     // Recursively filter the next level's parents
     const nextLevel = level - 1;
