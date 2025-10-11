@@ -121,14 +121,14 @@
       </ng-container>
 
       <!-- CASE 2: TABLE WITHOUT PROJECT GROUPINGS (Original simple mode) -->
-      <ng-container *ngIf="!projectHeaders?.length">
+      <ng-container *ngIf="!projectHeaders?.length && this.tableData.length">
         <tr>
           <!-- Base Column (Sprints / Metrics) -->
           <th class="p-text-center non-sortable p-p-2"
               [pSortableColumn]="baseColumnHeader"
               [ngStyle]="{'min-width': '150px'}">
             {{ baseColumnHeader }}
-            <p-sortIcon [field]="baseColumnHeader"></p-sortIcon>
+            <p-sortIcon [field]="baseColumnHeader" class="here"></p-sortIcon>
           </th>
 
           <!-- Base Column 2 (rowId) - Invisible -->
@@ -160,7 +160,7 @@
         <!-- BASE COLUMN 1 (E.g.: Usage Type / Metrics) -->
         <td class="p-text-left p-text-bold p-p-2" [ngStyle]="{'min-width': '150px'}">
           <!-- Display the row value -->
-          {{ rowData[baseColumnHeader] }}
+          {{ rowData[baseColumnHeader] || rowData[baseColumnHeaderKey] }}
         </td>
 
         <!-- BASE COLUMN 2 (rowId) - Invisible -->
@@ -233,6 +233,23 @@
 
       </tr>
 
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="
+          (projectHeaders?.length
+            ? projectHeaders.length * subColumns.length + (baseColumnHeader2 ? 2 : 1)
+            : subColumns.length + (baseColumnHeader2 ? 2 : 1))
+          "
+            class="p-text-center p-py-5 p-text-bold p-text-secondary">
+
+          <div class="p-d-flex p-flex-column p-align-center p-justify-center p-w-100">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" style="max-height: 150px; margin-bottom: 1rem;"/>
+            <h4 class="p-text-center p-m-0" tabindex="0">No data available.</h4>
+          </div>
+        </td>
+      </tr>
     </ng-template>
   </p-table>
 

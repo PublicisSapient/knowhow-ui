@@ -29,6 +29,7 @@ export class DynamicKpiTableComponent {
   @Input() projectHeaders: ProjectHeader[] = [];
   @Input() subColumns: SubColumn[] = [];
   @Input() baseColumnHeader: string = '';
+  @Input() baseColumnHeaderKey: string = '';
   @Input() baseColumnHeader2?: string;
   @Input() summary: any;
   @Output() onProjectSettingsClick = new EventEmitter<string>();

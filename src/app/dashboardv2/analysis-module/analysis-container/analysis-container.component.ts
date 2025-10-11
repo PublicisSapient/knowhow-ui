@@ -63,6 +63,7 @@ export class AnalysisContainerComponent implements OnInit {
   aiUsageProjectHeaders: ProjectHeader[] = [];
   aiUsageSubColumns: SubColumn[] = [];
   aiUsageBaseColumnHeader: string = '';
+  aiUsageBaseColumnKey: string = '';
   aiUsageSummaryDisplayData: AnalyticsSummary[] = [];
 
   // --- VARIABLES FOR METRICS TABLE ---
@@ -304,8 +305,7 @@ export class AnalysisContainerComponent implements OnInit {
     });
 
     this.aiUsageTableData.push(totalRow);
-
-    this.aiUsageBaseColumnHeader = 'usageType';
+    this.aiUsageBaseColumnKey = 'usageType';
 
     this.updateKpiSettings('aiUsage');
   }
@@ -542,6 +542,8 @@ export class AnalysisContainerComponent implements OnInit {
       next: (response: any) => {
         if (response.success) {
           this.processMetricsTableData(response.data);
+        } else if (response.data.length === 0) {
+          this.metricsTableData = [];
         } else {
           console.warn('Did not get data from API');
           this.metricsTableData = [];
@@ -562,6 +564,8 @@ export class AnalysisContainerComponent implements OnInit {
           const apiData = response?.data;
           if (apiData && apiData.analytics?.length > 0) {
             this.processAiUsageTableData(apiData);
+          } else if (apiData.length === 0) {
+            this.aiUsageTableData = [];
           } else {
             console.warn(
               'AI Analytics API returned empty data or was not in the expected format.',
