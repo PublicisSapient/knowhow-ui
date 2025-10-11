@@ -167,14 +167,11 @@ export class AnalysisContainerComponent implements OnInit {
             ];
             this.selectedSprint =
               this.filterData[analysisConstant.SPRINT_KEY][2];
-            this.processProjectData(this.projectData);
             this.payloadPreparasation();
           }
         }),
     );
   }
-
-  processProjectData(data: any) {}
 
   private processAiUsageTableData(apiData: any) {
     const projectNames = new Set<string>();
@@ -414,10 +411,6 @@ export class AnalysisContainerComponent implements OnInit {
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
 
     this.updateKpiSettings('metrics');
-  }
-
-  processAnalyticsData(apiData: any) {
-    this.processAiUsageTableData(apiData);
   }
 
   removeProject(project: any) {
