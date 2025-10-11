@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
   OnChanges,
   OnInit,
@@ -17,22 +18,52 @@ import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MenuItem, MessageService } from 'primeng/api';
-import { DatePipe } from '@angular/common';
-import { Menu } from 'primeng/menu';
+import { DatePipe, NgClass, NgSwitch } from '@angular/common';
+import { Menu, MenuModule } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { catchError, distinctUntilChanged, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Dialog } from 'primeng/dialog';
-
+import { Dialog, DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { TabViewModule } from 'primeng/tabview';
+import { SharedModuleModule } from '../../shared-module/shared-module.module';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
+
+interface SelectedTrend {
+  nodeId: string;
+  nodeName: string;
+  basicProjectConfigId: string;
+}
 
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',
   styleUrls: ['./kpi-card-v2.component.css'],
+  standalone: true,
+  imports: [
+    DialogModule,
+    Button,
+    NgSwitch,
+    TableModule,
+    TabViewModule,
+    NgClass,
+    SharedModuleModule,
+    MenuModule,
+    DropdownModule,
+    FormsModule,
+    MultiSelectModule,
+    RadioButtonModule,
+    SelectButtonModule,
+  ],
 })
 export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
@@ -55,6 +86,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpiSize;
   @Input() kpiDataStatusCode = '';
   @Input() filterApplyData: any;
+  @Input() tableData: any[];
+  @Input() tableColumns: any[];
   // showComments: boolean = false;
   loading = false;
   noData = false;
@@ -136,8 +169,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
-
   @Input() kpiTitle: string = '';
+  public selectedTrendObject: SelectedTrend | null = null;
 
   constructor(
     public service: SharedService,
@@ -450,6 +483,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           : '',
       );
     }
+
     //#endregion
 
     console.log('kpicard onchanges called');
@@ -628,8 +662,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
-    const selectedTrend = this.service.getSelectedTrends();
-    if (selectedTrend.length == 1 || selectedTab === 'release') {
+    let selectedTrend = this.service.getSelectedTrends();
+
+    let currentTrendList: SelectedTrend[] = [];
+
+    if (this.selectedTrendObject) {
+      currentTrendList = [this.selectedTrendObject];
+    } else {
+      currentTrendList = selectedTrend;
+    }
+
+    if (currentTrendList.length == 1 || selectedTab === 'release') {
+      console.log(JSON.stringify(currentTrendList));
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
@@ -640,7 +684,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       );
       this.http
         .getKPIFieldMappingConfig(
-          `${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
+          `${currentTrendList[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
         )
         .subscribe((data) => {
           if (data?.success) {
@@ -652,15 +696,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             ];
             if (this.fieldMappingConfig.length > 0) {
               this.selectedConfig = {
-                ...selectedTrend[0],
-                id: selectedTrend[0]?.basicProjectConfigId,
+                ...currentTrendList[0],
+                id: currentTrendList[0]?.basicProjectConfigId,
               };
               this.getFieldMapping();
               const metaDataList = this.service.getFieldMappingMetaData();
               if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
                 const metaData = metaDataList.find(
                   (data) =>
-                    data.projectID === selectedTrend[0]?.basicProjectConfigId &&
+                    data.projectID ===
+                      currentTrendList[0]?.basicProjectConfigId &&
                     data.kpiSource === kpiSource,
                 );
                 if (metaData?.metaData) {
@@ -717,16 +762,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getFieldMappingMetaData(kpiSource) {
     this.http
       .getKPIConfigMetadata(
-        this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-        this.kpiData?.kpiId,
+        this.selectedTrendObject.basicProjectConfigId,
+        this.kpiData?.kpiDetail.kpiId,
       )
       .pipe(
         tap((Response) => {
           if (Response.success) {
             this.fieldMappingMetaData = Response.data;
             this.service.setFieldMappingMetaData({
-              projectID:
-                this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+              projectID: this.selectedTrendObject.basicProjectConfigId,
               kpiSource,
               metaData: Response.data,
             });

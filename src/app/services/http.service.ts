@@ -202,6 +202,9 @@ export class HttpService {
   private executivePageURL = this.baseUrl + '/api/executive';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
+  private alalyticsMatricesTableDataURL = this.baseUrl + '/api/';
+  private AIAnalyticsDataURL =
+    this.baseUrl + '/api/analysis/analytics/ai-usage/query';
 
   constructor(
     private router: Router,
@@ -1315,5 +1318,13 @@ export class HttpService {
 
   getProductivityGain(payload) {
     return this.http.post<any>(this.pebCalculateUrl, payload);
+  }
+
+  getAlalyticsMatricesTableData(payLoad) {
+    return this.http.post<any>(this.alalyticsMatricesTableDataURL, payLoad);
+  }
+
+  getAIAnalyticsData(payLoad) {
+    return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
   }
 }

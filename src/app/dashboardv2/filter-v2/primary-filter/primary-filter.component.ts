@@ -7,14 +7,27 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { MultiSelect } from 'primeng/multiselect';
+import { NgClass, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { Button } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-primary-filter',
   templateUrl: './primary-filter.component.html',
   styleUrls: ['./primary-filter.component.css'],
+  standalone: true,
+  imports: [
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgClass,
+    NgIf,
+  ],
 })
 export class PrimaryFilterComponent implements OnChanges {
   @Input() filterData = null;
@@ -37,7 +50,7 @@ export class PrimaryFilterComponent implements OnChanges {
     public service: SharedService,
     public helperService: HelperService,
   ) {
-    // This is required speecifically when filter is removed from removeFilter fn on filter-new
+    // This is required specifically when filter is removed from removeFilter fn on filter-new
     this.service.selectedTrendsEvent.subscribe((filters) => {
       if (
         filters?.length &&
@@ -73,11 +86,7 @@ export class PrimaryFilterComponent implements OnChanges {
         changes['selectedTab'].previousValue &&
       !changes['selectedTab']?.firstChange;
 
-    if (
-      selectedLevelChanged ||
-      primaryFilterConfigChanged ||
-      selectedTypeChanged
-    ) {
+    if (selectedLevelChanged || primaryFilterConfigChanged) {
       // || selectedTabChanged)
       this.applyDefaultFilters();
       return;
@@ -578,6 +587,10 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   getImmediateParentDisplayName(child) {
+    if (this.selectedLevel === 'Project') {
+      return null;
+    }
+
     const completeHiearchyData = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
     )[this.selectedType.toLowerCase()];

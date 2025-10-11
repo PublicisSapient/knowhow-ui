@@ -1,0 +1,60 @@
+:host::ng-deep.table-layout-fix {
+  height: auto !important;
+}
+
+:host::ng-deep.kpi-card-body img {
+  border: 2px solid red;
+  display: none !important;
+}
+
+:host::ng-deep.non-sortable {
+  cursor: default !important;
+  user-select: none;
+}
+
+:host::ng-deep.kpi-menu-container {
+  display: none;
+}
+
+:host::ng-deep.kpi-card-container-wrapper {
+  border-radius: 10px;
+}
+
+:host::ng-deep.kpi-card-header {
+  background-color: #0b4bc8;
+  color: white !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+:host::ng-deep.p-datatable-thead th,
+:host::ng-deep.p-datatable-tbody tr:last-child {
+  background-color: #f5f9ff !important;
+}
+
+:host::ng-deep.kpi-filter,
+:host::ng-deep.kpi-card-body {
+  padding: 0 !important;
+}
+
+ul li.selectedfilter {
+  font-size: 0.8rem;
+  display: flex;
+  line-height: 2;
+  margin: 10px;
+}
+
+.selectedfilter {
+  padding: 0 8px;
+  background-color: #e5eeff;
+  border-radius: 50px;
+  color: #0b4bc8;
+  display: flex;
+  align-items: center;
+}
+
+.remove-node {
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 5px;
+}

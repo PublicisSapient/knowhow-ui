@@ -7,14 +7,29 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { MultiSelect } from 'primeng/multiselect';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { TooltipModule } from 'primeng/tooltip';
+import { NgForOf, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-additional-filter',
   templateUrl: './additional-filter.component.html',
   styleUrls: ['./additional-filter.component.css'],
+  standalone: true,
+  imports: [
+    TooltipModule,
+    NgIf,
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgForOf,
+  ],
 })
 export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedLevel: any = '';
@@ -31,7 +46,7 @@ export class AdditionalFilterComponent implements OnChanges {
   selectedTrends = [];
   previousSelectedTrends = [];
   selectedAdditionalFilterLevel = [];
-  squadLevel = {};
+  squadLevel: any = {};
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;

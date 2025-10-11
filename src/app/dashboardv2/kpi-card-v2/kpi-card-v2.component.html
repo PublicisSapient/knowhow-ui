@@ -101,7 +101,10 @@
 
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
       *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
-      [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
+         [ngClass]="{
+    'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
+    'table-layout-fix': kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
+  }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr; let k = index">
@@ -189,13 +192,17 @@
 
     </div>
     <div class="kpi-card-body p-pr-5 p-pl-5" [ngClass]="{'smallChart':board == 'dora'}">
+      <ng-container *ngIf="kpiData?.kpiFilter?.toLowerCase() === 'table'">
+        <ng-content select="[kpiTable]"></ng-content>
+      </ng-container>
       <!--place for chart to be rendered-->
       <ng-content
-        *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+        *ngIf="kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'table' && !loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData">
+      </ng-content>
       <ng-template #noData>
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
-          <div class="p-w-100  p-d-flex p-justify-center">
+          <div class="p-w-100 1 p-d-flex p-justify-center">
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
@@ -216,7 +223,7 @@
         </div>
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
-          <div class="p-w-100  p-d-flex p-justify-center">
+          <div class="p-w-100 2 p-d-flex p-justify-center">
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
@@ -365,7 +372,7 @@
 
 <ng-template #noDataRawDataKPIs>
   <div class="min-ht" *ngIf="!loader && (!currentChartData?.chartData?.length || !currentChartData?.chartData?.data?.length || !currentChartData?.chartData?.chartData?.length) else defaultMessage">
-    <div class="p-w-100  p-d-flex p-justify-center">
+    <div class="p-w-100 3 p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
@@ -378,7 +385,7 @@
 
 <ng-template #defaultMessage>
   <div class="min-ht">
-    <div class="p-w-100  p-d-flex p-justify-center">
+    <div class="p-w-100 4 p-d-flex p-justify-center">
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>

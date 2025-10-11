@@ -1,0 +1,268 @@
+<div class="kpi-table-container">
+  <p-table
+    [value]="tableData"
+    [scrollable]="true"
+    [sortMode]="'multiple'"
+    styleClass="p-datatable-gridlines p-w-100 kpi-analytics-table"
+    [style]="{'width':'100%'}">
+
+    <!-- TWO-LEVEL HEADER -->
+
+    <ng-template pTemplate="header">
+
+      <!-- CASE 1: TABLE WITH PROJECT GROUPINGS AND SUB-COLUMNS (Complex / AI Usage / Metrics) -->
+      <ng-container *ngIf="projectHeaders?.length">
+
+        <!-- Determine if we need the second header row (for Metrics, we don't):
+             - METRICS CASE: subColumns.length === 1 and the label is empty
+             - AI USAGE CASE: subColumns.length > 1
+        -->
+        <ng-container *ngIf="subColumns.length === 1 && subColumns[0].label === ''; else defaultHeader">
+          <!-- METRICS CASE: Single header row (Base Column + Dynamic Headers) -->
+          <tr>
+            <!-- Base Column 1 (Metrics) -->
+            <th rowspan="1"
+                class="p-text-center non-sortable p-p-2"
+                [ngStyle]="{'min-width': '150px'}"
+                [pSortableColumn]="baseColumnHeader">
+              {{ baseColumnHeader }}
+              <p-sortIcon [field]="baseColumnHeader"></p-sortIcon>
+            </th>
+
+            <!-- Base Column 2 (rowId) - Invisible, to enforce row uniqueness -->
+            <th *ngIf="baseColumnHeader2"
+                rowspan="1"
+                class="p-text-center non-sortable p-p-2"
+                [ngStyle]="{'min-width': '0px', 'width': '0px', 'padding': '0', 'border-right': 'none', 'visibility': 'hidden'}">
+              <span class="p-sr-only">{{ baseColumnHeader2 }}</span>
+            </th>
+
+
+            <!-- LEVEL 1: DYNAMIC HEADER (Sprint + Projects) -->
+            <th *ngFor="let header of projectHeaders"
+                [attr.colspan]="1"
+                class="p-text-center p-p-2"
+                [pSortableColumn]="header.cleanName + subColumns[0].dataSuffix">
+
+              <div class="p-flex p-align-center p-justify-center p-gap-1">
+                <span class="p-text-bold">{{ header.name }}</span>
+
+                <!-- Settings Button (only for Projects, not for Sprint or Total) -->
+                <i *ngIf="!header.isTotalColumn && header.name !== 'Sprint'"
+                   class="fas fa-cog p-ml-1 p-cursor-pointer"
+                   style="font-size: 14px;"
+                   (click)="onProjectSettingsClick.emit(header.name)"
+                   title="Project Settings"
+                   role="button"
+                   tabindex="0">
+                </i>
+                <p-sortIcon [field]="header.cleanName + subColumns[0].dataSuffix"></p-sortIcon>
+              </div>
+            </th>
+          </tr>
+
+        </ng-container>
+
+        <!-- AI USAGE CASE: Two header rows (Standard complex mode) -->
+        <ng-template #defaultHeader>
+          <tr>
+            <!-- LEVEL 1: BASE COLUMN 1 (E.g.: Usage Type) -->
+            <th rowspan="2"
+                class="p-text-center non-sortable p-p-2"
+                [ngStyle]="{'min-width': '150px'}"
+                [pSortableColumn]="baseColumnHeader">
+              {{ baseColumnHeader }}
+            </th>
+
+            <!-- Base Column 2 (rowId) - Invisible -->
+            <th *ngIf="baseColumnHeader2"
+                rowspan="2"
+                class="p-text-center non-sortable p-p-2"
+                [ngStyle]="{'min-width': '0px', 'width': '0px', 'padding': '0', 'border-right': 'none', 'visibility': 'hidden'}">
+              <span class="p-sr-only">{{ baseColumnHeader2 }}</span>
+            </th>
+
+            <!-- LEVEL 1: DYNAMIC HEADER (Projects + Total) -->
+            <th *ngFor="let header of projectHeaders"
+                [attr.colspan]="subColumns.length"
+                class="p-text-center p-p-2">
+
+              <div class="p-flex p-align-center p-justify-center p-gap-1">
+                <span class="p-text-bold">{{ header.name }}</span>
+
+                <!-- Settings Button -->
+                <i *ngIf="!header.isTotalColumn"
+                   class="fas fa-cog p-ml-1 p-cursor-pointer"
+                   style="font-size: 14px;"
+                   (click)="onProjectSettingsClick.emit(header.name)"
+                   title="Project Settings"
+                   role="button"
+                   tabindex="0">
+                </i>
+              </div>
+            </th>
+          </tr>
+
+          <!-- LEVEL 2: METRICS (Sub-columns) -->
+          <tr>
+            <ng-container *ngFor="let header of projectHeaders">
+              <th *ngFor="let subColumn of subColumns"
+                  class="p-text-center p-p-2"
+                  [ngStyle]="{'min-width': '100px'}"
+                  [pSortableColumn]="subColumn.isSortable ? header.cleanName + subColumn.dataSuffix : null">
+
+                {{ subColumn.label }}
+                <p-sortIcon *ngIf="subColumn.isSortable" [field]="header.cleanName + subColumn.dataSuffix"></p-sortIcon>
+              </th>
+            </ng-container>
+          </tr>
+        </ng-template>
+
+      </ng-container>
+
+      <!-- CASE 2: TABLE WITHOUT PROJECT GROUPINGS (Original simple mode) -->
+      <ng-container *ngIf="!projectHeaders?.length && this.tableData.length">
+        <tr>
+          <!-- Base Column (Sprints / Metrics) -->
+          <th class="p-text-center non-sortable p-p-2"
+              [pSortableColumn]="baseColumnHeader"
+              [ngStyle]="{'min-width': '150px'}">
+            {{ baseColumnHeader }}
+            <p-sortIcon [field]="baseColumnHeader" class="here"></p-sortIcon>
+          </th>
+
+          <!-- Base Column 2 (rowId) - Invisible -->
+          <th *ngIf="baseColumnHeader2"
+              class="p-text-center non-sortable p-p-2"
+              [ngStyle]="{'min-width': '0px', 'width': '0px', 'padding': '0', 'border-right': 'none', 'visibility': 'hidden'}">
+            <span class="p-sr-only">{{ baseColumnHeader2 }}</span>
+          </th>
+
+          <!-- Simple Metric Columns -->
+          <th *ngFor="let subColumn of subColumns"
+              class="p-text-center p-p-2"
+              [ngStyle]="{'min-width': '100px'}"
+              [pSortableColumn]="subColumn.isSortable ? subColumn.dataSuffix : null">
+            {{ subColumn.label }}
+            <p-sortIcon *ngIf="subColumn.isSortable" [field]="subColumn.dataSuffix"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-container>
+
+    </ng-template>
+
+    <!-- TABLE BODY -->
+
+    <ng-template pTemplate="body" let-rowData>
+      <!-- Use isTotalRow flag for total row styling -->
+      <tr [ngClass]="{'total-row-bg': rowData.isTotalRow}">
+
+        <!-- BASE COLUMN 1 (E.g.: Usage Type / Metrics) -->
+        <td class="p-text-left p-text-bold p-p-2" [ngStyle]="{'min-width': '150px'}">
+          <!-- Display the row value -->
+          {{ rowData[baseColumnHeader] || rowData[baseColumnHeaderKey] }}
+        </td>
+
+        <!-- BASE COLUMN 2 (rowId) - Invisible -->
+        <td *ngIf="baseColumnHeader2"
+            class="p-text-left p-text-bold p-p-2"
+            [ngStyle]="{'min-width': '0px', 'width': '0px', 'padding': '0', 'border-right': 'none', 'visibility': 'hidden'}">
+          {{ rowData[baseColumnHeader2] }}
+        </td>
+
+        <!-- COMPLEX CASE (Metrics and AI Usage) -->
+        <ng-container *ngIf="projectHeaders?.length">
+          <ng-container *ngFor="let header of projectHeaders">
+            <ng-container *ngFor="let subColumn of subColumns">
+
+              <td class="p-text-center p-p-2"
+                  [ngStyle]="{'min-width': '100px'}"
+                  [ngClass]="{
+          'p-text-bold': rowData.isTotalRow,
+          'total-column-bg': header.isTotalColumn
+        }">
+
+                <!-- VALUE DISPLAY -->
+                <ng-container *ngIf="!header.isTotalColumn; else totalCell">
+
+                  <!-- NEW LOGIC: Check if it's the 'Sprint' column and display it as plain text without a pipe -->
+                  <ng-container *ngIf="header.cleanName === 'sprintName'; else projectMetric">
+                    {{ rowData[header.cleanName + subColumn.dataSuffix] }}
+                  </ng-container>
+
+                  <ng-template #projectMetric>
+                    <!-- Project Metric column: Check for N/A or apply pipe if defined -->
+
+                    <ng-container *ngIf="rowData[header.cleanName + subColumn.dataSuffix] === 'N/A'; else metricValue">
+                      {{ rowData[header.cleanName + subColumn.dataSuffix] }}
+                    </ng-container>
+
+                    <ng-template #metricValue>
+                      <!-- Apply the pipe ONLY if 'subColumn.pipe' is defined (AI Usage case) -->
+                      <ng-container *ngIf="subColumn.pipe; else rawValue">
+                        {{ rowData[header.cleanName + subColumn.dataSuffix] | number: subColumn.pipe }}
+                      </ng-container>
+                      <ng-template #rawValue>
+                        <!-- Display raw value (Metrics case, where pipe is undefined) -->
+                        {{ rowData[header.cleanName + subColumn.dataSuffix] }}
+                      </ng-template>
+                    </ng-template>
+                  </ng-template>
+
+                </ng-container>
+
+                <ng-template #totalCell>
+                  <!-- Row Total Value -->
+                  {{ rowData[subColumn.totalDataKey] | number: subColumn.pipe }}
+                </ng-template>
+
+              </td>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <!-- SIMPLE CASE -->
+        <ng-container *ngIf="!projectHeaders?.length">
+          <td *ngFor="let subColumn of subColumns"
+              class="p-text-center p-p-2"
+              [ngStyle]="{'min-width': '100px'}">
+            <!-- Apply the pipe in the simple case, if defined -->
+            {{ rowData[subColumn.dataSuffix] | number: subColumn.pipe }}
+          </td>
+        </ng-container>
+
+      </tr>
+
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="
+          (projectHeaders?.length
+            ? projectHeaders.length * subColumns.length + (baseColumnHeader2 ? 2 : 1)
+            : subColumns.length + (baseColumnHeader2 ? 2 : 1))
+          "
+            class="p-text-center p-py-5 p-text-bold p-text-secondary">
+
+          <div class="p-d-flex p-flex-column p-align-center p-justify-center p-w-100">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" style="max-height: 150px; margin-bottom: 1rem;"/>
+            <h4 class="p-text-center p-m-0" tabindex="0">No data available.</h4>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div *ngIf="summary && summary.length"
+       class="p-p-4 p-mt-4 p-grid p-jc-between p-gap-3">
+    <div *ngFor="let item of summary"
+         class="p-col p-d-flex p-flex-column p-ai-center p-jc-center p-text-center summary-card">
+      <div class="text-blue p-text-bold">
+        {{ item.number }}
+      </div>
+      <div class="font-small">
+        {{ item.summaryName }}
+      </div>
+    </div>
+  </div>
+</div>
