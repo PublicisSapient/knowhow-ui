@@ -83,9 +83,10 @@
         appendTo="body"
         panelStyleClass="custom-multiselect-panel"
         [showToggleAll]="false"
-        (onChange)="onSelectionOfOptions($event, field)">
+        (onChange)="onSelectionOfOptions($event, field)"
+        [disabled]="!field?.isDisabled">
         <ng-template let-hierarchy pTemplate="item">
-          <div class="option"  [ngClass]="{ 'inactive-projects': hierarchy.projectOnHold }">
+          <div class="option" >
             {{ hierarchy.nodeDisplayName }}
             <span class="parent_item" style="color: green">
               {{ getNodeDisplayNameById(hierarchy.parentId, hierarchy) }}

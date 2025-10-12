@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -31,6 +31,7 @@ import { Router } from '@angular/router';
 })
 export class ProjectFilterComponent implements OnInit {
   @Output() projectSelectedEvent = new EventEmitter<string>();
+  @Input() projectAdminAccessLevels: any = [];
   data = <any>[];
   filteredData = <any>[];
   projects = <any>[];
@@ -111,11 +112,10 @@ export class ProjectFilterComponent implements OnInit {
 
         if (Array.isArray(hierarchyData) && Array.isArray(allProjects)) {
           hierarchyData.forEach((level) =>
-            level?.list?.forEach((node) => {
-              const project = allProjects.find(
+            level?.list?.filter((node) => {
+              const project = allProjects.filter(
                 (projectItem) => projectItem.name === node.nodeName,
               );
-              if (project) node.projectOnHold = project.projectOnHold;
             }),
           );
 
@@ -141,9 +141,7 @@ export class ProjectFilterComponent implements OnInit {
         const isAccessMgmtPage = currentUrl.includes(
           '/dashboard/Config/Profile/AccessMgmt',
         );
-        const isRaiseRequestPage = currentUrl.includes(
-          '/dashboard/Config/Profile/RaiseRequest',
-        );
+
         const isProjectAdmin = this.authService.checkIfProjectAdmin();
 
         this.formData =
@@ -170,8 +168,36 @@ export class ProjectFilterComponent implements OnInit {
               userProjects.includes(project.nodeName.toLowerCase()),
             );
           }
+          level.list = level.list.filter((node) => {
+            const project = allProjects.find((p) => p.name === node.nodeName);
+            return !project || project.projectOnHold === false;
+          });
+
           this.filteredSuggestions[level.hierarchyLevelId] = level.list ?? [];
         });
+
+        if (isProjectAdmin && isAccessMgmtPage) {
+          const hierarchyOrder = this.formData.map(
+            (item) => item.hierarchyLevelId,
+          );
+
+          const firstMatchedIndex = Math.min(
+            ...this.projectAdminAccessLevels
+              .map((level) => hierarchyOrder.indexOf(level))
+              .filter((i) => i !== -1),
+          );
+
+          this.formData = this.formData.map((item, index) => ({
+            ...item,
+            isDisabled:
+              firstMatchedIndex !== Infinity && index >= firstMatchedIndex,
+          }));
+        } else {
+          this.formData = this.formData.map((item) => ({
+            ...item,
+            isDisabled: true,
+          }));
+        }
 
         this.service.sendProjectData(this.data);
       } else {

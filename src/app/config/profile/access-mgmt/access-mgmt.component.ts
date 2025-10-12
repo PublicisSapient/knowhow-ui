@@ -76,6 +76,7 @@ export class AccessMgmtComponent implements OnInit {
   isOpenSource: boolean = false;
   uniqueArrUserData: any = [];
   userProjects: any = [];
+  projectAdminAccessLevels: any = [];
 
   constructor(
     private service: SharedService,
@@ -130,6 +131,20 @@ export class AccessMgmtComponent implements OnInit {
         this.users = userData.data;
         this.uniqueArrUserData = JSON.parse(JSON.stringify(this.users));
         this.allUsers = this.users;
+        const userId = this.service.getCurrentUserDetails()?.user_name;
+
+        if (
+          !this.projectAdminAccessLevels ||
+          this.projectAdminAccessLevels.length === 0
+        ) {
+          this.projectAdminAccessLevels = this.allUsers
+            .filter((user) => user.username === userId)
+            .flatMap((user) => user.projectsAccess)
+            .filter((project) => project.role === 'ROLE_PROJECT_ADMIN')
+            .map((project) => project.accessNodes)
+            .flat()
+            .map((node) => node.accessLevel);
+        }
       } else {
         // show error message
         this.messageService.add({

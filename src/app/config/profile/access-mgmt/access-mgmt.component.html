@@ -292,7 +292,7 @@
           <h2 id="addProjectHeader" tabindex="0">Add Projects</h2>
         </ng-template>
         <div class="dialog-panel" #dialogpanel>
-          <app-project-filter #projectfilter (projectSelectedEvent)="projectSelectedEvent($event)"></app-project-filter>
+          <app-project-filter #projectfilter (projectSelectedEvent)="projectSelectedEvent($event)" [projectAdminAccessLevels]="projectAdminAccessLevels"></app-project-filter>
         </div>
         <p-footer>
           <div class="ui-dialog-buttonpane ui-helper-clearfix">
