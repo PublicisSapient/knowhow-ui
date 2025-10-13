@@ -52,7 +52,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   private readonly svg: any;
   private readonly width: number = 0;
   private readonly allSeverityKeys = ['s1', 's2', 's3', 's4'];
-  private readonly testExecutionKeys = ['AUTOMATED', 'MANUAL', 'TOTAL'];
+  private readonly testExecutionKeys = ['AUTOMATED', 'MANUAL'];
 
   filter = [
     { option: 'S1', value: 's1', selected: true },
