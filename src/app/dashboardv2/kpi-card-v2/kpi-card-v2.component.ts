@@ -452,7 +452,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     //#endregion
 
-    console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
       this.selectedTab === 'my-knowhow' ||
@@ -463,7 +462,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
-      // console.log(this.kpiTitle, 'kpi title in card');
       if (
         this.kpiTitle === 'Release Frequency' ||
         this.kpiTitle === 'Value Delivery (Cost of Delay)'
@@ -477,11 +475,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           disabled: false,
         });
       }
-      // this.service.flag$.subscribe((flag) => {
-      //   console.log('recieving flag > ', flag);
-      //   if (flag) {
-      //   }
-      // });
     }
   }
 
@@ -495,9 +488,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       styleClass: 'custom-dialog-class',
     });
 
-    this.commentDialogRef.onClose.subscribe(() => {
-      console.log('on close called');
-    });
+    this.commentDialogRef.onClose.subscribe(() => {});
   };
 
   showTooltip(val) {
@@ -707,7 +698,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -735,7 +725,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -1485,7 +1474,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   onDialogClose() {
     if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
       const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
-      console.log('menuEl', menuEl);
       menuEl.focus();
     }
   }
@@ -1557,9 +1545,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportDataToConfluence(event) {
-    console.log('kpiData > ', this.kpiData);
     const payloadDataFromKPIGroup = this.service.getKPIPostData();
-    console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
