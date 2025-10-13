@@ -39,9 +39,9 @@ export class ForgotPasswordComponent implements OnInit {
   success = '';
   isPasswordUpdated = false;
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private httpService: HttpService,
-    private router: Router,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly httpService: HttpService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit() {
