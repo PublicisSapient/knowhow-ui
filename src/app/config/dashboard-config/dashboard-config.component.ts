@@ -307,6 +307,7 @@ export class DashboardconfigComponent implements OnInit {
               : filteredProj.projectName,
             id: filteredProj.id,
             type: filteredProj.kanban ? 'kanban' : 'scrum',
+            onHold: filteredProj.projectOnHold,
           }));
         } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
           that.userProjects = [];
@@ -318,6 +319,7 @@ export class DashboardconfigComponent implements OnInit {
                 : filteredProj.projectName,
               id: filteredProj.id,
               type: filteredProj.kanban ? 'kanban' : 'scrum',
+              onHold: filteredProj.projectOnHold,
             }));
         }
       } else {

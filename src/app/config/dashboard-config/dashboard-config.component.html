@@ -40,7 +40,7 @@
               </div>
             </ng-template>
             <ng-template let-userProject pTemplate="item">
-              <div>
+              <div [ngClass]="{ 'inactive-projects': userProject.onHold }">
                 <div>{{ userProject.name }}</div>
               </div>
             </ng-template>
