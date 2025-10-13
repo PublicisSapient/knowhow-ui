@@ -13,8 +13,8 @@ describe('GenericFilterComponent', () => {
   const mockData = {
     Project: [
       { nodeId: '1', nodeDisplayName: 'Project 1' },
-      { nodeId: '2', nodeDisplayName: 'Project 2' }
-    ]
+      { nodeId: '2', nodeDisplayName: 'Project 2' },
+    ],
   };
 
   beforeEach(async () => {
@@ -24,13 +24,16 @@ describe('GenericFilterComponent', () => {
         FormsModule,
         MultiSelectModule,
         DropdownModule,
-        ButtonModule
-      ]
+        ButtonModule,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GenericFilterComponent);
     component = fixture.componentInstance;
-    component.config = { type: 'multiSelect', defaultLevel: { labelName: 'Project' } };
+    component.config = {
+      type: 'multiSelect',
+      defaultLevel: { labelName: 'Project' },
+    };
     component.data = mockData;
   });
 
@@ -44,48 +47,54 @@ describe('GenericFilterComponent', () => {
 
   it('should emit selectionChange with correct format for singleSelect', () => {
     spyOn(component.selectionChange, 'emit');
-    component.config = { type: 'singleSelect', defaultLevel: { labelName: 'Project' } };
-    
+    component.config = {
+      type: 'singleSelect',
+      defaultLevel: { labelName: 'Project' },
+    };
+
     component.onSelectionChange({ value: mockData.Project[0] });
-    
+
     expect(component.selectionChange.emit).toHaveBeenCalledWith({
       value: mockData.Project[0],
-      type: 'Project'
+      type: 'Project',
     });
   });
 
   it('should emit selectionChange with correct format for multiSelect on applyFilters', () => {
     spyOn(component.selectionChange, 'emit');
     component.selectedValue = [mockData.Project[0]];
-    
+
     component.applyFilters(null);
-    
+
     expect(component.selectionChange.emit).toHaveBeenCalledWith({
       value: [mockData.Project[0]],
-      type: 'Project'
+      type: 'Project',
     });
   });
 
   it('should update selectedValue for multiSelect on ngOnChanges', () => {
     component.selectedFilters = [mockData.Project[0]];
     const changes = {
-      selectedFilters: new SimpleChange(null, [mockData.Project[0]], false)
+      selectedFilters: new SimpleChange(null, [mockData.Project[0]], false),
     };
-    
+
     component.ngOnChanges(changes);
-    
+
     expect(component.selectedValue).toEqual([mockData.Project[0]]);
   });
 
   it('should update selectedValue for singleSelect on ngOnChanges', () => {
-    component.config = { type: 'singleSelect', defaultLevel: { labelName: 'Project' } };
+    component.config = {
+      type: 'singleSelect',
+      defaultLevel: { labelName: 'Project' },
+    };
     component.selectedFilters = mockData.Project[0];
     const changes = {
-      selectedFilters: new SimpleChange(null, mockData.Project[0], false)
+      selectedFilters: new SimpleChange(null, mockData.Project[0], false),
     };
-    
+
     component.ngOnChanges(changes);
-    
+
     expect(component.selectedValue).toEqual(mockData.Project[0]);
   });
 });

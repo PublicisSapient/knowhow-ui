@@ -202,7 +202,7 @@ export class HttpService {
   private executivePageURL = this.baseUrl + '/api/executive';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
-  private alalyticsMatricesTableDataURL = this.baseUrl + '/api/';
+  private analyticsMetricsTableDataURL = this.baseUrl + '/api/';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
 
@@ -1320,8 +1320,8 @@ export class HttpService {
     return this.http.post<any>(this.pebCalculateUrl, payload);
   }
 
-  getAlalyticsMatricesTableData(payLoad) {
-    return this.http.post<any>(this.alalyticsMatricesTableDataURL, payLoad);
+  getAnalyticsMetricsTableData(payLoad) {
+    return this.http.post<any>(this.analyticsMetricsTableDataURL, payLoad);
   }
 
   getAIAnalyticsData(payLoad) {

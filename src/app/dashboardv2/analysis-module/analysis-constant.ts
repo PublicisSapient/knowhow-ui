@@ -53,7 +53,7 @@ export const AI_USES_TABLE_DUMMY_KPI = {
   kpiName: 'AI Usage Analytics',
 };
 
-export const MATRICS_TABLE_DUMMY_KPI = {
+export const METRICS_TABLE_DUMMY_KPI = {
   issueData: 'JIRA',
   kpiId: 'kpi199',
   kpiFilter: 'table',

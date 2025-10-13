@@ -129,7 +129,7 @@ export class AnalysisContainerComponent implements OnInit {
 
   updateKpiSettings(type) {
     this.aiUsageKpiSettings = analysisConstant.AI_USES_TABLE_DUMMY_KPI;
-    this.metricsKpiSettings = analysisConstant.MATRICS_TABLE_DUMMY_KPI;
+    this.metricsKpiSettings = analysisConstant.METRICS_TABLE_DUMMY_KPI;
   }
 
   getProjectData() {
@@ -168,7 +168,7 @@ export class AnalysisContainerComponent implements OnInit {
             ];
             this.selectedSprint =
               this.filterData[analysisConstant.SPRINT_KEY][2];
-            this.payloadPreparasation();
+            this.payloadPreparation();
           }
         }),
     );
@@ -424,7 +424,7 @@ export class AnalysisContainerComponent implements OnInit {
       ),
     ];
 
-    this.payloadPreparasation();
+    this.payloadPreparation();
   }
 
   cleanName(name: string): string {
@@ -490,24 +490,24 @@ export class AnalysisContainerComponent implements OnInit {
   handleFilterSelect(event: any) {
     if (event.type === analysisConstant.PROJECT_KEY) {
       this.selectedProjects = event['value'];
-      this.payloadPreparasation();
+      this.payloadPreparation();
     } else {
       this.selectedSprint = event['value'];
-      this.payloadPreparasation();
+      this.payloadPreparation();
     }
   }
 
-  payloadPreparasation() {
-    const proejctAlongWithSprint = {};
+  payloadPreparation() {
+    const projectAlongWithSprint = {};
     this.selectedProjects.forEach((project) => {
       const allSprintsForAProject = this.projectData[
         analysisConstant.SPRINT_KEY
       ].filter((sprintDetails) => sprintDetails.parentId === project.nodeId);
-      proejctAlongWithSprint[project.nodeId] = allSprintsForAProject;
+      projectAlongWithSprint[project.nodeId] = allSprintsForAProject;
     });
 
     const latestClosedSprintsPerProject = Object.fromEntries(
-      Object.entries(proejctAlongWithSprint).map(([projectId, sprints]) => {
+      Object.entries(projectAlongWithSprint).map(([projectId, sprints]) => {
         const latestClosed = (sprints as any[])
           .filter((s: any) => s.sprintState === 'CLOSED')
           .sort(
@@ -537,8 +537,8 @@ export class AnalysisContainerComponent implements OnInit {
 
     console.log('api will hit from here', payload);
 
-    // GET Matrics Table Data
-    this.httpService.getAlalyticsMatricesTableData(payload).subscribe({
+    //GET Metrics Table Data
+    this.httpService.getAnalyticsMetricsTableData(payload).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.processMetricsTableData(response.data);
