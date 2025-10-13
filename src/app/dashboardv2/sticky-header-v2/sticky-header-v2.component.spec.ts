@@ -22,6 +22,7 @@ describe('StickyHeaderV2Component', () => {
     mockSharedService = jasmine.createSpyObj('SharedService', [
       'onTabSwitch',
       'mapColorToProjectObs',
+      'getSelectedTab'
     ]);
     mockHelperService = jasmine.createSpyObj('HelperService', [
       'getObjectKeys',
