@@ -155,7 +155,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    console.log('this.kpiData ', this.kpiData);
     this.chartType = this.kpiData.kpiDetail?.chartType;
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -467,11 +466,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
-      // console.log(this.kpiTitle, 'kpi title in card');
-      // if (
-      //   this.kpiTitle === 'Release Frequency' ||
-      //   this.kpiTitle === 'Value Delivery (Cost of Delay)'
-      // ) {
       this.menuItems.push({
         label: 'Embed KPI',
         icon: 'pi pi-external-link',
@@ -480,12 +474,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
         disabled: false,
       });
-      // }
-      // this.service.flag$.subscribe((flag) => {
-      //   console.log('recieving flag > ', flag);
-      //   if (flag) {
-      //   }
-      // });
     }
   }
 

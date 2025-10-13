@@ -938,7 +938,6 @@ export class SharedService {
       ).values(),
     ];
     argumentData.kpiList = uniqueKpiList;
-    console.log('argumentData ', argumentData);
     this.kpiPostData = argumentData;
   }
 
@@ -955,7 +954,6 @@ export class SharedService {
       ).values(),
     ];
     argumentData.kpiList = uniqueKpiList;
-    console.log('argumentData jenkins ', argumentData);
     this.kpiPostJenkinsData = argumentData;
   }
 
@@ -965,7 +963,6 @@ export class SharedService {
 
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
-    console.log('Setting multiline chart flag to:', value);
     this.flagMultilineChartSubject.next(value);
   }
 }
