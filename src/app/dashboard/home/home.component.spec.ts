@@ -85,7 +85,15 @@ describe('HomeComponent', () => {
 
     mockHelperService = jasmine.createSpyObj('HelperService', [
       'urlRedirection',
+      'fetchPEBaData',
     ]);
+
+    mockHelperService.fetchPEBaData.and.returnValue(
+      of({
+        success: true,
+        data: { kpiTrends: { positive: [], negative: [] } },
+      }),
+    );
 
     mockSharedService = jasmine.createSpyObj(
       'SharedService',
@@ -107,6 +115,7 @@ describe('HomeComponent', () => {
           filterApplyData: {},
           dashConfigData: {},
         }),
+        pebData$: of({ kpiTrends: [] }),
       },
     );
 
