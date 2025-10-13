@@ -34,15 +34,15 @@ describe('GenericFilterComponent', () => {
     component.data = mockData;
   });
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  fit('should return correct options', () => {
+  it('should return correct options', () => {
     expect(component.options).toEqual(mockData.Project);
   });
 
-  fit('should emit selectionChange with correct format for singleSelect', () => {
+  it('should emit selectionChange with correct format for singleSelect', () => {
     spyOn(component.selectionChange, 'emit');
     component.config = { type: 'singleSelect', defaultLevel: { labelName: 'Project' } };
     
@@ -54,7 +54,7 @@ describe('GenericFilterComponent', () => {
     });
   });
 
-  fit('should emit selectionChange with correct format for multiSelect on applyFilters', () => {
+  it('should emit selectionChange with correct format for multiSelect on applyFilters', () => {
     spyOn(component.selectionChange, 'emit');
     component.selectedValue = [mockData.Project[0]];
     
@@ -66,7 +66,7 @@ describe('GenericFilterComponent', () => {
     });
   });
 
-  fit('should update selectedValue for multiSelect on ngOnChanges', () => {
+  it('should update selectedValue for multiSelect on ngOnChanges', () => {
     component.selectedFilters = [mockData.Project[0]];
     const changes = {
       selectedFilters: new SimpleChange(null, [mockData.Project[0]], false)
@@ -77,7 +77,7 @@ describe('GenericFilterComponent', () => {
     expect(component.selectedValue).toEqual([mockData.Project[0]]);
   });
 
-  fit('should update selectedValue for singleSelect on ngOnChanges', () => {
+  it('should update selectedValue for singleSelect on ngOnChanges', () => {
     component.config = { type: 'singleSelect', defaultLevel: { labelName: 'Project' } };
     component.selectedFilters = mockData.Project[0];
     const changes = {
