@@ -98,7 +98,7 @@ export class AnalysisContainerComponent implements OnInit {
     this.selectedTab = analysisConstant.SELECTED_TAB_ANALYSIS_KEY;
   }
 
-  private processSummaryData(summary: any): AnalyticsSummary[] {
+  public processSummaryData(summary: any): AnalyticsSummary[] {
     if (!summary) {
       return [];
     }
@@ -120,7 +120,7 @@ export class AnalysisContainerComponent implements OnInit {
     return summaryArray;
   }
 
-  private camelCaseToTitleCase(camelCase: string): string {
+  public camelCaseToTitleCase(camelCase: string): string {
     if (!camelCase) return '';
 
     const result = camelCase.replace(/([A-Z])/g, ' $1');
