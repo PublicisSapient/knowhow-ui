@@ -7,6 +7,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -41,6 +42,7 @@ export class HeaderComponent implements OnInit {
   isNotConfigPage: boolean = false;
   saveReportsUrl: string = '';
   saveDashboardUrl: string = '';
+  isAnalsisFlag = new BehaviorSubject(false);
 
   constructor(
     private httpService: HttpService,
@@ -140,6 +142,13 @@ export class HeaderComponent implements OnInit {
     });
 
     this.getExistingReports();
+    this.getFeatureFlag();
+  }
+
+  getFeatureFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('ANALYSIS')
+      .then((res) => this.isAnalsisFlag.next(res));
   }
 
   // when user would want to give access on project from notification list
