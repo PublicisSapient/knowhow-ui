@@ -429,9 +429,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (this.refreshCounter) return;
+        if (this.refreshCounter) {
+          return;
+        }
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
+        const kpiFiltersParam = params['kpiFilters'];
         let tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
@@ -1334,16 +1336,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source, bool): void {
-    console.log('postData', postData);
-    if (bool) this.service.setKPIPostData(postData);
+    if (bool) {
+      this.service.setKPIPostData(postData);
+    }
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
       const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
-      if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
-      console.log('postData', postData);
+      if (kpi171) {
+        kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+      }
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(

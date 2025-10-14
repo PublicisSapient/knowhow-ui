@@ -153,6 +153,8 @@ export class SharedService {
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
 
+  private pebDataSubject = new BehaviorSubject<any>(null);
+  public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
   kpiPostData: object = {};
 
@@ -917,12 +919,14 @@ export class SharedService {
     return stateFilters.length <= 8;
   }
 
-  setPEBData(value) {
-    this.PEBData = value;
+  // Add method to update PEBa data
+  setPEBData(data: any): void {
+    this.pebDataSubject.next(data);
   }
 
-  getPEBData() {
-    return this.PEBData;
+  // Add method to get current PEBa data
+  getPEBData(): any {
+    return this.pebDataSubject.getValue();
   }
   //#endregion
 

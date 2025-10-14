@@ -88,7 +88,7 @@ export class ProfileComponent implements OnInit {
         icon: 'fa fa-universal-access',
         routerLink: ['/dashboard/Config/Profile/AccessMgmt'],
         routerLinkActiveOptions: { exact: true },
-        visible: this.isSuperAdmin,
+        visible: this.isSuperAdmin || this.isProjectAdmin,
       },
       {
         label: 'Raise Request',
