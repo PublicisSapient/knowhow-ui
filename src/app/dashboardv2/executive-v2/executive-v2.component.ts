@@ -1229,6 +1229,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
+    this.service.setKPIPostJenkinsData(postData);
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();

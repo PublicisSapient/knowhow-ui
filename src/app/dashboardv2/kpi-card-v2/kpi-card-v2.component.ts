@@ -138,6 +138,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() xCaption: string;
 
   @Input() kpiTitle: string = '';
+  chartType: String = '';
 
   constructor(
     public service: SharedService,
@@ -154,6 +155,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.chartType = this.kpiData.kpiDetail?.chartType;
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
@@ -454,27 +456,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
     // -- export widget to confluence
     if (
-      this.selectedTab === 'my-knowhow' ||
-      // this.selectedTab === 'speed' ||
-      // this.selectedTab === 'quality' ||
-      this.selectedTab === 'value'
+      (this.selectedTab === 'my-knowhow' ||
+        this.selectedTab === 'speed' ||
+        this.selectedTab === 'quality' ||
+        this.selectedTab === 'value') &&
+      this.chartType === 'line'
     ) {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
-      if (
-        this.kpiTitle === 'Release Frequency' ||
-        this.kpiTitle === 'Value Delivery (Cost of Delay)'
-      ) {
-        this.menuItems.push({
-          label: 'Embed KPI',
-          icon: 'pi pi-external-link',
-          command: ($event) => {
-            this.exportDataToConfluence($event);
-          },
-          disabled: false,
-        });
-      }
+      this.menuItems.push({
+        label: 'Embed KPI',
+        icon: 'pi pi-external-link',
+        command: ($event) => {
+          this.exportDataToConfluence($event);
+        },
+        disabled: false,
+      });
     }
   }
 
@@ -1545,7 +1543,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportDataToConfluence(event) {
-    const payloadDataFromKPIGroup = this.service.getKPIPostData();
+    console.log('kpiData > ', this.kpiData);
+    let payloadDataFromKPIGroup;
+    if (this.kpiData.kpiDetail.kpiSource === 'Jira') {
+      payloadDataFromKPIGroup = this.service.getKPIPostData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Jenkins') {
+      payloadDataFromKPIGroup = this.service.getKPIPostJenkinsData();
+    }
+    console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
