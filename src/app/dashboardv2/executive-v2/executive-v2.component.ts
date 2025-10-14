@@ -952,7 +952,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi: { kpiId: any }) => kpi.kpiId,
           );
           kpiArr.forEach((element) => this.kpiLoader.add(element));
-          console.log('kpiJira', this.kpiJira);
           this.postJiraKpi(this.kpiJira, 'jira', true);
         }
       }
@@ -2919,7 +2918,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   }
                 });
                 if (!anyProject?.length) {
-                  // console.log(dataItem);
                 } else {
                   if (
                     Array.isArray(anyProject[0][0]) &&
@@ -3048,8 +3046,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         });
       });
-    } else {
-      console.log(data);
     }
     return data;
   }
