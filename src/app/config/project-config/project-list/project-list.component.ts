@@ -233,6 +233,11 @@ export class ProjectListComponent implements OnInit {
       heading: 'Project',
     };
     this.cols?.unshift(projectObj);
+    const statusObj = {
+      id: 'status',
+      heading: 'Project Status',
+    };
+    this.cols?.splice(1, 0, statusObj);
     const typeObj = {
       id: 'type',
       heading: 'Type',
@@ -246,6 +251,7 @@ export class ProjectListComponent implements OnInit {
       const obj = {
         id: this.projectList[i]?.id,
         name: this.projectList[i]?.projectDisplayName,
+        status: this.projectList[i]?.projectOnHold ? 'Paused' : 'Active',
         type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
         saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
         developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,

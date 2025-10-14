@@ -3047,8 +3047,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         });
       });
-    } else {
-      console.log(data);
     }
     return data;
   }

@@ -454,7 +454,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     //#endregion
 
-    console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
       (this.selectedTab === 'my-knowhow' ||
@@ -487,9 +486,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       styleClass: 'custom-dialog-class',
     });
 
-    this.commentDialogRef.onClose.subscribe(() => {
-      console.log('on close called');
-    });
+    this.commentDialogRef.onClose.subscribe(() => {});
   };
 
   showTooltip(val) {
@@ -699,7 +696,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -727,7 +723,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -1477,7 +1472,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   onDialogClose() {
     if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
       const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
-      console.log('menuEl', menuEl);
       menuEl.focus();
     }
   }
