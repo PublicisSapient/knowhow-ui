@@ -270,8 +270,6 @@ export class HeaderComponent implements OnInit {
   }
 
   goToAnalysis() {
-    console.log('analysis');
-    console.log(this.router.url);
     this.router
       .navigate(['/dashboard/Analysis'], {
         queryParams: {},

@@ -96,6 +96,7 @@ export class AnalysisContainerComponent implements OnInit {
     this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
     this.selectedTab = analysisConstant.SELECTED_TAB_ANALYSIS_KEY;
+    this.updateKpiSettings();
   }
 
   public processSummaryData(summary: any): AnalyticsSummary[] {
@@ -127,7 +128,7 @@ export class AnalysisContainerComponent implements OnInit {
     return result.charAt(0).toUpperCase() + result.slice(1).trim();
   }
 
-  updateKpiSettings(type) {
+  updateKpiSettings() {
     this.aiUsageKpiSettings = analysisConstant.AI_USES_TABLE_DUMMY_KPI;
     this.metricsKpiSettings = analysisConstant.METRICS_TABLE_DUMMY_KPI;
   }
@@ -306,8 +307,6 @@ export class AnalysisContainerComponent implements OnInit {
 
     this.aiUsageTableData.push(totalRow);
     this.aiUsageBaseColumnKey = 'usageType';
-
-    this.updateKpiSettings('aiUsage');
   }
 
   private processMetricsTableData(apiData: any) {
@@ -409,8 +408,6 @@ export class AnalysisContainerComponent implements OnInit {
     // 5. Setting Base Column Headers
     this.metricsBaseColumnHeader = 'Metrics'; // First fixed column (visible)
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
-
-    this.updateKpiSettings('metrics');
   }
 
   removeProject(project: any) {
@@ -547,13 +544,11 @@ export class AnalysisContainerComponent implements OnInit {
         } else {
           console.warn('Did not get data from API');
           this.metricsTableData = [];
-          this.updateKpiSettings('');
         }
       },
       error: (error) => {
         console.error('Error fetching Matrix Data:', error);
         this.metricsTableData = [];
-        this.updateKpiSettings('');
       },
     });
 
@@ -571,13 +566,11 @@ export class AnalysisContainerComponent implements OnInit {
               'AI Analytics API returned empty data or was not in the expected format.',
             );
             this.aiUsageTableData = [];
-            this.updateKpiSettings('aiUsage');
           }
         },
         error: (error) => {
           console.error('Error fetching AI Analytics Data:', error);
           this.aiUsageTableData = [];
-          this.updateKpiSettings('aiUsage');
         },
       }),
     );

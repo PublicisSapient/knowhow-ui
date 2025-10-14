@@ -8,8 +8,13 @@
 
 .filter-item-selected {
   padding: 4px;
+  font-size: 0.75rem;
 }
 
 .floating-label {
   font-size: 12px;
+}
+
+:host::ng-deep.p-multiselect .p-multiselect-label {
+  font-size: 0.75rem;
 }
