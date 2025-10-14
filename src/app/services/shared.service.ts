@@ -153,12 +153,17 @@ export class SharedService {
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
 
+  private pebDataSubject = new BehaviorSubject<any>(null);
+  public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
   kpiPostData: object = {};
+  kpiPostJenkinsData: object = {};
 
   private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
   // Observable for components to subscribe to
   flag$ = this.flagMultilineChartSubject.asObservable();
+  appendKpiList: Array<any> = [];
+  appendKpiListJenkins: Array<any> = [];
 
   constructor(
     private router: Router,
@@ -917,26 +922,51 @@ export class SharedService {
     return stateFilters.length <= 8;
   }
 
-  setPEBData(value) {
-    this.PEBData = value;
+  // Add method to update PEBa data
+  setPEBData(data: any): void {
+    this.pebDataSubject.next(data);
   }
 
-  getPEBData() {
-    return this.PEBData;
+  // Add method to get current PEBa data
+  getPEBData(): any {
+    return this.pebDataSubject.getValue();
   }
   //#endregion
 
   setKPIPostData(data) {
-    this.kpiPostData = data;
+    const argumentData = data;
+    this.appendKpiList.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostData = argumentData;
   }
 
   getKPIPostData() {
     return this.kpiPostData;
   }
 
+  setKPIPostJenkinsData(data) {
+    const argumentData = data;
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostJenkinsData = argumentData;
+  }
+
+  getKPIPostJenkinsData() {
+    return this.kpiPostJenkinsData;
+  }
+
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
-    console.log('Setting multiline chart flag to:', value);
     this.flagMultilineChartSubject.next(value);
   }
 }

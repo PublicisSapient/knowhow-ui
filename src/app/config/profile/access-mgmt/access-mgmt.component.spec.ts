@@ -98,12 +98,20 @@ describe('AccessMgmtComponent', () => {
   });
 
   it('should get user data on load', (done) => {
+    const fakeUserData = {
+      data: [
+        { username: 'user1', authorities: ['ROLE_USER'] },
+        { username: 'user2', authorities: ['ROLE_ADMIN'] },
+      ],
+    };
+
     component.ngOnInit();
-    // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/userinfo')[0].flush(fakeUserData);
-    expect(Object.keys(component.users).length).toBe(
-      Object.keys(fakeUserData.data).length,
-    );
+
+    const req = httpMock.expectOne(baseUrl + '/api/userinfo');
+    expect(req.request.method).toBe('GET');
+    req.flush(fakeUserData);
+
+    expect(component.users.length).toBe(fakeUserData.data.length);
     done();
   });
 
@@ -207,8 +215,9 @@ describe('AccessMgmtComponent', () => {
 
   it('should check access deletion status', () => {
     const isSuperAdmin = false;
-    component.accessDeletionStatus(fakeDeleteAccess, isSuperAdmin);
     spyOn(component, 'getUsers');
+
+    component.accessDeletionStatus(fakeDeleteAccess, isSuperAdmin);
     expect(component.accessConfirm).toBe(false);
   });
 

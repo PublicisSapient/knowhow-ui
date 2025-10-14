@@ -93,3 +93,13 @@ div.main {
 :host::ng-deep .p-confirm-dialog .p-dialog-footer .p-button {
   background-color: #0b4bc8;
 }
+
+.status-active {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.status-paused {
+  color: #fd7e14;
+  font-weight: 500;
+}
