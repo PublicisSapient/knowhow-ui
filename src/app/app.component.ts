@@ -95,7 +95,7 @@ export class AppComponent implements OnInit {
           uiType: 'New',
         };
         this.ga.setPageLoad(data);
-        let loc = window.location.hash
+        const loc = window.location.hash
           ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
           : '';
         if (

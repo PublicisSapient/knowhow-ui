@@ -103,7 +103,12 @@
       <ng-template pTemplate="body" let-project let-columns="columns">
         <tr role="row" tabindex="0">
           <td *ngFor="let col of columns" role="cell" tabindex="0">
-            {{project[col.id]}}
+            <span *ngIf="col.id === 'status'" [ngClass]="{'status-active': project[col.id] === 'Active', 'status-paused': project[col.id] === 'Paused'}">
+              {{project[col.id]}}
+            </span>
+            <span *ngIf="col.id !== 'status'">
+              {{project[col.id]}}
+            </span>
           </td>
           <td class="p-0 p-text-right" role="cell">
             <div class="p-d-flex p-jc-end">

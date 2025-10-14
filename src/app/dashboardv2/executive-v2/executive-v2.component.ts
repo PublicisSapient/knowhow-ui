@@ -446,9 +446,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (this.refreshCounter) return;
+        if (this.refreshCounter) {
+          return;
+        }
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
+        const kpiFiltersParam = params['kpiFilters'];
         let tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
@@ -967,7 +969,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi: { kpiId: any }) => kpi.kpiId,
           );
           kpiArr.forEach((element) => this.kpiLoader.add(element));
-          console.log('kpiJira', this.kpiJira);
           this.postJiraKpi(this.kpiJira, 'jira', true);
         }
       }
@@ -1245,6 +1246,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
+    this.service.setKPIPostJenkinsData(postData);
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
@@ -1351,16 +1353,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source, bool): void {
-    console.log('postData', postData);
-    if (bool) this.service.setKPIPostData(postData);
+    if (bool) {
+      this.service.setKPIPostData(postData);
+    }
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
       const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
-      if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
-      console.log('postData', postData);
+      if (kpi171) {
+        kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+      }
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -2932,7 +2936,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   }
                 });
                 if (!anyProject?.length) {
-                  // console.log(dataItem);
                 } else {
                   if (
                     Array.isArray(anyProject[0][0]) &&
@@ -3061,8 +3064,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         });
       });
-    } else {
-      console.log(data);
     }
     return data;
   }
