@@ -36,7 +36,8 @@
         [kpiData]="metricsKpiSettings"
         [loader]="false"
         [selectedTab]="selectedTab"
-        [immediateLoader]="false">
+        [immediateLoader]="false" 
+        [selectedBoard]="'analysis'">
         <app-dynamic-kpi-table
           kpiTable
           [tableData]="metricsTableData"
@@ -58,7 +59,8 @@
                        [kpiData]="aiUsageKpiSettings"
                        [loader]="false"
                        [selectedTab]="selectedTab"
-                       [immediateLoader]="false">
+                       [immediateLoader]="false"
+                       [selectedBoard]="'analysis'">
         <app-dynamic-kpi-table
           kpiTable
           [tableData]="aiUsageTableData"

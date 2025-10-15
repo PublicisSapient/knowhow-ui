@@ -172,6 +172,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpiTitle: string = '';
   public selectedTrendObject: SelectedTrend | null = null;
   chartType: String = '';
+  @Input() selectedBoard: string = 'dashboard';
 
   constructor(
     public service: SharedService,
