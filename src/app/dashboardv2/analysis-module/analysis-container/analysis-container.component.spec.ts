@@ -93,7 +93,7 @@ describe('AnalysisContainerComponent', () => {
   });
 
   it('should update kpi settings', () => {
-    component.updateKpiSettings('test');
+    component.updateKpiSettings();
 
     expect(component.aiUsageKpiSettings).toBeDefined();
   });
@@ -200,9 +200,6 @@ describe('AnalysisContainerComponent', () => {
     expect(component.metricsSummaryDisplayData).toEqual([
       { number: '50', summaryName: 'Total' },
     ]);
-
-    // Test updateKpiSettings call
-    expect(component.updateKpiSettings).toHaveBeenCalledWith('metrics');
   });
 
   it('should handle missing sprint data in processMetricsTableData', () => {
@@ -529,9 +526,6 @@ describe('AnalysisContainerComponent', () => {
     expect(component.aiUsageSummaryDisplayData).toEqual([
       { number: '85.5', summaryName: 'Total' },
     ]);
-
-    // Test updateKpiSettings call
-    expect(component.updateKpiSettings).toHaveBeenCalledWith('aiUsage');
   });
 
   it('should handle missing project data in processAiUsageTableData', () => {
@@ -644,7 +638,6 @@ describe('AnalysisContainerComponent', () => {
     expect(component.aiUsageTableData.length).toBe(1); // Only total row
     expect(component.aiUsageTableData[0].usageType).toBe('Total');
     expect(component.aiUsageProjectHeaders.length).toBe(1); // Only Total header
-    expect(component.updateKpiSettings).toHaveBeenCalledWith('aiUsage');
   });
 
   it('should open project settings with valid project by nodeName', () => {
