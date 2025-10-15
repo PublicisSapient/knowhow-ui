@@ -157,10 +157,13 @@ export class SharedService {
   public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
   kpiPostData: object = {};
+  kpiPostJenkinsData: object = {};
 
   private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
   // Observable for components to subscribe to
   flag$ = this.flagMultilineChartSubject.asObservable();
+  appendKpiList: Array<any> = [];
+  appendKpiListJenkins: Array<any> = [];
 
   constructor(
     private router: Router,
@@ -931,16 +934,39 @@ export class SharedService {
   //#endregion
 
   setKPIPostData(data) {
-    this.kpiPostData = data;
+    const argumentData = data;
+    this.appendKpiList.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostData = argumentData;
   }
 
   getKPIPostData() {
     return this.kpiPostData;
   }
 
+  setKPIPostJenkinsData(data) {
+    const argumentData = data;
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostJenkinsData = argumentData;
+  }
+
+  getKPIPostJenkinsData() {
+    return this.kpiPostJenkinsData;
+  }
+
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
-    console.log('Setting multiline chart flag to:', value);
     this.flagMultilineChartSubject.next(value);
   }
 }
