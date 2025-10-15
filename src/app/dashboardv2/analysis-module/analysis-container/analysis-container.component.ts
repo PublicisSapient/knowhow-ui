@@ -39,6 +39,12 @@ export interface AnalyticsSummary {
   summaryName: string;
 }
 
+interface MetricGroup {
+  metricName: string;
+  rows: any[];
+  rowspan: number;
+}
+
 @Component({
   selector: 'app-analysis-container',
   templateUrl: './analysis-container.component.html',
@@ -74,12 +80,16 @@ export class AnalysisContainerComponent implements OnInit {
   metricsBaseColumnHeader: string = '';
   metricsBaseColumnHeader2: string = '';
   metricsSummaryDisplayData: AnalyticsSummary[] = [];
+  metricsGroupedTableData: MetricGroup[] = [];
 
   selectedProjects: any = [];
   subscriptions: Subscription[] = [];
   filterData: any = null;
   projectFilterConfig: any = null;
   sprintFilterConfig: any = null;
+  metricsResponseMock: any;
+  currentSortField: string | null = null;
+  currentSortOrder: 1 | -1 = 1;
 
   analyticsSummary: any;
   @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
@@ -346,7 +356,7 @@ export class AnalysisContainerComponent implements OnInit {
         label: '',
         dataSuffix: '_value',
         pipe: undefined,
-        isSortable: false,
+        isSortable: true,
         totalDataKey: '',
       },
     ];
@@ -408,6 +418,39 @@ export class AnalysisContainerComponent implements OnInit {
     // 5. Setting Base Column Headers
     this.metricsBaseColumnHeader = 'Metrics'; // First fixed column (visible)
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
+  }
+
+  public sortMetricsGroupedData(field: string) {
+    this.currentSortOrder =
+      this.currentSortField === field && this.currentSortOrder === 1 ? -1 : 1;
+    this.currentSortField = field;
+
+    this.metricsGroupedTableData.forEach((group) => {
+      group.rows.sort((a, b) => {
+        const valueA = a[field] ?? '';
+        const valueB = b[field] ?? '';
+
+        let comparison = 0;
+
+        const extractValue = (s: string): number => {
+          const match = s.match(/(\d+)/);
+          return match ? parseInt(match[1], 10) : Number.MIN_SAFE_INTEGER;
+        };
+
+        const numA = extractValue(String(valueA));
+        const numB = extractValue(String(valueB));
+
+        if (numA < numB) {
+          comparison = -1;
+        } else if (numA > numB) {
+          comparison = 1;
+        }
+
+        return comparison * this.currentSortOrder;
+      });
+    });
+
+    this.metricsGroupedTableData = [...this.metricsGroupedTableData];
   }
 
   removeProject(project: any) {

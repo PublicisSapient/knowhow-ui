@@ -3,6 +3,8 @@
     [value]="tableData"
     [scrollable]="true"
     [sortMode]="'multiple'"
+    [customSort]="true"
+    (sortFunction)="onCustomSort($event)"
     styleClass="p-datatable-gridlines p-w-100 kpi-analytics-table"
     [style]="{'width':'100%'}">
 
@@ -24,9 +26,9 @@
             <th rowspan="1"
                 class="p-text-center non-sortable p-p-2"
                 [ngStyle]="{'min-width': '150px'}"
-                [pSortableColumn]="baseColumnHeader">
+                [pSortableColumn]="isMetricsLayout ? null : baseColumnHeader">
               {{ baseColumnHeader }}
-              <p-sortIcon [field]="baseColumnHeader"></p-sortIcon>
+              <p-sortIcon *ngIf="!isMetricsLayout" [field]="baseColumnHeader"></p-sortIcon>
             </th>
 
             <!-- Base Column 2 (rowId) - Invisible, to enforce row uniqueness -->
@@ -70,7 +72,7 @@
             <th rowspan="2"
                 class="p-text-center non-sortable p-p-2"
                 [ngStyle]="{'min-width': '150px'}"
-                [pSortableColumn]="baseColumnHeader">
+                [pSortableColumn]="isMetricsLayout ? null : baseColumnHeader">
               {{ baseColumnHeader }}
             </th>
 
@@ -155,7 +157,11 @@
 
     <ng-template pTemplate="body" let-rowData>
       <!-- Use isTotalRow flag for total row styling -->
-      <tr [ngClass]="{'total-row-bg': rowData.isTotalRow}">
+      <tr [ngClass]="{
+        'total-row-bg': rowData.isTotalRow,
+        'metric-separator': rowData[baseColumnHeader] && rowData[baseColumnHeader] !== '\u00A0',
+        'metric-spacer-row': rowData[baseColumnHeader] === '\u00A0'
+      }">
 
         <!-- BASE COLUMN 1 (E.g.: Usage Type / Metrics) -->
         <td class="p-text-left p-text-bold p-p-2" [ngStyle]="{'min-width': '150px'}">
