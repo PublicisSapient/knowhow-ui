@@ -80,18 +80,13 @@ export class AnalysisContainerComponent implements OnInit {
   metricsBaseColumnHeader: string = '';
   metricsBaseColumnHeader2: string = '';
   metricsSummaryDisplayData: AnalyticsSummary[] = [];
-  metricsGroupedTableData: MetricGroup[] = [];
 
   selectedProjects: any = [];
   subscriptions: Subscription[] = [];
   filterData: any = null;
   projectFilterConfig: any = null;
   sprintFilterConfig: any = null;
-  metricsResponseMock: any;
-  currentSortField: string | null = null;
-  currentSortOrder: 1 | -1 = 1;
 
-  analyticsSummary: any;
   @ViewChild('kpiCard') kpiCardComponent!: KpiCardV2ComponentType;
 
   constructor(
@@ -100,8 +95,6 @@ export class AnalysisContainerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // const projectNames = new Set<string>();
-    // this.selectedProjects = Array.from(projectNames);
     this.getProjectData();
     this.projectFilterConfig = analysisConstant.PROJECT_FILTER_CONFIG;
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
@@ -420,39 +413,6 @@ export class AnalysisContainerComponent implements OnInit {
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
   }
 
-  public sortMetricsGroupedData(field: string) {
-    this.currentSortOrder =
-      this.currentSortField === field && this.currentSortOrder === 1 ? -1 : 1;
-    this.currentSortField = field;
-
-    this.metricsGroupedTableData.forEach((group) => {
-      group.rows.sort((a, b) => {
-        const valueA = a[field] ?? '';
-        const valueB = b[field] ?? '';
-
-        let comparison = 0;
-
-        const extractValue = (s: string): number => {
-          const match = s.match(/(\d+)/);
-          return match ? parseInt(match[1], 10) : Number.MIN_SAFE_INTEGER;
-        };
-
-        const numA = extractValue(String(valueA));
-        const numB = extractValue(String(valueB));
-
-        if (numA < numB) {
-          comparison = -1;
-        } else if (numA > numB) {
-          comparison = 1;
-        }
-
-        return comparison * this.currentSortOrder;
-      });
-    });
-
-    this.metricsGroupedTableData = [...this.metricsGroupedTableData];
-  }
-
   removeProject(project: any) {
     if (this.selectedProjects.length === 1) {
       return;
@@ -578,22 +538,22 @@ export class AnalysisContainerComponent implements OnInit {
     console.log('api will hit from here', payload);
 
     //GET Metrics Table Data
-    this.httpService.getAnalyticsMetricsTableData(payload).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.processMetricsTableData(response.data);
-        } else if (response.data.length === 0) {
-          this.metricsTableData = [];
-        } else {
-          console.warn('Did not get data from API');
-          this.metricsTableData = [];
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching Matrix Data:', error);
-        this.metricsTableData = [];
-      },
-    });
+    // this.httpService.getAnalyticsMetricsTableData(payload).subscribe({
+    //   next: (response: any) => {
+    //     if (response.success) {
+    //       this.processMetricsTableData(response.data);
+    //     } else if (response.data.length === 0) {
+    //       this.metricsTableData = [];
+    //     } else {
+    //       console.warn('Did not get data from API');
+    //       this.metricsTableData = [];
+    //     }
+    //   },
+    //   error: (error) => {
+    //     console.error('Error fetching Matrix Data:', error);
+    //     this.metricsTableData = [];
+    //   },
+    // });
 
     //GET AI analytics Data
     this.subscriptions.push(

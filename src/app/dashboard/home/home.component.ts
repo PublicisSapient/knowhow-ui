@@ -208,7 +208,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.bottomTilesData.set([
         {
           cssClassName: '',
-          category: 'Top 3 Risks this Quarter',
+          category: 'Top 4 Risks this Quarter',
           value: [],
           icon: '',
         },
