@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { HttpService } from '../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -42,8 +41,6 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   error = '';
   sessionMsg = '';
-  adLogin = true;
-  loginConfig = {};
 
   refreshCounter = 0;
   self: any = this;

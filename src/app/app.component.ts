@@ -27,10 +27,8 @@ import {
   RouteConfigLoadStart,
   RouteConfigLoadEnd,
   NavigationEnd,
-  ActivatedRoute,
 } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { Location } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 @Component({
@@ -40,7 +38,7 @@ import { throwError } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   loadingRouteConfig: boolean;
-  authorized: boolean = true;
+  authorized = true;
   refreshCounter = 0;
   self: any = this;
   selectedTab = '';
