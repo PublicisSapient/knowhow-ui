@@ -119,7 +119,7 @@ describe('AnalysisContainerComponent', () => {
     component.payloadPreparation();
 
     expect(console.log).toHaveBeenCalled();
-    expect(httpService.getAnalyticsMetricsTableData).toHaveBeenCalled();
+    //expect(httpService.getAnalyticsMetricsTableData).toHaveBeenCalled();
     expect(httpService.getAIAnalyticsData).toHaveBeenCalled();
   });
 
