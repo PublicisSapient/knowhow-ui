@@ -114,7 +114,7 @@ export class CapacityPlanningComponent implements OnInit {
   showPopuup = false;
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
-  errorMessage= 'Error in Saving Assignee Details. Please try after sometime!'
+  errorMessage = 'Error in Saving Assignee Details. Please try after sometime!';
   constructor(
     private http_service: HttpService,
     private messageService: MessageService,
