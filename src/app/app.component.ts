@@ -58,14 +58,12 @@ export class AppComponent implements OnInit {
 
   constructor(
     public router: Router,
-    private service: SharedService,
-    private getAuth: GetAuthService,
-    private httpService: HttpService,
-    private primengConfig: PrimeNGConfig,
+    private readonly service: SharedService,
+    private readonly getAuth: GetAuthService,
+    private readonly httpService: HttpService,
+    private readonly primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService,
-    private authorisation: GetAuthorizationService,
-    private route: ActivatedRoute,
-    private location: Location,
+    private readonly authorisation: GetAuthorizationService,
   ) {
     this.authorized = this.getAuth.checkAuth();
   }

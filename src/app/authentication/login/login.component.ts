@@ -50,14 +50,13 @@ export class LoginComponent implements OnInit {
   selectedTab = '';
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private httpService: HttpService,
-    private sharedService: SharedService,
-    private ga: GoogleAnalyticsService,
-    private helperService: HelperService,
-    private location: Location,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly httpService: HttpService,
+    private readonly sharedService: SharedService,
+    private readonly ga: GoogleAnalyticsService,
+    private readonly helperService: HelperService,
   ) {}
 
   ngOnInit() {
