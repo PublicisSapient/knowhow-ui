@@ -22,6 +22,7 @@ import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.c
 import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
 import { HomeComponent } from '../dashboard/home/home.component';
+import { AnalysisContainerComponent } from '../dashboardv2/analysis-module/analysis-container/analysis-container.component';
 
 @Injectable({
   providedIn: 'root',
@@ -103,6 +104,10 @@ export class AppInitializerService {
           },
         },
         {
+          path: 'Analysis',
+          component: AnalysisContainerComponent,
+        },
+        {
           path: ':boardName',
           component: ExecutiveV2Component,
           pathMatch: 'full',
@@ -152,6 +157,13 @@ export class AppInitializerService {
             ).then((m) => m.ReportsModuleModule),
           data: {
             feature: 'Report',
+          },
+        },
+        {
+          path: 'Analysis',
+          component: AnalysisContainerComponent,
+          data: {
+            feature: 'Analysis',
           },
         },
         {

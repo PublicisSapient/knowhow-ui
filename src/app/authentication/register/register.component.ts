@@ -34,15 +34,15 @@ import { catchError, takeUntil, tap } from 'rxjs/operators';
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   registorForm: UntypedFormGroup;
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   loading = false;
   submitted = false;
   error = '';
   success = '';
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private router: Router,
-    private httpService: HttpService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly router: Router,
+    private readonly httpService: HttpService,
   ) {}
   ngOnInit() {
     // Set validation for registration-form elements

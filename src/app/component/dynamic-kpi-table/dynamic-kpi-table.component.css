@@ -1,0 +1,34 @@
+.metric-separator td {
+  border-top: 2px solid #c7c7c7;
+}
+
+:host
+  ::ng-deep
+  .kpi-analytics-table
+  .p-datatable-tbody
+  > tr.metric-separator
+  > td:first-child {
+  border-bottom-color: transparent !important;
+}
+
+.total-row-bg td {
+  font-weight: 600;
+}
+
+:host ::ng-deep .kpi-analytics-table .p-datatable-tbody > tr > td,
+:host ::ng-deep .kpi-analytics-table .p-datatable-thead > tr > th {
+  border-right: none !important;
+}
+
+:host ::ng-deep .kpi-analytics-table .p-datatable-wrapper table {
+  border-collapse: separate;
+}
+
+:host
+  ::ng-deep
+  .kpi-analytics-table
+  .p-datatable-tbody
+  > tr.metric-spacer-row
+  > td:first-child {
+  border-bottom-color: transparent !important;
+}
