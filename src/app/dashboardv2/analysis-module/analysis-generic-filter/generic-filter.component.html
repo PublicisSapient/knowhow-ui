@@ -1,0 +1,61 @@
+<div class="generic-filter-container">
+  <span class="p-float-label p-mx-2" *ngIf="config?.type === 'multiSelect'">
+    <p-multiSelect
+      #multiSelect
+      inputId="multiselectFilter"
+      [options]="options"
+      [(ngModel)]="selectedValue"
+      [optionLabel]="optionLabel"
+      [style]="{ width: '300px', 'max-width': '100%', height: '40px' }"
+      [selectionLimit]="6"
+      [selectedItemsLabel]="'{0} selected'"
+      [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
+      appendTo="body"
+      placeholder="Select"
+      [resetFilterOnHide]="true"
+      (onChange)="onSelectionChange($event)">
+      <ng-template let-option pTemplate="item">
+        <div class="filter-item">
+          <span>{{ option[optionLabel] }}</span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <div class="p-p-3 p-text-right">
+          <p-button
+            label="Apply"
+            (onClick)="applyFilters($event)"
+            [style]="{ backgroundColor: '#0B4BC8', width: '100%' }"
+            [disabled]="!selectedValue?.length">
+          </p-button>
+        </div>
+      </ng-template>
+    </p-multiSelect>
+    <label class="floating-label" for="multiselectFilter">Select {{ config.defaultLevel.labelName }}</label>
+  </span>
+
+  <span class="p-float-label p-mx-2" *ngIf="config?.type === 'singleSelect'">
+    <p-dropdown
+      inputId="singleselectFilter"
+      [options]="options"
+      [(ngModel)]="selectedValue"
+      [placeholder]="placeholder"
+      [optionLabel]="optionLabel"
+      [style]="{ width: '300px', 'max-width': '100%', height: '40px' }"
+      (onChange)="onSelectionChange($event)"
+      [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }"
+      appendTo="body"
+      [filter]="true">
+      <ng-template pTemplate="selectedItem" *ngIf="selectedValue">
+        <div class="filter-item-selected">
+          <span>{{ selectedValue[optionLabel] }}</span>
+        </div>
+      </ng-template>
+      <ng-template let-option pTemplate="item">
+        <div class="filter-item">
+          <span>{{ option[optionLabel] }}</span>
+        </div>
+      </ng-template>
+    </p-dropdown>
+    <label class="floating-label" for="singleselectFilter">Select {{ config.defaultLevel.labelName }}</label>
+  </span>
+</div>

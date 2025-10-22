@@ -14,14 +14,54 @@ import { HelperService } from 'src/app/services/helper.service';
 import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Subject, interval, of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
-import { MultiSelect } from 'primeng/multiselect';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { AutoComplete } from 'primeng/autocomplete';
+import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { FormsModule } from '@angular/forms';
+import { Button, ButtonDirective } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import {
+  JsonPipe,
+  NgClass,
+  NgForOf,
+  NgIf,
+  NgStyle,
+  UpperCasePipe,
+} from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { BlockUIModule } from 'primeng/blockui';
+import { ParentFilterComponent } from './parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './additional-filter/additional-filter.component';
 
 @Component({
   selector: 'app-filter-new',
   templateUrl: './filter-new.component.html',
   styleUrls: ['./filter-new.component.css'],
+  standalone: true,
+  imports: [
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgClass,
+    AutoCompleteModule,
+    UpperCasePipe,
+    NgStyle,
+    NgIf,
+    TooltipModule,
+    CheckboxModule,
+    DialogModule,
+    BlockUIModule,
+    ParentFilterComponent,
+    PrimaryFilterComponent,
+    AdditionalFilterComponent,
+    JsonPipe,
+    ButtonDirective,
+    NgForOf,
+  ],
 })
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
@@ -57,7 +97,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   additionalFilterLevelArr = [];
   filterType = '';
   selectedSprint: any;
-  lastSyncData = {};
+  lastSyncData: any = {};
   additionalData = false;
   daysRemaining: any;
   combinedDate: string;
@@ -72,7 +112,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   disableShowHideApply = true;
   showHideSelectAll = false;
   showChart = 'chart';
-  iterationConfigData = {};
+  iterationConfigData: any = {};
   isRecommendationsEnabled = false;
   selectedBoard: any;
   hierarchies: any;
@@ -1718,6 +1758,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else if (typeof event[0] === 'string') {
         selectedProjectIds = [...new Set(event)];
       }
+
       this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
 

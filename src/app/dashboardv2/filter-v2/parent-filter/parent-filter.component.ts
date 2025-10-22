@@ -8,11 +8,25 @@ import {
 } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-parent-filter',
   templateUrl: './parent-filter.component.html',
   styleUrls: ['./parent-filter.component.css'],
+  standalone: true,
+  imports: [
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgClass,
+    NgIf,
+  ],
 })
 export class ParentFilterComponent implements OnChanges {
   @Input() filterData = null;

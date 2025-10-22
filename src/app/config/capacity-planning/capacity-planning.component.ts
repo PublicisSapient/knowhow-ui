@@ -114,6 +114,7 @@ export class CapacityPlanningComponent implements OnInit {
   showPopuup = false;
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
+  errorMessage = 'Error in Saving Assignee Details. Please try after sometime!';
   constructor(
     private http_service: HttpService,
     private messageService: MessageService,
@@ -535,8 +536,7 @@ export class CapacityPlanningComponent implements OnInit {
       } else {
         this.messageService.add({
           severity: 'error',
-          summary:
-            'Error in Saving Assignee Details. Please try after sometime!',
+          summary: this.errorMessage,
         });
       }
     });
@@ -571,8 +571,7 @@ export class CapacityPlanningComponent implements OnInit {
         } else {
           this.messageService.add({
             severity: 'error',
-            summary:
-              'Error in Saving Assignee Details. Please try after sometime!',
+            summary: this.errorMessage,
           });
         }
       });
@@ -695,8 +694,7 @@ export class CapacityPlanningComponent implements OnInit {
       } else {
         this.messageService.add({
           severity: 'error',
-          summary:
-            'Error in Saving Assignee Details. Please try after sometime!',
+          summary: this.errorMessage,
         });
       }
     });
@@ -736,8 +734,7 @@ export class CapacityPlanningComponent implements OnInit {
         } else {
           this.messageService.add({
             severity: 'error',
-            summary:
-              'Error in Saving Assignee Details. Please try after sometime!',
+            summary: this.errorMessage,
           });
         }
       });
@@ -913,7 +910,7 @@ export class CapacityPlanningComponent implements OnInit {
       } else {
         this.messageService.add({
           severity: 'error',
-          summary: 'Error in saving scenario. Please try after some time.',
+          summary: this.errorMessage,
         });
       }
       this.showPopuup = false;
