@@ -79,8 +79,6 @@ export class StickyHeaderV2Component implements AfterViewChecked, OnDestroy {
     const orgDetails = this.completeHierarchyData?.find(
       (hi) => hi.hierarchyLevelId.toLowerCase() === orgId,
     );
-      return orgDetails?.hierarchyLevelName || '';
-   
-    }
+    return orgDetails?.hierarchyLevelName || '';
   }
 }
