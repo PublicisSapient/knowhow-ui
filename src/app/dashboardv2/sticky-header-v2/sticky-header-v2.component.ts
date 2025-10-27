@@ -18,6 +18,7 @@ export class StickyHeaderV2Component implements AfterViewChecked, OnDestroy {
   //isIteration:boolean = false;
   subscriptions: Subscription[] = [];
   colorObj: any = {};
+  completeHierarchyData: any = {};
   constructor(
     public service: SharedService,
     private helperService: HelperService,
@@ -68,5 +69,16 @@ export class StickyHeaderV2Component implements AfterViewChecked, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  getOrganasationName(orgId) {
+    this.completeHierarchyData = JSON.parse(
+      localStorage.getItem('completeHierarchyData') || '{}',
+    )[this.service.getSelectedType()];
+
+    const orgDetails = this.completeHierarchyData?.find(
+      (hi) => hi.hierarchyLevelId.toLowerCase() === orgId,
+    );
+    return orgDetails?.hierarchyLevelName || '';
   }
 }
