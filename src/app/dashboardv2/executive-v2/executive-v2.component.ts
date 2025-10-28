@@ -171,6 +171,67 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     { label: 'Bug Resolution', value: '85%', trend: 'negative' },
   ];
 
+  chartData = {
+    filter1: 'develop -> knowhow-api -> KnowHOW',
+    filter2: 'gurdeep.singh@publicissapient.com',
+    value: [
+      {
+        data: 'KnowHOW',
+        maturity: '1',
+        value: [
+          {
+            date: '29-Sep-2025 to 05-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 100 },
+            PullRequests: [
+              { size: '109', ID: '1234' },
+              { size: '1876', ID: '43' },
+              { size: '109', ID: '34' },
+            ],
+          },
+          {
+            date: '06-Oct-2025 to 15-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 1320 },
+            PullRequests: [
+              { size: '1549', ID: '12' },
+              { size: '876', ID: '438' },
+              { size: '1879', ID: '342' },
+            ],
+          },
+          {
+            date: '16-Oct-2025 to 22-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 890 },
+            PullRequests: [
+              { size: '450', ID: '56' },
+              { size: '1200', ID: '78' },
+              { size: '650', ID: '90' },
+            ],
+          },
+          {
+            date: '23-Oct-2025 to 29-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 1100 },
+            PullRequests: [
+              { size: '890', ID: '101' },
+              { size: '1650', ID: '102' },
+              { size: '320', ID: '103' },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,

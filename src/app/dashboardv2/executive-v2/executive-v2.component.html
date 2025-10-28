@@ -172,7 +172,7 @@
 
                                 <ng-container *ngSwitchCase="'grouped_column_plus_line'">
                                   <ng-container *ngIf="checkIfZeroData(kpi)">
-                                    <!-- <app-grouped-column-plus-line-chart-v2 [data]="kpiChartData[kpi?.kpiId]"
+                                    <app-grouped-column-plus-line-chart-v2 [data]="kpiChartData[kpi?.kpiId]"
                                       [lineChart]="kpi?.kpiDetail?.lineChart"
                                       [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup" [unit]="kpi?.kpiDetail?.kpiUnit"
                                       [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -183,9 +183,21 @@
                                       [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
                                       [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG" [board]="selectedTab"
                                       [kpiId]="kpi?.kpiId">
-                                    </app-grouped-column-plus-line-chart-v2> -->
-                                    <!-- <app-progress-chart></app-progress-chart> -->
-                                    <app-scatter-plot-chart></app-scatter-plot-chart>
+                                    </app-grouped-column-plus-line-chart-v2>
+
+                                    <app-progress-chart [thresholdValue]=""
+                                      [unit]="" [data]=""
+                                      [xCaption]=""
+                                      [yCaption]=""
+                                      [color]="" [selectedtype]=""
+                                      [viewType]="" [board]=""></app-progress-chart>
+
+                                    <app-scatter-plot-chart [thresholdValue]=""
+                                      [unit]="" [data]="chartData"
+                                      [xCaption]=""
+                                      [yCaption]=""
+                                      [color]="" [selectedtype]=""
+                                      [viewType]="" [board]=""></app-scatter-plot-chart>
                                   </ng-container>
                                   <ng-container *ngIf="!checkIfZeroData(kpi)">
                                     <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">

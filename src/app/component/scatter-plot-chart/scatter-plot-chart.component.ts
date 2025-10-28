@@ -1,10 +1,38 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
 
-interface DataPoint {
-  month: string;
-  value: number;
-  category: string;
+interface PullRequest {
+  size: string;
+  ID: string;
+}
+
+interface WeekData {
+  date: string;
+  kpiGroup: string;
+  sprojectName: string;
+  hoverValue: {
+    'No of lines': number;
+  };
+  PullRequests: PullRequest[];
+}
+
+interface MaturityData {
+  data: string;
+  maturity: string;
+  value: WeekData[];
+}
+
+interface ChartData {
+  filter1: string;
+  filter2: string;
+  value: MaturityData[];
+}
+
+interface PlotPoint {
+  weekNumber: number;
+  size: number;
+  prId: string;
+  date: string;
 }
 
 @Component({
@@ -15,61 +43,134 @@ interface DataPoint {
 })
 export class ScatterPlotChartComponent {
   @ViewChild('chartSvg', { static: true }) svgRef!: ElementRef;
+  @ViewChild('tooltip', { static: true }) tooltipRef!: ElementRef;
 
-  private data: DataPoint[] = [
-    // January
-    { month: 'Jan', value: 80, category: 'Under 100' },
-    { month: 'Jan', value: 150, category: '100-300' },
-    { month: 'Jan', value: 215, category: '100-300' },
-    { month: 'Jan', value: 420, category: '300-500' },
-
-    // February
-    { month: 'Feb', value: 90, category: 'Under 100' },
-    { month: 'Feb', value: 180, category: '100-300' },
-    { month: 'Feb', value: 295, category: '100-300' },
-    { month: 'Feb', value: 550, category: '500+' },
-
-    // March
-    { month: 'Mar', value: 60, category: 'Under 100' },
-    { month: 'Mar', value: 140, category: '100-300' },
-    { month: 'Mar', value: 250, category: '100-300' },
-    { month: 'Mar', value: 370, category: '300-500' },
-
-    // April
-    { month: 'Apr', value: 60, category: 'Under 100' },
-    { month: 'Apr', value: 210, category: '100-300' },
-    { month: 'Apr', value: 330, category: '300-500' },
-    { month: 'Apr', value: 625, category: '500+' },
-
-    // May
-    { month: 'May', value: 90, category: 'Under 100' },
-    { month: 'May', value: 160, category: '100-300' },
-    { month: 'May', value: 270, category: '100-300' },
-    { month: 'May', value: 450, category: '300-500' },
-
-    // June
-    { month: 'Jun', value: 70, category: 'Under 100' },
-    { month: 'Jun', value: 190, category: '100-300' },
-    { month: 'Jun', value: 305, category: '300-500' },
-    { month: 'Jun', value: 585, category: '500+' },
-  ];
-
-  private colorScale: { [key: string]: string } = {
-    'Under 100': '#10b981',
-    '100-300': '#3b82f6',
-    '300-500': '#f59e0b',
-    '500+': '#ef4444',
+  @Input() data: ChartData = {
+    filter1: 'develop -> knowhow-api -> KnowHOW',
+    filter2: 'gurdeep.singh@publicissapient.com',
+    value: [
+      {
+        data: 'KnowHOW',
+        maturity: '1',
+        value: [
+          {
+            date: '29-Sep-2025 to 05-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 100 },
+            PullRequests: [
+              { size: '109', ID: '1234' },
+              { size: '1876', ID: '43' },
+              { size: '109', ID: '34' },
+            ],
+          },
+          {
+            date: '06-Oct-2025 to 15-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 1320 },
+            PullRequests: [
+              { size: '1549', ID: '12' },
+              { size: '876', ID: '438' },
+              { size: '1879', ID: '342' },
+            ],
+          },
+          {
+            date: '16-Oct-2025 to 22-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 890 },
+            PullRequests: [
+              { size: '450', ID: '56' },
+              { size: '1200', ID: '78' },
+              { size: '650', ID: '90' },
+            ],
+          },
+          {
+            date: '23-Oct-2025 to 29-Oct-2025',
+            kpiGroup:
+              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+            sprojectName: 'KnowHOW',
+            hoverValue: { 'No of lines': 1100 },
+            PullRequests: [
+              { size: '890', ID: '101' },
+              { size: '1650', ID: '102' },
+              { size: '320', ID: '103' },
+            ],
+          },
+        ],
+      },
+    ],
   };
 
   ngOnInit(): void {
     this.createChart();
   }
 
+  private processData(): PlotPoint[] {
+    const points: PlotPoint[] = [];
+
+    if (this.data.value && this.data.value.length > 0) {
+      const weeklyData = this.data.value[0].value;
+
+      weeklyData.forEach((week, weekIndex) => {
+        week.PullRequests.forEach((pr) => {
+          points.push({
+            weekNumber: weekIndex + 1,
+            size: parseInt(pr.size, 10),
+            prId: pr.ID,
+            date: week.date,
+          });
+        });
+      });
+    }
+
+    return points;
+  }
+
+  private applyJitter(
+    points: PlotPoint[],
+  ): Array<PlotPoint & { jitterX: number }> {
+    // Group points by week and size to detect overlaps
+    const grouped = d3.group(points, (d) => `${d.weekNumber}-${d.size}`);
+    const jitteredPoints: Array<PlotPoint & { jitterX: number }> = [];
+
+    grouped.forEach((group) => {
+      if (group.length === 1) {
+        // No overlap, no jitter needed
+        jitteredPoints.push({ ...group[0], jitterX: 0 });
+      } else {
+        // Multiple points at same position, apply jitter
+        const jitterSpacing = 0.08; // Small horizontal offset
+        const totalWidth = (group.length - 1) * jitterSpacing;
+
+        group.forEach((point, index) => {
+          const jitterOffset = index * jitterSpacing - totalWidth / 2;
+          jitteredPoints.push({ ...point, jitterX: jitterOffset });
+        });
+      }
+    });
+
+    return jitteredPoints;
+  }
+
   private createChart(): void {
+    const plotPoints = this.processData();
+
+    if (plotPoints.length === 0) {
+      console.warn('No data to display');
+      return;
+    }
+
+    const jitteredPoints = this.applyJitter(plotPoints);
+
     const svg = d3.select(this.svgRef.nativeElement);
     const width = 600;
     const height = 400;
-    const margin = { top: 20, right: 20, bottom: 80, left: 60 };
+    const margin = { top: 20, right: 20, bottom: 60, left: 60 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -80,20 +181,34 @@ export class ScatterPlotChartComponent {
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Scales
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const maxWeek = d3.max(plotPoints, (d) => d.weekNumber) || 4;
+    const weeks = Array.from({ length: maxWeek }, (_, i) => i + 1);
+
     const xScale = d3
-      .scalePoint()
-      .domain(months)
-      .range([0, chartWidth])
-      .padding(0.5);
+      .scaleLinear()
+      .domain([0.5, maxWeek + 0.5])
+      .range([0, chartWidth]);
 
-    const yScale = d3.scaleLinear().domain([0, 800]).range([chartHeight, 0]);
+    const maxSize = d3.max(plotPoints, (d) => d.size) || 2000;
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, maxSize * 1.1]) // Add 10% padding at top
+      .range([chartHeight, 0])
+      .nice();
 
-    // Grid lines (draw these first, before axes)
-    const yTicks = [0, 200, 400, 600, 800];
+    // Radius scale using square root for better visual distribution
+    const maxRadius = 15;
+    const minRadius = 3;
+    const radiusScale = d3
+      .scaleSqrt()
+      .domain([0, maxSize])
+      .range([minRadius, maxRadius]);
+
+    // Grid lines
     const gridGroup = g.append('g').attr('class', 'grid-lines');
 
     // Horizontal grid lines
+    const yTicks = yScale.ticks(5);
     yTicks.forEach((tick) => {
       gridGroup
         .append('line')
@@ -106,9 +221,9 @@ export class ScatterPlotChartComponent {
         .attr('shape-rendering', 'crispEdges');
     });
 
-    // Vertical grid lines for x-axis
-    months.forEach((month) => {
-      const xPos = xScale(month) || 0;
+    // Vertical grid lines
+    weeks.forEach((week) => {
+      const xPos = xScale(week);
       gridGroup
         .append('line')
         .attr('x1', xPos)
@@ -121,7 +236,12 @@ export class ScatterPlotChartComponent {
     });
 
     // X-axis
-    const xAxis = d3.axisBottom(xScale).tickSize(0).tickPadding(10);
+    const xAxis = d3
+      .axisBottom(xScale)
+      .tickValues(weeks)
+      .tickFormat((d) => d.toString())
+      .tickSize(0)
+      .tickPadding(10);
 
     g.append('g')
       .attr('transform', `translate(0,${chartHeight})`)
@@ -131,12 +251,17 @@ export class ScatterPlotChartComponent {
       .style('font-size', '12px')
       .style('fill', '#666');
 
+    // X-axis label
+    g.append('text')
+      .attr('x', chartWidth / 2)
+      .attr('y', chartHeight + 40)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '12px')
+      .style('fill', '#666')
+      .text('Week');
+
     // Y-axis
-    const yAxis = d3
-      .axisLeft(yScale)
-      .tickValues(yTicks)
-      .tickSize(0)
-      .tickPadding(10);
+    const yAxis = d3.axisLeft(yScale).ticks(5).tickSize(0).tickPadding(10);
 
     g.append('g')
       .call(yAxis)
@@ -155,53 +280,42 @@ export class ScatterPlotChartComponent {
       .style('fill', '#666')
       .text('Lines');
 
-    // Plot points with animation - no jitter, align vertically
+    // Tooltip
+    const tooltip = d3.select(this.tooltipRef.nativeElement);
+
+    // Plot points with animation and jitter
     g.selectAll('.data-point')
-      .data(this.data)
+      .data(jitteredPoints)
       .enter()
       .append('circle')
       .attr('class', 'data-point')
-      .attr('cx', (d) => xScale(d.month) || 0)
+      .attr('cx', (d) => xScale(d.weekNumber + d.jitterX))
       .attr('cy', chartHeight)
-      .attr('r', 6)
-      .attr('fill', (d) => this.colorScale[d.category])
-      .attr('opacity', 0.8)
+      .attr('r', 0)
+      .attr('fill', '#6079c5')
+      .attr('opacity', 0.7)
+      .style('cursor', 'pointer')
+      .on('mouseover', function (event, d) {
+        d3.select(this)
+          .attr('opacity', 1)
+          .attr('stroke', '#3d5a9e')
+          .attr('stroke-width', 2);
+
+        tooltip
+          .style('opacity', '1')
+          .style('left', event.pageX + 10 + 'px')
+          .style('top', event.pageY - 10 + 'px')
+          .html(`<strong>PR #${d.prId}</strong><br/>Size: ${d.size} lines`);
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr('opacity', 0.7).attr('stroke', 'none');
+
+        tooltip.style('opacity', '0');
+      })
       .transition()
       .duration(1000)
-      .delay((d, i) => i * 30)
-      .attr('cy', (d) => yScale(d.value));
-
-    // Legend
-    const legend = svg
-      .append('g')
-      .attr('transform', `translate(${width / 2 - 150},${height - 40})`);
-
-    const legendData = [
-      { label: 'Under 100', color: this.colorScale['Under 100'] },
-      { label: '100-300', color: this.colorScale['100-300'] },
-      { label: '300-500', color: this.colorScale['300-500'] },
-      { label: '500+', color: this.colorScale['500+'] },
-    ];
-
-    legendData.forEach((item, i) => {
-      const legendItem = legend
-        .append('g')
-        .attr('transform', `translate(${i * 80},0)`);
-
-      legendItem
-        .append('circle')
-        .attr('cx', 0)
-        .attr('cy', 0)
-        .attr('r', 5)
-        .attr('fill', item.color);
-
-      legendItem
-        .append('text')
-        .attr('x', 12)
-        .attr('y', 4)
-        .style('font-size', '11px')
-        .style('fill', '#666')
-        .text(item.label);
-    });
+      .delay((d, i) => i * 50)
+      .attr('cy', (d) => yScale(d.size))
+      .attr('r', (d) => radiusScale(d.size));
   }
 }
