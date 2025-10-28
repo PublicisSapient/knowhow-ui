@@ -156,8 +156,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       if (!this.refreshCounter) {
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
-        let tabParam = params['selectedTab'];
+        const kpiFiltersParam = params['kpiFilters'];
+        const tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
             let selectedTab = decodeURIComponent(this.location.path());

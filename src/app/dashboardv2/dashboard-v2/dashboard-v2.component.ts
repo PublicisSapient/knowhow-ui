@@ -66,6 +66,7 @@ export class DashboardV2Component implements AfterContentInit {
     this.service.onTabSwitch.subscribe((data) => {
       if (data?.selectedBoard) {
         this.selectedTab = data.selectedBoard;
+        console.log(this.selectedTab);
       }
     });
 

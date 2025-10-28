@@ -59,8 +59,8 @@ describe('FilterNewComponent', () => {
   beforeEach(async () => {
     mockMultiSelect = new MockMultiSelect() as any;
     await TestBed.configureTestingModule({
-      declarations: [FilterNewComponent],
       imports: [
+        FilterNewComponent,
         RouterTestingModule,
         HttpClientModule,
         BrowserAnimationsModule,

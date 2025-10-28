@@ -27,8 +27,12 @@ describe('AdditionalFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AdditionalFilterComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        AdditionalFilterComponent,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [
