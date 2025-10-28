@@ -935,13 +935,13 @@ export class SharedService {
 
   setKPIPostData(data) {
     const argumentData = data;
-    this.appendKpiList.push(argumentData.kpiList);
-    const uniqueKpiList = [
-      ...new Map(
-        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
-      ).values(),
-    ];
-    argumentData.kpiList = uniqueKpiList;
+    // this.appendKpiList.push(argumentData.kpiList);
+    // const uniqueKpiList = [
+    //   ...new Map(
+    //     this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+    //   ).values(),
+    // ];
+    // argumentData.kpiList = uniqueKpiList;
     this.kpiPostData = argumentData;
   }
 
@@ -951,13 +951,13 @@ export class SharedService {
 
   setKPIPostJenkinsData(data) {
     const argumentData = data;
-    this.appendKpiListJenkins.push(argumentData.kpiList);
-    const uniqueKpiList = [
-      ...new Map(
-        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
-      ).values(),
-    ];
-    argumentData.kpiList = uniqueKpiList;
+    // this.appendKpiListJenkins.push(argumentData.kpiList);
+    // const uniqueKpiList = [
+    //   ...new Map(
+    //     this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+    //   ).values(),
+    // ];
+    // argumentData.kpiList = uniqueKpiList;
     this.kpiPostJenkinsData = argumentData;
   }
 
