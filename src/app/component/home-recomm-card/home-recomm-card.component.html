@@ -1,0 +1,12 @@
+<div class="card" [ngStyle]="priorityStyle">
+  <div class="header p-d-flex p-jc-between">
+    <span class="priority-label" [ngStyle]="priorityLabelStyle">
+      {{ priority }}
+    </span>
+    <span class="category">{{ category }}</span>
+  </div>
+
+  <h3 class="title">{{ title }}</h3>
+  <p class="description">{{ description }}</p>
+  <p class="savings">{{ savings }}</p>
+</div>

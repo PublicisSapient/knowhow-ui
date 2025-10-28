@@ -1,0 +1,37 @@
+<div class="kpi-card-container">
+  <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+    <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
+      <div class="kpi-card-title-container">
+        <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Next Best Actions</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-card-body">
+    <p class="nba-subtitle">
+      Top recommendations to improve efficiency and quality:
+    </p>
+
+    <div class="nba-cards">
+    
+    <!-- <app-home-recomm-card
+      priority="Low"
+      category="Enterprise"
+      title="Standardize Code Review"
+      description="Reduce rework by 40%"
+      savings="$20,130">
+    </app-home-recomm-card>  -->
+
+    <app-home-recomm-card
+      *ngFor="let item of recommendations"
+      [priority]="item.priority"
+      [title]="item.title"
+      [description]="item.description"
+      [category]="item.category"
+      [savings]="item.potentialSavings"
+    ></app-home-recomm-card>
+
+    </div>
+
+  </div>
+</div>

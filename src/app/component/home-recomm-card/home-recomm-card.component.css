@@ -1,0 +1,67 @@
+/* Base Card */
+.card {
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border-left: 6px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Priority Label */
+.priority-label {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 3px 8px;
+}
+
+/* Savings */
+.savings {
+  color: #168a41;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Priority Variants */
+.priority-high {
+  border-left-color: #e74c3c;
+}
+.priority-high .priority-label {
+  background-color: #fdecea;
+  color: #c0392b;
+  border: 1px solid #f5b7b1;
+}
+
+.priority-medium {
+  border-left-color: #f1c40f;
+}
+.priority-medium .priority-label {
+  background-color: #fff8e1;
+  color: #b7950b;
+  border: 1px solid #f7dc6f;
+}
+
+.priority-low {
+  border-left-color: #2ecc71;
+}
+.priority-low .priority-label {
+  background-color: #eafaf1;
+  color: #1e8449;
+  border: 1px solid #abebc6;
+}
+
+/* Category */
+.category {
+  color: #1a73e8;
+  font-size: 13px;
+  font-weight: 500;
+}
