@@ -934,7 +934,7 @@ export class SharedService {
   //#endregion
 
   setKPIPostData(data) {
-    const argumentData = data;
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
     this.appendKpiList.push(argumentData.kpiList);
     const uniqueKpiList = [
       ...new Map(
@@ -950,7 +950,7 @@ export class SharedService {
   }
 
   setKPIPostJenkinsData(data) {
-    const argumentData = data;
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
     this.appendKpiListJenkins.push(argumentData.kpiList);
     const uniqueKpiList = [
       ...new Map(
