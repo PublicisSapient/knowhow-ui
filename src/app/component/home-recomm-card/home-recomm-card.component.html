@@ -3,7 +3,7 @@
     <span class="priority-label" [ngStyle]="priorityLabelStyle">
       {{ priority }}
     </span>
-    <span class="category">{{ category }}</span>
+    <span class="category" (click)="handleProjectClickDialog()">{{ category }}</span>
   </div>
 
   <h3 class="title">{{ title }}</h3>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output, output } from '@angular/core';
 
 @Component({
   selector: 'app-home-recomm-card',
@@ -14,6 +14,7 @@ export class HomeRecommCardComponent {
   @Input() title!: string;
   @Input() description!: string;
   @Input() savings!: string;
+  @Output() handleProjectClick = new EventEmitter();
 
   priorityStyle: any = {};
   priorityLabelStyle: any = {};
@@ -50,5 +51,9 @@ export class HomeRecommCardComponent {
         };
         break;
     }
+  }
+
+  handleProjectClickDialog() {
+    this.handleProjectClick.emit();
   }
 }

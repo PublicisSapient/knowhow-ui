@@ -13,7 +13,6 @@
     </p>
 
     <div class="nba-cards">
-    
     <!-- <app-home-recomm-card
       priority="Low"
       category="Enterprise"
@@ -29,9 +28,33 @@
       [description]="item.description"
       [category]="item.category"
       [savings]="item.potentialSavings"
+         (handleProjectClick)="openProjectDetailsPopup()"
     ></app-home-recomm-card>
 
     </div>
 
   </div>
 </div>
+
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true" (onHide)="displayModal=false" role="dialog"
+  #templateOfReference tabindex="0" aria-labelledby="dialogHeader">
+  <p-header id="dialogHeader">
+    <div class="p-d-flex p-jc-between">
+      <div>
+        Project Name
+      </div>
+      <div class="export-button">
+        
+      </div>
+    </div>
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <app-recomm-details benefit="$24,156" implementation="Medium" timeToValue="3–4 months"
+      [kpis]="['Development Speed', 'Code Quality', 'Bug Reduction']" [actionPlan]="[
+   { step: 1, title: 'Assess Current State', description: 'Evaluate existing technical debt and team readiness' },
+   { step: 2, title: 'Pilot Implementation', description: 'Start with a small team to validate approach and ROI' },
+   { step: 3, title: 'Scale Across Organization', description: 'Roll out successful practices to all relevant teams' }
+ ]"></app-recomm-details>
+  </div>
+</p-dialog>

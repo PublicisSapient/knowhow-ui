@@ -1,0 +1,49 @@
+<div class="recommendation-container">
+  <!-- Top 3 info boxes -->
+  <div class="info-boxes">
+    <div class="info-box">
+      <div class="label">Projected Benefit</div>
+      <div class="value green">{{ benefit }}</div>
+    </div>
+
+    <div class="info-box">
+      <div class="label">Implementation</div>
+      <div class="value blue">{{ implementation }}</div>
+    </div>
+
+    <div class="info-box">
+      <div class="label">Time to Value</div>
+      <div class="value purple">{{ timeToValue }}</div>
+    </div>
+  </div>
+
+  <!-- KPI Section -->
+  <div class="kpi-section">
+    <div class="kpi-title">
+      <span class="icon">🎯</span>
+      <span>Affected Key Performance Indicators</span>
+    </div>
+
+    <div class="kpi-tags">
+      <span *ngFor="let kpi of kpis" class="kpi-chip">{{ kpi }}</span>
+    </div>
+  </div>
+
+  <!-- Recommended Action Plan -->
+  <div class="action-plan">
+    <div class="plan-title">
+      <span class="icon">💡</span>
+      <span>Recommended Action Plan</span>
+    </div>
+
+    <div class="plan-steps">
+      <div *ngFor="let step of actionPlan" class="plan-step">
+        <div class="step-circle">{{ step.step }}</div>
+        <div class="step-content">
+          <div class="step-title">{{ step.title }}</div>
+          <div class="step-desc">{{ step.description }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

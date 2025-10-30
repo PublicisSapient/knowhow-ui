@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.selectedType !== 'scrum',
               )
               .subscribe({
-                next: (executiveBoard) => {
+                next: (executiveBoard: any) => {
                   /** ---------- Handle executive summery API ---------- */
                   if (executiveBoard?.error) {
                     this.messageService.add({

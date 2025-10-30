@@ -1,0 +1,137 @@
+.recommendation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: 'Inter', sans-serif;
+  background: white;
+  border-radius: 12px;
+}
+
+/* === Info Boxes === */
+.info-boxes {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  .info-box {
+    flex: 1;
+    text-align: center;
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 12px;
+
+    .label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+
+      &.green {
+        color: #18a558;
+      }
+      &.blue {
+        color: #2a5be0;
+      }
+      &.purple {
+        color: #8a3ffc;
+      }
+    }
+  }
+}
+
+/* === KPI Section === */
+.kpi-section {
+  background: #f7f4ff;
+  border-radius: 10px;
+  padding: 14px 16px;
+
+  .kpi-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+
+    .icon {
+      font-size: 1.2rem;
+      margin-right: 8px;
+      color: #6b4cff;
+    }
+  }
+
+  .kpi-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .kpi-chip {
+      background: #ece4ff;
+      color: #5b32ff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  }
+}
+
+/* === Action Plan === */
+.action-plan {
+  background: #fff4e8;
+  border-radius: 10px;
+  padding: 14px 16px;
+
+  .plan-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+
+    .icon {
+      margin-right: 8px;
+      color: #ff8c00;
+    }
+  }
+
+  .plan-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .plan-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+
+      .step-circle {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #ff8c00;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        .step-title {
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+        .step-desc {
+          color: #555;
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}

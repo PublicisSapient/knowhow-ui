@@ -1,15 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { DialogModule } from 'primeng/dialog';
 import { HomeRecommCardComponent } from 'src/app/component/home-recomm-card/home-recomm-card.component';
+import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
 
 @Component({
   selector: 'app-nba',
   standalone: true,
   templateUrl: './nba.component.html',
   styleUrls: ['./nba.component.css'],
-  imports: [CommonModule, HomeRecommCardComponent],
+  imports: [
+    CommonModule,
+    HomeRecommCardComponent,
+    RecommDetailsComponent,
+    DialogModule,
+  ],
 })
 export class NbaComponent {
+  displayModal = false;
   recommendations = [
     {
       priority: 'High',
@@ -33,4 +41,8 @@ export class NbaComponent {
       potentialSavings: '$24,156 potential savings',
     },
   ];
+
+  openProjectDetailsPopup() {
+    this.displayModal = true;
+  }
 }
