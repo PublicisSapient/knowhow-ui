@@ -934,14 +934,14 @@ export class SharedService {
   //#endregion
 
   setKPIPostData(data) {
-    const argumentData = data;
-    // this.appendKpiList.push(argumentData.kpiList);
-    // const uniqueKpiList = [
-    //   ...new Map(
-    //     this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
-    //   ).values(),
-    // ];
-    // argumentData.kpiList = uniqueKpiList;
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiList.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
     this.kpiPostData = argumentData;
   }
 
@@ -950,14 +950,14 @@ export class SharedService {
   }
 
   setKPIPostJenkinsData(data) {
-    const argumentData = data;
-    // this.appendKpiListJenkins.push(argumentData.kpiList);
-    // const uniqueKpiList = [
-    //   ...new Map(
-    //     this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
-    //   ).values(),
-    // ];
-    // argumentData.kpiList = uniqueKpiList;
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
     this.kpiPostJenkinsData = argumentData;
   }
 
