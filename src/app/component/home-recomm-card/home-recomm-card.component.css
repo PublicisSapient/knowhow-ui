@@ -2,7 +2,7 @@
 .card {
   border-radius: 12px;
   padding: 16px;
-  margin: 12px 0;
+  margin: 0px 0;
   background-color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   border-left: 6px solid transparent;
@@ -31,37 +31,18 @@
   margin-top: 8px;
 }
 
-/* Priority Variants */
-.priority-high {
-  border-left-color: #e74c3c;
-}
-.priority-high .priority-label {
-  background-color: #fdecea;
-  color: #c0392b;
-  border: 1px solid #f5b7b1;
-}
-
-.priority-medium {
-  border-left-color: #f1c40f;
-}
-.priority-medium .priority-label {
-  background-color: #fff8e1;
-  color: #b7950b;
-  border: 1px solid #f7dc6f;
-}
-
-.priority-low {
-  border-left-color: #2ecc71;
-}
-.priority-low .priority-label {
-  background-color: #eafaf1;
-  color: #1e8449;
-  border: 1px solid #abebc6;
-}
-
-/* Category */
 .category {
   color: #1a73e8;
   font-size: 13px;
   font-weight: 500;
+}
+
+.description {
+  margin: 0px;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.title {
+  margin: 15px 0px 5px 0px;
 }

@@ -1,12 +1,12 @@
-<div class="card" [ngStyle]="priorityStyle">
+<div class="card cursor-pointer" [ngStyle]="priorityStyle" (click)="handleProjectClickDialog()">
   <div class="header p-d-flex p-jc-between">
     <span class="priority-label" [ngStyle]="priorityLabelStyle">
       {{ priority }}
     </span>
-    <span class="category" (click)="handleProjectClickDialog()">{{ category }}</span>
+    <span class="category">{{ category }}</span>
   </div>
 
-  <h3 class="title">{{ title }}</h3>
+  <h4 class="title">{{ title }}</h4>
   <p class="description">{{ description }}</p>
   <p class="savings">{{ savings }}</p>
 </div>
