@@ -535,25 +535,23 @@ export class AnalysisContainerComponent implements OnInit {
       projectBasicConfigIds: projectBasicConfigIds,
     };
 
-    console.log('api will hit from here', payload);
-
     //GET Metrics Table Data
-    // this.httpService.getAnalyticsMetricsTableData(payload).subscribe({
-    //   next: (response: any) => {
-    //     if (response.success) {
-    //       this.processMetricsTableData(response.data);
-    //     } else if (response.data.length === 0) {
-    //       this.metricsTableData = [];
-    //     } else {
-    //       console.warn('Did not get data from API');
-    //       this.metricsTableData = [];
-    //     }
-    //   },
-    //   error: (error) => {
-    //     console.error('Error fetching Matrix Data:', error);
-    //     this.metricsTableData = [];
-    //   },
-    // });
+    this.httpService.getAnalyticsMetricsTableData(aiPayload).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.processMetricsTableData(response.data);
+        } else if (response.data.length === 0) {
+          this.metricsTableData = [];
+        } else {
+          console.warn('Did not get data from API');
+          this.metricsTableData = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching Matrix Data:', error);
+        this.metricsTableData = [];
+      },
+    });
 
     //GET AI analytics Data
     this.subscriptions.push(
