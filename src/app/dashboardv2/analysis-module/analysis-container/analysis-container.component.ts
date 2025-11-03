@@ -395,10 +395,10 @@ export class AnalysisContainerComponent implements OnInit {
             if (sprintData) {
               newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`;
             } else {
-              newRow[dataKey] = 'NA';
+              newRow[dataKey] = 'N/A';
             }
           } else {
-            newRow[dataKey] = 'NA';
+            newRow[dataKey] = 'N/A';
           }
         });
 
@@ -448,8 +448,6 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   openProjectSettings(projectName: string) {
-    console.log(`Settings for project: ${projectName} clicked.`);
-
     const lowerCaseProjectName = projectName?.toLowerCase();
 
     const projectObject = this.projectData[analysisConstant.PROJECT_KEY]?.find(
