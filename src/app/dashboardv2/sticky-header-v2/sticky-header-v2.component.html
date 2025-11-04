@@ -18,7 +18,7 @@
               class="align-list-marker"
               [ngStyle]="{ background: colorObj[item]?.color }"></span>
             <span class="p-l-1"
-              >{{ colorObj[item]?.labelName | uppercase }}:
+              >{{ getOrganasationName(colorObj[item]?.labelName) }}:
               {{
                 colorObj[item]?.nodeDisplayName?.length <= 20
                   ? colorObj[item]?.nodeDisplayName
@@ -32,6 +32,6 @@
   </div>
  } @else {
   <span class="text-container p-d-inline-block p-mr-2">Selected Organization:</span>
-  <span class="p-text-bold p-d-inline-block p-mr-3">{{colorObj?.[objectKeys(colorObj)]?.labelName | uppercase}}</span>
+  <span class="p-text-bold p-d-inline-block p-mr-3">{{getOrganasationName(colorObj?.[objectKeys(colorObj)]?.labelName)}}</span>
  }
 </div>

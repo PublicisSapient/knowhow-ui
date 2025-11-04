@@ -40,8 +40,12 @@ describe('ParentFilterComponent', () => {
   let mockEventEmitter: EventEmitter<any>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ParentFilterComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        ParentFilterComponent,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [

@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { HttpService } from '../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -42,22 +41,19 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   error = '';
   sessionMsg = '';
-  adLogin = true;
-  loginConfig = {};
 
   refreshCounter = 0;
   self: any = this;
   selectedTab = '';
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private httpService: HttpService,
-    private sharedService: SharedService,
-    private ga: GoogleAnalyticsService,
-    private helperService: HelperService,
-    private location: Location,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly httpService: HttpService,
+    private readonly sharedService: SharedService,
+    private readonly ga: GoogleAnalyticsService,
+    private readonly helperService: HelperService,
   ) {}
 
   ngOnInit() {
