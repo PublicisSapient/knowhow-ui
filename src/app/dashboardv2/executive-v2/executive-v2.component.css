@@ -158,3 +158,25 @@
   transition: border 2s ease;
   box-shadow: 0 0 10px rgba(11, 75, 200, 0.35);
 }
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .metrics-grid.column-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .metrics-grid.column-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
