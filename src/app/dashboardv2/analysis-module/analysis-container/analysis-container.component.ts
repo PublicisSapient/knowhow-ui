@@ -259,11 +259,11 @@ export class AnalysisContainerComponent implements OnInit {
         const efficiencyGainDisplay =
           efficiencyGainValue !== null && efficiencyGainValue !== undefined
             ? efficiencyGainValue
-            : 'N/A';
+            : 'NA';
         const issueCountDisplay =
           issueCountValue !== null && issueCountValue !== undefined
             ? issueCountValue
-            : 'N/A';
+            : 'NA';
 
         row[`${fieldNamePrefix}_efficiencyGain`] = efficiencyGainDisplay;
         row[`${fieldNamePrefix}_issueCount`] = issueCountDisplay;
@@ -395,10 +395,10 @@ export class AnalysisContainerComponent implements OnInit {
             if (sprintData) {
               newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`;
             } else {
-              newRow[dataKey] = 'N/A';
+              newRow[dataKey] = 'NA';
             }
           } else {
-            newRow[dataKey] = 'N/A';
+            newRow[dataKey] = 'NA';
           }
         });
 

@@ -211,7 +211,7 @@ describe('AnalysisContainerComponent', () => {
     // Should handle missing project data gracefully
     expect(component.metricsTableData.length).toBeGreaterThan(0);
     const row = component.metricsTableData[0];
-    expect(row['project2_value']).toBe('N/A'); // Missing project should show N/A
+    expect(row['project2_value']).toBe('NA'); // Missing project should show NA
   });
 
   it('should handle empty analytics in processMetricsTableData', () => {
@@ -534,8 +534,8 @@ describe('AnalysisContainerComponent', () => {
 
     const row = component.aiUsageTableData[0];
     expect(row['projectAlpha_efficiencyGain']).toBe(10);
-    expect(row['projectMissing_efficiencyGain']).toBe('N/A'); // Missing project shows N/A
-    expect(row['projectMissing_issueCount']).toBe('N/A');
+    expect(row['projectMissing_efficiencyGain']).toBe('NA'); // Missing project shows NA
+    expect(row['projectMissing_issueCount']).toBe('NA');
   });
 
   it('should handle null and undefined values in processAiUsageTableData', () => {
@@ -562,8 +562,8 @@ describe('AnalysisContainerComponent', () => {
     (component as any).processAiUsageTableData(mockApiData);
 
     const row = component.aiUsageTableData[0];
-    expect(row['projectTest_efficiencyGain']).toBe('N/A');
-    expect(row['projectTest_issueCount']).toBe('N/A');
+    expect(row['projectTest_efficiencyGain']).toBe('NA');
+    expect(row['projectTest_issueCount']).toBe('NA');
     expect(row.totalEfficiencyGain).toBe(0); // Numeric calculation should be 0
     expect(row.totalIssueCount).toBe(0);
   });
