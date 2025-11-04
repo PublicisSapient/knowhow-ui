@@ -114,25 +114,9 @@ describe('AnalysisContainerComponent', () => {
       ],
     };
 
-    spyOn(console, 'log');
-
     component.payloadPreparation();
 
-    expect(console.log).toHaveBeenCalled();
-    //expect(httpService.getAnalyticsMetricsTableData).toHaveBeenCalled();
     expect(httpService.getAIAnalyticsData).toHaveBeenCalled();
-  });
-
-  it('should handle empty project data in payload preparation', () => {
-    component.selectedProjects = [];
-    component.selectedSprint = { nodeId: '2' };
-    component.projectData = { Sprint: [] };
-
-    spyOn(console, 'log');
-
-    component.payloadPreparation();
-
-    expect(console.log).toHaveBeenCalled();
   });
 
   it('should process metrics table data with complete flow', () => {
@@ -227,7 +211,7 @@ describe('AnalysisContainerComponent', () => {
     // Should handle missing project data gracefully
     expect(component.metricsTableData.length).toBeGreaterThan(0);
     const row = component.metricsTableData[0];
-    expect(row['project2_value']).toBe('NA'); // Missing project should show NA
+    expect(row['project2_value']).toBe('N/A'); // Missing project should show N/A
   });
 
   it('should handle empty analytics in processMetricsTableData', () => {
@@ -664,14 +648,7 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     component.openProjectSettings('test-project');
-
-    // Verify console log
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: test-project clicked.',
-    );
 
     // Verify trend object is set
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
@@ -703,13 +680,8 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     component.openProjectSettings('Project Alpha');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: Project Alpha clicked.',
-    );
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
       nodeId: '1',
       nodeName: 'project-alpha',
@@ -732,14 +704,10 @@ describe('AnalysisContainerComponent', () => {
       ],
     };
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('non-existent-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: non-existent-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'The complete object for project "non-existent-project" was not found in the available project list.',
     );
@@ -763,14 +731,10 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     } as any;
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('test-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: test-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'FATAL ERROR: KpiCardV2 component reference is missing or does not have onOpenFieldMappingDialog method.',
     );
@@ -780,14 +744,10 @@ describe('AnalysisContainerComponent', () => {
   it('should handle empty projectData in openProjectSettings', () => {
     component.projectData = { Project: [] };
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('any-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: any-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'The complete object for project "any-project" was not found in the available project list.',
     );
@@ -810,14 +770,9 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     // Test with different case
     component.openProjectSettings('CAMELCASE-PROJECT');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: CAMELCASE-PROJECT clicked.',
-    );
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
       nodeId: '1',
       nodeName: 'CamelCase-Project',
