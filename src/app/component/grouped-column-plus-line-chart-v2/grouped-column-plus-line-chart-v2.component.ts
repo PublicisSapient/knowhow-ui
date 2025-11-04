@@ -226,7 +226,6 @@ export class GroupedColumnPlusLineChartV2Component
     const paddingFactor = 0;
 
     const x0 = d3.scaleBand().range([0, width]); // .padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);
-
     const x1 = d3.scaleBand();
 
     let xScale;
@@ -472,82 +471,193 @@ export class GroupedColumnPlusLineChartV2Component
             : 'translate(' + x0(d.categorie) + ',0)',
         );
 
-      // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
-      if (this.lineChart === false) {
-        d3.selectAll('.rounded-bar')
-          .on('mouseover', function (event, d) {
-            if (d?.value[0]?.hoverValue) {
-              const circle = event.target;
-              const { top: yPosition, left: xPosition } =
-                circle.getBoundingClientRect();
+      // Define the div for the tooltip
+      const div = d3
+        .select(this.elem)
+        .select('#chart')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('display', 'none')
+        .style('opacity', 0);
+
+      // ============================================
+      // MODIFIED SECTION FOR KPI157
+      // ============================================
+      if (this.kpiId === 'kpi157') {
+        // Convert bars to lines for kpi157
+        // Create line generator for each series
+        data[0].value.forEach((seriesData, seriesIndex) => {
+          const rateName = seriesData.rate;
+
+          // Extract values for this series across all categories
+          const lineData = data.map((d) => ({
+            categorie: d.categorie,
+            sortName: d.sortName,
+            value: d.value[seriesIndex].value,
+            rate: d.value[seriesIndex].rate,
+            hoverValue: d.value[seriesIndex].hoverValue,
+          }));
+
+          const barLine = d3
+            .line()
+            .x((d, i) => {
+              const xPos =
+                this.isXaxisGroup === true ? x0(d.sortName) : x0(d.categorie);
+              return xPos + x1(d.rate) + x1.bandwidth() / 2;
+            })
+            .y((d) => y(d.value));
+
+          // Draw the line
+          svgX
+            .append('path')
+            .datum(lineData)
+            .attr('class', 'bar-line bar-line-' + seriesIndex)
+            .attr('d', barLine)
+            .style('fill', 'none')
+            .style('stroke', '#ed8888')
+            .style('stroke-width', '2')
+            .style('opacity', 1);
+
+          // Draw circles for this series
+          svgX
+            .selectAll('.bar-circle-' + seriesIndex)
+            .data(lineData)
+            .enter()
+            .append('circle')
+            .attr('class', 'bar-circle bar-circle-' + seriesIndex)
+            .attr('cx', (d, i) => {
+              const xPos =
+                this.isXaxisGroup === true ? x0(d.sortName) : x0(d.categorie);
+              return xPos + x1(d.rate) + x1.bandwidth() / 2;
+            })
+            .attr('cy', (d) => y(d.value))
+            .attr('r', 3)
+            .style('fill', '#ed8888')
+            .style('stroke', 'white')
+            .style('stroke-width', 1)
+            .on('mouseover', function (event, d) {
+              if (d?.hoverValue) {
+                d3.select(this).transition().duration(200).attr('r', 4);
+
+                const circle = event.target;
+                const { top: yPosition, left: xPosition } =
+                  circle.getBoundingClientRect();
+
+                div
+                  .transition()
+                  .duration(200)
+                  .style('display', 'block')
+                  .style('opacity', 0.9);
+
+                let dataString = '';
+                let htmlString = '';
+
+                for (const key in d.hoverValue) {
+                  dataString += `<div class='toolTipValue p-d-flex p-align-center'><div class="stack-key p-mr-1">${key}</div><div>${d.hoverValue[key]}</div></div>`;
+                }
+
+                htmlString =
+                  "<div class='toolTip'> " + `${dataString}` + '</div>';
+                div
+                  .html(htmlString)
+                  .style('left', xPosition + 20 + 'px')
+                  .style('top', yPosition + 'px')
+                  .style('position', 'fixed')
+                  .style('align', 'left');
+              }
+            })
+            .on('mouseout', function (e, d) {
+              d3.select(this).transition().duration(200).attr('r', 3);
 
               div
                 .transition()
-                .duration(200)
-                .style('display', 'block')
-                .style('opacity', 0.9);
+                .duration(500)
+                .style('display', 'none')
+                .style('opacity', 0);
+            });
+        });
+      } else {
+        // Original bar rendering code for other KPIs
+        // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+        if (this.lineChart === false) {
+          d3.selectAll('.rounded-bar')
+            .on('mouseover', function (event, d) {
+              if (d?.value[0]?.hoverValue) {
+                const circle = event.target;
+                const { top: yPosition, left: xPosition } =
+                  circle.getBoundingClientRect();
 
-              let dataString = '';
-              let htmlString = '';
+                div
+                  .transition()
+                  .duration(200)
+                  .style('display', 'block')
+                  .style('opacity', 0.9);
 
-              for (const key in d.value[0].hoverValue) {
-                dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+                let dataString = '';
+                let htmlString = '';
+
+                for (const key in d.value[0].hoverValue) {
+                  dataString += `<div class='toolTipValue p-d-flex p-align-center'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+                }
+
+                htmlString =
+                  "<div class='toolTip'> " + `${dataString}` + '</div>';
+                div
+                  .html(htmlString)
+                  .style('left', xPosition + 20 + 'px')
+                  .style('top', yPosition + 'px')
+                  .style('position', 'fixed')
+                  .style('align', 'left');
               }
-
-              htmlString =
-                "<div class='toolTip'> " + `${dataString}` + '</div>';
+            })
+            .on('mouseout', function (e, d) {
               div
-                .html(htmlString)
-                .style('left', xPosition + 20 + 'px')
-                .style('top', yPosition + 'px')
-                .style('position', 'fixed')
-                .style('align', 'left');
-            }
-          })
-          .on('mouseout', function (e, d) {
-            div
-              .transition()
-              .duration(500)
-              .style('display', 'none')
-              .style('opacity', 0);
-          });
-      }
+                .transition()
+                .duration(500)
+                .style('display', 'none')
+                .style('opacity', 0);
+            });
+        }
 
-      const rx = x1.bandwidth() / 2;
-      const ry = x1.bandwidth() / 2;
-      slice
-        .selectAll('arc')
-        .data((d) => d.value)
-        .enter()
-        .append('path')
-        .style('fill', (d) => color(d.rate))
-        .attr('d', (d) => {
-          if (height - margin.top - y(d.value) >= rx) {
-            return `
+        const rx = x1.bandwidth() / 2;
+        const ry = x1.bandwidth() / 2;
+        slice
+          .selectAll('arc')
+          .data((d) => d.value)
+          .enter()
+          .append('path')
+          .style('fill', (d) => color(d.rate))
+          .attr('d', (d) => {
+            if (height - margin.top - y(d.value) >= rx) {
+              return `
               M${x1(d.rate)},${y(d.value) + ry}
               a${rx},${ry} 0 0 1 ${rx},${-ry}
               h${x1.bandwidth() - 2 * rx}
               a${rx},${ry} 0 0 1 ${rx},${ry}
               v${height - margin.top - y(d.value) - ry}
               h${-x1.bandwidth()}Z`;
-          } else {
-            return `
+            } else {
+              return `
               M${x1(d.rate)},${
-              (Math.min(height - margin.top - y(d.value) - ry), y(0))
-            }
+                (Math.min(height - margin.top - y(d.value) - ry), y(0))
+              }
               a${rx},${
-              ry - (height - margin.top - y(d.value) + rx)
-            } 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
+                ry - (height - margin.top - y(d.value) + rx)
+              } 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
 
               v${height - margin.top - y(d.value) - rx}
               h${x1.bandwidth() - 2 * rx}
               v${-(height - margin.top - y(d.value)) + rx}
               a${rx},${
-              ry - (height - margin.top - y(d.value) + rx)
-            } 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
+                ry - (height - margin.top - y(d.value) + rx)
+              } 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
               h${-x1.bandwidth()}Z`;
-          }
-        });
+            }
+          });
+      }
+      // ============================================
+      // END OF MODIFIED SECTION
+      // ============================================
 
       // threshold line
       if (self.thresholdValue) {
@@ -574,15 +684,6 @@ export class GroupedColumnPlusLineChartV2Component
           .attr('class', 'thresholdlinetext');
       }
 
-      // Define the div for the tooltip
-      const div = d3
-        .select(this.elem)
-        .select('#chart')
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('display', 'none')
-        .style('opacity', 0);
-
       // bar legend
       const prevLength = -40;
       let legend = svgLegend
@@ -596,12 +697,39 @@ export class GroupedColumnPlusLineChartV2Component
           return 'translate(' + len + ', 0)';
         });
 
-      // Legend indicator  .attr("x", width/2)
-      legend
-        .append('rect')
-        .attr('width', 12)
-        .attr('height', 12)
-        .style('fill', (d, i) => color(i));
+      // ============================================
+      // MODIFIED LEGEND FOR KPI157
+      // ============================================
+      if (this.kpiId === 'kpi157') {
+        // Show line legend for bars (since they're now lines)
+        legend
+          .append('svg:line')
+          .attr('x1', 0)
+          .attr('x2', 15)
+          .attr('y1', 6)
+          .attr('y2', 6)
+          .style('stroke', (d, i) => color(i))
+          .attr('stroke-width', '2');
+
+        legend
+          .append('circle')
+          .style('fill', (d, i) => color(i))
+          .style('stroke', 'white')
+          .style('stroke-width', 1)
+          .attr('r', 3)
+          .attr('cx', 7)
+          .attr('cy', 6);
+      } else {
+        // Original rectangle legend
+        legend
+          .append('rect')
+          .attr('width', 12)
+          .attr('height', 12)
+          .style('fill', (d, i) => color(i));
+      }
+      // ============================================
+      // END OF MODIFIED LEGEND
+      // ============================================
 
       //Legend text /.attr("x", width/2 + 20)
       legend
@@ -624,6 +752,8 @@ export class GroupedColumnPlusLineChartV2Component
         .style('text-anchor', 'start')
         .style('font-size', 10)
         .text(self.barLegend);
+
+      // Rest of the existing line chart code continues here...
       // self.lineChart = false;
       if (self.lineChart !== false) {
         const lineOpacity = '1';
@@ -638,15 +768,12 @@ export class GroupedColumnPlusLineChartV2Component
         const duration = 250;
 
         const colorArr = this.color;
-        /* Add line into SVG acoording to data */
-
-        const yScale = d3
+        /* Add line into SVG according to data */ const yScale = d3
           .scaleLinear()
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
         const elem = this.elem;
-
         const lines = svgX.append('g').attr('class', 'lines');
 
         const line = d3
