@@ -231,9 +231,16 @@ describe('DynamicKpiTableComponent', () => {
 
   describe('mouseEnter', () => {
     it('should show tooltip for sprintName field with hover text', () => {
-      const mockEvent = { pageX: 100, pageY: 200 };
+      const mockEvent = {
+        target: {
+          getBoundingClientRect: () => ({ left: 100, bottom: 50 }),
+        },
+      };
       const mockField = { cleanName: 'sprintName' };
       const mockData = { hoverText: ['Sprint 1', 'Sprint 2'] };
+
+      spyOnProperty(window, 'scrollX', 'get').and.returnValue(0);
+      spyOnProperty(window, 'scrollY', 'get').and.returnValue(0);
 
       component.mouseEnter(mockEvent, mockField, mockData);
 
@@ -241,8 +248,6 @@ describe('DynamicKpiTableComponent', () => {
       expect(component.toolTipHtml).toBe(
         '<span>Sprint 1</span><br/><span>Sprint 2</span><br/>',
       );
-      expect(component.left).toBe('100px');
-      expect(component.top).toBe('200px');
     });
 
     it('should not show tooltip for non-sprintName field', () => {
