@@ -125,65 +125,7 @@ export class JiraConfigComponent implements OnInit {
   activeIndex: number = 0;
   repositryValuesArray: any = [];
   currentFormElement: any;
-  branchAndRepoDropdown: any = [
-    {
-      repositoryName: 'knowhow-api',
-      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
-      connectionId: '622082fc468bf07bd93f7f73',
-      lastUpdatedTimestamp: 1761565697000,
-      order: 1,
-      branchList: [
-        {
-          branchName: 'feature/DTS-49682-precompute-productivity-gain',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 1,
-        },
-        {
-          branchName: 'feature/DTS-4968',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 2,
-        },
-      ],
-    },
-    {
-      repositoryName: 'knowhow-ap',
-      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
-      connectionId: '622082fc468bf07bd93f7f73',
-      lastUpdatedTimestamp: 1761565697000,
-      order: 1,
-      branchList: [
-        {
-          branchName: 'main',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 1,
-        },
-        {
-          branchName: 'develop',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 2,
-        },
-      ],
-    },
-    {
-      repositoryName: 'knowhow-pi',
-      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
-      connectionId: '622082fc468bf07bd93f7f73',
-      lastUpdatedTimestamp: 1761565697000,
-      order: 1,
-      branchList: [
-        {
-          branchName: 'feature/DTS-49682-precompute-productivity-gain',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 1,
-        },
-        {
-          branchName: 'develop',
-          lastUpdatedTimestamp: 1761724281000,
-          order: 2,
-        },
-      ],
-    },
-  ];
+  branchAndRepoDropdown: any = [];
   branchListItems: any = [];
 
   constructor(
@@ -433,7 +375,6 @@ export class JiraConfigComponent implements OnInit {
   }
 
   onConnectionSelect(connection: any) {
-    console.log(connection, 'connection');
     const connectionId = connection.id;
     if (this.urlParam === 'Bamboo') {
       this.getPlansForBamboo(connectionId);
@@ -465,8 +406,6 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'Jira') {
       this.isLoading = false;
     }
-
-    // Load SCM repositories/branches for SCM tools
     if (
       this.urlParam === 'Bitbucket' ||
       this.urlParam === 'AzureRepository' ||
@@ -1882,56 +1821,6 @@ export class JiraConfigComponent implements OnInit {
             { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
-          // this.formTemplate = {
-          //   group: 'BitBucket',
-          //   elements: [
-          //     {
-          //       type: 'text',
-          //       label: 'Full Git URL',
-          //       id: 'gitFullUrl',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'Branch',
-          //       id: 'branch',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Branch name to access BitBucket data.<br />
-          //     <i>
-          //       Impacted : All BitBucket based KPIs</i>`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'Repo Slug',
-          //       id: 'repoSlug',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Repo Slug to access BitBucket data.<br />
-          //     Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
-          //     <i>
-          //       Impacted : All BitBucket based KPIs</i>`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'Project Key',
-          //       id: 'bitbucketProjKey',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Bitbucket project key to access BitBucket data.<br />
-          //     Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
-          //     <i>
-          //       Impacted : All BitBucket based KPIs</i>`,
-          //     },
-          //   ],
-          // };
-
           //new Changes
           this.formTemplate = {
             group: 'BitBucket',
@@ -2131,55 +2020,6 @@ export class JiraConfigComponent implements OnInit {
             { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
-          // this.formTemplate = {
-          //   group: 'AzureRepository',
-          //   elements: [
-          //     {
-          //       type: 'text',
-          //       label: 'Full Git URL',
-          //       id: 'gitFullUrl',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'API Version',
-          //       id: 'apiVersion',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `API version to be used for Azure pipeline API's.<br />
-          //     <i>
-          //       Example: 5.1 <br />
-          //       Impacted : All AzurePipeline based KPIs</i>`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'Repository Name',
-          //       id: 'repositoryName',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Azure Repository Name.<br />
-          //     <i>
-          //       Impacted : All AzureRepository based KPIs</i>`,
-          //     },
-          //     {
-          //       type: 'text',
-          //       label: 'Branch',
-          //       id: 'branch',
-          //       validators: ['required'],
-          //       containerClass: 'p-sm-6',
-          //       show: true,
-          //       tooltip: `Branch name to access Azure Repository data.<br />
-          //     <i>
-          //       Example: master<br />
-          //       Impacted : All Azure Repository based KPIs</i>`,
-          //     },
-          //   ],
-          // };
           this.formTemplate = {
             group: 'AzureRepository',
             elements: [
@@ -2901,10 +2741,6 @@ export class JiraConfigComponent implements OnInit {
   save() {
     this.submitted = true;
     // return if form is invalid
-    console.log(this.toolForm, 'this.toolForm');
-    console.log(this.toolForm.invalid, 'this.toolForm.invalid');
-    console.log(this.selectedConnection, 'this.selectedConnection');
-    console.log(this.checkUrlparams());
     if (
       (this.toolForm.invalid && this.checkUrlparams()) ||
       !this.selectedConnection
@@ -2972,7 +2808,6 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (!this.checkUrlparams()) {
-      // console.log(this.repositryValuesArray, 'this.repositryValuesArray');
       // submitData['scmToolConfigList'] = this.repositryValuesArray;
       delete submitData['Repositry'];
     }
@@ -3012,7 +2847,6 @@ export class JiraConfigComponent implements OnInit {
         }
         delete submitData['boards'];
       }
-      console.log(submitData, 'submitData');
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {
@@ -3449,15 +3283,19 @@ export class JiraConfigComponent implements OnInit {
 
   repositryChange(event) {
     if (typeof event.value === 'string') {
-      // Removed mock data creation. Match an existing repository by name if possible
-      const search = (event.value || '').toLowerCase();
-      const options = Array.isArray(this.branchAndRepoDropdown)
-        ? this.branchAndRepoDropdown
-        : [];
-      const matched = options.find(
-        (item) => (item?.repositoryName || '').toLowerCase() === search,
+      const obj = {
+        repositoryName: event.value,
+        repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
+        connectionId: '622082fc468bf07bd93f7f73',
+        lastUpdatedTimestamp: 1761565697000,
+        order: 1,
+        branchList: [],
+      };
+      this.currentFormElement = obj;
+      const originaldropdownOptions = JSON.parse(
+        JSON.stringify(this.branchAndRepoDropdown),
       );
-      this.currentFormElement = matched || null;
+      // this.branchAndRepoDropdown = originaldropdownOptions.filter(item=>item.repositoryName.toLowerCase().includes(event.value))
     } else {
       this.currentFormElement = event.value;
     }
@@ -3480,9 +3318,7 @@ export class JiraConfigComponent implements OnInit {
     this.toolForm.get('branch').reset();
   }
 
-  onBranchSelectionChange(event) {
-    // console.log(event, 'event');
-  }
+  onBranchSelectionChange(event) {}
 
   clearRepositories(index?) {
     if (index) {
