@@ -360,6 +360,8 @@ export class AnalysisContainerComponent implements OnInit {
     const finalTableData: any[] = [];
     let rowIndex = 0;
 
+    const dummySprintWithActualName = this.preapareHoverText(apiData.analytics);
+
     // 4. Data Transformation (Creating Rows)
     apiData.analytics.forEach((metricData: any) => {
       const metricDescription = metricData.metric;
@@ -376,11 +378,13 @@ export class AnalysisContainerComponent implements OnInit {
         const newRow: any = {
           Metrics: index === 0 ? metricDescription : '\u00A0',
           rowId: rowIndex++,
+          hoverText: [],
         };
 
         // Data key for the Sprint column (e.g., sprintName_value)
         const sprintDataKey = `${sprintHeader.cleanName}${this.metricsSubColumns[0].dataSuffix}`;
         newRow[sprintDataKey] = sprintName;
+        newRow.hoverText = dummySprintWithActualName[sprintName];
 
         // Iterate through Projects to populate dynamic columns
         allProjects.forEach((projectName) => {
@@ -411,6 +415,33 @@ export class AnalysisContainerComponent implements OnInit {
     // 5. Setting Base Column Headers
     this.metricsBaseColumnHeader = 'Metrics'; // First fixed column (visible)
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
+  }
+
+  preapareHoverText(inputData) {
+    if (!inputData) {
+      return;
+    }
+    const sprintMap: Record<string, string[]> = {};
+
+    inputData.forEach((metricItem) => {
+      metricItem.projects.forEach((project) => {
+        project.sprints.forEach((sprint) => {
+          const sprintKey = sprint.sprint;
+          const sprintName = sprint.name;
+
+          if (!sprintMap[sprintKey]) {
+            sprintMap[sprintKey] = [];
+          }
+
+          // Avoid duplicates (optional)
+          if (!sprintMap[sprintKey].includes(sprintName)) {
+            sprintMap[sprintKey].push(sprintName);
+          }
+        });
+      });
+    });
+
+    return sprintMap;
   }
 
   removeProject(project: any) {

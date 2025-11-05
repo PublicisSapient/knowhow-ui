@@ -782,4 +782,79 @@ describe('AnalysisContainerComponent', () => {
       component.kpiCardComponent.onOpenFieldMappingDialog,
     ).toHaveBeenCalled();
   });
+
+  it('should prepare hover text correctly with valid input data', () => {
+    const mockInputData = [
+      {
+        metric: 'Velocity',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [
+              { sprint: 'S1', name: 'Sprint 1 - Alpha' },
+              { sprint: 'S2', name: 'Sprint 2 - Beta' },
+            ],
+          },
+          {
+            name: 'Project B',
+            sprints: [{ sprint: 'S1', name: 'Sprint 1 - Gamma' }],
+          },
+        ],
+      },
+      {
+        metric: 'Quality',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [{ sprint: 'S3', name: 'Sprint 3 - Delta' }],
+          },
+        ],
+      },
+    ];
+
+    const result = (component as any).preapareHoverText(mockInputData);
+
+    expect(result).toEqual({
+      S1: ['Sprint 1 - Alpha', 'Sprint 1 - Gamma'],
+      S2: ['Sprint 2 - Beta'],
+      S3: ['Sprint 3 - Delta'],
+    });
+  });
+
+  it('should handle null or undefined input in preapareHoverText', () => {
+    const result1 = (component as any).preapareHoverText(null);
+    const result2 = (component as any).preapareHoverText(undefined);
+
+    expect(result1).toBeUndefined();
+    expect(result2).toBeUndefined();
+  });
+
+  it('should handle empty input data in preapareHoverText', () => {
+    const result = (component as any).preapareHoverText([]);
+
+    expect(result).toEqual({});
+  });
+
+  it('should avoid duplicate sprint names in preapareHoverText', () => {
+    const mockInputData = [
+      {
+        metric: 'Test Metric',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [
+              { sprint: 'S1', name: 'Sprint 1' },
+              { sprint: 'S1', name: 'Sprint 1' },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const result = (component as any).preapareHoverText(mockInputData);
+
+    expect(result).toEqual({
+      S1: ['Sprint 1'],
+    });
+  });
 });
