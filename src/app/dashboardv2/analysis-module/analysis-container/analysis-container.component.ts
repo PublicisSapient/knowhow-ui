@@ -397,7 +397,9 @@ export class AnalysisContainerComponent implements OnInit {
               (sprint: any) => sprint.sprint === sprintName,
             );
             if (sprintData) {
-              newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`;
+              newRow[dataKey] = `${sprintData.value} (${sprintData.trend}${
+                sprintData.trendUnit || ''
+              })`;
             } else {
               newRow[dataKey] = 'NA';
             }
