@@ -228,4 +228,65 @@ describe('DynamicKpiTableComponent', () => {
       expect(row1Cells[1].nativeElement.textContent.trim()).toBe('5');
     });
   });
+
+  describe('mouseEnter', () => {
+    it('should show tooltip for sprintName field with hover text', () => {
+      const mockEvent = { pageX: 100, pageY: 200 };
+      const mockField = { cleanName: 'sprintName' };
+      const mockData = { hoverText: ['Sprint 1', 'Sprint 2'] };
+
+      component.mouseEnter(mockEvent, mockField, mockData);
+
+      expect(component.showToolTip).toBe(true);
+      expect(component.toolTipHtml).toBe(
+        '<span>Sprint 1</span><br/><span>Sprint 2</span><br/>',
+      );
+      expect(component.left).toBe('100px');
+      expect(component.top).toBe('200px');
+    });
+
+    it('should not show tooltip for non-sprintName field', () => {
+      const mockEvent = { pageX: 100, pageY: 200 };
+      const mockField = { cleanName: 'otherField' };
+      const mockData = { hoverText: ['Some text'] };
+
+      component.mouseEnter(mockEvent, mockField, mockData);
+
+      expect(component.showToolTip).toBe(false);
+      expect(component.toolTipHtml).toBe('');
+    });
+
+    it('should not show tooltip when hoverText is empty', () => {
+      const mockEvent = { pageX: 100, pageY: 200 };
+      const mockField = { cleanName: 'sprintName' };
+      const mockData = { hoverText: [] };
+
+      component.mouseEnter(mockEvent, mockField, mockData);
+
+      expect(component.showToolTip).toBe(false);
+      expect(component.toolTipHtml).toBe('');
+    });
+
+    it('should not show tooltip when data is null', () => {
+      const mockEvent = { pageX: 100, pageY: 200 };
+      const mockField = { cleanName: 'sprintName' };
+
+      component.mouseEnter(mockEvent, mockField, null);
+
+      expect(component.showToolTip).toBe(false);
+      expect(component.toolTipHtml).toBe('');
+    });
+  });
+
+  describe('mouseLeave', () => {
+    it('should hide tooltip and clear tooltip html', () => {
+      component.showToolTip = true;
+      component.toolTipHtml = '<span>Some content</span>';
+
+      component.mouseLeave();
+
+      expect(component.showToolTip).toBe(false);
+      expect(component.toolTipHtml).toBe('');
+    });
+  });
 });
