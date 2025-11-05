@@ -259,11 +259,11 @@ export class AnalysisContainerComponent implements OnInit {
         const efficiencyGainDisplay =
           efficiencyGainValue !== null && efficiencyGainValue !== undefined
             ? efficiencyGainValue
-            : 'N/A';
+            : 'NA';
         const issueCountDisplay =
           issueCountValue !== null && issueCountValue !== undefined
             ? issueCountValue
-            : 'N/A';
+            : 'NA';
 
         row[`${fieldNamePrefix}_efficiencyGain`] = efficiencyGainDisplay;
         row[`${fieldNamePrefix}_issueCount`] = issueCountDisplay;
@@ -360,6 +360,8 @@ export class AnalysisContainerComponent implements OnInit {
     const finalTableData: any[] = [];
     let rowIndex = 0;
 
+    const dummySprintWithActualName = this.preapareHoverText(apiData.analytics);
+
     // 4. Data Transformation (Creating Rows)
     apiData.analytics.forEach((metricData: any) => {
       const metricDescription = metricData.metric;
@@ -376,11 +378,13 @@ export class AnalysisContainerComponent implements OnInit {
         const newRow: any = {
           Metrics: index === 0 ? metricDescription : '\u00A0',
           rowId: rowIndex++,
+          hoverText: [],
         };
 
         // Data key for the Sprint column (e.g., sprintName_value)
         const sprintDataKey = `${sprintHeader.cleanName}${this.metricsSubColumns[0].dataSuffix}`;
         newRow[sprintDataKey] = sprintName;
+        newRow.hoverText = dummySprintWithActualName[sprintName];
 
         // Iterate through Projects to populate dynamic columns
         allProjects.forEach((projectName) => {
@@ -393,7 +397,9 @@ export class AnalysisContainerComponent implements OnInit {
               (sprint: any) => sprint.sprint === sprintName,
             );
             if (sprintData) {
-              newRow[dataKey] = `${sprintData.value} (${sprintData.trend})`;
+              newRow[dataKey] = `${sprintData.value} (${sprintData.trend}${
+                sprintData.trendUnit || ''
+              })`;
             } else {
               newRow[dataKey] = 'NA';
             }
@@ -411,6 +417,33 @@ export class AnalysisContainerComponent implements OnInit {
     // 5. Setting Base Column Headers
     this.metricsBaseColumnHeader = 'Metrics'; // First fixed column (visible)
     this.metricsBaseColumnHeader2 = 'rowId'; // Second fixed column (technical/invisible)
+  }
+
+  preapareHoverText(inputData) {
+    if (!inputData) {
+      return;
+    }
+    const sprintMap: Record<string, string[]> = {};
+
+    inputData.forEach((metricItem) => {
+      metricItem.projects.forEach((project) => {
+        project.sprints.forEach((sprint) => {
+          const sprintKey = sprint.sprint;
+          const sprintName = sprint.name;
+
+          if (!sprintMap[sprintKey]) {
+            sprintMap[sprintKey] = [];
+          }
+
+          // Avoid duplicates (optional)
+          if (!sprintMap[sprintKey].includes(sprintName)) {
+            sprintMap[sprintKey].push(sprintName);
+          }
+        });
+      });
+    });
+
+    return sprintMap;
   }
 
   removeProject(project: any) {
@@ -448,8 +481,6 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   openProjectSettings(projectName: string) {
-    console.log(`Settings for project: ${projectName} clicked.`);
-
     const lowerCaseProjectName = projectName?.toLowerCase();
 
     const projectObject = this.projectData[analysisConstant.PROJECT_KEY]?.find(
@@ -535,25 +566,23 @@ export class AnalysisContainerComponent implements OnInit {
       projectBasicConfigIds: projectBasicConfigIds,
     };
 
-    console.log('api will hit from here', payload);
-
     //GET Metrics Table Data
-    // this.httpService.getAnalyticsMetricsTableData(payload).subscribe({
-    //   next: (response: any) => {
-    //     if (response.success) {
-    //       this.processMetricsTableData(response.data);
-    //     } else if (response.data.length === 0) {
-    //       this.metricsTableData = [];
-    //     } else {
-    //       console.warn('Did not get data from API');
-    //       this.metricsTableData = [];
-    //     }
-    //   },
-    //   error: (error) => {
-    //     console.error('Error fetching Matrix Data:', error);
-    //     this.metricsTableData = [];
-    //   },
-    // });
+    this.httpService.getAnalyticsMetricsTableData(aiPayload).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.processMetricsTableData(response.data);
+        } else if (response.data.length === 0) {
+          this.metricsTableData = [];
+        } else {
+          console.warn('Did not get data from API');
+          this.metricsTableData = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching Matrix Data:', error);
+        this.metricsTableData = [];
+      },
+    });
 
     //GET AI analytics Data
     this.subscriptions.push(
