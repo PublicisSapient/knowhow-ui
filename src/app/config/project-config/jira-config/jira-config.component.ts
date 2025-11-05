@@ -2810,6 +2810,10 @@ export class JiraConfigComponent implements OnInit {
     if (!this.checkUrlparams()) {
       submitData['repositoryName'] = null;
       submitData['scmToolConfigList'] = this.repositryValuesArray;
+      submitData['scmToolConfigList'].forEach((x) => {
+        x.branch = JSON.parse(JSON.stringify(x.branchList));
+        delete x.branchList;
+      });
       delete submitData['Repositry'];
     }
 
