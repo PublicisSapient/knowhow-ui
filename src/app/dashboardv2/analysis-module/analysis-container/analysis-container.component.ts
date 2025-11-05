@@ -8,7 +8,10 @@ import { Subscription } from 'rxjs';
 import { GenericFilterComponent } from '../analysis-generic-filter/generic-filter.component';
 import { ButtonModule } from 'primeng/button';
 import * as analysisConstant from '../analysis-constant';
-import { AI_USAGE_TOOLTIP_INFO } from '../analysis-constant';
+import {
+  AI_USAGE_TOOLTIP_INFO,
+  MATRIX_TABLE_TOOLTIP_INFO,
+} from '../analysis-constant';
 
 interface SubColumn {
   label: string;
@@ -64,6 +67,7 @@ export class AnalysisContainerComponent implements OnInit {
   selectedSprint: any = {};
   selectedTab: any;
   aiUsageTooltip: typeof AI_USAGE_TOOLTIP_INFO;
+  matrixTableTooltip: typeof MATRIX_TABLE_TOOLTIP_INFO;
 
   // --- VARIABLES FOR AI USAGE TABLE ---
   public aiUsageKpiSettings: any;
@@ -103,6 +107,7 @@ export class AnalysisContainerComponent implements OnInit {
     this.selectedTab = analysisConstant.SELECTED_TAB_ANALYSIS_KEY;
     this.updateKpiSettings();
     this.aiUsageTooltip = AI_USAGE_TOOLTIP_INFO;
+    this.matrixTableTooltip = MATRIX_TABLE_TOOLTIP_INFO;
   }
 
   public processSummaryData(summary: any): AnalyticsSummary[] {
