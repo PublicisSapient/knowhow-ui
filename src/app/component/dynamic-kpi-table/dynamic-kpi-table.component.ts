@@ -164,11 +164,13 @@ export class DynamicKpiTableComponent {
   mouseEnter(event, field, data) {
     if (field.cleanName === 'sprintName') {
       if (data?.hoverText?.length > 0) {
+        this.toolTipHtml = '';
         data.hoverText.forEach((item) => {
           this.toolTipHtml += `<span>${item}</span><br/>`;
         });
-        this.top = event.pageY + 'px';
-        this.left = event.pageX + 'px';
+        const rect = event.target.getBoundingClientRect();
+        this.top = rect.bottom + 5 + 'px';
+        this.left = rect.left + 'px';
         this.showToolTip = true;
       }
     }
