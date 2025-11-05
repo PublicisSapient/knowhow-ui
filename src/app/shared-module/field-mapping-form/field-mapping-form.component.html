@@ -66,9 +66,9 @@
       <ng-template pTemplate="header">
           <h2 tabindex="0" id="addValuesDialogTitle">Add Value(s)</h2>
       </ng-template>
-      <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
+      <div class="dialog-panel" style="width: 450px; min-height: 450px;">
           <div *ngIf="singleSelectionDropdown">
-              <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false" [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues" placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data" filter="true" showClear="true" aria-label="Single Value Selection" tabindex="0">
+              <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" appendTo="body" [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues" placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data" filter="true" showClear="true" aria-label="Single Value Selection" tabindex="0">
               </p-dropdown>
           </div>
           <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
