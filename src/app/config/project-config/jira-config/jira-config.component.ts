@@ -2808,7 +2808,8 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (!this.checkUrlparams()) {
-      // submitData['scmToolConfigList'] = this.repositryValuesArray;
+      submitData['repositoryName'] = null;
+      submitData['scmToolConfigList'] = this.repositryValuesArray;
       delete submitData['Repositry'];
     }
 
@@ -3303,7 +3304,16 @@ export class JiraConfigComponent implements OnInit {
       ? this.currentFormElement.branchList
       : [];
     this.branchListItems = branches;
-    const values = branches.map((x) => x.name);
+    const values = branches
+      .filter(
+        (branch) =>
+          branch.branchName === 'master' || branch.branchName === 'develop',
+      )
+      .map((x) => x.branchName);
+    this.currentFormElement.branchList = branches.filter(
+      (branch) =>
+        branch.branchName === 'master' || branch.branchName === 'develop',
+    );
     this.toolForm.get('branch')?.setValue(values);
   }
 
@@ -3359,7 +3369,7 @@ export class JiraConfigComponent implements OnInit {
             });
             return;
           } else {
-            this.branchAndRepoDropdown = [];
+            this.branchAndRepoDropdown = resp?.data?.repositories ?? [];
             if (resp?.message) {
               this.messenger.add({ severity: 'warn', summary: resp.message });
             }
