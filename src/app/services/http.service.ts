@@ -202,7 +202,8 @@ export class HttpService {
   private executivePageURL = this.baseUrl + '/api/executive';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
-  private analyticsMetricsTableDataURL = this.baseUrl + '/api/';
+  private analyticsMetricsTableDataURL =
+    this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
 

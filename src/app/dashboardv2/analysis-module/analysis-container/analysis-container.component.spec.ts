@@ -114,25 +114,9 @@ describe('AnalysisContainerComponent', () => {
       ],
     };
 
-    spyOn(console, 'log');
-
     component.payloadPreparation();
 
-    expect(console.log).toHaveBeenCalled();
-    //expect(httpService.getAnalyticsMetricsTableData).toHaveBeenCalled();
     expect(httpService.getAIAnalyticsData).toHaveBeenCalled();
-  });
-
-  it('should handle empty project data in payload preparation', () => {
-    component.selectedProjects = [];
-    component.selectedSprint = { nodeId: '2' };
-    component.projectData = { Sprint: [] };
-
-    spyOn(console, 'log');
-
-    component.payloadPreparation();
-
-    expect(console.log).toHaveBeenCalled();
   });
 
   it('should process metrics table data with complete flow', () => {
@@ -550,8 +534,8 @@ describe('AnalysisContainerComponent', () => {
 
     const row = component.aiUsageTableData[0];
     expect(row['projectAlpha_efficiencyGain']).toBe(10);
-    expect(row['projectMissing_efficiencyGain']).toBe('N/A'); // Missing project shows N/A
-    expect(row['projectMissing_issueCount']).toBe('N/A');
+    expect(row['projectMissing_efficiencyGain']).toBe('NA'); // Missing project shows NA
+    expect(row['projectMissing_issueCount']).toBe('NA');
   });
 
   it('should handle null and undefined values in processAiUsageTableData', () => {
@@ -578,8 +562,8 @@ describe('AnalysisContainerComponent', () => {
     (component as any).processAiUsageTableData(mockApiData);
 
     const row = component.aiUsageTableData[0];
-    expect(row['projectTest_efficiencyGain']).toBe('N/A');
-    expect(row['projectTest_issueCount']).toBe('N/A');
+    expect(row['projectTest_efficiencyGain']).toBe('NA');
+    expect(row['projectTest_issueCount']).toBe('NA');
     expect(row.totalEfficiencyGain).toBe(0); // Numeric calculation should be 0
     expect(row.totalIssueCount).toBe(0);
   });
@@ -664,14 +648,7 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     component.openProjectSettings('test-project');
-
-    // Verify console log
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: test-project clicked.',
-    );
 
     // Verify trend object is set
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
@@ -703,13 +680,8 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     component.openProjectSettings('Project Alpha');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: Project Alpha clicked.',
-    );
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
       nodeId: '1',
       nodeName: 'project-alpha',
@@ -732,14 +704,10 @@ describe('AnalysisContainerComponent', () => {
       ],
     };
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('non-existent-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: non-existent-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'The complete object for project "non-existent-project" was not found in the available project list.',
     );
@@ -763,14 +731,10 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     } as any;
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('test-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: test-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'FATAL ERROR: KpiCardV2 component reference is missing or does not have onOpenFieldMappingDialog method.',
     );
@@ -780,14 +744,10 @@ describe('AnalysisContainerComponent', () => {
   it('should handle empty projectData in openProjectSettings', () => {
     component.projectData = { Project: [] };
 
-    spyOn(console, 'log');
     spyOn(console, 'error');
 
     component.openProjectSettings('any-project');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: any-project clicked.',
-    );
     expect(console.error).toHaveBeenCalledWith(
       'The complete object for project "any-project" was not found in the available project list.',
     );
@@ -810,14 +770,9 @@ describe('AnalysisContainerComponent', () => {
       selectedTrendObject: null,
     };
 
-    spyOn(console, 'log');
-
     // Test with different case
     component.openProjectSettings('CAMELCASE-PROJECT');
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Settings for project: CAMELCASE-PROJECT clicked.',
-    );
     expect(component.kpiCardComponent.selectedTrendObject).toEqual({
       nodeId: '1',
       nodeName: 'CamelCase-Project',
@@ -826,5 +781,80 @@ describe('AnalysisContainerComponent', () => {
     expect(
       component.kpiCardComponent.onOpenFieldMappingDialog,
     ).toHaveBeenCalled();
+  });
+
+  it('should prepare hover text correctly with valid input data', () => {
+    const mockInputData = [
+      {
+        metric: 'Velocity',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [
+              { sprint: 'S1', name: 'Sprint 1 - Alpha' },
+              { sprint: 'S2', name: 'Sprint 2 - Beta' },
+            ],
+          },
+          {
+            name: 'Project B',
+            sprints: [{ sprint: 'S1', name: 'Sprint 1 - Gamma' }],
+          },
+        ],
+      },
+      {
+        metric: 'Quality',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [{ sprint: 'S3', name: 'Sprint 3 - Delta' }],
+          },
+        ],
+      },
+    ];
+
+    const result = (component as any).preapareHoverText(mockInputData);
+
+    expect(result).toEqual({
+      S1: ['Sprint 1 - Alpha', 'Sprint 1 - Gamma'],
+      S2: ['Sprint 2 - Beta'],
+      S3: ['Sprint 3 - Delta'],
+    });
+  });
+
+  it('should handle null or undefined input in preapareHoverText', () => {
+    const result1 = (component as any).preapareHoverText(null);
+    const result2 = (component as any).preapareHoverText(undefined);
+
+    expect(result1).toBeUndefined();
+    expect(result2).toBeUndefined();
+  });
+
+  it('should handle empty input data in preapareHoverText', () => {
+    const result = (component as any).preapareHoverText([]);
+
+    expect(result).toEqual({});
+  });
+
+  it('should avoid duplicate sprint names in preapareHoverText', () => {
+    const mockInputData = [
+      {
+        metric: 'Test Metric',
+        projects: [
+          {
+            name: 'Project A',
+            sprints: [
+              { sprint: 'S1', name: 'Sprint 1' },
+              { sprint: 'S1', name: 'Sprint 1' },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const result = (component as any).preapareHoverText(mockInputData);
+
+    expect(result).toEqual({
+      S1: ['Sprint 1'],
+    });
   });
 });

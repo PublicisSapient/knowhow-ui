@@ -29,27 +29,27 @@
   </div>
 </div>
 
-<!--<div class="p-d-flex p-jc-center p-ai-center p-mt-3">-->
-<!--  <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 95%;">-->
-<!--    <div class="p-card-content p-p-0">-->
-<!--      <app-kpi-card-v2-->
-<!--        [kpiData]="metricsKpiSettings"-->
-<!--        [loader]="false"-->
-<!--        [selectedTab]="selectedTab"-->
-<!--        [immediateLoader]="false" -->
-<!--        [selectedBoard]="'analysis'">-->
-<!--        <app-dynamic-kpi-table-->
-<!--          kpiTable-->
-<!--          [tableData]="metricsTableData"-->
-<!--          [projectHeaders]="metricsProjectHeaders"-->
-<!--          [subColumns]="metricsSubColumns"-->
-<!--          [baseColumnHeader]="metricsBaseColumnHeader"-->
-<!--          (onProjectSettingsClick)="openProjectSettings($event)">-->
-<!--        </app-dynamic-kpi-table>-->
-<!--      </app-kpi-card-v2>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+<div class="p-d-flex p-jc-center p-ai-center p-mt-3">
+ <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 95%;">
+    <div class="p-card-content p-p-0">
+      <app-kpi-card-v2 #kpiCard
+        [kpiData]="metricsKpiSettings"
+        [loader]="false"
+        [selectedTab]="selectedTab"
+        [immediateLoader]="false" 
+        [selectedBoard]="'analysis'">
+        <app-dynamic-kpi-table
+          kpiTable
+          [tableData]="metricsTableData"
+          [projectHeaders]="metricsProjectHeaders"
+          [subColumns]="metricsSubColumns"
+          [baseColumnHeader]="metricsBaseColumnHeader"
+          (onProjectSettingsClick)="openProjectSettings($event)">
+        </app-dynamic-kpi-table>
+      </app-kpi-card-v2>
+    </div>
+  </div>
+</div>
 
 
 <div class="p-d-flex p-jc-center p-ai-center">
