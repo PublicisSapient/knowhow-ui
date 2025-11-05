@@ -37,6 +37,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
+import { AI_USAGE_TOOLTIP_INFO } from '../analysis-module/analysis-constant';
 
 interface SelectedTrend {
   nodeId: string;
@@ -137,6 +138,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   disableSettings = false;
   @Input() immediateLoader = true;
   @Input() partialData = false;
+  @Input() customTooltip: typeof AI_USAGE_TOOLTIP_INFO;
   warning = '';
   kpiHeaderData: {};
   kpiFilterData: {};

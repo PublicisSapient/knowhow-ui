@@ -49,6 +49,7 @@ export const AI_USES_TABLE_DUMMY_KPI = {
   kpiDetail: {
     kpiInfo: 'Info here',
     kpiSource: 'Jira',
+    kpiId: 'kpi198',
   },
   kpiName: 'AI Usage Analytics',
 };
@@ -65,3 +66,18 @@ export const METRICS_TABLE_DUMMY_KPI = {
 };
 
 export const SELECTED_TAB_ANALYSIS_KEY = 'analysis';
+
+export const AI_USAGE_TOOLTIP_INFO = {
+  definition:
+    'The AI Usage Analytics view provides a snapshot of how projects are adopting AI assistants.\n' +
+    'It helps leaders understand where AI is being used, how frequently, and by which projects -enabling data-driven strategies for scaling AI adoption across the organization.',
+  details: [
+    {
+      type: 'link',
+      kpiLinkDetail: {
+        text: 'Detailed Information at',
+        link: 'https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/385908747/Analysis+of+sprint+metrics+AI+usage',
+      },
+    },
+  ],
+};

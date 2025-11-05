@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { GenericFilterComponent } from '../analysis-generic-filter/generic-filter.component';
 import { ButtonModule } from 'primeng/button';
 import * as analysisConstant from '../analysis-constant';
+import { AI_USAGE_TOOLTIP_INFO } from '../analysis-constant';
 
 interface SubColumn {
   label: string;
@@ -62,6 +63,7 @@ export class AnalysisContainerComponent implements OnInit {
   projectData: any;
   selectedSprint: any = {};
   selectedTab: any;
+  aiUsageTooltip: typeof AI_USAGE_TOOLTIP_INFO;
 
   // --- VARIABLES FOR AI USAGE TABLE ---
   public aiUsageKpiSettings: any;
@@ -100,6 +102,7 @@ export class AnalysisContainerComponent implements OnInit {
     this.sprintFilterConfig = analysisConstant.SPRINT_FILTER_CONFIG;
     this.selectedTab = analysisConstant.SELECTED_TAB_ANALYSIS_KEY;
     this.updateKpiSettings();
+    this.aiUsageTooltip = AI_USAGE_TOOLTIP_INFO;
   }
 
   public processSummaryData(summary: any): AnalyticsSummary[] {
@@ -448,8 +451,6 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   openProjectSettings(projectName: string) {
-    console.log(`Settings for project: ${projectName} clicked.`);
-
     const lowerCaseProjectName = projectName?.toLowerCase();
 
     const projectObject = this.projectData[analysisConstant.PROJECT_KEY]?.find(
