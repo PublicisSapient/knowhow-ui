@@ -22,6 +22,7 @@ import {
   UntypedFormGroup,
   UntypedFormControl,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -122,6 +123,68 @@ export class JiraConfigComponent implements OnInit {
   jiraConfigurationTypeOptions;
   jiraQueryEnabled = true;
   activeIndex: number = 0;
+  repositryValuesArray: any = [];
+  currentFormElement: any;
+  branchAndRepoDropdown: any = [
+    {
+      repositoryName: 'knowhow-api',
+      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
+      connectionId: '622082fc468bf07bd93f7f73',
+      lastUpdatedTimestamp: 1761565697000,
+      order: 1,
+      branchList: [
+        {
+          branchName: 'feature/DTS-49682-precompute-productivity-gain',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 1,
+        },
+        {
+          branchName: 'feature/DTS-4968',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 2,
+        },
+      ],
+    },
+    {
+      repositoryName: 'knowhow-ap',
+      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
+      connectionId: '622082fc468bf07bd93f7f73',
+      lastUpdatedTimestamp: 1761565697000,
+      order: 1,
+      branchList: [
+        {
+          branchName: 'main',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 1,
+        },
+        {
+          branchName: 'develop',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 2,
+        },
+      ],
+    },
+    {
+      repositoryName: 'knowhow-pi',
+      repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
+      connectionId: '622082fc468bf07bd93f7f73',
+      lastUpdatedTimestamp: 1761565697000,
+      order: 1,
+      branchList: [
+        {
+          branchName: 'feature/DTS-49682-precompute-productivity-gain',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 1,
+        },
+        {
+          branchName: 'develop',
+          lastUpdatedTimestamp: 1761724281000,
+          order: 2,
+        },
+      ],
+    },
+  ];
+  branchListItems: any = [];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -138,15 +201,15 @@ export class JiraConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
 
     const selectedType =
-      this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
+      this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
-    )[selectedType].map((x) => ({
+    )[selectedType]?.map((x) => ({
       id: x['hierarchyLevelId'],
       name: x['hierarchyLevelName'],
     }));
 
-    Object.keys(this.selectedProject).forEach((key) => {
+    Object.keys(this.selectedProject)?.forEach((key) => {
       if (levelDetails.map((x) => x.id).includes(key)) {
         const propertyName = levelDetails.filter((x) => x.id === key)[0].name;
         this.selectedProject[propertyName] = this.selectedProject[key];
@@ -370,6 +433,7 @@ export class JiraConfigComponent implements OnInit {
   }
 
   onConnectionSelect(connection: any) {
+    console.log(connection, 'connection');
     const connectionId = connection.id;
     if (this.urlParam === 'Bamboo') {
       this.getPlansForBamboo(connectionId);
@@ -400,6 +464,16 @@ export class JiraConfigComponent implements OnInit {
 
     if (this.urlParam === 'Jira') {
       this.isLoading = false;
+    }
+
+    // Load SCM repositories/branches for SCM tools
+    if (
+      this.urlParam === 'Bitbucket' ||
+      this.urlParam === 'AzureRepository' ||
+      this.urlParam === 'GitLab' ||
+      this.urlParam === 'GitHub'
+    ) {
+      this.loadScmRepos(connectionId);
     }
 
     if (this.urlParam === 'GitHubAction') {
@@ -511,6 +585,7 @@ export class JiraConfigComponent implements OnInit {
           this.configuredTools = this.sharedService
             .getSelectedToolConfig()
             .filter((toolConfig) => toolConfig.toolName === this.urlParam);
+          this.configuredTools = this.configuredTools.slice().reverse();
           if (this.configuredTools.length) {
             this.configuredTools.forEach((tool) => {
               this.connections.forEach((connection) => {
@@ -1799,59 +1874,89 @@ export class JiraConfigComponent implements OnInit {
               header: 'Connection Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
-            { field: 'repoSlug', header: 'Repo Slug', class: 'long-text' },
             {
-              field: 'bitbucketProjKey',
-              header: 'Project Key',
+              field: 'repositoryName',
+              header: 'Repository Name',
               class: 'long-text',
             },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
+          // this.formTemplate = {
+          //   group: 'BitBucket',
+          //   elements: [
+          //     {
+          //       type: 'text',
+          //       label: 'Full Git URL',
+          //       id: 'gitFullUrl',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'Branch',
+          //       id: 'branch',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Branch name to access BitBucket data.<br />
+          //     <i>
+          //       Impacted : All BitBucket based KPIs</i>`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'Repo Slug',
+          //       id: 'repoSlug',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Repo Slug to access BitBucket data.<br />
+          //     Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
+          //     <i>
+          //       Impacted : All BitBucket based KPIs</i>`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'Project Key',
+          //       id: 'bitbucketProjKey',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Bitbucket project key to access BitBucket data.<br />
+          //     Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
+          //     <i>
+          //       Impacted : All BitBucket based KPIs</i>`,
+          //     },
+          //   ],
+          // };
+
+          //new Changes
           this.formTemplate = {
             group: 'BitBucket',
             elements: [
               {
-                type: 'text',
-                label: 'Full Git URL',
-                id: 'gitFullUrl',
+                type: 'basicDropdown',
+                label: 'Repositry',
+                id: 'Repositry',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+                tooltip: `Repositry to access BitBucket data.<br />
+               Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
+               <i>
+                 Impacted : All BitBucket based KPIs</i>`,
+                options: 'branchAndRepoDropdown',
               },
               {
-                type: 'text',
+                type: 'array',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access BitBucket data.<br />
-              <i>
-                Impacted : All BitBucket based KPIs</i>`,
-              },
-              {
-                type: 'text',
-                label: 'Repo Slug',
-                id: 'repoSlug',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `Repo Slug to access BitBucket data.<br />
-              Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
-              <i>
-                Impacted : All BitBucket based KPIs</i>`,
-              },
-              {
-                type: 'text',
-                label: 'Project Key',
-                id: 'bitbucketProjKey',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `Bitbucket project key to access BitBucket data.<br />
-              Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
               <i>
                 Impacted : All BitBucket based KPIs</i>`,
               },
@@ -1878,39 +1983,32 @@ export class JiraConfigComponent implements OnInit {
               header: 'Connection Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
             {
-              field: 'projectId',
-              header: 'Gitlab Project Id',
+              field: 'repositoryName',
+              header: 'Repository Name',
               class: 'long-text',
             },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
             group: 'GitLab',
             elements: [
               {
-                type: 'text',
-                label: 'Full Git URL',
-                id: 'gitFullUrl',
+                type: 'basicDropdown',
+                label: 'Repositry',
+                id: 'Repositry',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+                tooltip: `Repositry to access GitLab data.<br />
+               Eg:protocol//domain/<br/>GitLab/scm/<br/>projectkey/reposlug
+               <i>
+                 Impacted : All GitLab based KPIs</i>`,
+                options: 'branchAndRepoDropdown',
               },
               {
-                type: 'number',
-                label: 'Gitlab Project Id',
-                id: 'projectId',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: ` GitLab Project Id to access GitLab data.<br />
-              <i>
-                Impacted : All GitLab based KPIs</i>`,
-              },
-              {
-                type: 'text',
+                type: 'array',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
@@ -1919,17 +2017,6 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Branch name to access GitLab data.<br />
               <i>
                 Impacted : All GitLab based KPIs</i>`,
-              },
-              {
-                type: 'array',
-                label: 'GitLab Ids',
-                id: 'gitLabID',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `list of inputs to access GitLab data.<br />
-              <i>
-                 Impacted : All GitLab based KPIs</i>`,
               },
             ],
           };
@@ -2036,7 +2123,6 @@ export class JiraConfigComponent implements OnInit {
               header: 'Connection Name',
               class: 'long-text',
             },
-            { field: 'apiVersion', header: 'API Verion', class: 'normal' },
             {
               field: 'repositoryName',
               header: 'Repository Name',
@@ -2045,52 +2131,81 @@ export class JiraConfigComponent implements OnInit {
             { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
+          // this.formTemplate = {
+          //   group: 'AzureRepository',
+          //   elements: [
+          //     {
+          //       type: 'text',
+          //       label: 'Full Git URL',
+          //       id: 'gitFullUrl',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'API Version',
+          //       id: 'apiVersion',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `API version to be used for Azure pipeline API's.<br />
+          //     <i>
+          //       Example: 5.1 <br />
+          //       Impacted : All AzurePipeline based KPIs</i>`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'Repository Name',
+          //       id: 'repositoryName',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Azure Repository Name.<br />
+          //     <i>
+          //       Impacted : All AzureRepository based KPIs</i>`,
+          //     },
+          //     {
+          //       type: 'text',
+          //       label: 'Branch',
+          //       id: 'branch',
+          //       validators: ['required'],
+          //       containerClass: 'p-sm-6',
+          //       show: true,
+          //       tooltip: `Branch name to access Azure Repository data.<br />
+          //     <i>
+          //       Example: master<br />
+          //       Impacted : All Azure Repository based KPIs</i>`,
+          //     },
+          //   ],
+          // };
           this.formTemplate = {
             group: 'AzureRepository',
             elements: [
               {
-                type: 'text',
-                label: 'Full Git URL',
-                id: 'gitFullUrl',
+                type: 'basicDropdown',
+                label: 'Repositry',
+                id: 'Repositry',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+                tooltip: `Repositry to access AzureRepositry data.<br />
+               Eg:protocol//domain/<br/>AzureRepositry/scm/<br/>projectkey/reposlug
+               <i>
+                 Impacted : All AzureRepositry based KPIs</i>`,
+                options: 'branchAndRepoDropdown',
               },
               {
-                type: 'text',
-                label: 'API Version',
-                id: 'apiVersion',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `API version to be used for Azure pipeline API's.<br />
-              <i>
-                Example: 5.1 <br />
-                Impacted : All AzurePipeline based KPIs</i>`,
-              },
-              {
-                type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `Azure Repository Name.<br />
-              <i>
-                Impacted : All AzureRepository based KPIs</i>`,
-              },
-              {
-                type: 'text',
+                type: 'array',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Branch name to access Azure Repository data.<br />
+                tooltip: `Branch name to access AzureRepositry data.<br />
               <i>
-                Example: master<br />
-                Impacted : All Azure Repository based KPIs</i>`,
+                Impacted : All AzureRepositry based KPIs</i>`,
               },
             ],
           };
@@ -2127,36 +2242,28 @@ export class JiraConfigComponent implements OnInit {
             group: 'GitHub',
             elements: [
               {
-                type: 'text',
-                label: 'Full Git URL',
-                id: 'gitFullUrl',
+                type: 'basicDropdown',
+                label: 'Repositry',
+                id: 'Repositry',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+                tooltip: `Repositry to access GitHub data.<br />
+               Eg:protocol//domain/<br/>GitHub/scm/<br/>projectkey/reposlug
+               <i>
+                 Impacted : All GitHub based KPIs</i>`,
+                options: 'branchAndRepoDropdown',
               },
               {
-                type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
-                validators: ['required'],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `GitHub Repository Name.<br />
-                <i>
-                  Impacted : All GitHub Repository based KPIs</i>`,
-              },
-              {
-                type: 'text',
+                type: 'array',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Branch name to access GitHub Repository data.<br />
-                <i>
-                  Example: master<br />
-                  Impacted : All GitHub Repository based KPIs</i>`,
+                tooltip: `Branch name to access GitHub data.<br />
+              <i>
+                Impacted : All GitHub based KPIs</i>`,
               },
             ],
           };
@@ -2782,10 +2889,26 @@ export class JiraConfigComponent implements OnInit {
     return this.toolForm.controls;
   }
 
+  checkUrlparams() {
+    return (
+      this.urlParam !== 'Bitbucket' &&
+      this.urlParam !== 'GitLab' &&
+      this.urlParam !== 'GitHub' &&
+      this.urlParam !== 'AzureRepository'
+    );
+  }
+
   save() {
     this.submitted = true;
     // return if form is invalid
-    if (this.toolForm.invalid || !this.selectedConnection) {
+    console.log(this.toolForm, 'this.toolForm');
+    console.log(this.toolForm.invalid, 'this.toolForm.invalid');
+    console.log(this.selectedConnection, 'this.selectedConnection');
+    console.log(this.checkUrlparams());
+    if (
+      (this.toolForm.invalid && this.checkUrlparams()) ||
+      !this.selectedConnection
+    ) {
       this.messenger.add({
         severity: 'error',
         summary: 'Please fill all fields and select a connection.',
@@ -2848,6 +2971,12 @@ export class JiraConfigComponent implements OnInit {
       )?.name;
     }
 
+    if (!this.checkUrlparams()) {
+      // console.log(this.repositryValuesArray, 'this.repositryValuesArray');
+      // submitData['scmToolConfigList'] = this.repositryValuesArray;
+      delete submitData['Repositry'];
+    }
+
     submitData['toolName'] = this.urlParam;
     submitData['basicProjectConfigId'] = this.selectedProject.id;
     submitData['connectionId'] = this.selectedConnection.id;
@@ -2883,6 +3012,7 @@ export class JiraConfigComponent implements OnInit {
         }
         delete submitData['boards'];
       }
+      console.log(submitData, 'submitData');
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {
@@ -2903,7 +3033,12 @@ export class JiraConfigComponent implements OnInit {
               this.tool['projectKey'].enable();
             }
 
-            this.configuredTools.push(response['data']);
+            if (!this.checkUrlparams()) {
+              this.repositryValuesArray = [];
+              this.currentFormElement = {};
+            }
+
+            this.configuredTools.unshift(response['data']);
             this.configuredTools.forEach((tool) => {
               this.connections?.forEach((connection) => {
                 if (tool.connectionId === connection.id) {
@@ -3308,5 +3443,151 @@ export class JiraConfigComponent implements OnInit {
 
   isPanelOpen(index: number): boolean {
     return this.activeIndex === index;
+  }
+
+  //New changes for BitBucket,Gitlab,GitHub
+
+  repositryChange(event) {
+    if (typeof event.value === 'string') {
+      // Removed mock data creation. Match an existing repository by name if possible
+      const search = (event.value || '').toLowerCase();
+      const options = Array.isArray(this.branchAndRepoDropdown)
+        ? this.branchAndRepoDropdown
+        : [];
+      const matched = options.find(
+        (item) => (item?.repositoryName || '').toLowerCase() === search,
+      );
+      this.currentFormElement = matched || null;
+    } else {
+      this.currentFormElement = event.value;
+    }
+    const branches = Array.isArray(this.currentFormElement?.branchList)
+      ? this.currentFormElement.branchList
+      : [];
+    this.branchListItems = branches;
+    const values = branches.map((x) => x.name);
+    this.toolForm.get('branch')?.setValue(values);
+  }
+
+  addRepositry() {
+    this.repositryValuesArray.push(this.currentFormElement);
+    this.repositryValuesArray = this.repositryValuesArray.filter(
+      (repo, index, self) =>
+        index ===
+        self.findIndex((r) => r.repositoryName === repo.repositoryName),
+    );
+    this.toolForm.get('Repositry').reset();
+    this.toolForm.get('branch').reset();
+  }
+
+  onBranchSelectionChange(event) {
+    // console.log(event, 'event');
+  }
+
+  clearRepositories(index?) {
+    if (index) {
+      this.repositryValuesArray.splice(index, 1);
+    } else {
+      this.repositryValuesArray = [];
+    }
+  }
+
+  // Fetch SCM repositories and branches for selected connection
+  private loadScmRepos(connectionId: string) {
+    if (!connectionId) {
+      return;
+    }
+    this.branchAndRepoDropdown = [];
+    this.branchListItems = [];
+    this.repositryValuesArray = [];
+    this.toolForm?.get('Repositry')?.reset();
+    this.toolForm?.get('branch')?.reset();
+    this.showLoadingOnFormElement('Repositry');
+    this.http.getDiscoveredReposAndBranches(connectionId).subscribe(
+      (resp: any) => {
+        try {
+          let items: any[] = [];
+          if (Array.isArray(resp)) {
+            items = resp;
+          } else if (Array.isArray(resp?.data)) {
+            items = resp.data;
+          } else if (Array.isArray(resp?.repos)) {
+            items = resp.repos;
+          } else if (resp?.success === false) {
+            this.branchAndRepoDropdown = [];
+            this.messenger.add({
+              severity: 'error',
+              summary:
+                resp?.message ||
+                'No repositories available for this connection',
+            });
+            return;
+          } else {
+            this.branchAndRepoDropdown = [];
+            if (resp?.message) {
+              this.messenger.add({ severity: 'warn', summary: resp.message });
+            }
+            return;
+          }
+
+          // Normalize minimal fields used by the UI
+          this.branchAndRepoDropdown = (items || []).map((repo) => ({
+            url: repo.url || repo.repoUrl || '',
+            repositoryName:
+              repo.repositoryName || repo.name || repo.repoName || '',
+            lastUpdated: repo.lastUpdated,
+            branchList: (repo.branchList || repo.branches || []).map((b) => ({
+              name: (b && b.name) || (b && b.branch) || b,
+              latestCommitTimestamp: (b && b.latestCommitTimestamp) || null,
+            })),
+          }));
+        } catch (e) {
+          this.branchAndRepoDropdown = [];
+          this.messenger.add({
+            severity: 'error',
+            summary: 'Unable to parse repositories response',
+          });
+        } finally {
+          this.hideLoadingOnFormElement('Repositry');
+        }
+      },
+      (err) => {
+        this.hideLoadingOnFormElement('Repositry');
+        this.messenger.add({
+          severity: 'error',
+          summary: err?.error?.message || 'Failed to load repositories',
+        });
+      },
+    );
+  }
+
+  // Triggers server-side repository discovery for the selected connection
+  triggerScmScan() {
+    const connectionId = this.selectedConnection?.id;
+    if (!connectionId) {
+      this.messenger.add({
+        severity: 'error',
+        summary: 'Please select a connection first.',
+      });
+      return;
+    }
+    this.showLoadingOnFormElement('Repositry');
+    this.http.triggerScmDiscovery(connectionId).subscribe(
+      () => {
+        // After triggering discovery, refresh the repo list
+        this.loadScmRepos(connectionId);
+        this.messenger.add({
+          severity: 'success',
+          summary: 'Scan triggered. Repositories will refresh shortly.',
+        });
+      },
+      (err) => {
+        this.hideLoadingOnFormElement('Repositry');
+        this.messenger.add({
+          severity: 'error',
+          summary: err?.error?.message || 'Failed to trigger scan',
+        });
+      },
+    );
   }
 }
