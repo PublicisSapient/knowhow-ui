@@ -1,27 +1,17 @@
 <div class="recommendation-container">
-  <!-- Top 3 info boxes -->
+  <!-- Dynamic info boxes -->
   <div class="info-boxes">
-    <div class="info-box">
-      <div class="label">Projected Benefit</div>
-      <div class="value green">{{ benefit }}</div>
-    </div>
-
-    <div class="info-box">
-      <div class="label">Implementation</div>
-      <div class="value blue">{{ implementation }}</div>
-    </div>
-
-    <div class="info-box">
-      <div class="label">Time to Value</div>
-      <div class="value purple">{{ timeToValue }}</div>
+    <div class="info-box" *ngFor="let box of infoBoxes">
+      <div class="label">{{ box.label }}</div>
+      <div class="value" [ngClass]="box.color">{{ box.value }}</div>
     </div>
   </div>
 
   <!-- KPI Section -->
   <div class="kpi-section">
     <div class="kpi-title">
-      <span class="icon">🎯</span>
-      <span>Affected Key Performance Indicators</span>
+      <span class="icon">{{ kpiSectionIcon }}</span>
+      <span>{{ kpiSectionTitle }}</span>
     </div>
 
     <div class="kpi-tags">
@@ -29,30 +19,25 @@
     </div>
   </div>
 
-  <!-- New Section: AI Rationale -->
-<div class="ai-rationale-section" *ngIf="false">
-  <h3 class="section-title">AI Rationale</h3>
-  <p class="section-description">
-    Historical data shows teams with regular refinement sessions achieve
-    <strong>85%+</strong> commitment reliability consistently.
-  </p>
-</div>
+  <!-- AI Rationale Section -->
+  <div class="ai-rationale-section" *ngIf="showAiRationale">
+    <h3 class="section-title">{{ aiRationaleTitle }}</h3>
+    <p class="section-description" [innerHTML]="aiRationaleDescription"></p>
+  </div>
 
-<!-- New Section: Supporting Data Trends -->
-<div class="supporting-data-section" *ngIf="false">
-  <h3 class="section-title">Supporting Data Trends</h3>
-  <ul class="data-list">
-    <li>Current sprint commitment variance: ±18%</li>
-    <li>Teams with refinement sessions show 47% less variance</li>
-    <li>Story point accuracy improves by 23% after 3 sprints</li>
-  </ul>
-</div>
+  <!-- Supporting Data Trends Section -->
+  <div class="supporting-data-section" *ngIf="showSupportingData">
+    <h3 class="section-title">{{ supportingDataTitle }}</h3>
+    <ul class="data-list">
+      <li *ngFor="let dataItem of supportingDataList">{{ dataItem }}</li>
+    </ul>
+  </div>
 
   <!-- Recommended Action Plan -->
   <div class="action-plan">
     <div class="plan-title">
-      <span class="icon">💡</span>
-      <span>Recommended Action Plan</span>
+      <span class="icon">{{ actionPlanIcon }}</span>
+      <span>{{ actionPlanTitle }}</span>
     </div>
 
     <div class="plan-steps">

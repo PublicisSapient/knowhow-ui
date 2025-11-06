@@ -18,6 +18,8 @@ import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-
 })
 export class NbaComponent {
   displayModal = false;
+  selectedRecommendation: any = {};
+
   recommendations = [
     {
       priority: 'High',
@@ -42,7 +44,46 @@ export class NbaComponent {
     },
   ];
 
-  openProjectDetailsPopup() {
+  // Sample recommendation details data
+  recommendationDetails = {
+    infoBoxes: [
+      { label: 'Projected Benefit', value: '$24,156', color: 'green' },
+      { label: 'Implementation', value: 'Medium', color: 'blue' },
+      { label: 'Time to Value', value: '3–4 months', color: 'purple' },
+    ],
+    kpis: ['Development Speed', 'Code Quality', 'Bug Reduction'],
+    actionPlan: [
+      {
+        step: 1,
+        title: 'Assess Current State',
+        description: 'Evaluate existing technical debt and team readiness',
+      },
+      {
+        step: 2,
+        title: 'Pilot Implementation',
+        description: 'Start with a small team to validate approach and ROI',
+      },
+      {
+        step: 3,
+        title: 'Scale Across Organization',
+        description: 'Roll out successful practices to all relevant teams',
+      },
+    ],
+    showAiRationale: true,
+    aiRationaleDescription:
+      'Historical data shows teams with regular refinement sessions achieve <strong>85%+</strong> commitment reliability consistently.',
+    showSupportingData: true,
+    supportingDataList: [
+      'Current sprint commitment variance: ±18%',
+      'Teams with refinement sessions show 47% less variance',
+      'Story point accuracy improves by 23% after 3 sprints',
+    ],
+  };
+
+  openProjectDetailsPopup(item) {
+    this.selectedRecommendation = this.recommendationDetails;
+    this.selectedRecommendation.title = item.title;
+    this.selectedRecommendation.nodeName = item.category;
     this.displayModal = true;
   }
 }
