@@ -7,7 +7,7 @@ describe('HomeRecommCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HomeRecommCardComponent],
+      imports: [HomeRecommCardComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeRecommCardComponent);
