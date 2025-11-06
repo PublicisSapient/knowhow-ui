@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { HomeRecommCardComponent } from 'src/app/component/home-recomm-card/home-recomm-card.component';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
@@ -16,60 +16,51 @@ import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-
     DialogModule,
   ],
 })
-export class NbaComponent implements OnInit {
+export class NbaComponent implements OnChanges {
   displayModal = false;
   selectedRecommendation: any = {};
-  recommendations: any = [];
+  recommendations: any[] = [];
 
-  @Input() rawData: Array<any> = [];
-
-  constructor() {}
-
-  ngOnInit(): void {}
+  @Input() rawData: any[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.prepareRecommCards();
+    if (changes['rawData']) {
+      this.prepareRecommCards();
+    }
   }
 
-  openProjectDetailsPopup(item, i) {
-    this.prepareTopBoxData(item);
-    this.selectedRecommendation.kpis = item.rawData.keyPerformanceIndicator;
-    this.selectedRecommendation.kpiSectionTitle =
-      'Affected Key Performance Indicators';
-    this.selectedRecommendation.actionPlanTitle = 'Recommended Action Plan';
-    this.selectedRecommendation.actionPlan =
-      item.rawData.recommendedActionPlan.actionPlan;
-    this.selectedRecommendation.title = item.title;
-    this.selectedRecommendation.nodeName = item.category;
+  openProjectDetailsPopup(item: any): void {
+    this.selectedRecommendation = {
+      infoBoxes: [
+        {
+          label: 'Projected Benefit',
+          value: item.rawData.saving,
+          color: 'green',
+        },
+        {
+          label: 'Implementation',
+          value: item.rawData.recommendationType,
+          color: 'blue',
+        },
+        {
+          label: 'Time to Value',
+          value: item.rawData.timeToVale,
+          color: 'purple',
+        },
+      ],
+      kpis: item.rawData.keyPerformanceIndicator,
+      kpiSectionTitle: 'Affected Key Performance Indicators',
+      actionPlanTitle: 'Recommended Action Plan',
+      actionPlan: item.rawData.recommendedActionPlan.actionPlan,
+      title: item.title,
+      nodeName: item.category,
+    };
     this.displayModal = true;
   }
 
-  prepareTopBoxData(item) {
-    this.selectedRecommendation.infoBoxes = [];
-    this.selectedRecommendation.infoBoxes.push({
-      label: 'Projected Benefit',
-      value: item.rawData.saving,
-      color: 'green',
-    });
-    this.selectedRecommendation.infoBoxes.push({
-      label: 'Implementation',
-      value: item.rawData.recommendationType,
-      color: 'blue',
-    });
-    this.selectedRecommendation.infoBoxes.push({
-      label: 'Time to Value',
-      value: item.rawData.timeToVale,
-      color: 'purple',
-    });
-  }
-
-  prepareRecommCards() {
-    if (!this.rawData || this.rawData.length == 0) {
-      this.recommendations = [];
-    }
-
-    this.rawData.forEach((data) => {
-      const tempObj = {
+  private prepareRecommCards(): void {
+    this.recommendations =
+      this.rawData?.map((data) => ({
         priority: data.recommendations.recommendationType,
         title: data.recommendations.observation,
         description: data.recommendations.recommendationDetails,
@@ -77,8 +68,6 @@ export class NbaComponent implements OnInit {
         id: data.nodeId,
         potentialSavings: data.recommendations.saving,
         rawData: data.recommendations,
-      };
-      this.recommendations.push(tempObj);
-    });
+      })) || [];
   }
 }

@@ -1,6 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
+interface InfoBox {
+  label: string;
+  value: string;
+  color: string;
+}
+
+interface ActionPlanStep {
+  step: number;
+  title: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-recomm-details',
   standalone: true,
@@ -9,33 +21,31 @@ import { Component, Input } from '@angular/core';
   imports: [CommonModule],
 })
 export class RecommDetailsComponent {
-  @Input() infoBoxes: { label: string; value: string; color: string }[] = [];
+  @Input() infoBoxes: InfoBox[] = [];
   @Input() kpis: string[] = [];
-  @Input() actionPlan: { step: number; title: string; description: string }[] =
-    [];
+  @Input() actionPlan: ActionPlanStep[] = [];
 
-  @Input() showAiRationale: boolean = false;
-  @Input() aiRationaleTitle: string = '';
-  @Input() aiRationaleDescription: string = '';
+  @Input() showAiRationale = false;
+  @Input() aiRationaleTitle = 'AI Rationale';
+  @Input() aiRationaleDescription = '';
 
-  @Input() showSupportingData: boolean = false;
-  @Input() supportingDataTitle: string = '';
+  @Input() showSupportingData = false;
+  @Input() supportingDataTitle = 'Supporting Data Trends';
   @Input() supportingDataList: string[] = [];
 
-  @Input() kpiSectionTitle: string = '';
-  @Input() kpiSectionIcon: string = '🎯';
+  @Input() kpiSectionTitle = 'Affected Key Performance Indicators';
+  @Input() kpiSectionIcon = '🎯';
 
-  @Input() actionPlanTitle: string = '';
-  @Input() actionPlanIcon: string = '💡';
+  @Input() actionPlanTitle = 'Recommended Action Plan';
+  @Input() actionPlanIcon = '💡';
 
-  // Backward compatibility
   @Input() set benefit(value: string) {
-    if (this.infoBoxes[0]) this.infoBoxes[0].value = value;
+    this.infoBoxes[0] && (this.infoBoxes[0].value = value);
   }
   @Input() set implementation(value: string) {
-    if (this.infoBoxes[1]) this.infoBoxes[1].value = value;
+    this.infoBoxes[1] && (this.infoBoxes[1].value = value);
   }
   @Input() set timeToValue(value: string) {
-    if (this.infoBoxes[2]) this.infoBoxes[2].value = value;
+    this.infoBoxes[2] && (this.infoBoxes[2].value = value);
   }
 }
