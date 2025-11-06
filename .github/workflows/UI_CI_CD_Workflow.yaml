@@ -102,15 +102,7 @@ jobs:
           npm install -g @angular/cli@17.3.12
 
           ENV_CONFIG="${{ github.event.inputs.env }}"
-
-          BUILD_CONFIG="$ENV_CONFIG"
-          if [[ "$ENV_CONFIG" == "dev1" ]]; then
-              BUILD_CONFIG="dev"
-              echo "INFO: Mapped $ENV_CONFIG to $BUILD_CONFIG for Angular build configuration."
-          fi
-
-          # Rulează scriptul NPM folosind configurația mapată (ex: build:dev)
-          npm run "build:$BUILD_CONFIG"
+          npm run "build:$ENV_CONFIG"
 
           mkdir -p build
           cp -r dist/dashboard/* build/
