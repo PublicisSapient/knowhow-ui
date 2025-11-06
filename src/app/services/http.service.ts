@@ -206,6 +206,7 @@ export class HttpService {
     this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
+  private homeNBAURL = this.baseUrl;
 
   constructor(
     private router: Router,
@@ -1315,137 +1316,10 @@ export class HttpService {
       `${this.executivePageURL}?iskanban=${selectedType}`,
       payload,
     );
-
-    const mockData = {
-      matrix: {
-        rows: [
-          {
-            id: 'fe675efa-a0c3-42ac-a328-69bf5f31e757',
-            name: 'DTS',
-            completion: '55%',
-            health: 'Moderate',
-            boardMaturity: {
-              dora: 'M3',
-              value: 'M1',
-              speed: 'M3',
-              quality: 'M4',
-            },
-          },
-        ],
-        columns: [
-          {
-            field: 'id',
-            header: 'Project ID',
-          },
-          {
-            field: 'name',
-            header: 'Engagement Name',
-          },
-          {
-            field: 'completion',
-            header: 'Efficiency(%)',
-          },
-          {
-            field: 'health',
-            header: 'Overall Health',
-          },
-          {
-            field: 'dora',
-            header: 'DORA',
-          },
-          {
-            field: 'quality',
-            header: 'Quality',
-          },
-          {
-            field: 'speed',
-            header: 'Speed',
-          },
-          {
-            field: 'value',
-            header: 'Value',
-          },
-        ],
-      },
-    };
-
-    // return of(mockData);
   }
 
   getProductivityGain(payload) {
-    // return this.http.post<any>(this.pebCalculateUrl, payload);
-    const mockData = {
-      categorizedProductivityGain: {
-        overall: -12,
-        speed: -64.25,
-        quality: 21.89,
-        efficiency: 0,
-        productivity: 4.75,
-      },
-      kpiTrends: {
-        positive: [
-          {
-            trendValue: 51.85,
-            kpiName: 'PR Success Rate',
-            kpiCategory: 'productivity',
-          },
-          {
-            trendValue: 83.33,
-            kpiName: 'Code Build Time',
-            kpiCategory: 'speed',
-          },
-          {
-            trendValue: 83.33,
-            kpiName: 'Defect Seepage Rate',
-            kpiCategory: 'quality',
-          },
-        ],
-        negative: [
-          {
-            trendValue: -1.05,
-            kpiName: 'Commitment Reliability',
-            kpiCategory: 'productivity',
-          },
-          {
-            trendValue: -12.76,
-            kpiName: 'Check-Ins & Merge Requests (Developer) ',
-            kpiCategory: 'productivity',
-          },
-          {
-            trendValue: -4.25,
-            kpiName: 'Revert Rate',
-            kpiCategory: 'productivity',
-          },
-          {
-            trendValue: -84.64,
-            kpiName: 'Pickup Time (Developer) ',
-            kpiCategory: 'speed',
-          },
-          {
-            trendValue: -7.69,
-            kpiName: 'Sprint Velocity',
-            kpiCategory: 'speed',
-          },
-          {
-            trendValue: -46.6,
-            kpiName: 'Scope Churn',
-            kpiCategory: 'speed',
-          },
-          {
-            trendValue: -322.22,
-            kpiName: 'Mean Time To Merge (Developer) ',
-            kpiCategory: 'speed',
-          },
-          {
-            trendValue: -39.56,
-            kpiName: 'Defect Density',
-            kpiCategory: 'quality',
-          },
-        ],
-      },
-    };
-
-    return of(mockData);
+    return this.http.post<any>(this.pebCalculateUrl, payload);
   }
 
   getAnalyticsMetricsTableData(payLoad) {
@@ -1454,5 +1328,8 @@ export class HttpService {
 
   getAIAnalyticsData(payLoad) {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
+  }
+  getHomeNBAData(payload) {
+    return this.http.post<any>(this.homeNBAURL, payload);
   }
 }

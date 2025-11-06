@@ -22,13 +22,13 @@
     </app-home-recomm-card>  -->
 
     <app-home-recomm-card
-      *ngFor="let item of recommendations"
+      *ngFor="let item of recommendations;let i = index"
       [priority]="item.priority"
       [title]="item.title"
       [description]="item.description"
       [category]="item.category"
       [savings]="item.potentialSavings"
-         (handleProjectClick)="openProjectDetailsPopup(item)"
+         (handleProjectClick)="openProjectDetailsPopup(item,i)"
     ></app-home-recomm-card>
 
     </div>
@@ -54,10 +54,8 @@
       [infoBoxes]="selectedRecommendation.infoBoxes"
       [kpis]="selectedRecommendation.kpis" 
       [actionPlan]="selectedRecommendation.actionPlan"
-      [showAiRationale]="selectedRecommendation.showAiRationale"
-      [aiRationaleDescription]="selectedRecommendation.aiRationaleDescription"
-      [showSupportingData]="selectedRecommendation.showSupportingData"
-      [supportingDataList]="selectedRecommendation.supportingDataList">
+      [kpiSectionTitle]="selectedRecommendation.kpiSectionTitle"
+      [actionPlanTitle] = "selectedRecommendation.actionPlanTitle">
     </app-recomm-details>
   </div>
 </p-dialog>

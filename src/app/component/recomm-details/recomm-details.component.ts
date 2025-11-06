@@ -9,28 +9,23 @@ import { Component, Input } from '@angular/core';
   imports: [CommonModule],
 })
 export class RecommDetailsComponent {
-  @Input() infoBoxes: { label: string; value: string; color: string }[] = [
-    { label: 'Projected Benefit', value: '', color: 'green' },
-    { label: 'Implementation', value: '', color: 'blue' },
-    { label: 'Time to Value', value: '', color: 'purple' },
-  ];
+  @Input() infoBoxes: { label: string; value: string; color: string }[] = [];
   @Input() kpis: string[] = [];
   @Input() actionPlan: { step: number; title: string; description: string }[] =
     [];
 
-  // New configurable properties
   @Input() showAiRationale: boolean = false;
-  @Input() aiRationaleTitle: string = 'AI Rationale';
+  @Input() aiRationaleTitle: string = '';
   @Input() aiRationaleDescription: string = '';
 
   @Input() showSupportingData: boolean = false;
-  @Input() supportingDataTitle: string = 'Supporting Data Trends';
+  @Input() supportingDataTitle: string = '';
   @Input() supportingDataList: string[] = [];
 
-  @Input() kpiSectionTitle: string = 'Affected Key Performance Indicators';
+  @Input() kpiSectionTitle: string = '';
   @Input() kpiSectionIcon: string = '🎯';
 
-  @Input() actionPlanTitle: string = 'Recommended Action Plan';
+  @Input() actionPlanTitle: string = '';
   @Input() actionPlanIcon: string = '💡';
 
   // Backward compatibility

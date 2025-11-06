@@ -320,10 +320,10 @@
   </div>
 </div>
 
-<div class="p-col-3">
+<div class="p-col-3" *ngIf="nbaRawData.length">
   <!-- <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator> -->
 
- <app-nba></app-nba>
+ <app-nba [rawData]="nbaRawData"></app-nba>
 
 </div>
 
