@@ -37,7 +37,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div class="p-col-9">
+  <div [ngClass]="nbaRawData.length ? 'p-col-9' : 'p-col-12'">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
