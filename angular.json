@@ -57,6 +57,22 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
+            "stage": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
             "qa": {
               "fileReplacements": [
                 {
@@ -64,7 +80,7 @@
                   "with": "src/environments/environment.qa.ts"
                 }
               ],
-              "optimization": false,
+              "optimization": true,
               "outputHashing": "all",
               "sourceMap": true,
               "namedChunks": true,
@@ -80,7 +96,7 @@
                   "with": "src/environments/environment.supervisor.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
