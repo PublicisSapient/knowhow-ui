@@ -92,7 +92,7 @@
 }
 
 :host ::ng-deep.p-dialog-header-icons {
-  top: 4px;
+  top: 16px;
   right: 10px;
   border: none;
   padding: 5px;

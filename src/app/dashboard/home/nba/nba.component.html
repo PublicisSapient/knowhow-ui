@@ -13,14 +13,6 @@
     </p>
 
     <div class="nba-cards">
-    <!-- <app-home-recomm-card
-      priority="Low"
-      category="Enterprise"
-      title="Standardize Code Review"
-      description="Reduce rework by 40%"
-      savings="$20,130">
-    </app-home-recomm-card>  -->
-
     <app-home-recomm-card
       *ngFor="let item of recommendations;let i = index"
       [priority]="item.priority"
@@ -37,7 +29,7 @@
 </div>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true" (onHide)="displayModal=false" role="dialog"
-  #templateOfReference tabindex="0" aria-labelledby="dialogHeader">
+  #templateOfReference tabindex="0" aria-labelledby="dialogHeader" [style]="{'min-width': '35vw'}">
   <p-header id="dialogHeader">
     <div>
       <div>
@@ -49,7 +41,7 @@
     </div>
   </p-header>
 
-  <div class="dialog-body p-mb-4" style="max-width: 35vw;">
+  <div class="dialog-body p-mb-4">
     <app-recomm-details 
       [infoBoxes]="selectedRecommendation.infoBoxes"
       [kpis]="selectedRecommendation.kpis" 

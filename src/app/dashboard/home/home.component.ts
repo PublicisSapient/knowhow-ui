@@ -194,7 +194,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
-          this.getNBAData();
+          // this.getNBAData(); // temporary commented
         }),
     );
 
