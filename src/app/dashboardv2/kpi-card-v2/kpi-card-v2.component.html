@@ -71,7 +71,7 @@
             (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
             aria-label="Show KPI Information" (focus)="showTooltip(true); showWarning(false)">
             <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
-            <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
+            <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="customTooltip || kpiData?.kpiDetail?.kpiInfo"
               (mouseleave)="showTooltip(false)" (blur)="showTooltip(false)" [showChartView]="showChartView"
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
           </span>

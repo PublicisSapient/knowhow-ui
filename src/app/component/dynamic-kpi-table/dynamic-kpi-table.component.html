@@ -185,7 +185,8 @@
                   [ngStyle]="{'min-width': '100px'}"
                   [ngClass]="{
           'p-text-bold': rowData.isTotalRow,
-          'total-column-bg': header.isTotalColumn
+          'total-column-bg': header.isTotalColumn,
+          'cursor-pointer': rowData?.hoverText?.length > 0
         }" (mouseenter)="mouseEnter($event, header, rowData)"
         (mouseleave)="mouseLeave()">
 
