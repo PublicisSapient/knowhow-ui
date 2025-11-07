@@ -101,7 +101,7 @@
   .plan-steps {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 
     .plan-step {
       display: flex;

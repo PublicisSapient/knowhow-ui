@@ -227,56 +227,71 @@
   </div>
 
   <!-- BOTTOM TREND SECTION -->
-  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
-    @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items ; let isFirst = $first) {
-    <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
-      <p class="form-title">{{ items.category }}</p>
-      @if(items.value.length){
-      <div class="data p-px-2">
-        @for (item of items.value; track item) {
-        <!-- Row with 3 columns -->
-        <div class="p-grid p-ai-center p-py-1">
-          <div class="p-col">
-            {{ item.property }}
+  <div class="kpi-details-table-container p-mt-3">
+    <div class="kpi-card-container">
+      <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+        <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
+          <div class="kpi-card-title-container">
+            <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Bottom Section</h3>
           </div>
-          <div class="p-col-fixed" style="width: 30px; text-align: center;">
-            <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
-          </div>
-          <div style="width: fit-content; text-align: right;">
-            {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
-          </div>
-
         </div>
-        }
       </div>
-      } @else if(isFirst && !loader && items.value.length === 0){
-        <h3>Data not found.</h3>
-      } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
-       <h3>Data not found.</h3>
-      } @else {
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      }
-    </div>
-    }
-    } @else {
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    }
 
+      <div class="kpi-card-body">
+        <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
+          @if(!BottomTilesLoader){
+          @for (items of bottomTilesData(); track items ; let isFirst = $first) {
+          <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
+            <p class="form-title">{{ items.category }}</p>
+            @if(items.value.length){
+            <div class="data p-px-2">
+              @for (item of items.value; track item) {
+              <!-- Row with 3 columns -->
+              <div class="p-grid p-ai-center p-py-1">
+                <div class="p-col">
+                  {{ item.property }}
+                </div>
+                <div class="p-col-fixed" style="width: 30px; text-align: center;">
+                  <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
+                </div>
+                <div style="width: fit-content; text-align: right;">
+                  {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
+                </div>
+      
+              </div>
+              }
+            </div>
+            } @else if(isFirst && !loader && items.value.length === 0){
+              <h3>Data not found.</h3>
+            } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
+             <h3>Data not found.</h3>
+            } @else {
+            <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+            <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+            <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+            }
+          </div>
+          }
+          } @else {
+          <div class="p-d-flex p-flex-column data-item p-col-2">
+            <p-skeleton width="100%" height="7rem" />
+          </div>
+          <div class="p-d-flex p-flex-column data-item p-col-2">
+            <p-skeleton width="100%" height="7rem" />
+          </div>
+          <div class="p-d-flex p-flex-column data-item p-col-2">
+            <p-skeleton width="100%" height="7rem" />
+          </div>
+          }
+      
+        </div>
+      </div>
+    </div>
   </div>
+  
 
   <!-- MATURITY WHEEL -->
-  <div class="kpi-details-table-container p-mt-3">
+  <div class="kpi-details-table-container p-mt-3" [hidden]="true">
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
         <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">

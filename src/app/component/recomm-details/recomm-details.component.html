@@ -3,7 +3,7 @@
   <div class="info-boxes">
     <div class="info-box" *ngFor="let box of infoBoxes">
       <div class="label">{{ box.label }}</div>
-      <div class="value" [ngClass]="box.color">{{ box.value }}</div>
+      <div class="value" [ngStyle]="{'color': box.color}" [ngClass]="box.color">{{ box.value }}</div>
     </div>
   </div>
 

@@ -27,7 +27,10 @@ export class HomeRecommCardComponent {
   private setPriorityStyles(): void {
     switch (this.priority) {
       case 'High':
-        this.priorityStyle = { borderLeft: '6px solid #E74C3C' };
+        this.priorityStyle = {
+          borderLeft: '6px solid #E74C3C',
+          backgroundColor: '#FDECEA',
+        };
         this.priorityLabelStyle = {
           backgroundColor: '#FDECEA',
           color: '#D93025',
@@ -35,19 +38,25 @@ export class HomeRecommCardComponent {
         break;
 
       case 'Medium':
-        this.priorityStyle = { borderLeft: '6px solid #F4B400' };
+        this.priorityStyle = {
+          borderLeft: '6px solid #EA793C',
+          backgroundColor: '#f3e3c9',
+        }; // orange border
         this.priorityLabelStyle = {
-          backgroundColor: '#FFF8E1',
-          color: '#F9A825',
+          backgroundColor: '#f3e3c9', // light orange background
+          color: '#E65100', // dark orange text (visible)
         };
         break;
 
       case 'Low':
       default:
-        this.priorityStyle = { borderLeft: '6px solid #81C784' };
+        this.priorityStyle = {
+          borderLeft: '6px solid #F4B400',
+          backgroundColor: '#FFF8E1',
+        };
         this.priorityLabelStyle = {
-          backgroundColor: '#E8F5E9',
-          color: '#388E3C',
+          backgroundColor: '#FFF8E1',
+          color: '#F9A825',
         };
         break;
     }

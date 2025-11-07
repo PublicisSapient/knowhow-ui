@@ -40,7 +40,7 @@ export class NbaComponent implements OnChanges {
         {
           label: 'Implementation',
           value: item.rawData.recommendationType,
-          color: 'blue',
+          color: this.getPriorityColor(item.rawData.recommendationType),
         },
         {
           label: 'Time to Value',
@@ -56,6 +56,18 @@ export class NbaComponent implements OnChanges {
       nodeName: item.category,
     };
     this.displayModal = true;
+  }
+
+  getPriorityColor(priority) {
+    switch (priority) {
+      case 'High':
+        return '#D93025';
+      case 'Medium':
+        return '#E65100';
+      case 'Low':
+      default:
+        return '#F9A825';
+    }
   }
 
   private prepareRecommCards(): void {
