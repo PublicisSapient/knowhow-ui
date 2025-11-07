@@ -102,10 +102,16 @@ jobs:
           npm install -g @angular/cli@17.3.12
 
           ENV_CONFIG="${{ github.event.inputs.env }}"
+          rm -rf dist/ build/
           npm run "build:$ENV_CONFIG"
 
           mkdir -p build
           cp -r dist/dashboard/* build/
+
+          echo "--- CONȚINUTUL build/ pentru $ENV_CONFIG ---"
+          ls -lR build/
+          echo "----------------------------------------"
+
           chmod -R 775 build
           cd build
           tar -czvf ui2.tar *
