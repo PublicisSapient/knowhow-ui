@@ -46,6 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   bottomTilesData = signal([]);
   BottomTilesLoader: boolean = false;
   calculatorDataLoader: boolean = true;
+  nbaRawData: Array<any> = [];
 
   constructor(
     private service: SharedService,
@@ -91,7 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.selectedType !== 'scrum',
               )
               .subscribe({
-                next: (executiveBoard) => {
+                next: (executiveBoard: any) => {
                   /** ---------- Handle executive summery API ---------- */
                   if (executiveBoard?.error) {
                     this.messageService.add({
@@ -193,6 +194,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
+          // this.getNBAData(); // temporary commented
         }),
     );
 
@@ -571,6 +573,33 @@ export class HomeComponent implements OnInit, OnDestroy {
       return data;
     });
     this.BottomTilesLoader = false;
+  }
+
+  getNBAData() {
+    this.httpService.getHomeNBAData({}).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.nbaRawData = res.data;
+        } else {
+          this.nbaRawData = [];
+          console.error('NBA data having some problem.');
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load NBA data. Please try again.',
+          });
+        }
+      },
+      error: (error) => {
+        this.nbaRawData = [];
+        console.error('Failed to load NBA data:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load NBA data. Please try again.',
+        });
+      },
+    });
   }
 
   ngOnDestroy() {

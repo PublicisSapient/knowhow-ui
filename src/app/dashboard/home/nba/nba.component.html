@@ -1,0 +1,53 @@
+<div class="kpi-card-container">
+  <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+    <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
+      <div class="kpi-card-title-container">
+        <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Next Best Actions</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-card-body">
+    <p class="nba-subtitle">
+      Top recommendations to improve efficiency and quality:
+    </p>
+
+    <div class="nba-cards">
+    <app-home-recomm-card
+      *ngFor="let item of recommendations;let i = index"
+      [priority]="item.priority"
+      [title]="item.title"
+      [description]="item.description"
+      [category]="item.category"
+      [savings]="item.potentialSavings"
+         (handleProjectClick)="openProjectDetailsPopup(item,i)"
+    ></app-home-recomm-card>
+
+    </div>
+
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true" (onHide)="displayModal=false" role="dialog"
+  #templateOfReference tabindex="0" aria-labelledby="dialogHeader" [style]="{'min-width': '35vw'}">
+  <p-header id="dialogHeader">
+    <div>
+      <div>
+        {{selectedRecommendation.title}}
+      </div>
+      <div class="export-button">
+        <span class="kpi-chip">{{selectedRecommendation.nodeName}}</span>
+      </div>
+    </div>
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <app-recomm-details 
+      [infoBoxes]="selectedRecommendation.infoBoxes"
+      [kpis]="selectedRecommendation.kpis" 
+      [actionPlan]="selectedRecommendation.actionPlan"
+      [kpiSectionTitle]="selectedRecommendation.kpiSectionTitle"
+      [actionPlanTitle] = "selectedRecommendation.actionPlanTitle">
+    </app-recomm-details>
+  </div>
+</p-dialog>

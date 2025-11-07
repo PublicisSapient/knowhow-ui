@@ -145,6 +145,9 @@ import { SharelinkService } from './services/share-link.service';
 import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
 import { HomeComponent } from './dashboard/home/home.component';
+import { HomeRecommCardComponent } from './component/home-recomm-card/home-recomm-card.component';
+import { NbaComponent } from './dashboard/home/nba/nba.component';
+import { RecommDetailsComponent } from './component/recomm-details/recomm-details.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -252,6 +255,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     FilterNewComponent,
     AdditionalFilterComponent,
     KpiCardV2Component,
+    HomeRecommCardComponent,
+    NbaComponent,
+    RecommDetailsComponent,
   ],
   providers: [
     ExcelService,
