@@ -28,35 +28,32 @@ export class HomeRecommCardComponent {
     switch (this.priority) {
       case 'High':
         this.priorityStyle = {
-          borderLeft: '6px solid #E74C3C',
-          backgroundColor: '#FDECEA',
+          borderLeft: '6px solid #f68605',
         };
         this.priorityLabelStyle = {
-          backgroundColor: '#FDECEA',
-          color: '#D93025',
+          backgroundColor: '#f68605',
+          color: '#fff',
         };
         break;
 
       case 'Medium':
         this.priorityStyle = {
-          borderLeft: '6px solid #EA793C',
-          backgroundColor: '#f3e3c9',
-        }; // orange border
+          borderLeft: '6px solid #fbcf5f',
+        };
         this.priorityLabelStyle = {
-          backgroundColor: '#f3e3c9', // light orange background
-          color: '#E65100', // dark orange text (visible)
+          backgroundColor: '#fbcf5f',
+          color: '#fff',
         };
         break;
 
       case 'Low':
       default:
         this.priorityStyle = {
-          borderLeft: '6px solid #F4B400',
-          backgroundColor: '#FFF8E1',
+          borderLeft: '6px solid #49535e',
         };
         this.priorityLabelStyle = {
-          backgroundColor: '#FFF8E1',
-          color: '#F9A825',
+          backgroundColor: '#49535e',
+          color: '#fff',
         };
         break;
     }

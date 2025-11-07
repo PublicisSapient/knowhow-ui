@@ -61,12 +61,12 @@ export class NbaComponent implements OnChanges {
   getPriorityColor(priority) {
     switch (priority) {
       case 'High':
-        return '#D93025';
+        return '#f68605';
       case 'Medium':
-        return '#E65100';
+        return '#fbcf5f';
       case 'Low':
       default:
-        return '#F9A825';
+        return '#49535e';
     }
   }
 
