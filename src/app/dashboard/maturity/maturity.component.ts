@@ -305,8 +305,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.jiraGroups = 0;
     this.showNoDataMsg = false;
     if (
-      this.service.getSelectedTab() === 'kpi-maturity' ||
-      this.service.getSelectedTab() === 'home'
+      this.service.getSelectedTab() === 'kpi-maturity'
+      // || this.service.getSelectedTab() === 'home'
     ) {
       this.masterData = $event?.masterData;
 
