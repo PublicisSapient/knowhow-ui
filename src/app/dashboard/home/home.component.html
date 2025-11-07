@@ -229,24 +229,27 @@
   <!-- BOTTOM TREND SECTION -->
   <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
     @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items ; let isFirst = $first) {
-    <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
-      <p class="form-title">{{ items.category }}</p>
+    @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
+    <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 p-p-3">
+      <p class="form-title p-mb-3">{{ items.category }}</p>
       @if(items.value.length){
-      <div class="data p-px-2">
+      <div class="data">
         @for (item of items.value; track item) {
-        <!-- Row with 3 columns -->
-        <div class="p-grid p-ai-center p-py-1">
-          <div class="p-col">
-            {{ item.property }}
+        <div class="progress-item p-mb-3">
+          <div class="p-d-flex p-jc-between p-ai-center p-mb-2">
+            <span class="progress-label">{{ item.property }}</span>
+            <span class="progress-value">{{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}</span>
           </div>
-          <div class="p-col-fixed" style="width: 30px; text-align: center;">
-            <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
+          <div class="progress-bar-container">
+            <div class="progress-bar" 
+                 [ngClass]="{
+                   'progress-yellow': index === 0,
+                   'progress-green': index === 1, 
+                   'progress-red': index === 2
+                 }"
+                 [style.width]="(item.value + '').replace('%', '') + '%'">
+            </div>
           </div>
-          <div style="width: fit-content; text-align: right;">
-            {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
-          </div>
-
         </div>
         }
       </div>
