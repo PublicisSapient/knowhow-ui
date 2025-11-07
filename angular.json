@@ -61,7 +61,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stage.ts"
+                  "with": "src/environments/environment.docker.ts"
                 }
               ],
               "optimization": true,
@@ -77,7 +77,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.qa.ts"
+                  "with": "src/environments/environment.docker.ts"
                 }
               ],
               "optimization": true,
@@ -125,7 +125,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
+                  "with": "src/environments/environment.docker.ts"
                 }
               ],
               "optimization": false,
@@ -141,7 +141,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev1.ts"
+                  "with": "src/environments/environment.docker.ts"
                 }
               ],
               "optimization": false,
