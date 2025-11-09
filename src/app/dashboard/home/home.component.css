@@ -397,15 +397,15 @@
 }
 
 .progress-yellow {
-  background-color: #fbbf24;
+  background-color: #FBCF5F
 }
 
 .progress-green {
-  background-color: #10b981;
+  background-color: #99cda9;
 }
 
 .progress-red {
-  background-color: #ef4444;
+  background-color: #ed8888;
 }
 :host .loader {
   position: absolute;
