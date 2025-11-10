@@ -1,0 +1,93 @@
+.ai-recommendation-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f0f8f0;
+  border: 1px solid #e0f0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 0;
+  min-height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ai-icon {
+  width: 20px;
+  height: 20px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  margin-right: 8px;
+  position: relative;
+}
+
+.ai-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.title {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 16px;
+}
+
+.target-section {
+  margin-bottom: 6px;
+}
+
+.next-sprint {
+  color: #2e7d32;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.target-value {
+  color: #2e7d32;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.improvement {
+  color: #4caf50;
+  font-weight: 500;
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+.action-section {
+  margin-top: 4px;
+}
+
+.action-link {
+  color: #4caf50;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.action-link:hover {
+  color: #2e7d32;
+}
+
+.chevron-icon {
+  margin-left: 16px;
+  cursor: pointer;
+}

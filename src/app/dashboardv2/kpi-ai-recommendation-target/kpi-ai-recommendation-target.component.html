@@ -1,0 +1,24 @@
+<div class="ai-recommendation-card">
+  <div class="card-content">
+    <div class="header-section">
+      <div class="ai-icon"></div>
+      <span class="title">AI Recommended Target</span>
+    </div>
+    
+    <div class="target-section">
+      <span class="next-sprint">Next Sprint: </span>
+      <span class="target-value">{{ targetValue }}</span>
+      <span class="improvement">({{ improvement }} {{ improvementLabel }})</span>
+    </div>
+    
+    <div class="action-section">
+      <span class="action-link" (click)="onViewPlanClick()">Click to view AI intervention plan</span>
+    </div>
+  </div>
+  
+  <div class="chevron-icon">
+    <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
+      <path d="M1 1L7 7L1 13" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</div>

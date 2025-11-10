@@ -258,6 +258,15 @@
         [colorObj]="trendBoxColorObj">
       </app-trend-indicator-v2>
     </div>
+    <div class="ai-recommendation-section"
+      [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
+      <app-kpi-ai-recommendation-target *ngIf="checkIfDataPresent(kpiDataStatusCode)"
+        [targetValue]="'85%'"
+        [improvement]="'+9.0%'"
+        [improvementLabel]="'improvement'"
+        (viewPlanClick)="onViewAiPlan()">
+      </app-kpi-ai-recommendation-target>
+    </div>
   </div>
 </ng-template>
 
@@ -442,4 +451,32 @@
         (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
     </div>
   </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="displayAiRecommModal" [modal]="true" [draggable]="true" [resizable]="true" 
+  (onHide)="displayAiRecommModal=false" role="dialog" tabindex="0" 
+  aria-labelledby="aiRecommDialogHeader" [style]="{'min-width': '35vw'}">
+  <p-header id="aiRecommDialogHeader">
+    <div>
+      <div>
+        AI Intervention Plan
+      </div>
+      <div class="export-button">
+        <span class="kpi-chip">{{kpiData.kpiDetail.kpiName}}</span>
+      </div>
+    </div>
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <app-recomm-details 
+      [infoBoxes]="aiRecommendationData.infoBoxes"
+      [kpis]="aiRecommendationData.kpis" 
+      [actionPlan]="aiRecommendationData.actionPlan"
+      [kpiSectionTitle]="aiRecommendationData.kpiSectionTitle"
+      [actionPlanTitle]="aiRecommendationData.actionPlanTitle"
+      [showAiRationale]="true"
+      [aiRationaleTitle]="'AI Analysis'"
+      [aiRationaleDescription]="aiRecommendationData.aiRationaleDescription">
+    </app-recomm-details>
+  </div>
 </p-dialog>
