@@ -66,7 +66,7 @@ export class AppInitializerService {
       },
     },
     {
-      path: 'peb',
+      path: 'potential-economic-benefits',
       component: PebCalculatorComponent,
       pathMatch: 'full',
       canActivate: [AccessGuard],

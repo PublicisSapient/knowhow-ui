@@ -206,9 +206,7 @@ export class HttpService {
     this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
-  private pebProductivityUrl = this.baseUrl + '/peb/productivity/{level}';
-  private pebProductivityDetailsUrl =
-    this.baseUrl + '/peb/productivity/{level}/details';
+  private pebProductivityUrl = this.baseUrl + '/peb/productivity';
   private homeNBAURL = this.baseUrl;
 
   constructor(
@@ -1335,13 +1333,13 @@ export class HttpService {
 
   getPebProductivityData(level) {
     return this.http.get<any>(
-      this.pebProductivityUrl.replace('{level}', level),
+      this.pebProductivityUrl.replace('{levelName}', level),
     );
   }
 
   getPebProductivityDetailsData(level) {
     return this.http.get<any>(
-      this.pebProductivityDetailsUrl.replace('{level}', level),
+      this.pebProductivityUrl.replace('{levelName}', level) + '/details',
     );
   }
   getHomeNBAData(payload) {
