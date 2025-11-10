@@ -45,6 +45,10 @@ export class DynamicKpiTableComponent {
 
   @Output() onProjectSettingsClick = new EventEmitter<string>();
   @Output() onSortGroupedData = new EventEmitter<string>();
+  showToolTip = false;
+  toolTipHtml = '';
+  left = '';
+  top = '';
 
   openProjectSettings(projectName: string): void {
     this.onProjectSettingsClick.emit(projectName);
@@ -155,5 +159,25 @@ export class DynamicKpiTableComponent {
       const sorted = this.tableData.slice().sort(compare);
       this.tableData = [...sorted];
     }
+  }
+
+  mouseEnter(event, field, data) {
+    if (field.cleanName === 'sprintName') {
+      if (data?.hoverText?.length > 0) {
+        this.toolTipHtml = '';
+        data.hoverText.forEach((item) => {
+          this.toolTipHtml += `<span>${item}</span><br/>`;
+        });
+        const rect = event.target.getBoundingClientRect();
+        this.top = rect.bottom + 5 + 'px';
+        this.left = rect.left + 'px';
+        this.showToolTip = true;
+      }
+    }
+  }
+
+  mouseLeave() {
+    this.showToolTip = false;
+    this.toolTipHtml = '';
   }
 }

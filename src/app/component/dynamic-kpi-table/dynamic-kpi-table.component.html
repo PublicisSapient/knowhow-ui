@@ -185,8 +185,10 @@
                   [ngStyle]="{'min-width': '100px'}"
                   [ngClass]="{
           'p-text-bold': rowData.isTotalRow,
-          'total-column-bg': header.isTotalColumn
-        }">
+          'total-column-bg': header.isTotalColumn,
+          'cursor-pointer': rowData?.hoverText?.length > 0
+        }" (mouseenter)="mouseEnter($event, header, rowData)"
+        (mouseleave)="mouseLeave()">
 
                 <!-- VALUE DISPLAY -->
                 <ng-container *ngIf="!header.isTotalColumn; else totalCell">
@@ -272,3 +274,12 @@
     </div>
   </div>
 </div>
+
+<div
+  class="tool-tip"
+  *ngIf="showToolTip"
+  innerHtml="{{ toolTipHtml }}"
+  [ngStyle]="{ left: left, top: top }"
+  [attr.aria-live]="'polite'"
+  role="tooltip"
+  [attr.aria-hidden]="!showToolTip"></div>

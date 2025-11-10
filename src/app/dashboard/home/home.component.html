@@ -37,7 +37,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div class="p-col-9">
+  <div [ngClass]="nbaRawData.length ? 'p-col-9' : 'p-col-12'">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -227,7 +227,7 @@
   </div>
 
   <!-- BOTTOM TREND SECTION -->
-  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
+  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
     @if(!BottomTilesLoader){
     @for (items of bottomTilesData(); track items ; let isFirst = $first) {
     <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
@@ -274,9 +274,10 @@
     }
 
   </div>
+  
 
   <!-- MATURITY WHEEL -->
-  <div class="kpi-details-table-container p-mt-3">
+  <div class="kpi-details-table-container p-mt-3" [hidden]="true">
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
         <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
@@ -320,8 +321,11 @@
   </div>
 </div>
 
-<div class="p-col-3">
-  <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
+<div class="p-col-3" *ngIf="nbaRawData.length">
+  <!-- <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator> -->
+
+ <app-nba [rawData]="nbaRawData"></app-nba>
+
 </div>
 
 </div>
