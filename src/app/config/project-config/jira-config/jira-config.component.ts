@@ -2812,6 +2812,7 @@ export class JiraConfigComponent implements OnInit {
       submitData['scmToolConfigList'] = this.repositryValuesArray;
       submitData['scmToolConfigList'].forEach((x) => {
         x.branch = JSON.parse(JSON.stringify(x.branchList));
+        x.branch = x.branch.map((branch) => branch.branchName).join(',');
         delete x.branchList;
       });
       delete submitData['Repositry'];
