@@ -205,6 +205,9 @@ export class HttpService {
   private analyticsMetricsTableDataURL = this.baseUrl + '/api/';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
+  private pebProductivityUrl = this.baseUrl + '/peb/productivity/{level}';
+  private pebProductivityDetailsUrl =
+    this.baseUrl + '/peb/productivity/{level}/details';
 
   constructor(
     private router: Router,
@@ -1326,5 +1329,17 @@ export class HttpService {
 
   getAIAnalyticsData(payLoad) {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
+  }
+
+  getPebProductivityData(level) {
+    return this.http.get<any>(
+      this.pebProductivityUrl.replace('{level}', level),
+    );
+  }
+
+  getPebProductivityDetailsData(level) {
+    return this.http.get<any>(
+      this.pebProductivityDetailsUrl.replace('{level}', level),
+    );
   }
 }

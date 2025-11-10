@@ -1,9 +1,7 @@
 .dashboard-container {
-  max-width: 900px;
   margin: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .peb-calculator-card {

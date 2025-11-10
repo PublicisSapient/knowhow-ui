@@ -65,6 +65,15 @@ export class PebCalculatorComponent implements OnInit {
   @Input() showLoader: boolean = false;
   isError: boolean = false;
   errorMessage: String = '';
+  items: any[] = [];
+  pebProductivityData: any = require('src/assets/data/peb-productivity.json')[
+    'data'
+  ];
+  pebProductivityDetailsData: any =
+    require('src/assets/data/peb-productivity-details.json')['data'];
+
+  performanceChartData: Array<object> = [];
+  costSavingsChartData: Array<object> = [];
 
   constructor(
     private fb: FormBuilder,
@@ -92,6 +101,8 @@ export class PebCalculatorComponent implements OnInit {
     this.pebForm.get('devCostControl')!.valueChanges.subscribe((v) => {
       this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
     });
+    this.getPebProjectStandings('team');
+    this.getPebProjectPerformanceData('team');
   }
 
   /**
@@ -224,5 +235,96 @@ export class PebCalculatorComponent implements OnInit {
         this.errorMessage = err['message'];
       },
     });
+  }
+
+  getPebProjectStandings(level) {
+    // this.httpService.getPebProductivityData(level).subscribe({
+    //   next: (response) => {
+    //     if (response['success']) {
+    //       // Handle successful response
+    this.items = [...this.pebProductivityData?.details];
+    //     } else {
+    //       // Handle error response
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('Failed to fetch project standings data', err.message);
+    //   },
+    // });
+  }
+
+  getPebProjectPerformanceData(level) {
+    this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
+      this.pebProductivityDetailsData?.categoryScores,
+    );
+    console.log('performanceChartData', this.performanceChartData);
+    this.costSavingsChartData = this.formatCategoryScoresForCumulativeChart(
+      this.pebProductivityDetailsData?.categoryScores,
+      true,
+    );
+    console.log('costSavingsChartData', this.costSavingsChartData);
+    // this.httpService.getPebProductivityDetailsData(level).subscribe({
+    //   next: (response) => {
+    //     if (response['success']) {
+    //       this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
+    //         response['data']['categoryScores'],
+    //       );
+    //     } else {
+    //       console.error(
+    //         'Server returned unsuccessful response:',
+    //         response['message'],
+    //       );
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('Failed to fetch project performance data', err.message);
+    //   },
+    // });
+  }
+  /**
+   * Formats raw KPI data into the structure required by Chart
+   */
+  formatCategoryScoresForCumulativeChart(
+    categoryScores: any[],
+    showOverall?: boolean,
+  ): any[] {
+    if (!categoryScores || categoryScores.length === 0) return [];
+
+    // Find all metric names except the date
+    var metrics = [];
+    if (showOverall) {
+      metrics.push('overall');
+    } else {
+      metrics = Object.keys(categoryScores[0]).filter(
+        (key) => key !== 'calculationDate' && key !== 'overall',
+      );
+    }
+    console.log(metrics);
+
+    // Build dataGroup for the chart
+    const dataGroup = categoryScores.map((entry) => {
+      const values = metrics.map((metric) => ({
+        kpiGroup: metric,
+        value: entry[metric],
+        hoverValue: {
+          Metric: metric,
+          Value: entry[metric],
+          Date: entry.calculationDate,
+        },
+      }));
+
+      return {
+        filter: entry.calculationDate, // X-axis value
+        value: values,
+      };
+    });
+
+    return [
+      {
+        dataGroup,
+        // If you want a dotted line, specify here — e.g. ['overall']
+        // additionalGroup: [],
+      },
+    ];
   }
 }
