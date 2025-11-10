@@ -75,10 +75,15 @@ describe('HomeComponent', () => {
     mockHttpService = jasmine.createSpyObj('HttpService', [
       'handleRestoreUrl',
       'getProductivityGain',
+      'getHomeNBAData',
     ]);
 
     mockHttpService.getProductivityGain.and.returnValue(
       of({ success: true, data: [] }),
+    );
+
+    mockHttpService.getHomeNBAData.and.returnValue(
+      of({ message: 'No data found', success: true, data: [] }),
     );
 
     mockLocation = jasmine.createSpyObj('Location', ['path']);
