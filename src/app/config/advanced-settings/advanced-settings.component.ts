@@ -34,10 +34,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class AdvancedSettingsComponent implements OnInit {
   items: MenuItem[];
   selectedView: string;
-  dataLoading: boolean = false;
-  showPreCalculatedDataForScrum: boolean = false;
-  showPreCalculatedDataForKanban: boolean = false;
-  showPrecalculatedConfigSection: boolean = false;
+  dataLoading = false;
+  showPreCalculatedDataForScrum = false;
+  showPreCalculatedDataForKanban = false;
+  showPrecalculatedConfigSection = false;
   processorData = {};
   userProjects = [];
   selectedProject = {};
