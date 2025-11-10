@@ -240,15 +240,17 @@ export class HomeComponent implements OnInit, OnDestroy {
           cssClassName: '',
           category: 'Positive Trends',
           value: [],
-          icon: 'pi-sort-up-fill',
-          color: 'green',
+          icon: true,
+          color: '#99cda9',
+          fontColor: 'black',
         };
         tempState[2] = {
           cssClassName: '',
           category: 'Negative Trends',
           value: [],
-          icon: 'pi-sort-down-fill',
-          color: 'red',
+          icon: true,
+          color: '#ed8888',
+          fontColor: 'black',
         };
         return tempState;
       });
