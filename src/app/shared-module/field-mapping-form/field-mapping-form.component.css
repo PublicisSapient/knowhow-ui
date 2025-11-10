@@ -161,7 +161,13 @@ label.btn-import-label {
 }
 
 ::ng-deep .mapping-selection-popup .p-dialog-content {
-  overflow-y: hidden;
+  overflow-y: visible !important;
+  overflow-x: visible !important;
+}
+
+::ng-deep .p-dropdown-panel {
+  width: 100%;
+  max-width: 450px !important;
 }
 
 :host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
@@ -200,6 +206,7 @@ label.btn-import-label {
   color: #fff;
   border-radius: 10px;
 }
+
 .dateAndName {
   font-size: small;
   color: #fff;
@@ -212,16 +219,15 @@ label.btn-import-label {
 .pt-3 {
   padding-top: 3px;
 }
+
 :host ::ng-deep .p-multiselect-header {
   display: flex;
-}
-:host ::ng-deep .p-dropdown-panel {
-  width: 100%;
 }
 
 .p-button:enabled:focus-visible {
   outline: 3px solid #0b4bc8;
 }
+
 :host::ng-deep.p-multiselect.p-multiselect-chip .p-multiselect-token {
   background-color: rgba(63, 81, 181, 0.12);
   color: #3f51b5;

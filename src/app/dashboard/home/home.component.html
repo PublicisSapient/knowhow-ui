@@ -1,14 +1,50 @@
 <p-toast [style]="{ marginTop: '80px' }" aria-live="polite" aria-atomic="true"></p-toast>
 
-<div class="p-col-12">
-  <!-- TOP TILES  -->
-  <div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
-    @if(!loader){
-    @for (item of aggregrationDataList; track item) {
-    <div class="p-d-flex data-item p-col-2 p-mt-3 p-mb-1 p-py-4 p-px-6">
-      <div class="icon-container">
-        <div class="icon" [ngClass]="item.cssClassName">
-          <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+<!-- TOP TILES  -->
+<div class="p-d-flex maturity-tablur-view p-flex-wrap p-jc-between">
+  @if(!loader){
+  @for (item of aggregrationDataList; track item) {
+  <div class="p-d-flex data-item p-col-2 p-mt-3 p-mb-1 p-py-4 p-px-6">
+    <div class="icon-container">
+      <div class="icon" [ngClass]="item.cssClassName">
+        <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+      </div>
+    </div>
+    <div class="data">
+      <p class="tabularKPI-column-header p-mb-0" tabindex="0">
+        {{ item.category }}
+      </p>
+      <div class="p-d-flex">
+        <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
+          {{ item.value }}
+          {{
+          item.average && item.average !== 'NA'
+          ? '(' + item.average + ')'
+          : ''
+          }}
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+  } @else {
+  @for (c of [1,2,3,4]; track c) {
+  <div class="p-d-flex p-flex-column data-item p-col-2">
+    <p-skeleton width="100%" height="7rem" />
+  </div>
+  }
+  }
+</div>
+
+<div class="kpi-details-table-container p-d-flex p-mx-2">
+  <div [ngClass]="nbaRawData.length ? 'p-col-9' : 'p-col-12'">
+    <!-- MATURITY TABLE -->
+    <div class="kpi-card-container">
+      <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
+        <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
+          <div class="kpi-card-title-container">
+            <h3 tabindex="0" [attr.aria-label]="'KPI Details'">KPI Details</h3>
+          </div>
         </div>
       </div>
       <div class="data">
@@ -225,7 +261,7 @@
 </div>
 
 <!-- BOTTOM TREND SECTION -->
-<div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
+<div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
   @if(!BottomTilesLoader){
   @for (items of bottomTilesData(); track items ; let isFirst = $first) {
   <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
@@ -246,35 +282,30 @@
         </div>
 
       </div>
-      }
+      <div class="p-col-fixed" style="width: 30px; text-align: center;">
+        <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
+      </div>
+      <div style="width: fit-content; text-align: right;">
+        {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
+      </div>
+
     </div>
-    } @else if(isFirst && !loader && items.value.length === 0){
-    <h3>Data not found.</h3>
-    } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
-    <h3>Data not found.</h3>
-    } @else {
-    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
-    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
-    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
     }
   </div>
-  }
+  } @else if(isFirst && !loader && items.value.length === 0){
+  <h3>Data not found.</h3>
+  } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
+  <h3>Data not found.</h3>
   } @else {
-  <div class="p-d-flex p-flex-column data-item p-col-2">
-    <p-skeleton width="100%" height="7rem" />
-  </div>
-  <div class="p-d-flex p-flex-column data-item p-col-2">
-    <p-skeleton width="100%" height="7rem" />
-  </div>
-  <div class="p-d-flex p-flex-column data-item p-col-2">
-    <p-skeleton width="100%" height="7rem" />
-  </div>
+  <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
+  <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
+  <div class="p-my-2"><p-skeleton width="100%" height="1.5rem" /></div>
   }
-
 </div>
 
+
 <!-- MATURITY WHEEL -->
-<div class="kpi-details-table-container p-mt-3">
+<div class="kpi-details-table-container p-mt-3" [hidden]="true">
   <div class="kpi-card-container">
     <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
       <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
@@ -299,6 +330,8 @@
                 </div>
               </ng-template>
             </p-dropdown>
+
+
 
             <label class="floating-label" for="singleselectFilter">
               Select

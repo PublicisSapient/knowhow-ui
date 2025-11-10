@@ -202,12 +202,14 @@ export class HttpService {
   private executivePageURL = this.baseUrl + '/api/executive';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
-  private analyticsMetricsTableDataURL = this.baseUrl + '/api/';
+  private analyticsMetricsTableDataURL =
+    this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
   private pebProductivityUrl = this.baseUrl + '/peb/productivity/{level}';
   private pebProductivityDetailsUrl =
     this.baseUrl + '/peb/productivity/{level}/details';
+  private homeNBAURL = this.baseUrl;
 
   constructor(
     private router: Router,
@@ -1341,5 +1343,8 @@ export class HttpService {
     return this.http.get<any>(
       this.pebProductivityDetailsUrl.replace('{level}', level),
     );
+  }
+  getHomeNBAData(payload) {
+    return this.http.post<any>(this.homeNBAURL, payload);
   }
 }
