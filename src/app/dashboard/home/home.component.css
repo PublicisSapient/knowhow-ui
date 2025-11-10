@@ -358,55 +358,82 @@
   font-weight: 600;
 }
 
-.bottom-panel-data-item {
+.trend-card {
   width: 33%;
   background-color: #fff;
-  border-radius: 10px;
-  border: 1px solid #d5dbe1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
 }
 
-.progress-item {
+.trend-card-header {
   margin-bottom: 1rem;
 }
 
-.progress-label {
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.95rem;
-}
-
-.progress-value {
+.trend-card-title {
+  font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
-  font-size: 1.1rem;
+  margin: 0;
 }
 
-.progress-bar-container {
-  width: 100%;
-  height: 8px;
-  background-color: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
+.trend-items-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.5rem;
 }
 
-.progress-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
+.trend-item {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  margin: 0 0.5rem;
 }
 
-.progress-yellow {
-  background-color: #fbcf5f;
+.trend-item:last-child {
+  border-bottom: none;
 }
 
-.progress-green {
-  background-color: #99cda9;
+.trend-icon-positive {
+  color: #10b981;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
-.progress-red {
-  background-color: #ed8888;
+.trend-icon-negative {
+  color: #ef4444;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
+
+.trend-icon-default {
+  color: #6b7280;
+  font-size: 1.25rem;
+}
+
+.trend-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trend-label {
+  color: #374151;
+}
+
+.trend-value-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  gap: 0.5rem;
+}
+
+.trend-value-container i {
+  font-size: 1.2rem;
+}
+
 :host .loader {
   position: absolute;
   width: 100%;

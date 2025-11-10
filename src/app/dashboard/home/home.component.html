@@ -230,24 +230,25 @@
   <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
     @if(!BottomTilesLoader){
     @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
-    <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 p-p-3">
-      <p class="form-title p-mb-3">{{ items.category }}</p>
+    <div class="trend-card p-col-4 p-p-3">
+      <div class="trend-card-header p-mb-3">
+        <h3 class="trend-card-title">{{ items.category }}</h3>
+      </div>
       @if(items.value.length){
-      <div class="data">
+      <div class="trend-items-container">
         @for (item of items.value; track item) {
-        <div class="progress-item p-mb-3">
-          <div class="p-d-flex p-jc-between p-ai-center p-mb-2">
-            <span class="progress-label">{{ item.property }}</span>
-            <span class="progress-value">{{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}</span>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" 
-                 [ngClass]="{
-                   'progress-yellow': index === 0,
-                   'progress-green': index === 1, 
-                   'progress-red': index === 2
-                 }"
-                 [style.width]="(item.value + '').replace('%', '') + '%'">
+        <div class="trend-item p-d-flex p-ai-center">
+          <div class="trend-content">
+            <span class="trend-label">{{ item.property }}</span>
+            <div class="trend-value-container" [style.background-color]="items.color">
+              @if(index !== 0) {
+              <i class="pi {{ item.value.toString().includes('-') ? 'pi-arrow-down' : 'pi-arrow-up' }}" [style.color]="items.fontColor"></i>
+              } @else if(items.icon) {
+              <i class="pi {{ items.icon }}" [style.color]="items.fontColor"></i>
+              }
+              <span class="trend-value" [style.color]="items.fontColor">
+                {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
+              </span>
             </div>
           </div>
         </div>
