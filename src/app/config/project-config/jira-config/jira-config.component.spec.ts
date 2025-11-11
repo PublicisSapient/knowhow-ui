@@ -77,17 +77,17 @@ describe('JiraConfigComponent', () => {
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' }),
   };
-  const fakeFetchBoards = require('../../../../test/resource/fakeFetchBoards.json');
-  const fakeSonarVersionsList = require('../../../../test/resource/fakeSonarVersionsList.json');
-  const fakeJiraConnections = require('../../../../test/resource/fakeJiraConnections.json');
-  const fakeBambooPlans = require('../../../../test/resource/fakeBambooPlans.json');
-  const fakeDeploymentProjects = require('../../../../test/resource/fakeDeploymentProjects.json');
-  const fakeJenkinsJobNames = require('../../../../test/resource/fakeJenkinsJobNames.json');
-  const fakeAzurePipelinesList = require('../../../../test/resource/fakeAzurePipelinesList.json');
-  const fakeProjectKeyList = require('../../../../test/resource/fakeProjectKeyList.json');
-  const fakeBranchesForProject = require('../../../../test/resource/fakeBranchesForProject.json');
-  const fakeConfiguredTools = require('../../../../test/resource/fakeConfiguredTools.json');
-  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
+  const fakeFetchBoards = require('src/test/resource/fakeFetchBoards.json');
+  const fakeSonarVersionsList = require('src/test/resource/fakeSonarVersionsList.json');
+  const fakeJiraConnections = require('src/test/resource/fakeJiraConnections.json');
+  const fakeBambooPlans = require('src/test/resource/fakeBambooPlans.json');
+  const fakeDeploymentProjects = require('src/test/resource/fakeDeploymentProjects.json');
+  const fakeJenkinsJobNames = require('src/test/resource/fakeJenkinsJobNames.json');
+  const fakeAzurePipelinesList = require('src/test/resource/fakeAzurePipelinesList.json');
+  const fakeProjectKeyList = require('src/test/resource/fakeProjectKeyList.json');
+  const fakeBranchesForProject = require('src/test/resource/fakeBranchesForProject.json');
+  const fakeConfiguredTools = require('src/test/resource/fakeConfiguredTools.json');
+  const fakeCompleteHiearchyData = require('src/test/resource/fakeCompleteHierarchyData.json');
   const fakeSelectedTool = [
     {
       id: '5fc086b9410df80001701334',
@@ -103,7 +103,7 @@ describe('JiraConfigComponent', () => {
       metadataTemplateID: '641d986af8d42d02b0c2558f',
     },
   ];
-  const fakeBranchListForProject = require('../../../../test/resource/fakeBranchListForProject.json');
+  const fakeBranchListForProject = require('src/test/resource/fakeBranchListForProject.json');
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',
