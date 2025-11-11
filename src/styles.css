@@ -2522,6 +2522,9 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .text-purple {
   color: #9810fa;
 }
+.text-orange {
+  color: #ff5c5d;
+}
 .text-xl {
   font-size: 1.25rem;
 }
