@@ -212,21 +212,25 @@ export class HomeComponent implements OnInit, OnDestroy {
           cssClassName: '',
           category: 'Top 4 Risks this Quarter',
           value: [],
-          icon: '',
+          icon: false,
+          color: '#fbcf5f',
+          fontColor: 'black',
         },
         {
           cssClassName: '',
           category: 'Positive Trends',
           value: [],
-          icon: 'pi-sort-up-fill',
-          color: 'green',
+          icon: true,
+          color: '#99cda9',
+          fontColor: 'black',
         },
         {
           cssClassName: '',
           category: 'Negative Trends',
           value: [],
-          icon: 'pi-sort-down-fill',
-          color: 'red',
+          icon: true,
+          color: '#ed8888',
+          fontColor: 'black',
         },
       ]);
     } else {
@@ -236,15 +240,17 @@ export class HomeComponent implements OnInit, OnDestroy {
           cssClassName: '',
           category: 'Positive Trends',
           value: [],
-          icon: 'pi-sort-up-fill',
-          color: 'green',
+          icon: true,
+          color: '#99cda9',
+          fontColor: 'black',
         };
         tempState[2] = {
           cssClassName: '',
           category: 'Negative Trends',
           value: [],
-          icon: 'pi-sort-down-fill',
-          color: 'red',
+          icon: true,
+          color: '#ed8888',
+          fontColor: 'black',
         };
         return tempState;
       });
@@ -339,7 +345,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       decendingData.length > 4 ? decendingData.slice(0, 4) : decendingData;
 
     return threshodData.map((node) => {
-      return { property: node.kpiName, value: node.trendValue };
+      return {
+        property: node.kpiName,
+        value: parseFloat(node.trendValue).toFixed(1),
+      };
     });
   }
 
