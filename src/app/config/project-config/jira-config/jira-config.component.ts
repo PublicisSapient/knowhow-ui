@@ -290,8 +290,9 @@ export class JiraConfigComponent implements OnInit {
   }
 
   addRepositoryIfNotExists(value: string) {
-    if (!value) return;
-
+    if (!value) {
+      return;
+    }
     const exists = this.branchListItems.some(
       (item) => item.branchName.toLowerCase() === value.toLowerCase(),
     );
@@ -317,8 +318,9 @@ export class JiraConfigComponent implements OnInit {
 
   get isBranchDisabled(): boolean {
     const repo = this.toolForm?.get('Repository')?.value;
-    console.log(repo, 'repo');
-    if (!repo) return true;
+    if (!repo) {
+      return true;
+    }
     return !(repo && repo.length > 0);
   }
 
@@ -3362,7 +3364,6 @@ export class JiraConfigComponent implements OnInit {
   //New changes for BitBucket,Gitlab,GitHub
 
   repositryChange(event) {
-    console.log(this.selectedConnection);
     if (typeof event.value === 'string') {
       const obj = {
         repositoryName: event.value,
