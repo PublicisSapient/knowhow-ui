@@ -2982,7 +2982,13 @@ export class JiraConfigComponent implements OnInit {
               this.currentFormElement = {};
             }
 
-            this.configuredTools.unshift(...response['data']);
+            // Ensure response data is treated as an array before using spread
+            const newItems = Array.isArray(response?.['data'])
+              ? response['data']
+              : response?.['data']
+              ? [response['data']]
+              : [];
+            this.configuredTools.unshift(...newItems);
             this.configuredTools.forEach((tool) => {
               this.connections?.forEach((connection) => {
                 if (tool.connectionId === connection.id) {
