@@ -148,6 +148,7 @@ import { HomeComponent } from './dashboard/home/home.component';
 import { HomeRecommCardComponent } from './component/home-recomm-card/home-recomm-card.component';
 import { NbaComponent } from './dashboard/home/nba/nba.component';
 import { RecommDetailsComponent } from './component/recomm-details/recomm-details.component';
+import { KpiAiRecommendationTargetComponent } from './dashboardv2/kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -258,6 +259,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     HomeRecommCardComponent,
     NbaComponent,
     RecommDetailsComponent,
+    KpiAiRecommendationTargetComponent,
   ],
   providers: [
     ExcelService,
