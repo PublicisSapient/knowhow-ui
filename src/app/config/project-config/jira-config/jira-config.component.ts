@@ -16,19 +16,12 @@
  *
  ******************************************************************************/
 
-import {
-  Component,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
   UntypedFormControl,
   Validators,
-  FormControl,
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -38,7 +31,6 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { KeyValue } from '@angular/common';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MultiSelect } from 'primeng/multiselect';
 declare const require: any;
 
 @Component({
@@ -3433,7 +3425,9 @@ export class JiraConfigComponent implements OnInit {
   }
 
   addRepositry() {
-    if (!this.currentFormElement?.repositoryName) return;
+    if (!this.currentFormElement?.repositoryName) {
+      return;
+    }
 
     const exists = this.repositryValuesArray.some((repo) => {
       if (
@@ -3450,7 +3444,9 @@ export class JiraConfigComponent implements OnInit {
           b.branchName.toLowerCase(),
         ) || [];
 
-      if (existingBranches.length !== currentBranches.length) return false;
+      if (existingBranches.length !== currentBranches.length) {
+        return false;
+      }
       return existingBranches.every((branch) =>
         currentBranches.includes(branch),
       );
