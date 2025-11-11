@@ -38,6 +38,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
 import { AI_USAGE_TOOLTIP_INFO } from '../analysis-module/analysis-constant';
+import { KpiAiRecommendationTargetComponent } from '../kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
+import { RecommDetailsComponent } from '../../component/recomm-details/recomm-details.component';
 
 interface SelectedTrend {
   nodeId: string;
@@ -64,6 +66,7 @@ interface SelectedTrend {
     MultiSelectModule,
     RadioButtonModule,
     SelectButtonModule,
+    KpiAiRecommendationTargetComponent,
   ],
 })
 export class KpiCardV2Component implements OnInit, OnChanges {

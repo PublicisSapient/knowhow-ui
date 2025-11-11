@@ -209,6 +209,7 @@ export class HttpService {
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
   private homeNBAURL = this.baseUrl;
+  private kpiAITargetRecommData = this.baseUrl;
 
   constructor(
     private router: Router,
@@ -1348,5 +1349,9 @@ export class HttpService {
   }
   getHomeNBAData(payload) {
     return this.http.post<any>(this.homeNBAURL, payload);
+  }
+
+  getkpiAITargetRecommData(payLoad) {
+    return this.http.post<any>(this.homeNBAURL, payLoad);
   }
 }
