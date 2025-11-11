@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-kpi-ai-recommendation-target',
@@ -55,8 +56,20 @@ export class KpiAiRecommendationTargetComponent {
   @Input() improvementLabel: string = 'improvement';
   @Output() viewPlanClick = new EventEmitter<void>();
 
+  constructor(private httpService: HttpService) {}
+
   onViewPlanClick(): void {
-    // this.viewPlanClick.emit();
     this.displayAiRecommModal = true;
+  }
+
+  fetchData() {
+    this.httpService.getkpiAITargetRecommData({}).subscribe({
+      next: (responce) => {
+        if (responce.success) {
+          this.aiRecommendationData = responce.data;
+        }
+      },
+      error(err) {},
+    });
   }
 }

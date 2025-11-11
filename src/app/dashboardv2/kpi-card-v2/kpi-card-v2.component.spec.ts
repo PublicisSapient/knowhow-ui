@@ -42,6 +42,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
+import { KpiAiRecommendationTargetComponent } from '../kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
 
 describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
@@ -86,6 +87,7 @@ describe('KpiCardV2Component', () => {
         RouterTestingModule,
         HttpClientTestingModule,
         BrowserAnimationsModule,
+        KpiAiRecommendationTargetComponent,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
@@ -2606,18 +2608,15 @@ describe('KpiCardV2Component', () => {
     });
   });
 
-  xdescribe('onTabChange', () => {
+  describe('onTabChange', () => {
     it('should focus on the new tab element', () => {
-      //  const focusSpy = spyOn(HTMLElement.prototype, 'focus');
       const mockElement = document.createElement('div');
-      mockElement.id = 'project_tab_1';
-
+      mockElement.id = 'project-tab-1';
       document.body.appendChild(mockElement);
-      const focusSpy = spyOn(mockElement, 'focus').and.callThrough();
+      const focusSpy = spyOn(mockElement, 'focus');
 
-      // document.body.appendChild(mockElement);
       component.onTabChange({ index: 1 });
-      fixture.detectChanges();
+
       expect(focusSpy).toHaveBeenCalled();
       document.body.removeChild(mockElement);
     });
