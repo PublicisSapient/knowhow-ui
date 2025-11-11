@@ -91,3 +91,31 @@
   margin-left: 16px;
   cursor: pointer;
 }
+
+.ai-recommendation-section {
+  padding: 0;
+  margin: 1rem;
+}
+
+.kpi-chip {
+  background: #444;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.export-button {
+  font-size: 0.75rem;
+  position: absolute;
+  right: 74px;
+  top: 25px;
+}
+
+:host ::ng-deep.p-dialog .p-dialog-header-icons {
+  padding: 3px;
+  position: absolute;
+  right: 21px;
+  top: 14px;
+}

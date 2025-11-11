@@ -22,3 +22,31 @@
     </svg>
   </div>
 </div>
+
+<p-dialog [(visible)]="displayAiRecommModal" [modal]="true" [draggable]="true" [resizable]="true" 
+  (onHide)="displayAiRecommModal=false" role="dialog" tabindex="0" 
+  [style]="{'min-width': '35vw'}">
+  <p-header>
+    <div>
+      <div>
+        AI Intervention Plan
+      </div>
+      <div class="export-button">
+        <span class="kpi-chip">{{kpiData.kpiDetail.kpiName}}</span>
+      </div>
+    </div>
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <app-recomm-details 
+      [infoBoxes]="aiRecommendationData.infoBoxes"
+      [kpis]="aiRecommendationData.kpis" 
+      [actionPlan]="aiRecommendationData.actionPlan"
+      [kpiSectionTitle]="aiRecommendationData.kpiSectionTitle"
+      [actionPlanTitle]="aiRecommendationData.actionPlanTitle"
+      [showAiRationale]="true"
+      [aiRationaleTitle]="'AI Analysis'"
+      [aiRationaleDescription]="aiRecommendationData.aiRationaleDescription">
+    </app-recomm-details>
+  </div>
+</p-dialog>
