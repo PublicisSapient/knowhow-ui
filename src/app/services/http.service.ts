@@ -1331,7 +1331,6 @@ export class HttpService {
   getAIAnalyticsData(payLoad) {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
   }
-  // Validates SCM connection bound to a project (expects basicProjectConfigId)
   fetchScmConnectionInfoByProject(
     basicProjectConfigId: string,
   ): Observable<any> {

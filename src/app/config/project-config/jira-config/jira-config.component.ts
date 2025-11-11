@@ -1900,7 +1900,7 @@ export class JiraConfigComponent implements OnInit {
             group: 'BitBucket',
             elements: [
               {
-                type: 'basicDropdown',
+                type: 'inputDropdown',
                 label: 'Repository',
                 id: 'Repository',
                 validators: ['required'],
@@ -1911,9 +1911,12 @@ export class JiraConfigComponent implements OnInit {
                <i>
                  Impacted : All BitBucket based KPIs</i>`,
                 options: 'branchAndRepoDropdown',
+                repositryChange: (event) => this.repositryChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
+                getTimeAgo: (event) => this.getTimeAgo(event),
               },
               {
-                type: 'array',
+                type: 'inputMultiselect',
                 label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
@@ -1922,6 +1925,10 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Branches name to access BitBucket data.<br />
               <i>
                 Impacted : All BitBucket based KPIs</i>`,
+                onFilter: (event) => this.onFilter(event),
+                branchSelectionChange: (event) =>
+                  this.onBranchSelectionChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
               },
             ],
           };
@@ -1958,7 +1965,7 @@ export class JiraConfigComponent implements OnInit {
             group: 'GitLab',
             elements: [
               {
-                type: 'basicDropdown',
+                type: 'inputDropdown',
                 label: 'Repository',
                 id: 'Repository',
                 validators: ['required'],
@@ -1969,9 +1976,12 @@ export class JiraConfigComponent implements OnInit {
                <i>
                  Impacted : All GitLab based KPIs</i>`,
                 options: 'branchAndRepoDropdown',
+                repositryChange: (event) => this.repositryChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
+                getTimeAgo: (event) => this.getTimeAgo(event),
               },
               {
-                type: 'array',
+                type: 'inputMultiselect',
                 label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
@@ -1980,6 +1990,10 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Branches name to access GitLab data.<br />
               <i>
                 Impacted : All GitLab based KPIs</i>`,
+                onFilter: (event) => this.onFilter(event),
+                branchSelectionChange: (event) =>
+                  this.onBranchSelectionChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
               },
             ],
           };
@@ -2098,7 +2112,7 @@ export class JiraConfigComponent implements OnInit {
             group: 'AzureRepository',
             elements: [
               {
-                type: 'basicDropdown',
+                type: 'inputDropdown',
                 label: 'Repository',
                 id: 'Repository',
                 validators: ['required'],
@@ -2109,9 +2123,12 @@ export class JiraConfigComponent implements OnInit {
                <i>
                  Impacted : All AzureRepositry based KPIs</i>`,
                 options: 'branchAndRepoDropdown',
+                repositryChange: (event) => this.repositryChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
+                getTimeAgo: (event) => this.getTimeAgo(event),
               },
               {
-                type: 'array',
+                type: 'inputMultiselect',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
@@ -2120,6 +2137,10 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Branch name to access AzureRepositry data.<br />
               <i>
                 Impacted : All AzureRepositry based KPIs</i>`,
+                onFilter: (event) => this.onFilter(event),
+                branchSelectionChange: (event) =>
+                  this.onBranchSelectionChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
               },
             ],
           };
@@ -2156,7 +2177,7 @@ export class JiraConfigComponent implements OnInit {
             group: 'GitHub',
             elements: [
               {
-                type: 'basicDropdown',
+                type: 'inputDropdown',
                 label: 'Repository',
                 id: 'Repository',
                 validators: ['required'],
@@ -2167,9 +2188,12 @@ export class JiraConfigComponent implements OnInit {
                <i>
                  Impacted : All GitHub based KPIs</i>`,
                 options: 'branchAndRepoDropdown',
+                repositryChange: (event) => this.repositryChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
+                getTimeAgo: (event) => this.getTimeAgo(event),
               },
               {
-                type: 'array',
+                type: 'inputMultiselect',
                 label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
@@ -2178,6 +2202,10 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Branches name to access GitHub data.<br />
               <i>
                 Impacted : All GitHub based KPIs</i>`,
+                onFilter: (event) => this.onFilter(event),
+                branchSelectionChange: (event) =>
+                  this.onBranchSelectionChange(event),
+                triggerScmScan: () => this.triggerScmScan(),
               },
             ],
           };
@@ -2954,7 +2982,7 @@ export class JiraConfigComponent implements OnInit {
               this.currentFormElement = {};
             }
 
-            this.configuredTools.unshift(response['data']);
+            this.configuredTools.unshift(...response['data']);
             this.configuredTools.forEach((tool) => {
               this.connections?.forEach((connection) => {
                 if (tool.connectionId === connection.id) {
