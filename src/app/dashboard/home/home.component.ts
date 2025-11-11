@@ -4,8 +4,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription, forkJoin } from 'rxjs';
-import { distinctUntilChanged, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
 
