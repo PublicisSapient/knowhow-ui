@@ -326,63 +326,97 @@
                           </ng-container>
                         </ng-container>
                         <ng-template #showNewCard>
-                           <ng-container *ngFor="let form_elem of formTemplate.elements">
-                            <div [ngClass]="form_elem.containerClass" *ngIf="form_elem.show">
-                                <div [ngSwitch]="form_elem.type">
+                            <section class=" step-2-top-section">
+                                <div class="p-d-flex">
+                                    <ng-container *ngFor="let form_elem of formTemplate.elements">
+                                     <div [ngClass]="form_elem.containerClass" *ngIf="form_elem.show">
+                                         <div [ngSwitch]="form_elem.type">
+         
+                                             <ng-container *ngSwitchCase="'array'" >
+                                                 <div class="p-fluid branch-container">
+                                                     <div>
+                                                         <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                                         <div class="p-d-flex">
 
-                                    <ng-container *ngSwitchCase="'array'" >
-                                        <div class="p-fluid branch-container">
-                                            <div>
-                                                <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                                <div class="p-d-flex">
-                                                    <p-multiSelect id="{{form_elem.id}}" [options]="branchListItems" class="flex-drop"
-                                                    formControlName="{{form_elem?.id}}" optionLabel="branchName" optionValue="branchName"
-                                                    display="chip" placeholder="Select branches" [showClear]="true" appendTo="body" (onChange)="onBranchSelectionChange($event)">
-                                                </p-multiSelect>
-                                                <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn" icon="pi pi-refresh" (click)="triggerScmScan()" aria-label="Scan or Refresh Repositories"></button>
-                                            </div>
-                                            </div>
-                                        </div>
+                                                             <p-multiSelect  id="{{form_elem.id}}" [options]="branchListItems" class="flex-drop" formControlName="{{form_elem?.id}}" #repoMultiSelect
+                                                            optionLabel="branchName" optionValue="branchName" 
+                                                             display="chip" placeholder="{{toolForm.get('Repository')?.value ? 'Select or enter branch' : 'Select a repository first'}}" [showClear]="true" filter="true"
+                                                              (onFilter)="onFilter($event)"
+                                                              (onChange)="onBranchSelectionChange($event)">
+                                                         </p-multiSelect>
+                                                            
+         
+                                                         <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn" icon="pi pi-refresh" (click)="triggerScmScan()" aria-label="Scan or Refresh Repositories"></button>
+                                                     </div>
+                                                     </div>
+                                                 </div>
+                                             </ng-container>
+                 
+                                            <ng-container *ngSwitchCase="'basicDropdown'"> <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                                <div class="p-d-flex p-ai-center">
+                                                    <p-dropdown [options]="branchAndRepoDropdown" optionLabel="repositoryName"
+                                                        placeholder="Select or enter a repository" class="flex-drop" id="repositoryName"
+                                                        formControlName="{{form_elem.id}}" editable="true" (onChange)="repositryChange($event)"
+                                                        [attr.aria-label]="form_elem.label" (onInput)="repositryChange($event)">
+                                                        <ng-template let-option pTemplate="item">
+                                                            <div class="dropdown-item">
+                                                                <div class="name">{{ option.repositoryName }}</div>
+                                                                <div class="timestamp">{{ getTimeAgo(option.lastUpdatedTimestamp) }}</div>
+                                                            </div>
+                                                        </ng-template>
+                                            
+                                                        <ng-template pTemplate="selectedItem" let-selected>
+                                                            <div *ngIf="selected" class="dropdown-item">
+                                                                <div class="name">{{ selected.repositoryName }}</div>
+                                                                <div class="timestamp">{{ getTimeAgo(selected.lastUpdatedTimestamp) }}</div>
+                                                            </div>
+                                                        </ng-template>
+                                                    </p-dropdown>
+                                                    <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn"
+                                                        icon="pi pi-refresh" (click)="triggerScmScan()" aria-label="Scan or Refresh Repositories"></button>
+                                                </div>
+                                            </ng-container>
+                                         
+                                         </div>
+                                     
+                                     </div>
                                     </ng-container>
-        
-                                    <ng-container *ngSwitchCase="'basicDropdown'" > <label for="{{form_elem.id}}">{{form_elem.label}}</label> <div class="p-d-flex p-ai-center"> <p-dropdown [options]="branchAndRepoDropdown" optionLabel="repositoryName" placeholder="Select Repository" class="flex-drop" id="repositoryName" formControlName="{{form_elem.id}}" editable="true" (onChange)="repositryChange($event)" [attr.aria-label]="form_elem.label" (onInput)="repositryChange($event)"></p-dropdown> <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn" icon="pi pi-refresh" (click)="triggerScmScan()" aria-label="Scan or Refresh Repositories"></button> </div> </ng-container>
-                                
                                 </div>
-                            
-                            </div>
-                           </ng-container>
-
-                           <ng-container>
-                            <div class="p-d-flex p-justify-between p-align-center p-w-100">
-                                <div>{{repositryValuesArray?.length ? repositryValuesArray?.length : ''}} {{repositryValuesArray?.length ? 'repositries' : ''}}</div>
-                                <div>
-                                    <button pButton pRipple type="button" class="p-button-md p-button-success" [disabled]="!toolForm.get('Repositry')?.value || !toolForm.get('branch')?.value" (click)="addRepositry()">Add Repository</button>
+    
+                               <ng-container>
+                                <div class="p-d-flex p-justify-between p-align-center p-w-100 p-mt-3 repository-length">
+                                    <div>{{repositryValuesArray?.length ? repositryValuesArray?.length : ''}} {{repositryValuesArray?.length ? repositryValuesArray?.length > 1 ? 'repositories added' :'repository added' : ''}}</div>
+                                    <div>
+                                  <button  pButton pRipple type="button" class="p-button p-button-success p-button-raised"
+                                icon="pi pi-plus" iconPos="left" label="Add Repository" [disabled]="!toolForm.get('Repository')?.value || !toolForm.get('branch')?.value" (click)="addRepositry()"
+                                aria-label="Add New Tool"></button>
+                                    </div>
                                 </div>
-                            </div>
-                           </ng-container>
+                               </ng-container>
+                            </section>
 
                         <ng-container>
                             <div class="container" *ngIf="repositryValuesArray?.length>0">
                                 <div class="header">
-                                    <h2>Repositories to Configure</h2>
+                                    <span class="p-d-flex repository-list">Repositories to Configure</span>
                                     <a class="clear-all" (click)="clearRepositories()">Clear All</a>
                                 </div>
-
-                                <div class="repo-card-list">
-                                    <div class="repo-card" *ngFor="let repo of repositryValuesArray;let i=index">
-                                        <div class="repo-header">
-                                            <!-- <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="repo"> -->
-                                            <div class="repo-name">{{repo.repositoryName}}</div>
-                                        </div>
-                                        <div class="repo-url">{{repo?.repositoryUrl}}</div>
-                                            <div class="branches" >
-                                                <div class="branch" *ngFor="let branch of repo.branchList;let subindex=index">{{branch?.branchName}}
-                                                    <!-- <div class="p-" (click)="clearRepositories(subindex)">×</div> -->
-                                                </div>
-                                            </div>
-                                            <div class="close-btn" (click)="clearRepositories(i)">×</div>
+                            <div class="repo-card-list">
+                                <div class="repo-card" *ngFor="let repo of repositryValuesArray;let i=index">
+                                    <div class="repo-header">
+                                        <!-- <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="repo"> -->
+                                        <div class="repo-name">{{repo.repositoryName}}</div>
                                     </div>
+                                    <div class="repo-url">{{repo?.repositoryUrl}}</div>
+                                    <div class="branches">
+                                        <div class="branch" *ngFor="let branch of repo.branchList;let subindex=index">{{branch?.branchName}}
+                                            <div (click)="clearSubRepositories(subindex,repo)"><i class="pi pi-times subBranch-close"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="close-btn" (click)="clearRepositories(i)"><i class="pi pi-times close-list"></i></div>
                                 </div>
+                            </div>
                         
 
                             </div>
@@ -445,7 +479,7 @@
                   </form>
                   <div class="save-container p-mt-5">
                       <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-                          iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || (toolForm.invalid && urlParam !== 'Bitbucket' && urlParam !== 'GitLab' && urlParam !== 'GitHub' && urlParam !== 'AzureRepository') || !selectedConnection" tabindex="0" aria-label="Save Configuration"></button>
+                          iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || (toolForm.invalid && urlParam !== 'Bitbucket' && urlParam !== 'GitLab' && urlParam !== 'GitHub' && urlParam !== 'AzureRepository') || !selectedConnection || ((urlParam === 'Bitbucket' || urlParam === 'GitLab' || urlParam === 'GitHub' || urlParam === 'AzureRepository') && repositryValuesArray.length===0)" tabindex="0" aria-label="Save Configuration"></button>
                       <button pButton pRipple type="button" class="p-d-none p-button-lg p-button-success p-button-raised"
                           icon="pi pi-plus-circle" iconPos="left" label="Reset" (click)="addNewTool()"
                           title="Click to add new tool config"

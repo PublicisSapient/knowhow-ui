@@ -16,7 +16,13 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -32,6 +38,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { KeyValue } from '@angular/common';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MultiSelect } from 'primeng/multiselect';
 declare const require: any;
 
 @Component({
@@ -127,7 +134,8 @@ export class JiraConfigComponent implements OnInit {
   currentFormElement: any;
   branchAndRepoDropdown: any = [];
   branchListItems: any = [];
-
+  filterText: any;
+  selected = [1];
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -248,6 +256,70 @@ export class JiraConfigComponent implements OnInit {
         }),
       )
       .subscribe();
+    const branchControl = this.toolForm.get('branch');
+
+    if (!this.toolForm.get('Repository')?.value) {
+      branchControl?.disable();
+    }
+
+    this.toolForm.get('Repository')?.valueChanges.subscribe((repos) => {
+      if (repos && Object.keys(repos).length > 0) {
+        branchControl?.enable();
+      } else {
+        branchControl?.disable();
+        branchControl?.reset();
+      }
+    });
+  }
+
+  @ViewChildren('repoMultiSelect') repoMultiSelectList!: QueryList<any>;
+  ngAfterViewChecked() {
+    this.repoMultiSelectList.forEach((ms) => {
+      const input: HTMLInputElement = ms?.filterInputChild?.nativeElement;
+      if (input && !input.dataset.listenerAdded) {
+        input.dataset.listenerAdded = 'true';
+        input.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Enter') {
+            const value = input.value.trim();
+            this.addRepositoryIfNotExists(value);
+            input.value = '';
+          }
+        });
+      }
+    });
+  }
+
+  addRepositoryIfNotExists(value: string) {
+    if (!value) return;
+
+    const exists = this.branchListItems.some(
+      (item) => item.branchName.toLowerCase() === value.toLowerCase(),
+    );
+
+    if (!exists) {
+      const newItem = {
+        branchName: value,
+        lastUpdatedTimestamp: Date.now(),
+      };
+
+      this.branchListItems = [...this.branchListItems, newItem];
+
+      const currentSelected = this.toolForm.get('branch')?.value || [];
+      this.toolForm
+        .get('branch')
+        ?.setValue([...currentSelected, newItem.branchName]);
+
+      this.currentFormElement.branchList.push(newItem);
+    }
+  }
+
+  onFilter(event: any) {}
+
+  get isBranchDisabled(): boolean {
+    const repo = this.toolForm?.get('Repository')?.value;
+    console.log(repo, 'repo');
+    if (!repo) return true;
+    return !(repo && repo.length > 0);
   }
 
   getPlansForBamboo(connectionId) {
@@ -1827,12 +1899,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'basicDropdown',
-                label: 'Repositry',
-                id: 'Repositry',
+                label: 'Repository',
+                id: 'Repository',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repositry to access BitBucket data.<br />
+                tooltip: `Repository to access BitBucket data.<br />
                Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
                <i>
                  Impacted : All BitBucket based KPIs</i>`,
@@ -1840,12 +1912,12 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'array',
-                label: 'Branch',
+                label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Branch name to access BitBucket data.<br />
+                tooltip: `Branches name to access BitBucket data.<br />
               <i>
                 Impacted : All BitBucket based KPIs</i>`,
               },
@@ -1885,12 +1957,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'basicDropdown',
-                label: 'Repositry',
-                id: 'Repositry',
+                label: 'Repository',
+                id: 'Repository',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repositry to access GitLab data.<br />
+                tooltip: `Repository to access GitLab data.<br />
                Eg:protocol//domain/<br/>GitLab/scm/<br/>projectkey/reposlug
                <i>
                  Impacted : All GitLab based KPIs</i>`,
@@ -1898,12 +1970,12 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'array',
-                label: 'Branch',
+                label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Branch name to access GitLab data.<br />
+                tooltip: `Branches name to access GitLab data.<br />
               <i>
                 Impacted : All GitLab based KPIs</i>`,
               },
@@ -2025,12 +2097,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'basicDropdown',
-                label: 'Repositry',
-                id: 'Repositry',
+                label: 'Repository',
+                id: 'Repository',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repositry to access AzureRepositry data.<br />
+                tooltip: `Repository to access AzureRepositry data.<br />
                Eg:protocol//domain/<br/>AzureRepositry/scm/<br/>projectkey/reposlug
                <i>
                  Impacted : All AzureRepositry based KPIs</i>`,
@@ -2083,12 +2155,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'basicDropdown',
-                label: 'Repositry',
-                id: 'Repositry',
+                label: 'Repository',
+                id: 'Repository',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repositry to access GitHub data.<br />
+                tooltip: `Repository to access GitHub data.<br />
                Eg:protocol//domain/<br/>GitHub/scm/<br/>projectkey/reposlug
                <i>
                  Impacted : All GitHub based KPIs</i>`,
@@ -2096,12 +2168,12 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'array',
-                label: 'Branch',
+                label: 'Branches',
                 id: 'branch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Branch name to access GitHub data.<br />
+                tooltip: `Branches name to access GitHub data.<br />
               <i>
                 Impacted : All GitHub based KPIs</i>`,
               },
@@ -2811,11 +2883,13 @@ export class JiraConfigComponent implements OnInit {
       submitData['repositoryName'] = null;
       submitData['scmToolConfigList'] = this.repositryValuesArray;
       submitData['scmToolConfigList'].forEach((x) => {
-        x.branch = JSON.parse(JSON.stringify(x.branchList));
-        x.branch = x.branch.map((branch) => branch.branchName).join(',');
+        x.branches = JSON.parse(JSON.stringify(x.branchList));
+        x.branches = x.branches.map((branch) => branch.branchName);
         delete x.branchList;
+        delete x.order;
+        delete x.lastUpdatedTimestamp;
       });
-      delete submitData['Repositry'];
+      delete submitData['Repository'];
     }
 
     submitData['toolName'] = this.urlParam;
@@ -3288,11 +3362,12 @@ export class JiraConfigComponent implements OnInit {
   //New changes for BitBucket,Gitlab,GitHub
 
   repositryChange(event) {
+    console.log(this.selectedConnection);
     if (typeof event.value === 'string') {
       const obj = {
         repositoryName: event.value,
-        repositoryUrl: 'https://github.com/PublicisSapient/knowhow-api',
-        connectionId: '622082fc468bf07bd93f7f73',
+        repositoryUrl: this.selectedConnection?.baseUrl,
+        connectionId: this.selectedConnection?.id,
         lastUpdatedTimestamp: 1761565697000,
         order: 1,
         branchList: [],
@@ -3323,24 +3398,80 @@ export class JiraConfigComponent implements OnInit {
   }
 
   addRepositry() {
-    this.repositryValuesArray.push(this.currentFormElement);
-    this.repositryValuesArray = this.repositryValuesArray.filter(
-      (repo, index, self) =>
-        index ===
-        self.findIndex((r) => r.repositoryName === repo.repositoryName),
-    );
-    this.toolForm.get('Repositry').reset();
-    this.toolForm.get('branch').reset();
+    if (!this.currentFormElement?.repositoryName) return;
+
+    const exists = this.repositryValuesArray.some((repo) => {
+      if (
+        repo.repositoryName.toLowerCase() !==
+        this.currentFormElement.repositoryName.toLowerCase()
+      ) {
+        return false;
+      }
+
+      const existingBranches =
+        repo.branchList?.map((b) => b.branchName.toLowerCase()) || [];
+      const currentBranches =
+        this.currentFormElement.branchList?.map((b) =>
+          b.branchName.toLowerCase(),
+        ) || [];
+
+      if (existingBranches.length !== currentBranches.length) return false;
+      return existingBranches.every((branch) =>
+        currentBranches.includes(branch),
+      );
+    });
+
+    if (exists) {
+      return;
+    }
+
+    const elementValues = JSON.parse(JSON.stringify(this.currentFormElement));
+    this.repositryValuesArray.push(elementValues);
+
+    this.toolForm.get('Repository')?.reset();
+    this.toolForm.get('branch')?.reset();
+
+    this.branchListItems = [];
+
+    this.repoMultiSelectList?.forEach((ms) => {
+      ms.filterValue = '';
+    });
+
+    this.currentFormElement.branchList = [];
+  }
+
+  getTimeAgo(timestamp: number): string {
+    const now = Date.now();
+    const diffMs = now - timestamp;
+
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return days === 1 ? '1 day ago' : `${days} days ago`;
+    } else if (hours > 0) {
+      return hours === 1 ? '1 hr ago' : `${hours} hrs ago`;
+    } else if (minutes > 0) {
+      return minutes === 1 ? '1 min ago' : `${minutes} mins ago`;
+    } else {
+      return 'Just now';
+    }
   }
 
   onBranchSelectionChange(event) {}
 
-  clearRepositories(index?) {
-    if (index) {
+  clearRepositories(index?: number) {
+    if (index !== undefined && index !== null) {
       this.repositryValuesArray.splice(index, 1);
     } else {
       this.repositryValuesArray = [];
     }
+  }
+
+  clearSubRepositories(index, branch) {
+    branch.branchList.splice(index, 1);
   }
 
   // Fetch SCM repositories and branches for selected connection
@@ -3349,11 +3480,11 @@ export class JiraConfigComponent implements OnInit {
       return;
     }
     this.branchAndRepoDropdown = [];
-    this.branchListItems = [];
+    //  this.branchListItems = [];
     this.repositryValuesArray = [];
-    this.toolForm?.get('Repositry')?.reset();
+    this.toolForm?.get('Repository')?.reset();
     this.toolForm?.get('branch')?.reset();
-    this.showLoadingOnFormElement('Repositry');
+    this.showLoadingOnFormElement('Repository');
     this.http.getDiscoveredReposAndBranches(connectionId).subscribe(
       (resp: any) => {
         try {
@@ -3375,9 +3506,6 @@ export class JiraConfigComponent implements OnInit {
             return;
           } else {
             this.branchAndRepoDropdown = resp?.data?.repositories ?? [];
-            if (resp?.message) {
-              this.messenger.add({ severity: 'warn', summary: resp.message });
-            }
             return;
           }
 
@@ -3399,11 +3527,11 @@ export class JiraConfigComponent implements OnInit {
             summary: 'Unable to parse repositories response',
           });
         } finally {
-          this.hideLoadingOnFormElement('Repositry');
+          this.hideLoadingOnFormElement('Repository');
         }
       },
       (err) => {
-        this.hideLoadingOnFormElement('Repositry');
+        this.hideLoadingOnFormElement('Repository');
         this.messenger.add({
           severity: 'error',
           summary: err?.error?.message || 'Failed to load repositories',
@@ -3422,7 +3550,7 @@ export class JiraConfigComponent implements OnInit {
       });
       return;
     }
-    this.showLoadingOnFormElement('Repositry');
+    this.showLoadingOnFormElement('Repository');
     this.http.triggerScmDiscovery(connectionId).subscribe(
       () => {
         // After triggering discovery, refresh the repo list
@@ -3433,7 +3561,7 @@ export class JiraConfigComponent implements OnInit {
         });
       },
       (err) => {
-        this.hideLoadingOnFormElement('Repositry');
+        this.hideLoadingOnFormElement('Repository');
         this.messenger.add({
           severity: 'error',
           summary: err?.error?.message || 'Failed to trigger scan',
