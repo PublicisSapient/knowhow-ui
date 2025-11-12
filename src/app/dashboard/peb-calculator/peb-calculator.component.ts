@@ -5,6 +5,13 @@ import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
+interface categoryScores {
+  overall: number;
+  speed: number;
+  quality: number;
+  efficiency: number;
+  productivity: number;
+}
 @Component({
   selector: 'app-peb-calculator',
   templateUrl: './peb-calculator.component.html',
@@ -16,45 +23,6 @@ export class PebCalculatorComponent implements OnInit {
     { label: 'Per Month', value: 'month' },
     { label: 'Per Quarter', value: 'quarter' },
     { label: 'Per Year', value: 'year' },
-  ];
-
-  roiMetrics = [
-    {
-      label: 'Speed',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-bolt',
-      color: '#d4fbdf',
-      elemColor: '#15ba40',
-      estValueSavingsLabel: 'Estd. Value from Faster Delivery',
-    },
-    {
-      label: 'Efficiency',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-chart-line',
-      color: '#dee8fc',
-      elemColor: '#2f76ff',
-      estValueSavingsLabel: 'Estd. Savings from Reduced Rework',
-    },
-    {
-      label: 'Quality',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-shield',
-      color: '#dce7fc',
-      elemColor: '#8980ed',
-      estValueSavingsLabel: 'Estd. Savings from Better Quality',
-    },
-    {
-      label: 'Productivity',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-bullseye',
-      color: '#ffecdf',
-      elemColor: '#f68605',
-      estValueSavingsLabel: 'Estd. Savings from Higher Throughput',
-    },
   ];
 
   aiBenefit = 29524;
@@ -76,7 +44,7 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryScores: any = {};
+  categoryScores: categoryScores;
 
   constructor(
     private fb: FormBuilder,
@@ -105,17 +73,17 @@ export class PebCalculatorComponent implements OnInit {
       this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
     });
     this.subscription.push(
-      this.sharedService.passDataToDashboard.subscribe((sharedobject) => {
-        if (sharedobject) {
-          const stateFilters =
-            this.sharedService.getBackupOfFilterSelectionState();
-          this.selectedLevel = stateFilters?.parent_level;
-          this.selectedLevel = 'engagement';
-          console.log(this.selectedLevel);
-          this.calculatePEB();
-          this.getPebProjectPerformanceData(this.selectedLevel);
-        }
-      }),
+      this.sharedService.passDataToDashboard
+        .pipe(distinctUntilChanged())
+        .subscribe((sharedobject) => {
+          if (sharedobject) {
+            const stateFilters =
+              this.sharedService.getBackupOfFilterSelectionState();
+            this.selectedLevel = stateFilters?.parent_level;
+            this.calculatePEB();
+            this.getPebProjectPerformanceData(this.selectedLevel);
+          }
+        }),
     );
   }
 
@@ -144,46 +112,9 @@ export class PebCalculatorComponent implements OnInit {
 
     this.showLoader = true;
 
-    // TODO --> Will handle the logic later. After demo is done.
-    /* const productivityGainData = this.sharedService.getPEBData();
-    if (productivityGainData) {
-      this.showLoader = false;
-      this.showResults = true;
-      const productivityGain =
-        productivityGainData['categorizedProductivityGain'];
-      const overallGain = productivityGain && productivityGain['overall'];
-
-      this.annualPEB = Math.round(
-        this.pebForm.get('devCountControl')!.value *
-          this.pebForm.get('devCostControl')!.value *
-          (overallGain / 100) *
-          (this.pebForm.get('durationControl')!.value === 'month'
-            ? 1 / 12
-            : this.pebForm.get('durationControl')!.value === 'quarter'
-            ? 1 / 4
-            : 1),
-      );
-      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
-
-      this.roiMetrics = this.roiMetrics.map((metric) => {
-        const key = metric.label.toLowerCase();
-        const percent = productivityGain[key]; // CHANGE: Calculate percent directly
-        const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
-        return {
-          ...metric,
-          percent,
-          value: value <= 0 ? 0 : value,
-        };
-      });
-    } else {
-      this.showLoader = false;
-      this.isError = true;
-      console.error('Failed to fetch productivity gain data');
-    } */
-
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
-      .getProductivityGain(this.selectedLevel?.toLowerCase())
+      .getPebProductivityData(this.selectedLevel?.toLowerCase())
       .subscribe({
         next: (response) => {
           if (response['success']) {
@@ -196,21 +127,7 @@ export class PebCalculatorComponent implements OnInit {
 
             this.annualPEB = this.calculateMultipliedDetails(overallGain);
             this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
-            // const details = response['data']?.details;
 
-            // this.items = [...response['data']?.details];
-            // this.roiMetrics = this.roiMetrics.map((metric) => {
-            //   const key = metric.label.toLowerCase();
-            //   const percent = productivityGain[key]; // CHANGE: Calculate percent directly
-            //   const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
-            //   return {
-            //     ...metric,
-            //     percent,
-            //     value: value <= 0 ? 0 : value,
-            //   };
-            // });
-
-            // console.log('roiMetrics', this.roiMetrics);
             const details = response['data']?.details;
             this.items = details.map((item) => ({
               levelName: item.levelName,
@@ -221,8 +138,6 @@ export class PebCalculatorComponent implements OnInit {
                 ]),
               ),
             }));
-            // console.log('items', this.items);
-
             this.performanceChartData =
               this.formatCategoryScoresForCumulativeChart(
                 this.pebProductivityDetailsData?.categoryScores,

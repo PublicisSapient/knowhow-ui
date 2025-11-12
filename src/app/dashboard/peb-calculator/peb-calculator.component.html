@@ -181,20 +181,34 @@
       <div class="p-col-6">
         <div class="p-2">
           <h4>Core Performance Metrics</h4>
-          <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="'Weeks'"
-            [yCaption]="'Performance'">
-          </app-cumulative-line-chart>
+          <ng-container *ngIf="performanceChartData?.length else noDataAccess">
+            <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="'Weeks'"
+              [yCaption]="'Performance'">
+            </app-cumulative-line-chart>
+          </ng-container>
         </div>
-        <!-- <p-chart type="line" [data]="lineChartData" [options]="lineChartOptions"></p-chart> -->
       </div>
       <div class="p-col-6">
         <div class="p-2">
           <h4>Projected Cost Savings Trend</h4>
-          <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="'Weeks'"
-            [yCaption]="'Cost Savings'">
-          </app-cumulative-line-chart>
+          <ng-container *ngIf="costSavingsChartData?.length else noDataAccess">
+            <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="'Weeks'"
+              [yCaption]="'Cost Savings'">
+            </app-cumulative-line-chart>
+          </ng-container>
+          
         </div>
       </div>
+      <ng-template #noDataAccess>
+          <div class="min-ht">
+              <div class="p-w-100  p-d-flex p-justify-center">
+                  <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+              </div>
+              <div class="p-w-100">
+                  <h4 class="p-text-center">No Data Available.</h4>
+              </div>
+          </div>
+      </ng-template>
     </div>
 
     <hr />
