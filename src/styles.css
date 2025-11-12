@@ -2602,3 +2602,8 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .bottom-0 {
   bottom: 0;
 }
+.peb-form p-inputnumber,
+.peb-form .p-inputnumber,
+.peb-form span.p-inputnumber.p-component {
+  width: 100%;
+}

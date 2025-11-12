@@ -201,12 +201,11 @@ export class HttpService {
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
   private executivePageURL = this.baseUrl + '/api/executive';
 
-  private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
+  private pebCalculateUrl = this.baseUrl + '/api/v1/peb/productivity';
   private analyticsMetricsTableDataURL =
     this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
-  private pebProductivityUrl = this.baseUrl + '/v1/peb/productivity';
   private homeNBAURL = this.baseUrl;
 
   constructor(
@@ -1319,8 +1318,8 @@ export class HttpService {
     );
   }
 
-  getProductivityGain(payload) {
-    return this.http.post<any>(this.pebCalculateUrl, payload);
+  getProductivityGain(level) {
+    return this.http.get<any>(this.pebCalculateUrl + '/' + level);
   }
 
   getAnalyticsMetricsTableData(payLoad) {
@@ -1331,16 +1330,8 @@ export class HttpService {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
   }
 
-  getPebProductivityData(level) {
-    return this.http.get<any>(
-      this.pebProductivityUrl.replace('{levelName}', level),
-    );
-  }
-
   getPebProductivityDetailsData(level) {
-    return this.http.get<any>(
-      this.pebProductivityUrl.replace('{levelName}', level) + '/details',
-    );
+    return this.http.get<any>(this.pebCalculateUrl + '/' + level + '/details');
   }
   getHomeNBAData(payload) {
     return this.http.post<any>(this.homeNBAURL, payload);
