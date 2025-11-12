@@ -97,3 +97,156 @@ font-size: 12px
 :host::ng-deep.p-button {
   background-color: #0b4bc8;
 }
+
+.container {
+  width: 100%;
+  margin-top: 2rem;
+  border-top: 1px solid #e0e0e1;
+  padding: 2rem 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.header .repository-list {
+  margin: 0;
+  font-size: 16px;
+  color: oklch(0.145 0 0);
+}
+
+.clear-all {
+  cursor: pointer;
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+.clear-all:hover {
+  background-color: #e5e5e5;
+  border-radius: 10px;
+}
+
+.close-list {
+  color: #333;
+  padding: 10px;
+}
+.close-list:hover {
+  background-color: #e5e5e5;
+  border-radius: 10px;
+}
+
+.repo-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #e0e0e1;
+  position: relative;
+}
+
+.repo-card .repo-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.repo-card .repo-header img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.repo-card .repo-header .repo-name {
+  font-size: 16px;
+  color: oklch(0.145 0 0);
+}
+
+.repo-card .repo-url {
+  font-size: 13px;
+  color: #717182;
+  margin-bottom: 10px;
+}
+
+.branches {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.branch {
+  display: flex;
+  align-items: center;
+  background-color: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #000;
+}
+
+.subBranch-close {
+  font-size: 9px;
+  margin-top: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.repo-card .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #999;
+}
+
+.repo-card .close-btn:hover {
+  color: #333;
+}
+.repo-card-list {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+.flex-drop {
+  flex: 1;
+}
+
+.step-2-top-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  border: 1px solid #e0e0e1;
+  border-radius: 10px;
+  padding: 10px;
+}
+.repository-length {
+  padding-left: 10px;
+}
+
+.timestamp {
+  font-size: 10px;
+}
+
+:host::ng-deep.branch-container
+  .p-multiselect.p-component.p-inputwrapper.p-multiselect-clearable.p-multiselect-chip {
+  height: 40px;
+}
+:host::ng-deep.branch-container
+  .p-multiselect.p-component
+  .p-multiselect-token {
+  padding: 2px 8px;
+}
+:host::ng-deep.branch-container
+  .p-multiselect.p-component
+  .p-multiselect-label.p-placeholder {
+  padding: 9px;
+}
+:host ::ng-deep .refresh-btn {
+  background-color: transparent !important;
+}
+:host ::ng-deep .refresh-btn:hover {
+  background-color: #dee8fc !important;
+}

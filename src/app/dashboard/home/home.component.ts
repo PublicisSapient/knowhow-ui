@@ -4,8 +4,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription, forkJoin } from 'rxjs';
-import { distinctUntilChanged, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
 
@@ -212,21 +212,25 @@ export class HomeComponent implements OnInit, OnDestroy {
           cssClassName: '',
           category: 'Top 4 Risks this Quarter',
           value: [],
-          icon: '',
+          icon: false,
+          color: '#fbcf5f',
+          fontColor: 'black',
         },
         {
           cssClassName: '',
           category: 'Positive Trends',
           value: [],
-          icon: 'pi-sort-up-fill',
-          color: 'green',
+          icon: true,
+          color: '#99cda9',
+          fontColor: 'black',
         },
         {
           cssClassName: '',
           category: 'Negative Trends',
           value: [],
-          icon: 'pi-sort-down-fill',
-          color: 'red',
+          icon: true,
+          color: '#ed8888',
+          fontColor: 'black',
         },
       ]);
     } else {
@@ -236,15 +240,17 @@ export class HomeComponent implements OnInit, OnDestroy {
           cssClassName: '',
           category: 'Positive Trends',
           value: [],
-          icon: 'pi-sort-up-fill',
-          color: 'green',
+          icon: true,
+          color: '#99cda9',
+          fontColor: 'black',
         };
         tempState[2] = {
           cssClassName: '',
           category: 'Negative Trends',
           value: [],
-          icon: 'pi-sort-down-fill',
-          color: 'red',
+          icon: true,
+          color: '#ed8888',
+          fontColor: 'black',
         };
         return tempState;
       });
@@ -339,7 +345,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       decendingData.length > 4 ? decendingData.slice(0, 4) : decendingData;
 
     return threshodData.map((node) => {
-      return { property: node.kpiName, value: node.trendValue };
+      return {
+        property: node.kpiName,
+        value: parseFloat(node.trendValue).toFixed(1),
+      };
     });
   }
 
