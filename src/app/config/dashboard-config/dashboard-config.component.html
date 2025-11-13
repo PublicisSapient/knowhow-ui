@@ -82,7 +82,7 @@
                   i == 0 &&
                   tabListContent[item].length < 2) ||
                 (i == 0 && item.toLowerCase() === 'others') ||
-                i !== 0)
+                i !== 0 && boardData?.boardSlug !== 'potential-economic-benefits')
             ">
             <div class="p-grid board-name-block p-py-2 p-d-flex p-jc-between">
               <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">
