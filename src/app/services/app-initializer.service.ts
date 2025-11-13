@@ -23,7 +23,7 @@ import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
 import { HomeComponent } from '../dashboard/home/home.component';
 import { AnalysisContainerComponent } from '../dashboardv2/analysis-module/analysis-container/analysis-container.component';
-
+import { PebCalculatorComponent } from '../dashboard/peb-calculator/peb-calculator.component';
 @Injectable({
   providedIn: 'root',
 })
@@ -63,6 +63,15 @@ export class AppInitializerService {
       canActivate: [AccessGuard],
       data: {
         feature: 'Home',
+      },
+    },
+    {
+      path: 'potential-economic-benefits',
+      component: PebCalculatorComponent,
+      pathMatch: 'full',
+      canActivate: [AccessGuard],
+      data: {
+        feature: 'PEB',
       },
     },
   ];
@@ -278,7 +287,6 @@ export class AppInitializerService {
                 response?.['data']?.authType,
               );
             }
-
             if (location) {
               const redirect_uri = JSON.parse(
                 localStorage.getItem('redirect_uri'),

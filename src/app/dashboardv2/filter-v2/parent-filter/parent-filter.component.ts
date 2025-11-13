@@ -92,7 +92,10 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
-        if (this.selectedTab.toLowerCase() === 'home') {
+        if (
+          this.selectedTab.toLowerCase() === 'home' ||
+          this.selectedTab.toLowerCase() === 'potential-economic-benefits'
+        ) {
           this.filterLevels = this.filterLevels.filter((e) => {
             return !result.includes(e.nodeName.toLowerCase());
           });
@@ -257,8 +260,10 @@ export class ParentFilterComponent implements OnChanges {
       tempStateFilters = this.stateFilters['nodeId'];
     }
     if (
-      this.selectedTab.toLowerCase() === 'home' &&
-      tempStateFilters.toLowerCase() === 'project'
+      (this.selectedTab.toLowerCase() === 'home' &&
+        tempStateFilters.toLowerCase() === 'project') ||
+      (this.selectedTab.toLowerCase() === 'potential-economic-benefits' &&
+        tempStateFilters.toLowerCase() === 'project')
     ) {
       const hierarchy = JSON.parse(
         localStorage.getItem('completeHierarchyData') || '{}',

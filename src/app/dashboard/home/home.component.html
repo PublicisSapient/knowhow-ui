@@ -37,7 +37,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div class="p-col-9">
+  <div [ngClass]="nbaRawData.length ? 'p-col-9' : 'p-col-12'">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -227,26 +227,30 @@
   </div>
 
   <!-- BOTTOM TREND SECTION -->
-  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between">
+  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
     @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items ; let isFirst = $first) {
-    <div class="p-d-flex p-flex-column bottom-panel-data-item p-col-4 ">
-      <p class="form-title">{{ items.category }}</p>
+    @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
+    <div class="trend-card p-col-4 p-p-3">
+      <div class="trend-card-header p-mb-3">
+        <h3 class="trend-card-title">{{ items.category }}</h3>
+      </div>
       @if(items.value.length){
-      <div class="data p-px-2">
+      <div class="trend-items-container">
         @for (item of items.value; track item) {
-        <!-- Row with 3 columns -->
-        <div class="p-grid p-ai-center p-py-1">
-          <div class="p-col">
-            {{ item.property }}
+        <div class="trend-item p-d-flex p-ai-center">
+          <div class="trend-content">
+            <span class="trend-label">{{ item.property }}</span>
+            <div class="trend-value-container" [style.background-color]="items.color">
+              @if(index !== 0) {
+              <i class="pi {{ item.value.toString().includes('-') ? 'pi-arrow-down' : 'pi-arrow-up' }}" [style.color]="items.fontColor"></i>
+              } @else if(items.icon) {
+              <i class="pi {{ items.icon }}" [style.color]="items.fontColor"></i>
+              }
+              <span class="trend-value" [style.color]="items.fontColor">
+                {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
+              </span>
+            </div>
           </div>
-          <div class="p-col-fixed" style="width: 30px; text-align: center;">
-            <i class="pi" [ngClass]="items.icon" [ngStyle]="{'color': items.color}" style="font-size: 0.9rem;"></i>
-          </div>
-          <div style="width: fit-content; text-align: right;">
-            {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
-          </div>
-
         </div>
         }
       </div>
@@ -274,9 +278,10 @@
     }
 
   </div>
+  
 
   <!-- MATURITY WHEEL -->
-  <div class="kpi-details-table-container p-mt-3">
+  <div class="kpi-details-table-container p-mt-3" [hidden]="true">
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
         <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
@@ -320,8 +325,11 @@
   </div>
 </div>
 
-<div class="p-col-3">
-  <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator>
+<div class="p-col-3" *ngIf="nbaRawData.length">
+  <!-- <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator> -->
+
+ <app-nba [rawData]="nbaRawData"></app-nba>
+
 </div>
 
 </div>

@@ -177,9 +177,11 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .domain(projects)
       .range([0, x0.bandwidth()])
       .padding(0.1);
+    const range = this.kpiId === 'kpi196' ? 5 : 50;
+    const maxLimit = this.kpiId === 'kpi196' ? 100 : 500;
     const y = d3
       .scaleLinear()
-      .domain([0, chartYRange ? chartYRange + 50 : 500])
+      .domain([0, chartYRange ? chartYRange + range : maxLimit])
       .range([height, 0])
       .clamp(true);
 
