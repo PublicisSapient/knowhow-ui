@@ -649,21 +649,41 @@ export class JiraConfigComponent implements OnInit {
   }
 
   mergeRepositoriesKeepBranch(arr: any[]): any[] {
+    if (!Array.isArray(arr)) {
+      return [];
+    }
+
     const map = new Map<string, any>();
+    const mergedList: any[] = [];
 
     arr.forEach((item) => {
+      if (!item || !item.repositoryName) {
+        if (item) {
+          mergedList.push(item);
+        }
+        return;
+      }
+
       const key = item.repositoryName.toLowerCase(); // case-insensitive
+      const branch = item.branch;
+
       if (map.has(key)) {
-        const existingBranches = map.get(key).branches.split(',');
-        if (!existingBranches.includes(item.branch)) {
-          map.get(key).branches += `,${item.branch}`;
+        const mappedItem = map.get(key);
+        const existingBranches = new Set(
+          (mappedItem.branches || '').split(',').filter((b) => !!b),
+        );
+        if (branch) {
+          existingBranches.add(branch);
+          mappedItem.branches = Array.from(existingBranches).join(',');
         }
       } else {
-        map.set(key, { ...item, branches: item.branch });
+        const newItem = { ...item, branches: branch || '' };
+        map.set(key, newItem);
+        mergedList.push(newItem);
       }
     });
 
-    return Array.from(map.values());
+    return mergedList;
   }
 
   checkProjectKey = () => {
