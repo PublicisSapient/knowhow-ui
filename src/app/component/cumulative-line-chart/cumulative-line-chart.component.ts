@@ -58,6 +58,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
     const categories = [];
     const maxYValue = [];
+    const minYValue = [];
     this.formatDateOnXAxis(this.graphData);
 
     this.graphData.forEach((d) => {
@@ -74,6 +75,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       });
       d['lineDataCategorywise'] = lineDataCategorywise;
       maxYValue.push(Math.max(...maxY));
+      minYValue.push(Math.min(...maxY));
     });
 
     const xCoordinates = this.graphData.map((d) => d.filter);
@@ -124,10 +126,9 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           .tickFormat((d, i) => (this.VisibleXAxisLbl.includes(d) ? d : '')),
       );
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
-      .range([height, 0]);
+    const yMin = Math.floor(Math.min(...minYValue) / 5) * 5;
+    const yMax = Math.ceil(Math.max(...maxYValue) / 5) * 5;
+    const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
     const svgY = d3
       .select(elem)
@@ -139,6 +140,19 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .attr('transform', `translate(50,${margin.top})`)
       .attr('class', 'yAxis')
       .call(d3.axisLeft(y).ticks(6).tickSize(0));
+
+    // Add zero baseline if data contains negative values
+    if (yMin < 0) {
+      svg
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', y(0))
+        .attr('y2', y(0))
+        .attr('stroke', '#999')
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4,2');
+    }
 
     // highlight todays Date
     if (this.currentDayIndex >= 0) {

@@ -1,0 +1,78 @@
+{
+    "message": "Productivity gain was successfully calculated",
+    "success": true,
+    "data": {
+        "summary": {
+            "categoryScores": {
+                "overall": 26.91,
+                "speed": 1.09,
+                "quality": 32.44,
+                "efficiency": 80.64,
+                "productivity": -22.08
+            },
+            "trends": {
+                "positive": [
+                    {
+                        "kpiName": "Wastage",
+                        "kpiCategory": "efficiency",
+                        "trendValue": 9.44
+                    },
+                    {
+                        "kpiName": "Planned Work Status",
+                        "kpiCategory": "efficiency",
+                        "trendValue": 151.85
+                    },
+                    {
+                        "kpiName": "Scope Churn",
+                        "kpiCategory": "speed",
+                        "trendValue": 35.19
+                    },
+                    {
+                        "kpiName": "Defect Reopen Rate",
+                        "kpiCategory": "quality",
+                        "trendValue": 83.33
+                    }
+                ],
+                "negative": [
+                    {
+                        "kpiName": "Commitment Reliability",
+                        "kpiCategory": "productivity",
+                        "trendValue": -22.08
+                    },
+                    {
+                        "kpiName": "Sprint Velocity",
+                        "kpiCategory": "speed",
+                        "trendValue": -15.96
+                    },
+                    {
+                        "kpiName": "Defect Density",
+                        "kpiCategory": "quality",
+                        "trendValue": -18.45
+                    }
+                ]
+            }
+        },
+        "details": [
+            {
+                "levelName": "ABC",
+                "categoryScores": {
+                    "overall": 26.91,
+                    "speed": 1.09,
+                    "quality": 32.44,
+                    "efficiency": 80.64,
+                    "productivity": -22.08
+                }
+            },
+            {
+                "levelName": "DEF",
+                "categoryScores": {
+                    "overall": 16.91,
+                    "speed": 11.09,
+                    "quality": 2.44,
+                    "efficiency": 80.64,
+                    "productivity": -12.08
+                }
+            }
+        ]
+    }
+}
