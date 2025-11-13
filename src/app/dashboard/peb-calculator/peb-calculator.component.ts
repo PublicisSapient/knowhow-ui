@@ -5,8 +5,7 @@ import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
-interface categoryScores {
-  overall: number;
+interface categoryVariations {
   speed: number;
   quality: number;
   efficiency: number;
@@ -44,7 +43,7 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryScores: categoryScores;
+  categoryVariations: categoryVariations;
   productivityGain: any = {};
 
   constructor(
@@ -142,9 +141,6 @@ export class PebCalculatorComponent implements OnInit {
 
   calculatePEB() {
     this.showLoader = true;
-    this.categoryScores = JSON.parse(
-      JSON.stringify(this.productivityGain['summary']?.categoryScores),
-    ) as categoryScores;
     const overallGain =
       this.productivityGain['summary']?.categoryScores['overall'];
 
@@ -153,7 +149,7 @@ export class PebCalculatorComponent implements OnInit {
 
     const details = this.productivityGain?.details;
     this.items = details.map((item) => ({
-      levelName: item.levelName,
+      ...item,
       categoryScores: Object.fromEntries(
         Object.entries(item.categoryScores).map(([key, value]) => [
           key,
@@ -180,6 +176,9 @@ export class PebCalculatorComponent implements OnInit {
               true,
             );
           console.log('costSavingsChartData', this.costSavingsChartData);
+          this.categoryVariations = JSON.parse(
+            JSON.stringify(response['data']?.categoryVariations),
+          ) as categoryVariations;
         } else {
           console.error(
             'Server returned unsuccessful response:',
@@ -207,7 +206,7 @@ export class PebCalculatorComponent implements OnInit {
       metrics.push('overall');
     } else {
       metrics = Object.keys(categoryScores[0]).filter(
-        (key) => key !== 'calculationDate' && key !== 'overall',
+        (key) => key !== 'temporalGroupingStartDate' && key !== 'overall',
       );
     }
 
@@ -219,12 +218,12 @@ export class PebCalculatorComponent implements OnInit {
         hoverValue: {
           Metric: metric,
           Value: entry[metric],
-          Date: entry.calculationDate,
+          Date: entry.temporalGroupingStartDate,
         },
       }));
 
       return {
-        filter: entry.calculationDate, // X-axis value
+        filter: entry.temporalGroupingStartDate, // X-axis value
         value: values,
       };
     });
