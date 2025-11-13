@@ -1337,7 +1337,7 @@ export class HttpService {
 
   getPebProductivityDetailsData(level) {
     return this.http.get<any>(
-      this.pebProductivityUrl + '/' + level + '/details',
+      this.pebProductivityUrl + '/' + level + '/trends',
     );
   }
   getHomeNBAData(payload) {

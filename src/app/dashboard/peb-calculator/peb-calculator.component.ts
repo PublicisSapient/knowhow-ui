@@ -45,6 +45,7 @@ export class PebCalculatorComponent implements OnInit {
   subscription = [];
   selectedLevel: string = '';
   categoryScores: categoryScores;
+  productivityGain: any = {};
 
   constructor(
     private fb: FormBuilder,
@@ -80,7 +81,7 @@ export class PebCalculatorComponent implements OnInit {
             const stateFilters =
               this.sharedService.getBackupOfFilterSelectionState();
             this.selectedLevel = stateFilters?.parent_level;
-            this.calculatePEB();
+            this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
           }
         }),
@@ -107,7 +108,7 @@ export class PebCalculatorComponent implements OnInit {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
-  calculatePEB() {
+  getPEBData() {
     //this.sharedService.getDataForSprintGoal()?.selectedLevel.nodeName,
 
     this.showLoader = true;
@@ -118,26 +119,9 @@ export class PebCalculatorComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response['success']) {
-            this.showLoader = false;
             this.showResults = true;
-            const productivityGain =
-              response['data']['summary']['categoryScores'];
-            this.categoryScores = JSON.parse(JSON.stringify(productivityGain));
-            const overallGain = productivityGain['overall'];
-
-            this.annualPEB = this.calculateMultipliedDetails(overallGain);
-            this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
-
-            const details = response['data']?.details;
-            this.items = details.map((item) => ({
-              levelName: item.levelName,
-              categoryScores: Object.fromEntries(
-                Object.entries(item.categoryScores).map(([key, value]) => [
-                  key,
-                  this.calculateMultipliedDetails(value as number),
-                ]),
-              ),
-            }));
+            this.productivityGain = response['data'];
+            this.calculatePEB();
             this.performanceChartData =
               this.formatCategoryScoresForCumulativeChart(
                 this.pebProductivityDetailsData?.categoryScores,
@@ -161,6 +145,30 @@ export class PebCalculatorComponent implements OnInit {
         },
       });
   }
+  calculatePEB() {
+    this.showLoader = true;
+    this.categoryScores = JSON.parse(
+      JSON.stringify(this.productivityGain['summary']?.categoryScores),
+    ) as categoryScores;
+    const overallGain =
+      this.productivityGain['summary']?.categoryScores['overall'];
+
+    this.annualPEB = this.calculateMultipliedDetails(overallGain);
+    this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+
+    const details = this.productivityGain?.details;
+    this.items = details.map((item) => ({
+      levelName: item.levelName,
+      categoryScores: Object.fromEntries(
+        Object.entries(item.categoryScores).map(([key, value]) => [
+          key,
+          this.calculateMultipliedDetails(value as number),
+        ]),
+      ),
+    }));
+
+    this.showLoader = false;
+  }
 
   getPebProjectPerformanceData(level) {
     this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
@@ -175,9 +183,10 @@ export class PebCalculatorComponent implements OnInit {
     // this.httpService.getPebProductivityDetailsData(level).subscribe({
     //   next: (response) => {
     //     if (response['success']) {
-    //       this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
-    //         response['data']['categoryScores'],
-    //       );
+    //       this.performanceChartData =
+    //         this.formatCategoryScoresForCumulativeChart(
+    //           response['data']['categoryScores'],
+    //         );
     //     } else {
     //       console.error(
     //         'Server returned unsuccessful response:',
