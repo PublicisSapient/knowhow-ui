@@ -1,28 +1,88 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import * as d3 from 'd3';
 
+interface MaturityData {
+  data: string;
+  date: string;
+  kpiGroup: string;
+  sprojectName: string;
+  value: number;
+}
+
+interface ChartData {
+  filter1: string;
+  filter2: string;
+  value: MaturityData[];
+}
 @Component({
   selector: 'app-progress-chart',
   standalone: false,
   templateUrl: './progress-chart.component.html',
   styleUrl: './progress-chart.component.css',
 })
-export class ProgressChartComponent {
-  @ViewChild('chartSvg', { static: true }) svgRef!: ElementRef;
+export class ProgressChartComponent implements OnChanges, AfterViewInit {
+  @ViewChild('chartSvg', { static: false }) svgRef!: ElementRef;
+  @Input() chartData: ChartData[];
 
-  private data = [
-    { label: 'Rework Rate', value: 15, max: 100, target: '<20% rework' },
-    { label: 'Revert Rate', value: 5, max: 100, target: '<8% revert' },
-  ];
+  private transformedData: {
+    label: string;
+    value: number;
+    max: number;
+    target: string;
+    kpiGroup: string;
+  }[] = [];
 
-  ngOnInit(): void {
-    this.createChart();
+  constructor() {}
+
+  ngAfterViewInit(): void {
+    console.log('progress chart ', this.chartData);
+    if (this.chartData) {
+      this.transformData();
+      this.createChart();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['chartData'] && changes['chartData'].currentValue) {
+      // Clear previous chart
+      d3.select(this.svgRef?.nativeElement).selectAll('*').remove();
+
+      this.transformData();
+      this.createChart();
+    }
+  }
+
+  private transformData(): void {
+    if (!this.chartData?.[0]?.value || this.chartData[0].value.length === 0) {
+      console.warn('Invalid data structure received');
+      this.transformedData = [];
+      return;
+    }
+
+    const valueArray = this.chartData[0].value;
+    this.transformedData = valueArray.map((item) => ({
+      label: item.data, // 'Rework Rate' or 'Revert Rate'
+      value: item.value || 0, // The numeric value (0.0 if empty)
+      max: 100,
+      target: item.data.includes('Rework') ? '<20%' : '<8%', // Determine target based on label
+      kpiGroup: item.kpiGroup,
+    }));
+
+    console.log('Transformed data:', this.transformedData);
   }
 
   private createChart(): void {
-    const svg = d3.select(this.svgRef.nativeElement);
-    const width = 570;
-    const height = 150;
+    const svg = d3.select(this.svgRef?.nativeElement);
+    const width = 825;
+    const height = 215;
     const margin = { top: 20, right: 20, bottom: 40, left: 20 };
 
     svg.attr('width', width).attr('height', height);
@@ -35,7 +95,12 @@ export class ProgressChartComponent {
     const barSpacing = 50;
     const barWidth = width - margin.left - margin.right;
 
-    this.data.forEach((d, i) => {
+    if (!this.transformedData || this.transformedData.length === 0) {
+      console.warn('No data to render');
+      return;
+    }
+
+    this.transformedData.forEach((d, i) => {
       const yPos = i * barSpacing;
 
       // Label and value
@@ -77,7 +142,7 @@ export class ProgressChartComponent {
         .attr('font-size', '14px')
         .attr('fill', '#333')
         .attr('text-anchor', 'end')
-        .text(`${d.value}/${d.max}`);
+        .text(`${d.value.toFixed(2)}/${d.max}`);
 
       // Progress bar background
       const barGroup = g
@@ -109,11 +174,22 @@ export class ProgressChartComponent {
     });
 
     // Target text at the bottom
-    g.append('text')
-      .attr('x', 0)
-      .attr('y', this.data.length * barSpacing + 30)
-      .attr('font-size', '13px')
-      .attr('fill', '#666')
-      .text(`Target: ${this.data[0].target}, ${this.data[1].target}`);
+    if (this.transformedData.length > 0) {
+      g.append('text')
+        .attr('x', 0)
+        .attr('y', this.transformedData.length * barSpacing + 35)
+        .attr('font-size', '13px')
+        .attr('fill', '#666')
+        .text(
+          `Target: ${this.transformedData
+            .map((d) => {
+              const metricName = d.label.toLowerCase().includes('rework')
+                ? 'rework'
+                : 'revert';
+              return `${d.target} ${metricName}`;
+            })
+            .join(', ')}`,
+        );
+    }
   }
 }

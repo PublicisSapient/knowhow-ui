@@ -171,66 +171,204 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     { label: 'Bug Resolution', value: '85%', trend: 'negative' },
   ];
 
-  chartData = {
-    filter1: 'develop -> knowhow-api -> KnowHOW',
-    filter2: 'gurdeep.singh@publicissapient.com',
-    value: [
-      {
-        data: 'KnowHOW',
-        maturity: '1',
-        value: [
-          {
-            date: '29-Sep-2025 to 05-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 100 },
-            PullRequests: [
-              { size: '109', ID: '1234' },
-              { size: '1876', ID: '43' },
-              { size: '109', ID: '34' },
-            ],
-          },
-          {
-            date: '06-Oct-2025 to 15-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 1320 },
-            PullRequests: [
-              { size: '1549', ID: '12' },
-              { size: '876', ID: '438' },
-              { size: '1879', ID: '342' },
-            ],
-          },
-          {
-            date: '16-Oct-2025 to 22-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 890 },
-            PullRequests: [
-              { size: '450', ID: '56' },
-              { size: '1200', ID: '78' },
-              { size: '650', ID: '90' },
-            ],
-          },
-          {
-            date: '23-Oct-2025 to 29-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 1100 },
-            PullRequests: [
-              { size: '890', ID: '101' },
-              { size: '1650', ID: '102' },
-              { size: '320', ID: '103' },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+  /* chartData = [
+    {
+      filter1: 'develop -> knowhow-api -> KnowHOW',
+      filter2: 'Overall',
+      value: [
+        {
+          data: 'KnowHOW',
+          maturity: '1',
+          value: [
+            {
+              data: '2170',
+              hoverValue: { 'No of lines': 100 },
+              date: '06-Oct-2025 to 12-Oct-2025',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 2170,
+              PullRequests: [
+                { size: '109', ID: '1234' },
+                { size: '1876', ID: '43' },
+                { size: '109', ID: '34' },
+              ],
+            },
+            {
+              data: '0',
+              hoverValue: { 'No of lines': 100 },
+              date: '13-Oct-2025 to 19-Oct-2025',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 0,
+              PullRequests: [
+                {
+                  size: '1549',
+                  ID: '12',
+                },
+                {
+                  size: '876',
+                  ID: '438',
+                },
+                {
+                  size: '1879',
+                  ID: '342',
+                },
+              ],
+            },
+            {
+              data: '0',
+              hoverValue: { 'No of lines': 100 },
+              date: '20-Oct-2025 to 26-Oct-2025',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 0,
+              PullRequests: [
+                { size: '109', ID: '1234' },
+                { size: '1876', ID: '43' },
+                { size: '109', ID: '34' },
+              ],
+            },
+            {
+              data: '0',
+              hoverValue: { 'No of lines': 100 },
+              date: '27-Oct-2025 to 02-Nov-2025',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 0,
+              PullRequests: [
+                {
+                  size: '1549',
+                  ID: '12',
+                },
+                {
+                  size: '876',
+                  ID: '438',
+                },
+                {
+                  size: '1879',
+                  ID: '342',
+                },
+              ],
+            },
+            {
+              data: '0',
+              hoverValue: { 'No of lines': 100 },
+              date: '03-Nov-2025 to 09-Nov-2025',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 0,
+              PullRequests: [
+                { size: '109', ID: '1234' },
+                { size: '1876', ID: '43' },
+                { size: '109', ID: '34' },
+              ],
+            },
+          ],
+          maturityValue: '434',
+        },
+      ],
+    },
+  ]; */
+
+  progressbarChartData = [
+    {
+      filter1: 'develop -> knowhow-api -> KnowHOW',
+      filter2: 'Overall',
+      value: [
+        {
+          data: 'Rework Rate',
+          date: '10-Nov-2025 to 16-Nov-2025',
+          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
+          value: 15.5,
+          sprojectName: 'KnowHOW',
+        },
+        {
+          data: 'Revert Rate',
+          date: '10-Nov-2025 to 16-Nov-2025',
+          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
+          value: 10.3,
+          sprojectName: 'KnowHOW',
+        },
+      ],
+    },
+  ];
+
+  donutChartData = [
+    {
+      filter1: 'develop -> knowhow-api -> KnowHOW',
+      filter2: 'Akshat Shrivastav',
+      value: [
+        {
+          data: 'KnowHOW',
+          maturity: '5',
+          value: [
+            {
+              data: '100.0',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Akshat Shrivastav',
+              sprojectName: 'KnowHOW',
+              value: 100,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      filter1: 'develop -> knowhow-api -> KnowHOW',
+      filter2: 'Overall',
+      value: [
+        {
+          data: 'KnowHOW',
+          maturity: '3',
+          value: [
+            {
+              data: '100.0',
+              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 100,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      filter1: 'develop -> knowhow-common -> KnowHOW',
+      filter2: 'Overall',
+      value: [
+        {
+          data: 'KnowHOW',
+          maturity: '3',
+          value: [
+            {
+              data: '100.0',
+              kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+              sprojectName: 'KnowHOW',
+              value: 100,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      filter1: 'develop -> knowhow-common -> KnowHOW',
+      filter2: 'Vlad Dinu',
+      value: [
+        {
+          data: 'KnowHOW',
+          maturity: '1',
+          value: [
+            {
+              data: '0.0',
+              kpiGroup: 'develop -> knowhow-common -> KnowHOW#Vlad Dinu',
+              sprojectName: 'KnowHOW',
+              value: 0,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  mockUpdatedConfigGlobalData: any[];
 
   constructor(
     public service: SharedService,
@@ -785,6 +923,619 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData = this.configGlobalData?.filter(
         (item) => item.shown,
       );
+
+      this.mockUpdatedConfigGlobalData = [
+        {
+          kpiId: 'kpi158',
+          kpiName: 'Mean Time To Merge',
+          isEnabled: true,
+          order: 1,
+          kpiDetail: {
+            id: '65793ddc127be336160bc113',
+            kpiId: 'kpi158',
+            kpiName: 'Mean Time To Merge',
+            isDeleted: 'False',
+            defaultOrder: 2,
+            kpiCategory: 'Developer',
+            kpiUnit: 'Hours',
+            chartType: 'card',
+            upperThresholdBG: 'red',
+            lowerThresholdBG: 'white',
+            showTrend: true,
+            isPositiveTrend: false,
+            calculateMaturity: true,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '10',
+            thresholdValue: 55,
+            kanban: false,
+            groupId: 6,
+            kpiInfo: {
+              definition:
+                'MEAN TIME TO MERGE measures the efficiency of the code review process in a team',
+              details: [
+                {
+                  type: 'paragraph',
+                  value:
+                    'It is calculated in â€˜Hoursâ€™. Fewer the Hours better is the â€˜Speedâ€™',
+                },
+                {
+                  type: 'paragraph',
+                  value:
+                    'A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive',
+                },
+                {
+                  type: 'paragraph',
+                  value:
+                    'Maturity of the KPI is calculated based on the average of the last 5 weeks',
+                },
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi158-Mean+Time+To+Merge',
+                  },
+                },
+              ],
+              maturityLevels: [
+                {
+                  level: 'M5',
+                  bgColor: '#6cab61',
+                  range: '<4 Hours',
+                },
+                {
+                  level: 'M4',
+                  bgColor: '#AEDB76',
+                  range: '4-8 Hours',
+                },
+                {
+                  level: 'M3',
+                  bgColor: '#eff173',
+                  range: '8-16 Hours',
+                },
+                {
+                  level: 'M2',
+                  bgColor: '#ffc35b',
+                  range: '16-48 Hours',
+                },
+                {
+                  level: 'M1',
+                  bgColor: '#F06667',
+                  range: '>48 Hours',
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Count(Hours)',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi160',
+          kpiName: 'Pickup Time',
+          isEnabled: true,
+          order: 2,
+          kpiDetail: {
+            id: '65793ddc127be336160bc115',
+            kpiId: 'kpi160',
+            kpiName: 'Pickup Time',
+            isDeleted: 'false',
+            defaultOrder: 3,
+            kpiCategory: 'Developer',
+            kpiUnit: 'Hours',
+            chartType: 'card',
+            upperThresholdBG: 'red',
+            lowerThresholdBG: 'white',
+            showTrend: true,
+            isPositiveTrend: false,
+            calculateMaturity: true,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: 10,
+            thresholdValue: 20,
+            kanban: false,
+            groupId: 6,
+            kpiInfo: {
+              definition:
+                'Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review',
+              details: [
+                {
+                  type: 'paragraph',
+                  value:
+                    'It is calculated in â€˜Hoursâ€™. Fewer the Hours better is the â€˜Speedâ€™',
+                },
+                {
+                  type: 'paragraph',
+                  value:
+                    'A progress indicator shows trend of Pickup Time in the last 2 weeks. A downward trend is considered positive',
+                },
+                {
+                  type: 'paragraph',
+                  value:
+                    'Maturity of the KPI is calculated based on the average of the last 5 weeks',
+                },
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi160-Pickup+Time',
+                  },
+                },
+              ],
+              maturityLevels: [
+                {
+                  level: 'M5',
+                  bgColor: '#6cab61',
+                  range: '<4 Hours',
+                },
+                {
+                  level: 'M4',
+                  bgColor: '#AEDB76',
+                  range: '4-8 Hours',
+                },
+                {
+                  level: 'M3',
+                  bgColor: '#eff173',
+                  range: '8-16 Hours',
+                },
+                {
+                  level: 'M2',
+                  bgColor: '#ffc35b',
+                  range: '16-48 Hours',
+                },
+                {
+                  level: 'M1',
+                  bgColor: '#F06667',
+                  range: '>48 Hours',
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Count (Hours)',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi185',
+          kpiName: 'Innovation Rate',
+          isEnabled: true,
+          order: 3,
+          kpiDetail: {
+            id: '6720d1339ac57e3618dfac1e',
+            kpiId: 'kpi185',
+            kpiName: 'Innovation Rate',
+            isDeleted: 'false',
+            defaultOrder: 9,
+            kpiCategory: 'Developer',
+            kpiUnit: '%',
+            chartType: 'card',
+            upperThresholdBG: 'white',
+            lowerThresholdBG: 'red',
+            showTrend: true,
+            isPositiveTrend: true,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '',
+            kanban: false,
+            groupId: 7,
+            kpiInfo: {
+              definition:
+                'Innovation rate aims at identifying the volume of brand new additions to a codebase (functional and non-functional features, etc) by measuring the newly added code at repository level.\nMore precisely, the New source lines of code(LOC) from a commit. (git log stats insertions)',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi185-Innovation+Rate',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Days/Weeks/Months',
+            yaxisLabel: 'Percentage',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi186',
+          kpiName: 'Defect Rate',
+          isEnabled: true,
+          order: 4,
+          kpiDetail: {
+            id: '6720d1339ac57e3618dfac20',
+            kpiId: 'kpi186',
+            kpiName: 'Defect Rate',
+            isDeleted: 'false',
+            defaultOrder: 10,
+            kpiCategory: 'Developer',
+            kpiUnit: '%',
+            chartType: 'card',
+            upperThresholdBG: 'red',
+            lowerThresholdBG: 'white',
+            showTrend: true,
+            isPositiveTrend: false,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '',
+            kanban: false,
+            groupId: 6,
+            kpiInfo: {
+              definition:
+                'The percentage of merged pull requests that are addressing defects.',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi186-Defect+Rate',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Days/Weeks/Months',
+            yaxisLabel: 'Percentage',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi157',
+          kpiName: 'Check-Ins & Merge Requests',
+          isEnabled: true,
+          order: 5,
+          kpiDetail: {
+            id: '65793ddc127be336160bc112',
+            kpiId: 'kpi157',
+            kpiName: 'Check-Ins & Merge Requests',
+            isDeleted: 'False',
+            defaultOrder: 1,
+            kpiCategory: 'Developer',
+            kpiUnit: 'MRs',
+            chartType: 'grouped_column_plus_line',
+            showTrend: true,
+            isPositiveTrend: true,
+            lineLegend: 'Merge Requests',
+            barLegend: 'Commits',
+            calculateMaturity: true,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: 10,
+            thresholdValue: 55,
+            kanban: false,
+            groupId: 6,
+            kpiInfo: {
+              definition:
+                'NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process',
+              details: [
+                {
+                  type: 'paragraph',
+                  value:
+                    'It is calculated as a Count. Higher the count better is the â€˜Speedâ€™',
+                },
+                {
+                  type: 'paragraph',
+                  value:
+                    'A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive',
+                },
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi157-Check-Ins+&+Merge+Requests',
+                  },
+                },
+              ],
+              maturityLevels: [
+                {
+                  level: 'M5',
+                  bgColor: '#6cab61',
+                  range: '> 16',
+                },
+                {
+                  level: 'M4',
+                  bgColor: '#AEDB76',
+                  range: '8-16',
+                },
+                {
+                  level: 'M3',
+                  bgColor: '#eff173',
+                  range: '4-8',
+                },
+                {
+                  level: 'M2',
+                  bgColor: '#ffc35b',
+                  range: '2-4',
+                },
+                {
+                  level: 'M1',
+                  bgColor: '#F06667',
+                  range: '0-2',
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-2', '2-4', '4-8', '8-16', '16-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Days',
+            yaxisLabel: 'Count',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi162',
+          kpiName: 'PR Size',
+          isEnabled: true,
+          order: 6,
+          kpiDetail: {
+            id: '65793ddc127be336160bc116',
+            kpiId: 'kpi162',
+            kpiName: 'PR Size',
+            isDeleted: 'false',
+            defaultOrder: 4,
+            kpiCategory: 'Developer',
+            kpiUnit: 'Lines',
+            chartType: 'scatter',
+            upperThresholdBG: 'red',
+            lowerThresholdBG: 'white',
+            showTrend: false,
+            isPositiveTrend: false,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: 10,
+            thresholdValue: 4,
+            kanban: false,
+            groupId: 6,
+            kpiInfo: {
+              definition:
+                'Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi162-PR+Size',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Count (No. of Lines)',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi182',
+          kpiName: 'PR Success Rate',
+          isEnabled: true,
+          order: 7,
+          kpiDetail: {
+            id: '6720d1329ac57e3618dfac18',
+            kpiId: 'kpi182',
+            kpiName: 'PR Success Rate',
+            isDeleted: 'false',
+            defaultOrder: 5,
+            kpiCategory: 'Developer',
+            kpiUnit: '%',
+            chartType: 'semi-circle-donut-chart',
+            upperThresholdBG: 'white',
+            lowerThresholdBG: 'red',
+            showTrend: true,
+            isPositiveTrend: true,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '',
+            thresholdValue: 50,
+            kanban: false,
+            groupId: 7,
+            kpiInfo: {
+              definition:
+                'PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi182-PR+Success+Rate',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-5', '5-20', '20-50', '50-80', '80-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Percentage',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi173',
+          kpiName: 'Rework Rate',
+          isEnabled: true,
+          order: 8,
+          kpiDetail: {
+            id: '65eeb08194c86b415f97893a',
+            kpiId: 'kpi173',
+            kpiName: 'Rework Rate',
+            isDeleted: 'false',
+            defaultOrder: 5,
+            kpiCategory: 'Developer',
+            kpiUnit: '%',
+            chartType: 'progressbar',
+            showTrend: true,
+            isPositiveTrend: false,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '',
+            kanban: false,
+            groupId: 7,
+            kpiInfo: {
+              definition:
+                'Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks).',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi173-Rework+Rate',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-80', '80-50', '50-20', '20-5', '5-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Percentage',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+        {
+          kpiId: 'kpi201',
+          kpiName: 'Code Quality Metrics',
+          isDeleted: 'False',
+          defaultOrder: 28,
+          kpiUnit: '%',
+          chartType: 'progressbar',
+          upperThresholdBG: 'red',
+          lowerThresholdBG: 'white',
+          showTrend: true,
+          isPositiveTrend: false,
+          calculateMaturity: false,
+          hideOverallFilter: false,
+          kpiSource: 'Jira',
+          maxValue: 100,
+          thresholdValue: 20,
+          kanban: false,
+          groupId: 26,
+          kpiInfo: {
+            definition:
+              'Defects Breached SLAs (%) refers to the percentage of defects within a system or service that fail to meet the agreed-upon Service Level Agreement (SLA) timeframes.',
+            formula: [
+              {
+                lhs: 'Defects Breached SLA (%)',
+                operator: 'division',
+                operands: [
+                  'Number of Resolved Defects that breached SLA',
+                  'Total Resolved Defects',
+                ],
+              },
+            ],
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/270794755/Defects+Breached+SLAs',
+                },
+              },
+            ],
+          },
+          aggregationCriteria: 'average',
+          isTrendCalculative: false,
+          isAdditionalFilterSupport: true,
+          combinedKpiSource: 'Jira',
+        },
+        {
+          kpiId: 'kpi181',
+          kpiName: 'PR Decline Rate',
+          isEnabled: true,
+          order: 10,
+          kpiDetail: {
+            id: '6720d1329ac57e3618dfac17',
+            kpiId: 'kpi181',
+            kpiName: 'PR Decline Rate',
+            isDeleted: 'false',
+            defaultOrder: 5,
+            kpiCategory: 'Developer',
+            kpiUnit: '%',
+            chartType: 'line',
+            upperThresholdBG: 'red',
+            lowerThresholdBG: 'white',
+            showTrend: true,
+            isPositiveTrend: false,
+            calculateMaturity: false,
+            hideOverallFilter: true,
+            kpiSource: 'BitBucket',
+            combinedKpiSource: 'Bitbucket/AzureRepository/GitHub/GitLab',
+            maxValue: '',
+            thresholdValue: 50,
+            kanban: false,
+            groupId: 7,
+            kpiInfo: {
+              definition:
+                'The percentage of opened Pull Requests that are declined within a timeframe.',
+              details: [
+                {
+                  type: 'link',
+                  kpiLinkDetail: {
+                    text: 'Detailed Information at',
+                    link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi181-PR+Decline+Rate',
+                  },
+                },
+              ],
+            },
+            kpiFilter: 'dropDown',
+            aggregationCriteria: 'average',
+            maturityRange: ['-80', '80-50', '50-20', '20-5', '5-'],
+            isRepoToolKpi: true,
+            trendCalculative: false,
+            xaxisLabel: 'Weeks',
+            yaxisLabel: 'Percentage',
+            isAdditionalFilterSupport: false,
+          },
+          shown: true,
+        },
+      ];
 
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
@@ -1651,10 +2402,2936 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
     }
+    /* Temporary workaround: Using setTimeout to simulate async behavior
+    setTimeout(() => {
+      this.setupSearchQuerySubscription();
+      // this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
+      this.bitBucketKpiData = {
+        kpi158: {
+          kpiId: 'kpi158',
+          kpiName: 'Mean Time To Merge',
+          unit: 'Hours',
+          chartType: '',
+          id: '65793ddc127be336160bc113',
+          isDeleted: 'False',
+          kpiCategory: 'Developer',
+          kpiUnit: 'Hours',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 55,
+          maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+          groupId: 6,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'MEAN TIME TO MERGE measures the efficiency of the code review process in a team',
+            details: [
+              {
+                type: 'paragraph',
+                value:
+                  'It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’',
+              },
+              {
+                type: 'paragraph',
+                value:
+                  'A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive',
+              },
+              {
+                type: 'paragraph',
+                value:
+                  'Maturity of the KPI is calculated based on the average of the last 5 weeks',
+              },
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi158-Mean+Time+To+Merge',
+                },
+              },
+            ],
+            maturityLevels: [
+              {
+                level: 'M5',
+                bgColor: '#6cab61',
+                range: '<4 Hours',
+              },
+              {
+                level: 'M4',
+                bgColor: '#AEDB76',
+                range: '4-8 Hours',
+              },
+              {
+                level: 'M3',
+                bgColor: '#eff173',
+                range: '8-16 Hours',
+              },
+              {
+                level: 'M2',
+                bgColor: '#ffc35b',
+                range: '16-48 Hours',
+              },
+              {
+                level: 'M1',
+                bgColor: '#F06667',
+                range: '>48 Hours',
+              },
+            ],
+          },
+          maxValue: '10',
+        },
+        kpi160: {
+          kpiId: 'kpi160',
+          kpiName: 'Pickup Time',
+          unit: 'Hours',
+          chartType: '',
+          id: '65793ddc127be336160bc115',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: 'Hours',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 20,
+          maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+          groupId: 6,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review',
+            details: [
+              {
+                type: 'paragraph',
+                value:
+                  'It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’',
+              },
+              {
+                type: 'paragraph',
+                value:
+                  'A progress indicator shows trend of Pickup Time in the last 2 weeks. A downward trend is considered positive',
+              },
+              {
+                type: 'paragraph',
+                value:
+                  'Maturity of the KPI is calculated based on the average of the last 5 weeks',
+              },
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi160-Pickup+Time',
+                },
+              },
+            ],
+            maturityLevels: [
+              {
+                level: 'M5',
+                bgColor: '#6cab61',
+                range: '<4 Hours',
+              },
+              {
+                level: 'M4',
+                bgColor: '#AEDB76',
+                range: '4-8 Hours',
+              },
+              {
+                level: 'M3',
+                bgColor: '#eff173',
+                range: '8-16 Hours',
+              },
+              {
+                level: 'M2',
+                bgColor: '#ffc35b',
+                range: '16-48 Hours',
+              },
+              {
+                level: 'M1',
+                bgColor: '#F06667',
+                range: '>48 Hours',
+              },
+            ],
+          },
+          maxValue: 10,
+        },
+        kpi185: {
+          kpiId: 'kpi185',
+          kpiName: 'Innovation Rate',
+          unit: '%',
+          chartType: '',
+          id: '6720d1339ac57e3618dfac1e',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 0,
+          groupId: 7,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'Innovation rate aims at identifying the volume of brand new additions to a codebase (functional and non-functional features, etc) by measuring the newly added code at repository level.\nMore precisely, the New source lines of code(LOC) from a commit. (git log stats insertions)',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi185-Innovation+Rate',
+                },
+              },
+            ],
+          },
+          maxValue: '',
+        },
+        kpi186: {
+          kpiId: 'kpi186',
+          kpiName: 'Defect Rate',
+          unit: '%',
+          chartType: '',
+          id: '6720d1339ac57e3618dfac20',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 0,
+          groupId: 6,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  label: 'branch#Overall',
+                  value: 2,
+                  value1: 13,
+                  unit: 'hrs',
+                  unit1: '%',
+                  modalValues: [],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'The percentage of merged pull requests that are addressing defects.',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi186-Defect+Rate',
+                },
+              },
+            ],
+          },
+          maxValue: '',
+        },
+        kpi157: {
+          kpiId: 'kpi157',
+          kpiName: 'Check-Ins & Merge Requests',
+          unit: 'MRs',
+          chartType: '',
+          id: '65793ddc127be336160bc112',
+          isDeleted: 'False',
+          kpiCategory: 'Developer',
+          kpiUnit: 'MRs',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 21,
+          maturityRange: ['-2', '2-4', '4-8', '8-16', '16-'],
+          groupId: 6,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#Akshat Shrivastav',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 2,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-common -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 5,
+                        'No. of Merge Requests': 3,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 3,
+                      value: 5,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'gurdeep-singh-49',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-common -> KnowHOW#gurdeep-singh-49',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'rapkalya',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#rapkalya',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: '74697698+rapkalya@users.noreply.github.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 4,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#74697698+rapkalya@users.noreply.github.com',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 4,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Kunal Kamble',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 12,
+                        'No. of Merge Requests': 7,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 7,
+                      value: 12,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Shubh Narayan',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 3,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Shubh Narayan',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 3,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'gurdeep-singh-49',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#gurdeep-singh-49',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: '74697698+rapkalya@users.noreply.github.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#74697698+rapkalya@users.noreply.github.com',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'Brahmanand Mishra',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#Brahmanand Mishra',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 7,
+                        'No. of Merge Requests': 5,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 5,
+                      value: 7,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'gurdeep.singh@publicissapient.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-api -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 9,
+                        'No. of Merge Requests': 4,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 4,
+                      value: 9,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'rapkalya',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 8,
+                        'No. of Merge Requests': 3,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#rapkalya',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 3,
+                      value: 8,
+                    },
+                  ],
+                  maturityValue: '3',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-common -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-common -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 3,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 3,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-common -> KnowHOW',
+              filter2: 'rapkalya',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#rapkalya',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: '74697698+rapkalya@users.noreply.github.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 4,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#74697698+rapkalya@users.noreply.github.com',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 4,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Kunal Kamble',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 10,
+                        'No. of Merge Requests': 5,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 5,
+                      value: 10,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Shubh Narayan',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 3,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Shubh Narayan',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 3,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: '74697698+rapkalya@users.noreply.github.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-ui -> KnowHOW#74697698+rapkalya@users.noreply.github.com',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: 'Brahmanand Mishra',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '2',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 2,
+                        'No. of Merge Requests': 2,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-ui -> KnowHOW#Brahmanand Mishra',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 2,
+                      value: 2,
+                    },
+                  ],
+                  maturityValue: '2',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 1,
+                        'No. of Merge Requests': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-ui -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 1,
+                      value: 1,
+                    },
+                  ],
+                  maturityValue: '1',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      hoverValue: {
+                        'No. of Check in': 5,
+                        'No. of Merge Requests': 3,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 3,
+                      value: 5,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                    {
+                      hoverValue: {
+                        'No. of Check in': 0,
+                        'No. of Merge Requests': 0,
+                      },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      lineValue: 0,
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0',
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process',
+            details: [
+              {
+                type: 'paragraph',
+                value:
+                  'It is calculated as a Count. Higher the count better is the ‘Speed’',
+              },
+              {
+                type: 'paragraph',
+                value:
+                  'A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive',
+              },
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi157-Check-Ins+&+Merge+Requests',
+                },
+              },
+            ],
+            maturityLevels: [
+              {
+                level: 'M5',
+                bgColor: '#6cab61',
+                range: '> 16',
+              },
+              {
+                level: 'M4',
+                bgColor: '#AEDB76',
+                range: '8-16',
+              },
+              {
+                level: 'M3',
+                bgColor: '#eff173',
+                range: '4-8',
+              },
+              {
+                level: 'M2',
+                bgColor: '#ffc35b',
+                range: '2-4',
+              },
+              {
+                level: 'M1',
+                bgColor: '#F06667',
+                range: '0-2',
+              },
+            ],
+          },
+          maxValue: 10,
+        },
+        kpi162: {
+          kpiId: 'kpi162',
+          kpiName: 'PR Size',
+          unit: 'Lines',
+          chartType: '',
+          id: '65793ddc127be336160bc116',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: 'Lines',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 4,
+          maturityRange: ['-16', '16-8', '8-4', '4-2', '2-'],
+          groupId: 6,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      data: '93',
+                      hoverValue: {
+                        'No of PRs': 1,
+                      },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#Akshat Shrivastav',
+                      sprojectName: 'KnowHOW',
+                      value: 93,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                  ],
+                  maturityValue: '93',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      data: '2170',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 2170,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                    {
+                      data: '0',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                    {
+                      data: '0',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                    {
+                      data: '0',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                    {
+                      data: '0',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                  ],
+                  maturityValue: '434',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Vlad Dinu',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      data: '1160',
+                      hoverValue: { 'No of lines': 100 },
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Vlad Dinu',
+                      sprojectName: 'KnowHOW',
+                      value: 1160,
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                  ],
+                  maturityValue: '1160',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'gurdeep.singh@publicissapient.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '1',
+                  value: [
+                    {
+                      date: '29-Sep-2025 to 05-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      hoverValue: { 'No of lines': 100 },
+                      PullRequests: [
+                        { size: '109', ID: '1234' },
+                        { size: '1876', ID: '43' },
+                        { size: '109', ID: '34' },
+                      ],
+                    },
+                    {
+                      date: '06-Oct-2025 to 15-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      hoverValue: { 'No of lines': 1320 },
+                      PullRequests: [
+                        { size: '1549', ID: '12' },
+                        { size: '876', ID: '438' },
+                        { size: '1879', ID: '342' },
+                      ],
+                    },
+                    {
+                      date: '16-Oct-2025 to 22-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      hoverValue: { 'No of lines': 890 },
+                      PullRequests: [
+                        { size: '450', ID: '56' },
+                        { size: '1200', ID: '78' },
+                        { size: '650', ID: '90' },
+                      ],
+                    },
+                    {
+                      date: '23-Oct-2025 to 29-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      hoverValue: { 'No of lines': 1100 },
+                      PullRequests: [
+                        { size: '890', ID: '101' },
+                        { size: '1650', ID: '102' },
+                        { size: '320', ID: '103' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi162-PR+Size',
+                },
+              },
+            ],
+          },
+          maxValue: 10,
+        },
+        kpi182: {
+          kpiId: 'kpi182',
+          kpiName: 'PR Success Rate',
+          unit: '%',
+          chartType: '',
+          id: '6720d1329ac57e3618dfac18',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 50,
+          maturityRange: ['-5', '5-20', '20-50', '50-80', '80-'],
+          groupId: 7,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#Akshat Shrivastav',
+                      value: 0.0,
+                      sprojectName: 'KnowHOW',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      data: '100.0',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 100,
+                      hoverValue: {},
+                      date: '',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      data: '100.0',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 100,
+                      hoverValue: {},
+                      date: '',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Vlad Dinu',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      data: '0.0',
+                      kpiGroup:
+                        'develop -> knowhow-common -> KnowHOW#Vlad Dinu',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                      hoverValue: {},
+                      date: '',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi182-PR+Success+Rate',
+                },
+              },
+            ],
+          },
+          maxValue: '',
+        },
+        kpi173: {
+          kpiId: 'kpi173',
+          kpiName: 'Rework Rate',
+          unit: '%',
+          chartType: '',
+          id: '65eeb08194c86b415f97893a',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 0,
+          maturityRange: ['-80', '80-50', '50-20', '20-5', '5-'],
+          groupId: 7,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      value: 0,
+                      value1: 0,
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks).',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi173-Rework+Rate',
+                },
+              },
+            ],
+          },
+          maxValue: '',
+        },
+        kpi181: {
+          kpiId: 'kpi181',
+          kpiName: 'PR Decline Rate',
+          unit: '%',
+          chartType: '',
+          id: '6720d1329ac57e3618dfac17',
+          isDeleted: 'false',
+          kpiCategory: 'Developer',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'BitBucket',
+          thresholdValue: 50,
+          maturityRange: ['-80', '80-50', '50-20', '20-5', '5-'],
+          groupId: 7,
+          responseCode: '200',
+          trendValueList: [
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Akshat Shrivastav',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#Akshat Shrivastav',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'Vlad Dinu',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-api -> KnowHOW#Vlad Dinu',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-api -> KnowHOW',
+              filter2: 'gurdeep.singh@publicissapient.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'Vlad Dinu',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-common -> KnowHOW#Vlad Dinu',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-common -> KnowHOW',
+              filter2: 'gurdeep-singh-49',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-common -> KnowHOW#gurdeep-singh-49',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Kunal Kamble',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Kunal Kamble',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Shubh Narayan',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Shubh Narayan',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'Vlad Dinu',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#Vlad Dinu',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-processors -> KnowHOW',
+              filter2: 'gurdeep-singh-49',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-processors -> KnowHOW#gurdeep-singh-49',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'gurdeep.singh@publicissapient.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#gurdeep.singh@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'develop -> knowhow-ui -> KnowHOW',
+              filter2: 'raja.kurru@publicissapient.com',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'develop -> knowhow-ui -> KnowHOW#raja.kurru@publicissapient.com',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-api -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '4',
+                  value: [
+                    {
+                      data: '33.33333333333333',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 33.33333333333333,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '6.67',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-api -> KnowHOW',
+              filter2: 'rapkalya',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '3',
+                  value: [
+                    {
+                      data: '50.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-api -> KnowHOW#rapkalya',
+                      sprojectName: 'KnowHOW',
+                      value: 50,
+                    },
+                  ],
+                  maturityValue: '50.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-common -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-common -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-common -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-common -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-processors -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup:
+                        'master -> knowhow-processors -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: 'Mamatha Paccha',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup:
+                        'master -> knowhow-ui -> KnowHOW#Mamatha Paccha',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+            {
+              filter1: 'master -> knowhow-ui -> KnowHOW',
+              filter2: 'Overall',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  maturity: '5',
+                  value: [
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '06-Oct-2025 to 12-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '13-Oct-2025 to 19-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '20-Oct-2025 to 26-Oct-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '27-Oct-2025 to 02-Nov-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                    {
+                      data: '0.0',
+                      hoverValue: {},
+                      date: '03-Nov-2025 to 09-Nov-2025',
+                      kpiGroup: 'master -> knowhow-ui -> KnowHOW#Overall',
+                      sprojectName: 'KnowHOW',
+                      value: 0,
+                    },
+                  ],
+                  maturityValue: '0.0',
+                },
+              ],
+            },
+          ],
+          kpiInfo: {
+            definition:
+              'The percentage of opened Pull Requests that are declined within a timeframe.',
+            details: [
+              {
+                type: 'link',
+                kpiLinkDetail: {
+                  text: 'Detailed Information at',
+                  link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi181-PR+Decline+Rate',
+                },
+              },
+            ],
+          },
+          maxValue: '',
+        },
+      };
+      console.log('this.bitBucketKpiData ', this.bitBucketKpiData);
+      this.fillKPIResponseCode(this.bitBucketKpiData);
+      this.createAllKpiArray(this.bitBucketKpiData);
+      this.removeLoaderFromKPIs(this.bitBucketKpiData);
+    }, 500);
+    */
+    // will be removed later after BE is ready
+
+    // ends here
     this.bitBucketKpiRequest = this.httpService
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
+          console.log('getData ', getData);
           this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
@@ -1675,7 +5352,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of BitBucket(scrum)
   postBitBucketKanbanKpi(postData, source): void {
-    if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
+    /*   if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
     }
     this.bitBucketKpiRequest = this.httpService
@@ -1698,6 +5375,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.handleKPIError(postData);
         },
       );
+
+    this.setupSearchQuerySubscription(); */
   }
 
   // post request of Jira(Kanban)
@@ -2922,6 +6601,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
       }
     }
+
+    console.log('this.allKpiArray ', this.allKpiArray);
   }
 
   appendParentName(data) {
@@ -4804,7 +8485,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkKPIPresence(kpi) {
     if (this.tabsArr.size > 1) {
       return (
-        this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']
+        this.selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&
+        kpi['isEnabled']
       );
     } else {
       return kpi['isEnabled'];

@@ -1,31 +1,32 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import * as d3 from 'd3';
+import { HelperService } from 'src/app/services/helper.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 interface PullRequest {
   size: string;
-  ID: string;
+  label: string;
+  hoverValue: {
+    'No of lines': number;
+  };
 }
 
 interface WeekData {
   date: string;
   kpiGroup: string;
   sprojectName: string;
-  hoverValue: {
-    'No of lines': number;
-  };
-  PullRequests: PullRequest[];
+  bubblePoints: PullRequest[];
 }
 
 interface MaturityData {
   data: string;
-  maturity: string;
   value: WeekData[];
-}
-
-interface ChartData {
-  filter1: string;
-  filter2: string;
-  value: MaturityData[];
 }
 
 interface PlotPoint {
@@ -42,92 +43,119 @@ interface PlotPoint {
   styleUrl: './scatter-plot-chart.component.css',
 })
 export class ScatterPlotChartComponent {
-  @ViewChild('chartSvg', { static: true }) svgRef!: ElementRef;
-  @ViewChild('tooltip', { static: true }) tooltipRef!: ElementRef;
+  // @ViewChild('chartSvg', { static: true }) svgRef!: ElementRef;
+  // @ViewChild('tooltip', { static: true }) tooltipRef!: ElementRef;
 
-  @Input() data: ChartData = {
-    filter1: 'develop -> knowhow-api -> KnowHOW',
-    filter2: 'gurdeep.singh@publicissapient.com',
-    value: [
-      {
-        data: 'KnowHOW',
-        maturity: '1',
-        value: [
-          {
-            date: '29-Sep-2025 to 05-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 100 },
-            PullRequests: [
-              { size: '109', ID: '1234' },
-              { size: '1876', ID: '43' },
-              { size: '109', ID: '34' },
-            ],
-          },
-          {
-            date: '06-Oct-2025 to 15-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 1320 },
-            PullRequests: [
-              { size: '1549', ID: '12' },
-              { size: '876', ID: '438' },
-              { size: '1879', ID: '342' },
-            ],
-          },
-          {
-            date: '16-Oct-2025 to 22-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 890 },
-            PullRequests: [
-              { size: '450', ID: '56' },
-              { size: '1200', ID: '78' },
-              { size: '650', ID: '90' },
-            ],
-          },
-          {
-            date: '23-Oct-2025 to 29-Oct-2025',
-            kpiGroup:
-              'develop -> knowhow-api -> KnowHOW#gurdeep.singh@publicissapient.com',
-            sprojectName: 'KnowHOW',
-            hoverValue: { 'No of lines': 1100 },
-            PullRequests: [
-              { size: '890', ID: '101' },
-              { size: '1650', ID: '102' },
-              { size: '320', ID: '103' },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+  @Input() data: MaturityData[];
+  @Input() selectedtype: string;
+  @Input() kpiId: string;
+  @Input() yCaption: string;
+  @Input() xCaption: string;
+  @Input() unit?: string;
+  @Input() source = '';
 
-  ngOnInit(): void {
-    this.createChart();
+  @ViewChild('chartContainer', { static: false }) chartContainer: ElementRef;
+  @ViewChild('chartSvg', { static: false }) svgRef!: ElementRef;
+  @ViewChild('tooltip', { static: false }) tooltipRef!: ElementRef;
+
+  elem: any;
+  counter = 0;
+
+  constructor(public helper: HelperService, public service: SharedService) {}
+
+  ngAfterViewInit(): void {
+    if (this.svgRef?.nativeElement) {
+      this.elem = this.svgRef.nativeElement.parentElement;
+      // console.log('elem initialized in AfterViewInit:', this.elem);
+      this.createChart();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log('ngOnChanges triggered');
+    // console.log('this.elem:', this.elem);
+    // console.log('this.data:', this.data);
+    if (Object.keys(changes)?.length > 0) {
+      d3.select(this.svgRef?.nativeElement).selectAll('*').remove();
+      // d3.select(this.elem).select('svg').remove();
+      d3.select(this.elem).select('.sprint-legend-container').remove();
+      this.counter = 0; // Reset counter for legend
+      this.createChart();
+
+      if (
+        this.selectedtype?.toLowerCase() === 'kanban' ||
+        this.service.getSelectedTab()?.toLowerCase() === 'developer'
+      ) {
+        this.xCaption = this.service.getSelectedDateFilter();
+      }
+      if (changes['activeTab']) {
+        /** settimeout applied because dom is loading late */
+        setTimeout(() => {
+          this.createChart();
+        }, 0);
+      }
+    }
   }
 
   private processData(): PlotPoint[] {
     const points: PlotPoint[] = [];
 
-    if (this.data.value && this.data.value.length > 0) {
-      const weeklyData = this.data.value[0].value;
+    // console.log('scatter data ', this.data);
 
-      weeklyData.forEach((week, weekIndex) => {
-        week.PullRequests.forEach((pr) => {
+    // Check if data exists and has the expected structure
+    if (!this.data || this.data.length === 0) {
+      console.warn('No data available');
+      return points;
+    }
+
+    // Access the first item's value array directly
+    const weeklyData = this.data[0].value;
+
+    if (!weeklyData || weeklyData.length === 0) {
+      console.warn('No weekly data available');
+      return points;
+    }
+
+    // Process each week's PR values
+    weeklyData.forEach((week, weekIndex) => {
+      // console.log(`Week ${weekIndex + 1}:`, week);
+      // console.log(`bubblePoints for week ${weekIndex + 1}:`, week.bubblePoints);
+
+      if (
+        week.bubblePoints &&
+        Array.isArray(week.bubblePoints) &&
+        week.bubblePoints.length > 0
+      ) {
+        if (week.bubblePoints.length === 0) {
+          console.warn(`Week ${weekIndex + 1} has empty bubblePoints array`);
+        }
+
+        week.bubblePoints.forEach((pr) => {
+          // console.log(`Processing PR:`, pr);
           points.push({
             weekNumber: weekIndex + 1,
             size: parseInt(pr.size, 10),
-            prId: pr.ID,
+            prId: pr.label,
             date: week.date,
           });
         });
-      });
-    }
+      } else {
+        console.warn(
+          `Week ${
+            weekIndex + 1
+          } has no bubblePoints or bubblePoints is not an array:`,
+          week,
+        );
+        points.push({
+          weekNumber: weekIndex + 1,
+          size: 0,
+          prId: 'N/A',
+          date: week.date,
+        });
+      }
+    });
 
+    // console.log(`Total points processed: ${points.length}`, points);
     return points;
   }
 
@@ -144,7 +172,7 @@ export class ScatterPlotChartComponent {
         jitteredPoints.push({ ...group[0], jitterX: 0 });
       } else {
         // Multiple points at same position, apply jitter
-        const jitterSpacing = 0.08; // Small horizontal offset
+        const jitterSpacing = 0.08;
         const totalWidth = (group.length - 1) * jitterSpacing;
 
         group.forEach((point, index) => {
@@ -157,19 +185,27 @@ export class ScatterPlotChartComponent {
     return jitteredPoints;
   }
 
+  private roundToNearestLarge(value: number): number {
+    if (value <= 0) return 0;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+    return Math.ceil(value / magnitude) * magnitude;
+  }
+
   private createChart(): void {
     const plotPoints = this.processData();
+    // console.log('plotPoints:', plotPoints);
+    // console.log('SVG ref:', this.svgRef?.nativeElement);
 
     if (plotPoints.length === 0) {
-      console.warn('No data to display');
-      return;
+      console.warn('No data points to display, but will render empty chart');
     }
 
-    const jitteredPoints = this.applyJitter(plotPoints);
+    const jitteredPoints =
+      plotPoints.length > 0 ? this.applyJitter(plotPoints) : [];
 
-    const svg = d3.select(this.svgRef.nativeElement);
-    const width = 600;
-    const height = 400;
+    const svg = d3.select(this.svgRef?.nativeElement);
+    const width = 825;
+    const height = 215;
     const margin = { top: 20, right: 20, bottom: 60, left: 60 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
@@ -181,7 +217,10 @@ export class ScatterPlotChartComponent {
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Scales
-    const maxWeek = d3.max(plotPoints, (d) => d.weekNumber) || 4;
+    const maxWeek =
+      plotPoints.length > 0
+        ? d3.max(plotPoints, (d) => d.weekNumber)
+        : this.data?.[0]?.value?.length || 4;
     const weeks = Array.from({ length: maxWeek }, (_, i) => i + 1);
 
     const xScale = d3
@@ -189,16 +228,19 @@ export class ScatterPlotChartComponent {
       .domain([0.5, maxWeek + 0.5])
       .range([0, chartWidth]);
 
-    const maxSize = d3.max(plotPoints, (d) => d.size) || 2000;
+    const maxSize =
+      plotPoints.length > 0
+        ? this.roundToNearestLarge(d3.max(plotPoints, (d) => d.size))
+        : 100;
     const yScale = d3
       .scaleLinear()
-      .domain([0, maxSize * 1.1]) // Add 10% padding at top
+      .domain([0, Math.max(maxSize * 1.1, 100)])
       .range([chartHeight, 0])
       .nice();
 
-    // Radius scale using square root for better visual distribution
+    // Radius scale
     const maxRadius = 15;
-    const minRadius = 3;
+    const minRadius = 0.5;
     const radiusScale = d3
       .scaleSqrt()
       .domain([0, maxSize])
@@ -258,7 +300,7 @@ export class ScatterPlotChartComponent {
       .attr('text-anchor', 'middle')
       .style('font-size', '12px')
       .style('fill', '#666')
-      .text('Week');
+      .text(this.xCaption || 'Week');
 
     // Y-axis
     const yAxis = d3.axisLeft(yScale).ticks(5).tickSize(0).tickPadding(10);
@@ -278,12 +320,13 @@ export class ScatterPlotChartComponent {
       .attr('text-anchor', 'middle')
       .style('font-size', '12px')
       .style('fill', '#666')
-      .text('Lines');
+      .text(this.yCaption || 'Lines');
 
     // Tooltip
-    const tooltip = d3.select(this.tooltipRef.nativeElement);
+    const tooltip = d3.select(this.tooltipRef?.nativeElement);
 
-    // Plot points with animation and jitter
+    // Plot points with animation and jitter (only if there are points)
+    // if (jitteredPoints.length > 0) {
     g.selectAll('.data-point')
       .data(jitteredPoints)
       .enter()
@@ -316,6 +359,197 @@ export class ScatterPlotChartComponent {
       .duration(1000)
       .delay((d, i) => i * 50)
       .attr('cy', (d) => yScale(d.size))
-      .attr('r', (d) => radiusScale(d.size));
+      .attr('r', (d) => (d.size === 0 ? 0.5 : radiusScale(d.size)));
+    // }
+
+    // Render legend
+    // console.log('scatter data to flatten ', this.data);
+    this.renderSprintsLegend(this.data, this.xCaption);
+  }
+
+  flattenData(data: MaturityData[]) {
+    const sprintMap = new Map();
+    let sprintCounter = 1;
+
+    data.forEach((project) => {
+      const projectName = project.data.trim();
+
+      project.value.forEach((week, index) => {
+        const sprintKey = index;
+
+        if (!sprintMap.has(sprintKey)) {
+          sprintMap.set(sprintKey, {
+            sprintNumber: sprintCounter++,
+            projects: {},
+            sprints: [],
+          });
+        }
+
+        const sprintEntry = sprintMap.get(sprintKey);
+        const sprintData = sprintEntry.projects;
+
+        // Add week date
+        const xAxisName = week.date?.trim();
+        if (xAxisName && !sprintEntry.sprints.includes(xAxisName)) {
+          sprintEntry.sprints.push(xAxisName);
+        }
+
+        // Calculate total lines for this week from all PRs
+        const totalLines =
+          week.bubblePoints?.reduce((sum, pr) => {
+            return sum + (pr.hoverValue?.['No of lines'] || 0);
+          }, 0) || 0;
+
+        sprintData[projectName] = {
+          'No of lines': totalLines,
+        };
+      });
+    });
+
+    return Array.from(sprintMap.values());
+  }
+
+  renderSprintsLegend(data: MaturityData[], xAxisCaption: string) {
+    this.counter++;
+    if (this.counter === 1) {
+      const flattenedData = this.flattenData(data);
+      const legendData = flattenedData.map((item) => ({
+        sprintNumber: item.sprintNumber,
+        sprintLabel: item.sprints.join(', '),
+      }));
+
+      const body = d3.select(this.elem);
+
+      const container = body
+        .insert('div')
+        .attr('class', 'sprint-legend-container')
+        .style('margin', '20px 0 0 0')
+        .style('font-family', 'Arial, sans-serif')
+        .style('font-size', '14px')
+        .style('max-width', '100%');
+
+      // Toggle Button
+      const toggleButton = container
+        .append('button')
+        .style('margin', '0 0 10px 0')
+        .style('padding', '0')
+        .style('cursor', 'pointer')
+        .style('font-size', '14px')
+        .style('background', 'none')
+        .style('border', 'none')
+        .style('color', '#0b4bc8')
+        .style('text-decoration', 'underline')
+        .style('text-underline-offset', '5px')
+        .attr('class', 'p-element p-component')
+        .on('click', function () {
+          const isVisible = legend.style('display') !== 'none';
+          legend.style('display', isVisible ? 'none' : 'block');
+          legend.attr('aria-hidden', isVisible ? 'true' : 'false');
+          legend.attr('tabindex', isVisible ? '-1' : '0');
+          toggleButton.text(
+            isVisible ? 'Show X-Axis Legend' : 'Hide X-Axis Legend',
+          );
+        });
+
+      // Legend Box
+      const legend = container
+        .append('div')
+        .attr('class', 'sprint-legend')
+        .style('padding', '0')
+        .style('border', '1px solid #ddd')
+        .style('border-radius', '6px')
+        .style('margin-top', '10px')
+        .attr('role', 'region')
+        .attr('aria-labelledby', 'legend-title');
+
+      if (this.source === 'fromReport') {
+        legend.style('display', 'block');
+        toggleButton.text('Hide X-Axis Legend');
+        legend.attr('aria-hidden', 'false');
+      } else {
+        legend.style('display', 'none');
+        legend.attr('aria-hidden', 'true');
+        toggleButton.text('Show X-Axis Legend');
+      }
+
+      // Scrollable container
+      const scrollContainer = legend
+        .append('div')
+        .style('overflow-x', 'auto')
+        .style('max-width', '100%');
+
+      // Table
+      const table = scrollContainer
+        .append('table')
+        .attr('role', 'table')
+        .style('width', '100%')
+        .style('border-collapse', 'collapse')
+        .style('min-width', '400px');
+
+      // Table Header
+      const thead = table.append('thead').attr('role', 'rowgroup');
+      const headerRow = thead.append('tr').attr('role', 'row');
+
+      headerRow
+        .append('th')
+        .attr('role', 'columnheader')
+        .attr('scope', 'col')
+        .text('X-Axis')
+        .style('text-align', 'left')
+        .style('padding', '12px 10px')
+        .style('border-bottom', '2px solid #ccc')
+        .style('background-color', '#f0f0f0')
+        .style('color', '#222')
+        .style('width', '10%')
+        .style('font-weight', '600');
+
+      headerRow
+        .append('th')
+        .attr('role', 'columnheader')
+        .attr('scope', 'col')
+        .text('Legend')
+        .style('text-align', 'left')
+        .style('padding', '12px 10px')
+        .style('border-bottom', '2px solid #ccc')
+        .style('background-color', '#f0f0f0')
+        .style('color', '#222')
+        .style('font-weight', '600');
+
+      // Table Body
+      const tbody = table.append('tbody').attr('role', 'rowgroup');
+
+      const rows = tbody
+        .selectAll('tr')
+        .data(legendData)
+        .enter()
+        .append('tr')
+        .attr('role', 'row')
+        .style('background', (d, i) => (i % 2 === 0 ? '#fff' : '#fafafa'));
+
+      rows
+        .append('td')
+        .attr('role', 'cell')
+        .text((d) => `${xAxisCaption} ${d.sprintNumber}:`)
+        .style('padding', '10px 10px')
+        .style('border-bottom', '1px solid #eee')
+        .style('width', '10%')
+        .style('color', '#333');
+
+      rows
+        .append('td')
+        .attr('role', 'cell')
+        .text((d) => {
+          return this.getFormatedDateBasedOnType(d.sprintLabel, this.xCaption);
+        })
+        .style('padding', '10px 10px')
+        .style('border-bottom', '1px solid #eee')
+        .style('word-break', 'break-word')
+        .style('color', '#666');
+    }
+  }
+
+  getFormatedDateBasedOnType(date: string, xCaptionType: string) {
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 }

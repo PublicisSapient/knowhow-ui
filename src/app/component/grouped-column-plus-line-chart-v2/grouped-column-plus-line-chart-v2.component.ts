@@ -79,6 +79,7 @@ export class GroupedColumnPlusLineChartV2Component
   ) {}
 
   ngOnInit(): void {
+    console.log('data ', this.data);
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
@@ -98,6 +99,7 @@ export class GroupedColumnPlusLineChartV2Component
     this.unmodifiedData = JSON.parse(JSON.stringify(this.data));
     this.dataPoints = this.unmodifiedData.length;
     const data = this.transform2(this.data);
+    console.log('grouped column plus line chart v2 data ', data);
     this.draw2(data);
   }
 
@@ -701,7 +703,7 @@ export class GroupedColumnPlusLineChartV2Component
       // MODIFIED LEGEND FOR KPI157
       // ============================================
       if (this.kpiId === 'kpi157') {
-        // Show line legend for bars (since they're now lines)
+        /* // Show line legend for bars (since they're now lines)
         legend
           .append('svg:line')
           .attr('x1', 0)
@@ -718,7 +720,65 @@ export class GroupedColumnPlusLineChartV2Component
           .style('stroke-width', 1)
           .attr('r', 3)
           .attr('cx', 7)
-          .attr('cy', 6);
+          .attr('cy', 6); */
+        svgLegend.selectAll('*').remove();
+
+        const legendGroup = svgLegend
+          .append('g')
+          .attr('transform', 'translate(20, 20)') // Top-left corner with padding
+          .attr('class', 'kpi157-line-legend');
+
+        const legendItems = legendGroup
+          .selectAll('.legend-item')
+          .data(data[0].value)
+          .enter()
+          .append('g')
+          .attr('class', 'legend-item')
+          .attr('transform', (d, i) => `translate(0, ${i * 22})`)
+          .style('cursor', 'pointer');
+
+        // Line segment
+        legendItems
+          .append('line')
+          .attr('x1', 0)
+          .attr('x2', 18)
+          .attr('y1', 10)
+          .attr('y2', 10)
+          .style('stroke', (d, i) => color(i))
+          .style('stroke-width', 2);
+
+        // Circle (data point)
+        legendItems
+          .append('circle')
+          .attr('cx', 9)
+          .attr('cy', 10)
+          .attr('r', 3.5)
+          .style('fill', (d, i) => color(i))
+          .style('stroke', 'white')
+          .style('stroke-width', 1);
+
+        // Text label
+        legendItems
+          .append('text')
+          .attr('x', 28)
+          .attr('y', 10)
+          .attr('dy', '0.35em')
+          .style('font-size', '11px')
+          .style('fill', '#333')
+          .text((d) => {
+            const label = d.rate;
+            return label.length > 20 ? label.substring(0, 17) + '...' : label;
+          });
+
+        // Optional: Add title
+        svgLegend
+          .append('text')
+          .attr('x', 20)
+          .attr('y', 10)
+          .style('font-size', '12px')
+          .style('font-weight', '600')
+          .style('fill', '#333')
+          .text(this.barLegend || 'Series');
       } else {
         // Original rectangle legend
         legend
@@ -1107,6 +1167,9 @@ export class GroupedColumnPlusLineChartV2Component
               .style('width', 'auto');
           });
       }
+      if (this.kpiId === 'kpi157') {
+        this.renderKpi157Legend();
+      }
     } catch (ex) {
       console.log(ex);
     }
@@ -1350,5 +1413,79 @@ export class GroupedColumnPlusLineChartV2Component
   getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
+  }
+
+  renderKpi157Legend() {
+    // Remove any existing kpi157 legend
+    d3.select(this.elem).select('.kpi157-legend-container').remove();
+
+    const body = d3.select(this.elem);
+
+    // Create legend container positioned at top
+    const legendContainer = body
+      .insert('div', '.sprint-legend-container') // Insert at the very beginning
+      .attr('class', 'kpi157-legend-container')
+      .style('margin', '15px 0')
+      .style('display', 'inline-block')
+      .style('font-family', 'Arial, sans-serif');
+
+    // Legend title
+    legendContainer
+      .append('div')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .style('color', '#333')
+      .style('margin-bottom', '10px');
+
+    // Create SVG for legend items
+    const legendSvg = legendContainer
+      .append('svg')
+      .attr('width', 400)
+      .attr('height', 30);
+
+    // Legend data with colors matching the lines
+    const legendData = [
+      { label: 'No. of Check-ins', color: '#ed8888' },
+      { label: 'No. of Merge Requests', color: '#6079c5' },
+    ];
+
+    // Create legend items
+    const legendItems = legendSvg
+      .selectAll('.legend-item')
+      .data(legendData)
+      .enter()
+      .append('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (d, i) => `translate(${i * 150}, 0)`);
+
+    // Draw line segment
+    legendItems
+      .append('line')
+      .attr('x1', 0)
+      .attr('x2', 20)
+      .attr('y1', 10)
+      .attr('y2', 10)
+      .style('stroke', (d) => d.color)
+      .style('stroke-width', 2);
+
+    // Draw circle (data point)
+    legendItems
+      .append('circle')
+      .attr('cx', 10)
+      .attr('cy', 10)
+      .attr('r', 4)
+      .style('fill', (d) => d.color)
+      .style('stroke', 'white')
+      .style('stroke-width', 1.5);
+
+    // Add text label
+    legendItems
+      .append('text')
+      .attr('x', 30)
+      .attr('y', 10)
+      .attr('dy', '0.35em')
+      .style('font-size', '12px')
+      .style('fill', '#333')
+      .text((d) => d.label);
   }
 }
