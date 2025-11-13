@@ -37,8 +37,8 @@ export class PebCalculatorComponent implements OnInit {
   items: any[] = [];
   // pebProductivityData: any = [];
   //require('src/assets/data/peb-productivity.json')['data'];
-  pebProductivityDetailsData: any =
-    require('src/assets/data/peb-productivity-details.json')['data'];
+  pebProductivityTrendData: any = {};
+  //require('src/assets/data/peb-productivity-details.json')['data'];
 
   performanceChartData: Array<object> = [];
   costSavingsChartData: Array<object> = [];
@@ -109,8 +109,6 @@ export class PebCalculatorComponent implements OnInit {
    * @throws Will display an error message if productivity gain data fetch fails
    */
   getPEBData() {
-    //this.sharedService.getDataForSprintGoal()?.selectedLevel.nodeName,
-
     this.showLoader = true;
 
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
@@ -122,10 +120,6 @@ export class PebCalculatorComponent implements OnInit {
             this.showResults = true;
             this.productivityGain = response['data'];
             this.calculatePEB();
-            this.performanceChartData =
-              this.formatCategoryScoresForCumulativeChart(
-                this.pebProductivityDetailsData?.categoryScores,
-              );
           } else {
             this.showLoader = false;
             this.isError = true;
@@ -145,6 +139,7 @@ export class PebCalculatorComponent implements OnInit {
         },
       });
   }
+
   calculatePEB() {
     this.showLoader = true;
     this.categoryScores = JSON.parse(
@@ -171,33 +166,31 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPebProjectPerformanceData(level) {
-    this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
-      this.pebProductivityDetailsData?.categoryScores,
-    );
-    console.log('performanceChartData', this.performanceChartData);
-    this.costSavingsChartData = this.formatCategoryScoresForCumulativeChart(
-      this.pebProductivityDetailsData?.categoryScores,
-      true,
-    );
-    console.log('costSavingsChartData', this.costSavingsChartData);
-    // this.httpService.getPebProductivityDetailsData(level).subscribe({
-    //   next: (response) => {
-    //     if (response['success']) {
-    //       this.performanceChartData =
-    //         this.formatCategoryScoresForCumulativeChart(
-    //           response['data']['categoryScores'],
-    //         );
-    //     } else {
-    //       console.error(
-    //         'Server returned unsuccessful response:',
-    //         response['message'],
-    //       );
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.error('Failed to fetch project performance data', err.message);
-    //   },
-    // });
+    this.httpService.getPebProductivityDetailsData(level).subscribe({
+      next: (response) => {
+        if (response['success']) {
+          this.performanceChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+            );
+          console.log('performanceChartData', this.performanceChartData);
+          this.costSavingsChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+              true,
+            );
+          console.log('costSavingsChartData', this.costSavingsChartData);
+        } else {
+          console.error(
+            'Server returned unsuccessful response:',
+            response['message'],
+          );
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch project performance data', err.message);
+      },
+    });
   }
   /**
    * Formats raw KPI data into the structure required by Chart
@@ -239,8 +232,6 @@ export class PebCalculatorComponent implements OnInit {
     return [
       {
         dataGroup,
-        // If you want a dotted line, specify here — e.g. ['overall']
-        // additionalGroup: [],
       },
     ];
   }
