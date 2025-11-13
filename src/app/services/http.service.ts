@@ -92,6 +92,8 @@ export class HttpService {
   private getTestExecutionUrl = this.baseUrl + '/api/testexecution';
   private updateKanbanScenariosUrl = this.baseUrl + '/api/kanbanscenario';
   private getProcessorDataUrl = this.baseUrl + '/api/processor';
+  private fetchScmInfoUrl = this.baseUrl + '/api/processor/fetch/scm';
+  private scmConfigConnectionUrl = this.baseUrl + '/api/scm/config/connection';
   private getServerRoleUrl =
     this.baseUrl + '/api/globalconfigurations/dojo/centralConfig';
   private runProcessorUrl = this.baseUrl + '/api/processor/trigger';
@@ -208,6 +210,7 @@ export class HttpService {
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
   private homeNBAURL = this.baseUrl;
   private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
+  private kpiAITargetRecommData = this.baseUrl;
 
   constructor(
     private router: Router,
@@ -1340,7 +1343,26 @@ export class HttpService {
       this.pebProductivityUrl + '/' + level + '/trends',
     );
   }
+  fetchScmConnectionInfoByProject(
+    basicProjectConfigId: string,
+  ): Observable<any> {
+    return this.http.get(
+      `${this.scmConfigConnectionUrl}/${basicProjectConfigId}`,
+    );
+  }
+
+  triggerScmDiscovery(connectionId: string): Observable<any> {
+    return this.http.post(`${this.fetchScmInfoUrl}/${connectionId}`, {});
+  }
+
+  getDiscoveredReposAndBranches(connectionId: string): Observable<any> {
+    return this.http.get(`${this.scmConfigConnectionUrl}/${connectionId}`);
+  }
   getHomeNBAData(payload) {
     return this.http.post<any>(this.homeNBAURL, payload);
+  }
+
+  getkpiAITargetRecommData(payLoad) {
+    return this.http.post<any>(this.homeNBAURL, payLoad);
   }
 }
