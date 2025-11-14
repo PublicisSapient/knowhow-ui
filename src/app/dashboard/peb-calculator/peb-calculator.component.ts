@@ -45,6 +45,7 @@ export class PebCalculatorComponent implements OnInit {
   selectedLevel: string = '';
   categoryVariations: categoryVariations;
   productivityGain: any = {};
+  xAxisLabel: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -141,29 +142,32 @@ export class PebCalculatorComponent implements OnInit {
 
   calculatePEB() {
     this.showLoader = true;
-    const overallGain =
-      this.productivityGain['summary']?.categoryScores['overall'];
+    setTimeout(() => {
+      const overallGain =
+        this.productivityGain['summary']?.categoryScores['overall'];
 
-    this.annualPEB = this.calculateMultipliedDetails(overallGain);
-    this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+      this.annualPEB = this.calculateMultipliedDetails(overallGain);
+      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
-    const details = this.productivityGain?.details;
-    this.items = details.map((item) => ({
-      ...item,
-      categoryScores: Object.fromEntries(
-        Object.entries(item.categoryScores).map(([key, value]) => [
-          key,
-          this.calculateMultipliedDetails(value as number),
-        ]),
-      ),
-    }));
+      const details = this.productivityGain?.details;
+      this.items = details.map((item) => ({
+        ...item,
+        categoryScores: Object.fromEntries(
+          Object.entries(item.categoryScores).map(([key, value]) => [
+            key,
+            this.calculateMultipliedDetails(value as number),
+          ]),
+        ),
+      }));
 
-    this.showLoader = false;
+      this.showLoader = false;
+    }, 1000);
   }
 
   getPebProjectPerformanceData(level) {
     this.httpService.getPebProductivityDetailsData(level).subscribe({
       next: (response) => {
+        // const response = require('src/assets/data/peb-productivity-details.json');
         if (response['success']) {
           this.performanceChartData =
             this.formatCategoryScoresForCumulativeChart(
@@ -179,6 +183,7 @@ export class PebCalculatorComponent implements OnInit {
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
           ) as categoryVariations;
+          this.xAxisLabel = response['data']?.temporalGrouping;
         } else {
           console.error(
             'Server returned unsuccessful response:',
@@ -216,9 +221,9 @@ export class PebCalculatorComponent implements OnInit {
         kpiGroup: metric,
         value: entry[metric],
         hoverValue: {
-          Metric: metric,
-          Value: entry[metric],
-          Date: entry.temporalGroupingStartDate,
+          metric: metric.toUpperCase(),
+          value: entry[metric],
+          date: entry.temporalGroupingStartDate,
         },
       }));
 
@@ -249,5 +254,9 @@ export class PebCalculatorComponent implements OnInit {
       devCountControl * devCostControl * (value / 100) * durationControl,
     );
     return multipliedDetails;
+  }
+
+  ngOnDestroy() {
+    this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
   }
 }
