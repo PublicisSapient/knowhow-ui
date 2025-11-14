@@ -37,7 +37,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div [ngClass]="nbaRawData.length ? 'p-col-9' : 'p-col-12'">
+  <div class="p-col-12">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -102,7 +102,7 @@
                     @if(BottomTilesLoader){
                       <p-skeleton width="60px" height="2rem" />
                     } @else {
-                      <span>{{ row[col.field] }}</span>
+                      <span class="styled-cell">{{ row[col.field] }}</span>
                     }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
@@ -331,9 +331,7 @@
   </div>
 </div>
 
-<div class="p-col-3" *ngIf="nbaRawData.length">
-  <!-- <app-peb-calculator [showLoader]="calculatorDataLoader"></app-peb-calculator> -->
-
+<div class="p-col-3" *ngIf="false">
  <app-nba [rawData]="nbaRawData"></app-nba>
 
 </div>
