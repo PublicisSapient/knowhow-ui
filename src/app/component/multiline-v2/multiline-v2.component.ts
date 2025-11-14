@@ -82,7 +82,6 @@ export class MultilineV2Component implements OnChanges {
   }
 
   ngOnInit(): void {
-    console.log('MultilineV2Component initialized');
     this.service.setMultilineChartFlag(true);
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
@@ -127,9 +126,7 @@ export class MultilineV2Component implements OnChanges {
     const sprintMap = new Map();
     let sprintCounter = 1;
 
-    // console.log('Flattening data for legend:', data);
     data.forEach((project) => {
-      // console.log('Processing project for legend:', project);
       const projectName = project.data.trim();
       project.value.forEach((sprint, index) => {
         const xAxisLabelName = sprint;
@@ -844,7 +841,6 @@ export class MultilineV2Component implements OnChanges {
         });
 
       /* Add circles (data) on the line */
-      // console.log('data ', data);
       lines
         .selectAll('circle-group')
         .data(data)
@@ -1032,14 +1028,6 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi184'
       ) {
         // Render Sprint Legend
-        // console.log('data ', data);
-        // console.log(
-        //   'xCaption ',
-        //   'flatten data ',
-        //   this.xCaption,
-        //   this.flattenData(data),
-        // );
-        console.log('data to flatten ', data);
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
       }
     }

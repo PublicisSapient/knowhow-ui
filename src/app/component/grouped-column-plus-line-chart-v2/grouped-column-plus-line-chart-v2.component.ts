@@ -79,7 +79,6 @@ export class GroupedColumnPlusLineChartV2Component
   ) {}
 
   ngOnInit(): void {
-    console.log('data ', this.data);
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
@@ -99,7 +98,6 @@ export class GroupedColumnPlusLineChartV2Component
     this.unmodifiedData = JSON.parse(JSON.stringify(this.data));
     this.dataPoints = this.unmodifiedData.length;
     const data = this.transform2(this.data);
-    console.log('grouped column plus line chart v2 data ', data);
     this.draw2(data);
   }
 

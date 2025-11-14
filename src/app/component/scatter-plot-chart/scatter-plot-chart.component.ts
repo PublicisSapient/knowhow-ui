@@ -344,16 +344,22 @@ export class ScatterPlotChartComponent {
           .attr('stroke', '#3d5a9e')
           .attr('stroke-width', 2);
 
+        const circle = event.target;
+        const { top: yPosition, left: xPosition } =
+          circle.getBoundingClientRect();
+
         tooltip
-          .style('opacity', '1')
-          .style('left', event.pageX + 10 + 'px')
-          .style('top', event.pageY - 10 + 'px')
+          .style('display', 'block')
+          .style('position', 'fixed')
+          .style('opacity', '0.9')
+          .style('left', xPosition + 10 + 'px')
+          .style('top', yPosition + 20 + 'px')
           .html(`<strong>PR #${d.prId}</strong><br/>Size: ${d.size} lines`);
       })
       .on('mouseout', function () {
         d3.select(this).attr('opacity', 0.7).attr('stroke', 'none');
 
-        tooltip.style('opacity', '0');
+        tooltip.style('display', 'none').style('opacity', '0');
       })
       .transition()
       .duration(1000)
@@ -410,142 +416,140 @@ export class ScatterPlotChartComponent {
   }
 
   renderSprintsLegend(data: MaturityData[], xAxisCaption: string) {
-    this.counter++;
-    if (this.counter === 1) {
-      const flattenedData = this.flattenData(data);
-      const legendData = flattenedData.map((item) => ({
-        sprintNumber: item.sprintNumber,
-        sprintLabel: item.sprints.join(', '),
-      }));
+    if (!this.elem || !data) return;
+    const flattenedData = this.flattenData(data);
+    const legendData = flattenedData.map((item) => ({
+      sprintNumber: item.sprintNumber,
+      sprintLabel: item.sprints.join(', '),
+    }));
 
-      const body = d3.select(this.elem);
+    const body = d3.select(this.elem);
 
-      const container = body
-        .insert('div')
-        .attr('class', 'sprint-legend-container')
-        .style('margin', '20px 0 0 0')
-        .style('font-family', 'Arial, sans-serif')
-        .style('font-size', '14px')
-        .style('max-width', '100%');
+    const container = body
+      .insert('div')
+      .attr('class', 'sprint-legend-container')
+      .style('margin', '20px 0 0 0')
+      .style('font-family', 'Arial, sans-serif')
+      .style('font-size', '14px')
+      .style('max-width', '100%');
 
-      // Toggle Button
-      const toggleButton = container
-        .append('button')
-        .style('margin', '0 0 10px 0')
-        .style('padding', '0')
-        .style('cursor', 'pointer')
-        .style('font-size', '14px')
-        .style('background', 'none')
-        .style('border', 'none')
-        .style('color', '#0b4bc8')
-        .style('text-decoration', 'underline')
-        .style('text-underline-offset', '5px')
-        .attr('class', 'p-element p-component')
-        .on('click', function () {
-          const isVisible = legend.style('display') !== 'none';
-          legend.style('display', isVisible ? 'none' : 'block');
-          legend.attr('aria-hidden', isVisible ? 'true' : 'false');
-          legend.attr('tabindex', isVisible ? '-1' : '0');
-          toggleButton.text(
-            isVisible ? 'Show X-Axis Legend' : 'Hide X-Axis Legend',
-          );
-        });
+    // Toggle Button
+    const toggleButton = container
+      .append('button')
+      .style('margin', '0 0 10px 0')
+      .style('padding', '0')
+      .style('cursor', 'pointer')
+      .style('font-size', '14px')
+      .style('background', 'none')
+      .style('border', 'none')
+      .style('color', '#0b4bc8')
+      .style('text-decoration', 'underline')
+      .style('text-underline-offset', '5px')
+      .attr('class', 'p-element p-component')
+      .on('click', function () {
+        const isVisible = legend.style('display') !== 'none';
+        legend.style('display', isVisible ? 'none' : 'block');
+        legend.attr('aria-hidden', isVisible ? 'true' : 'false');
+        legend.attr('tabindex', isVisible ? '-1' : '0');
+        toggleButton.text(
+          isVisible ? 'Show X-Axis Legend' : 'Hide X-Axis Legend',
+        );
+      });
 
-      // Legend Box
-      const legend = container
-        .append('div')
-        .attr('class', 'sprint-legend')
-        .style('padding', '0')
-        .style('border', '1px solid #ddd')
-        .style('border-radius', '6px')
-        .style('margin-top', '10px')
-        .attr('role', 'region')
-        .attr('aria-labelledby', 'legend-title');
+    // Legend Box
+    const legend = container
+      .append('div')
+      .attr('class', 'sprint-legend')
+      .style('padding', '0')
+      .style('border', '1px solid #ddd')
+      .style('border-radius', '6px')
+      .style('margin-top', '10px')
+      .attr('role', 'region')
+      .attr('aria-labelledby', 'legend-title');
 
-      if (this.source === 'fromReport') {
-        legend.style('display', 'block');
-        toggleButton.text('Hide X-Axis Legend');
-        legend.attr('aria-hidden', 'false');
-      } else {
-        legend.style('display', 'none');
-        legend.attr('aria-hidden', 'true');
-        toggleButton.text('Show X-Axis Legend');
-      }
-
-      // Scrollable container
-      const scrollContainer = legend
-        .append('div')
-        .style('overflow-x', 'auto')
-        .style('max-width', '100%');
-
-      // Table
-      const table = scrollContainer
-        .append('table')
-        .attr('role', 'table')
-        .style('width', '100%')
-        .style('border-collapse', 'collapse')
-        .style('min-width', '400px');
-
-      // Table Header
-      const thead = table.append('thead').attr('role', 'rowgroup');
-      const headerRow = thead.append('tr').attr('role', 'row');
-
-      headerRow
-        .append('th')
-        .attr('role', 'columnheader')
-        .attr('scope', 'col')
-        .text('X-Axis')
-        .style('text-align', 'left')
-        .style('padding', '12px 10px')
-        .style('border-bottom', '2px solid #ccc')
-        .style('background-color', '#f0f0f0')
-        .style('color', '#222')
-        .style('width', '10%')
-        .style('font-weight', '600');
-
-      headerRow
-        .append('th')
-        .attr('role', 'columnheader')
-        .attr('scope', 'col')
-        .text('Legend')
-        .style('text-align', 'left')
-        .style('padding', '12px 10px')
-        .style('border-bottom', '2px solid #ccc')
-        .style('background-color', '#f0f0f0')
-        .style('color', '#222')
-        .style('font-weight', '600');
-
-      // Table Body
-      const tbody = table.append('tbody').attr('role', 'rowgroup');
-
-      const rows = tbody
-        .selectAll('tr')
-        .data(legendData)
-        .enter()
-        .append('tr')
-        .attr('role', 'row')
-        .style('background', (d, i) => (i % 2 === 0 ? '#fff' : '#fafafa'));
-
-      rows
-        .append('td')
-        .attr('role', 'cell')
-        .text((d) => `${xAxisCaption} ${d.sprintNumber}:`)
-        .style('padding', '10px 10px')
-        .style('border-bottom', '1px solid #eee')
-        .style('width', '10%')
-        .style('color', '#333');
-
-      rows
-        .append('td')
-        .attr('role', 'cell')
-        .text((d) => {
-          return this.getFormatedDateBasedOnType(d.sprintLabel, this.xCaption);
-        })
-        .style('padding', '10px 10px')
-        .style('border-bottom', '1px solid #eee')
-        .style('word-break', 'break-word')
-        .style('color', '#666');
+    if (this.source === 'fromReport') {
+      legend.style('display', 'block');
+      toggleButton.text('Hide X-Axis Legend');
+      legend.attr('aria-hidden', 'false');
+    } else {
+      legend.style('display', 'none');
+      legend.attr('aria-hidden', 'true');
+      toggleButton.text('Show X-Axis Legend');
     }
+
+    // Scrollable container
+    const scrollContainer = legend
+      .append('div')
+      .style('overflow-x', 'auto')
+      .style('max-width', '100%');
+
+    // Table
+    const table = scrollContainer
+      .append('table')
+      .attr('role', 'table')
+      .style('width', '100%')
+      .style('border-collapse', 'collapse')
+      .style('min-width', '400px');
+
+    // Table Header
+    const thead = table.append('thead').attr('role', 'rowgroup');
+    const headerRow = thead.append('tr').attr('role', 'row');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('X-Axis')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('width', '10%')
+      .style('font-weight', '600');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('Legend')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('font-weight', '600');
+
+    // Table Body
+    const tbody = table.append('tbody').attr('role', 'rowgroup');
+
+    const rows = tbody
+      .selectAll('tr')
+      .data(legendData)
+      .enter()
+      .append('tr')
+      .attr('role', 'row')
+      .style('background', (d, i) => (i % 2 === 0 ? '#fff' : '#fafafa'));
+
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d) => `${xAxisCaption} ${d.sprintNumber}:`)
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('width', '10%')
+      .style('color', '#333');
+
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d) => {
+        return this.getFormatedDateBasedOnType(d.sprintLabel, this.xCaption);
+      })
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('word-break', 'break-word')
+      .style('color', '#666');
   }
 
   getFormatedDateBasedOnType(date: string, xCaptionType: string) {
