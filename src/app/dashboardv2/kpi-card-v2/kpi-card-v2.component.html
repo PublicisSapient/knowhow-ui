@@ -65,7 +65,7 @@
       <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader role="region"
         aria-label="KPI Card Header">
         <div class="kpi-card-title-container">
-          <h3 *ngIf="kpiData" tabindex="0" [attr.aria-label]="kpiData?.kpiName + ' KPI Details'">{{kpiData?.kpiName}}
+          <h3 *ngIf="kpiData" tabindex="0" [attr.aria-label]="kpiData?.kpiName + ' KPI Details'">{{kpiTitle}}
           </h3>
           <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
             (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
@@ -253,7 +253,7 @@
       </div>
     </div>
     <div class="kpi-card-footer p-pr-5 p-pl-5"
-      [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
+      [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) || (kpiData?.kpiId === 'kpi182') || (kpiData?.kpiId === 'kpi162') || (kpiData?.kpiId === 'kpi201'))}">
       <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
         [colorObj]="trendBoxColorObj">
       </app-trend-indicator-v2>

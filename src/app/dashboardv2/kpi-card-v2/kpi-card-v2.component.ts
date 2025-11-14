@@ -174,9 +174,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
-  @Input() kpiTitle: string = '';
+  @Input() kpiTitle;
   public selectedTrendObject: SelectedTrend | null = null;
-  chartType: String = '';
+  chartType;
   @Input() selectedBoard: string = 'dashboard';
 
   constructor(
