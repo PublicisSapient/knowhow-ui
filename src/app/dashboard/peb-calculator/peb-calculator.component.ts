@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 
 interface categoryVariations {
   speed: number;
@@ -16,7 +17,7 @@ interface categoryVariations {
   selector: 'app-peb-calculator',
   templateUrl: './peb-calculator.component.html',
   styleUrls: ['./peb-calculator.component.css'],
-  providers: [DatePipe],
+  providers: [DatePipe, DynamicCurrencyPipe],
 })
 export class PebCalculatorComponent implements OnInit {
   pebForm: FormGroup;
@@ -54,6 +55,7 @@ export class PebCalculatorComponent implements OnInit {
     public sharedService: SharedService,
     public httpService: HttpService,
     private datePipe: DatePipe,
+    private dynamicCurrencyPipe: DynamicCurrencyPipe,
   ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
@@ -223,7 +225,9 @@ export class PebCalculatorComponent implements OnInit {
         value: entry[metric],
         hoverValue: {
           Metric: metric.toUpperCase(),
-          Value: entry[metric],
+          Value: this.dynamicCurrencyPipe.transform(
+            this.calculateMultipliedDetails(entry[metric]),
+          ),
           Date: this.datePipe.transform(
             entry.temporalGroupingStartDate,
             'dd/MM/yyyy',
