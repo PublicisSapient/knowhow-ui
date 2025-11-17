@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   BottomTilesLoader: boolean = false;
   calculatorDataLoader: boolean = true;
   nbaRawData: Array<any> = [];
+  productivityData: any = {};
 
   constructor(
     private service: SharedService,
@@ -106,12 +107,18 @@ export class HomeComponent implements OnInit, OnDestroy {
                       executiveBoard.data.matrix.rows.map((row) => ({
                         ...row,
                         ...row?.boardMaturity,
+                        productivity: this.getProductivityForRow(row.name),
                       }));
 
-                    this.tableData['columns'] =
+                    const filteredColumns =
                       executiveBoard.data.matrix.columns.filter(
                         (col) => col.field !== 'id',
                       );
+                    this.tableData['columns'] = [
+                      ...filteredColumns.slice(0, 2),
+                      { field: 'productivity', header: 'Productivity' },
+                      ...filteredColumns.slice(2),
+                    ];
 
                     const { tableColumnData, tableColumnForm } =
                       this.generateColumnFilterData(
@@ -200,7 +207,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscription.push(
       this.service.pebData$.subscribe((data) => {
-        if (data?.['kpiTrends']) this.processPEBData(data);
+        if (data?.['summary']['trends']) this.processPEBData(data);
       }),
     );
   }
@@ -434,8 +441,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             if (targettedDetails) {
               targettedDetails['children'] = targettedDetails['children'] || {};
               targettedDetails['children']['data'] = res.data.matrix.rows;
-              targettedDetails['children']['columns'] =
-                res.data.matrix.columns.filter((col) => col.field !== 'id');
+              const childFilteredColumns = res.data.matrix.columns.filter(
+                (col) => col.field !== 'id',
+              );
+              targettedDetails['children']['columns'] = [
+                ...childFilteredColumns.slice(0, 2),
+                { field: 'productivity', header: 'Productivity' },
+                ...childFilteredColumns.slice(2),
+              ];
               const { tableColumnData, tableColumnForm } =
                 this.generateColumnFilterData(
                   targettedDetails['children']['data'],
@@ -536,9 +549,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
+    const label = this.completeHierarchyData.find(
+      (hi) => hi.level === filterApplyData.level - 1,
+    ).hierarchyLevelName;
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(filterApplyData).subscribe({
+      this.helperService.fetchPEBaData(label.toLowerCase()).subscribe({
         next: (res) => {
           if (res.success) {
             this.processPEBData(res.data);
@@ -568,7 +584,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   processPEBData(data) {
-    const kpiTrends = data['kpiTrends'];
+    // Store productivity data for table integration
+    if (data.summary) {
+      this.productivityData[data.summary.levelName] =
+        data.summary.categoryScores.productivity;
+    }
+    if (data.details) {
+      data.details.forEach((detail) => {
+        this.productivityData[detail.organizationEntityName] =
+          detail.categoryScores.productivity;
+      });
+    }
+
+    // Update table data with productivity values
+    if (this.tableData.data && this.tableData.data.length > 0) {
+      this.tableData.data = this.tableData.data.map((row) => ({
+        ...row,
+        productivity: this.getProductivityForRow(row.name),
+      }));
+    }
+
+    const kpiTrends = data['summary']['trends'];
     this.bottomTilesData.update((value) => {
       const data = [...value];
       data[1] = {
@@ -582,6 +618,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       return data;
     });
     this.BottomTilesLoader = false;
+  }
+
+  getProductivityForRow(rowName: string): string {
+    const productivity = this.productivityData[rowName];
+    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
   }
 
   getNBAData() {

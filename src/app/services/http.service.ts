@@ -1322,10 +1322,6 @@ export class HttpService {
     );
   }
 
-  getProductivityGain(payload) {
-    return this.http.post<any>(this.pebCalculateUrl, payload);
-  }
-
   getAnalyticsMetricsTableData(payLoad) {
     return this.http.post<any>(this.analyticsMetricsTableDataURL, payLoad);
   }
