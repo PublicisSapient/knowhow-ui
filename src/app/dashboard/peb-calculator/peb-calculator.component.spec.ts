@@ -196,9 +196,9 @@ import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { of, throwError, Subject } from 'rxjs';
-import { Message } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 
 class MockHttpService {
   getPebProductivityData() {
@@ -238,7 +238,7 @@ describe('PebCalculatorComponent', () => {
   let productivityGain = require('src/assets/data/peb-productivity.json');
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PebCalculatorComponent],
+      declarations: [PebCalculatorComponent, DynamicCurrencyPipe],
       imports: [
         ReactiveFormsModule,
         FormsModule,
@@ -308,9 +308,9 @@ describe('PebCalculatorComponent', () => {
     component.showResults = false;
     const http = TestBed.inject(HttpService) as any;
     spyOn(http, 'getPebProductivityData').and.returnValue(of(productivityGain));
+    spyOn(component, 'calculatePEB').and.callThrough();
     component.getPEBData();
-    tick();
-
+    tick(1000);
     expect(component.showLoader).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);

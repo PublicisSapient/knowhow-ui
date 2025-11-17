@@ -5,8 +5,7 @@ import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
-interface categoryScores {
-  overall: number;
+interface categoryVariations {
   speed: number;
   quality: number;
   efficiency: number;
@@ -37,15 +36,16 @@ export class PebCalculatorComponent implements OnInit {
   items: any[] = [];
   // pebProductivityData: any = [];
   //require('src/assets/data/peb-productivity.json')['data'];
-  pebProductivityDetailsData: any =
-    require('src/assets/data/peb-productivity-details.json')['data'];
+  pebProductivityTrendData: any = {};
+  //require('src/assets/data/peb-productivity-details.json')['data'];
 
   performanceChartData: Array<object> = [];
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryScores: categoryScores;
+  categoryVariations: categoryVariations;
   productivityGain: any = {};
+  xAxisLabel: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -109,8 +109,6 @@ export class PebCalculatorComponent implements OnInit {
    * @throws Will display an error message if productivity gain data fetch fails
    */
   getPEBData() {
-    //this.sharedService.getDataForSprintGoal()?.selectedLevel.nodeName,
-
     this.showLoader = true;
 
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
@@ -122,10 +120,6 @@ export class PebCalculatorComponent implements OnInit {
             this.showResults = true;
             this.productivityGain = response['data'];
             this.calculatePEB();
-            this.performanceChartData =
-              this.formatCategoryScoresForCumulativeChart(
-                this.pebProductivityDetailsData?.categoryScores,
-              );
           } else {
             this.showLoader = false;
             this.isError = true;
@@ -145,59 +139,62 @@ export class PebCalculatorComponent implements OnInit {
         },
       });
   }
+
   calculatePEB() {
     this.showLoader = true;
-    this.categoryScores = JSON.parse(
-      JSON.stringify(this.productivityGain['summary']?.categoryScores),
-    ) as categoryScores;
-    const overallGain =
-      this.productivityGain['summary']?.categoryScores['overall'];
+    setTimeout(() => {
+      const overallGain =
+        this.productivityGain['summary']?.categoryScores['overall'];
 
-    this.annualPEB = this.calculateMultipliedDetails(overallGain);
-    this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+      this.annualPEB = this.calculateMultipliedDetails(overallGain);
+      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
-    const details = this.productivityGain?.details;
-    this.items = details.map((item) => ({
-      levelName: item.levelName,
-      categoryScores: Object.fromEntries(
-        Object.entries(item.categoryScores).map(([key, value]) => [
-          key,
-          this.calculateMultipliedDetails(value as number),
-        ]),
-      ),
-    }));
+      const details = this.productivityGain?.details;
+      this.items = details.map((item) => ({
+        ...item,
+        categoryScores: Object.fromEntries(
+          Object.entries(item.categoryScores).map(([key, value]) => [
+            key,
+            this.calculateMultipliedDetails(value as number),
+          ]),
+        ),
+      }));
 
-    this.showLoader = false;
+      this.showLoader = false;
+    }, 1000);
   }
 
   getPebProjectPerformanceData(level) {
-    this.performanceChartData = this.formatCategoryScoresForCumulativeChart(
-      this.pebProductivityDetailsData?.categoryScores,
-    );
-    console.log('performanceChartData', this.performanceChartData);
-    this.costSavingsChartData = this.formatCategoryScoresForCumulativeChart(
-      this.pebProductivityDetailsData?.categoryScores,
-      true,
-    );
-    console.log('costSavingsChartData', this.costSavingsChartData);
-    // this.httpService.getPebProductivityDetailsData(level).subscribe({
-    //   next: (response) => {
-    //     if (response['success']) {
-    //       this.performanceChartData =
-    //         this.formatCategoryScoresForCumulativeChart(
-    //           response['data']['categoryScores'],
-    //         );
-    //     } else {
-    //       console.error(
-    //         'Server returned unsuccessful response:',
-    //         response['message'],
-    //       );
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.error('Failed to fetch project performance data', err.message);
-    //   },
-    // });
+    this.httpService.getPebProductivityDetailsData(level).subscribe({
+      next: (response) => {
+        // const response = require('src/assets/data/peb-productivity-details.json');
+        if (response['success']) {
+          this.performanceChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+            );
+          console.log('performanceChartData', this.performanceChartData);
+          this.costSavingsChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+              true,
+            );
+          console.log('costSavingsChartData', this.costSavingsChartData);
+          this.categoryVariations = JSON.parse(
+            JSON.stringify(response['data']?.categoryVariations),
+          ) as categoryVariations;
+          this.xAxisLabel = response['data']?.temporalGrouping;
+        } else {
+          console.error(
+            'Server returned unsuccessful response:',
+            response['message'],
+          );
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch project performance data', err.message);
+      },
+    });
   }
   /**
    * Formats raw KPI data into the structure required by Chart
@@ -214,7 +211,7 @@ export class PebCalculatorComponent implements OnInit {
       metrics.push('overall');
     } else {
       metrics = Object.keys(categoryScores[0]).filter(
-        (key) => key !== 'calculationDate' && key !== 'overall',
+        (key) => key !== 'temporalGroupingStartDate' && key !== 'overall',
       );
     }
 
@@ -224,14 +221,14 @@ export class PebCalculatorComponent implements OnInit {
         kpiGroup: metric,
         value: entry[metric],
         hoverValue: {
-          Metric: metric,
-          Value: entry[metric],
-          Date: entry.calculationDate,
+          metric: metric.toUpperCase(),
+          value: entry[metric],
+          date: entry.temporalGroupingStartDate,
         },
       }));
 
       return {
-        filter: entry.calculationDate, // X-axis value
+        filter: entry.temporalGroupingStartDate, // X-axis value
         value: values,
       };
     });
@@ -239,8 +236,6 @@ export class PebCalculatorComponent implements OnInit {
     return [
       {
         dataGroup,
-        // If you want a dotted line, specify here — e.g. ['overall']
-        // additionalGroup: [],
       },
     ];
   }
@@ -259,5 +254,9 @@ export class PebCalculatorComponent implements OnInit {
       devCountControl * devCostControl * (value / 100) * durationControl,
     );
     return multipliedDetails;
+  }
+
+  ngOnDestroy() {
+    this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
   }
 }
