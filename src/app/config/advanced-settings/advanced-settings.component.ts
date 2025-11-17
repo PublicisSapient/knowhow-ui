@@ -53,7 +53,7 @@ export class AdvancedSettingsComponent implements OnInit {
   configuredToolList: any;
   azureSnapshotToggleTooltip = `Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning.
     Subsequent changes will be tracked as scope changes.Applies to active sprints only - use with caution.`;
-
+  dateTimeFormat: string = 'dd-MMM-yyyy (EEE) - hh:mmaaa';
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
@@ -256,7 +256,7 @@ export class AdvancedSettingsComponent implements OnInit {
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionEndedAt,
-          'dd-MMM-yyyy (EEE) - hh:mmaaa',
+          this.dateTimeFormat,
         );
   }
 
@@ -280,10 +280,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   endTimeConversion(time) {
-    return new DatePipe('en-US').transform(
-      time,
-      'dd-MMM-yyyy (EEE) - hh:mmaaa',
-    );
+    return new DatePipe('en-US').transform(time, this.dateTimeFormat);
   }
 
   //used to run the processor's run(), called when run button is clicked
@@ -548,7 +545,7 @@ export class AdvancedSettingsComponent implements OnInit {
       ? 'NA'
       : new DatePipe('en-US').transform(
           traceLog.executionResumesAt,
-          'dd-MMM-yyyy (EEE) - hh:mmaaa',
+          this.dateTimeFormat,
         );
   }
 
