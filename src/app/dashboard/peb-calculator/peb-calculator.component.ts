@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
+import { DatePipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -15,6 +16,7 @@ interface categoryVariations {
   selector: 'app-peb-calculator',
   templateUrl: './peb-calculator.component.html',
   styleUrls: ['./peb-calculator.component.css'],
+  providers: [DatePipe],
 })
 export class PebCalculatorComponent implements OnInit {
   pebForm: FormGroup;
@@ -51,6 +53,7 @@ export class PebCalculatorComponent implements OnInit {
     private fb: FormBuilder,
     public sharedService: SharedService,
     public httpService: HttpService,
+    private datePipe: DatePipe,
   ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
@@ -173,13 +176,11 @@ export class PebCalculatorComponent implements OnInit {
             this.formatCategoryScoresForCumulativeChart(
               response['data']['categoryScores'],
             );
-          console.log('performanceChartData', this.performanceChartData);
           this.costSavingsChartData =
             this.formatCategoryScoresForCumulativeChart(
               response['data']['categoryScores'],
               true,
             );
-          console.log('costSavingsChartData', this.costSavingsChartData);
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
           ) as categoryVariations;
@@ -221,9 +222,12 @@ export class PebCalculatorComponent implements OnInit {
         kpiGroup: metric,
         value: entry[metric],
         hoverValue: {
-          metric: metric.toUpperCase(),
-          value: entry[metric],
-          date: entry.temporalGroupingStartDate,
+          Metric: metric.toUpperCase(),
+          Value: entry[metric],
+          Date: this.datePipe.transform(
+            entry.temporalGroupingStartDate,
+            'dd/MM/yyyy',
+          ),
         },
       }));
 
