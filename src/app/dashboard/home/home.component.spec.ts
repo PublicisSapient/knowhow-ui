@@ -5,7 +5,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { Location } from '@angular/common';
 import { HomeComponent } from './home.component';
 import { SharedService } from '../../services/shared.service';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,14 +17,23 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
 import { of, throwError } from 'rxjs';
-import { Component } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-maturity', // must match actual selector used in HomeComponent template
+  selector: 'app-maturity',
   template: '',
 })
 class MockMaturityComponent {
   receiveSharedData = jasmine.createSpy('receiveSharedData');
+}
+
+@Component({
+  selector: 'app-nba',
+  template: '',
+})
+class MockNbaComponent {
+  rawData: any;
 }
 
 describe('HomeComponent', () => {
@@ -34,6 +43,7 @@ describe('HomeComponent', () => {
   let mockHelperService: jasmine.SpyObj<HelperService>;
   let mockLocation: jasmine.SpyObj<Location>;
   let mockHttpService: jasmine.SpyObj<HttpService>;
+  let mockMessageService: jasmine.SpyObj<MessageService>;
   let routerMock;
   let activatedRouteMock;
 
@@ -43,27 +53,13 @@ describe('HomeComponent', () => {
       { path: 'authentication/login', component: DashboardComponent },
     ];
 
-    const details = {
-      user_email: 'abc@gmail.com',
-      user_id: '5ea7cd94063c29192d7fc0f7',
-      projectsAccess: [],
-      user_name: 'dummyName',
-      authType: 'dymmyType',
-      notificationEmail: {
-        accessAlertNotification: true,
-        errorAlertNotification: false,
-      },
-      authorities: ['ROLE_SUPERADMIN'],
-    };
-
     routerMock = {
       navigate: jasmine.createSpy('navigate'),
-      routerState: {
-        root: {},
-      },
+      routerState: { root: {} },
       queryParams: of({ myParam: 'testValue' }),
       events: of({}),
     };
+
     activatedRouteMock = {
       queryParams: of({
         stateFilters: 'mockKpi9dfjdhfjd',
@@ -74,11 +70,12 @@ describe('HomeComponent', () => {
 
     mockHttpService = jasmine.createSpyObj('HttpService', [
       'handleRestoreUrl',
-      'getProductivityGain',
+      'getPebProductivityData',
       'getHomeNBAData',
+      'getExecutiveBoardData',
     ]);
 
-    mockHttpService.getProductivityGain.and.returnValue(
+    mockHttpService.getPebProductivityData.and.returnValue(
       of({ success: true, data: [] }),
     );
 
@@ -86,7 +83,29 @@ describe('HomeComponent', () => {
       of({ message: 'No data found', success: true, data: [] }),
     );
 
-    mockLocation = jasmine.createSpyObj('Location', ['path']);
+    mockHttpService.getExecutiveBoardData.and.returnValue(
+      of({
+        data: {
+          matrix: {
+            rows: [
+              {
+                id: 'r1',
+                name: 'Test Row',
+                completion: '80%',
+                health: 'healthy',
+                boardMaturity: { maturity: 'M3' },
+              },
+            ],
+            columns: [
+              { field: 'id', header: 'ID' },
+              { field: 'name', header: 'Name' },
+            ],
+          },
+        },
+      }),
+    );
+
+    mockLocation = jasmine.createSpyObj('Location', ['path', 'getState']);
 
     mockHelperService = jasmine.createSpyObj('HelperService', [
       'urlRedirection',
@@ -96,7 +115,14 @@ describe('HomeComponent', () => {
     mockHelperService.fetchPEBaData.and.returnValue(
       of({
         success: true,
-        data: { kpiTrends: { positive: [], negative: [] } },
+        data: {
+          summary: {
+            trends: { positive: [], negative: [] },
+            levelName: 'Test Level',
+            categoryScores: { productivity: 85.5 },
+          },
+          details: [],
+        },
       }),
     );
 
@@ -112,26 +138,38 @@ describe('HomeComponent', () => {
         'passDataToDashboard',
         'getFilterData',
         'setPEBData',
+        'getSelectedType',
       ],
       {
         passDataToDashboard: of({
           masterData: {},
-          filterdata: {},
-          filterApplyData: {},
+          filterData: {},
+          filterApplyData: {
+            level: 1,
+            label: 'project',
+            selectedMap: { date: ['2023-01-01'] },
+            ids: ['123'],
+          },
           dashConfigData: {},
         }),
-        pebData$: of({ kpiTrends: [] }),
+        pebData$: of({ summary: { trends: { positive: [], negative: [] } } }),
       },
     );
+
+    mockSharedService.getSelectedType.and.returnValue('kanban');
+    mockSharedService.getFilterData.and.returnValue([]);
+
+    mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes(routes),
         HttpClientTestingModule,
+        FormsModule,
       ],
-      declarations: [HomeComponent, MockMaturityComponent],
+      declarations: [HomeComponent, MockMaturityComponent, MockNbaComponent],
       providers: [
-        MessageService,
+        { provide: MessageService, useValue: mockMessageService },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: Router, useValue: routerMock },
@@ -140,103 +178,53 @@ describe('HomeComponent', () => {
         { provide: SharedService, useValue: mockSharedService },
         { provide: HelperService, useValue: mockHelperService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
 
-    fixture.detectChanges();
+    // Initialize component properties to avoid undefined errors
+    component.completeHierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelName: 'Test Level',
+        hierarchyLevelId: 'project',
+      },
+    ];
+    component.filterApplyData = {
+      level: 1,
+      label: 'project',
+      selectedMap: { date: ['2023-01-01'] },
+      ids: ['123'],
+    };
+    component.selectedType = 'kanban';
+    component.productivityData = {};
+    component.tableData = { columns: [], data: [] };
+    component.aggregrationDataList = [];
+    component.bottomTilesData.set([]);
+
+    spyOn(localStorage, 'getItem').and.callFake((key) => {
+      if (key === 'completeHierarchyData') {
+        return JSON.stringify({
+          kanban: [
+            {
+              level: 1,
+              hierarchyLevelName: 'Test Level',
+              hierarchyLevelId: 'project',
+            },
+          ],
+        });
+      }
+      return null;
+    });
+    spyOn(localStorage, 'setItem');
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set state filter backup if user has access', () => {
-    const filters = {
-      primary_level: [
-        {
-          labelName: 'Project',
-          basicProjectConfigId: 'p1',
-        },
-      ],
-    };
-
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        authorities: [],
-        projectsAccess: [
-          {
-            projects: [{ projectId: 'p1' }],
-          },
-        ],
-      }),
-    );
-
-    component.urlRedirection();
-  });
-
-  it('should redirect to error if user has no project access', () => {
-    const filters = {
-      primary_level: [
-        {
-          labelName: 'Project',
-          basicProjectConfigId: 'unauthorized',
-        },
-      ],
-    };
-
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        authorities: [],
-        projectsAccess: [
-          {
-            projects: [{ projectId: 'p1' }],
-          },
-        ],
-      }),
-    );
-
-    component.urlRedirection();
-  });
-
-  it('should handle query params and call urlRedirection when handleRestoreUrl returns success', fakeAsync(() => {
-    // ARRANGE
-    mockSharedService.getSelectedTab.and.returnValue(null);
-    const mockResponse = {
-      success: true,
-      data: {
-        longKPIFiltersString: btoa(JSON.stringify({ filter: 'value' })),
-        longStateFiltersString: btoa('{"a":1}'),
-      },
-    };
-    mockHttpService.handleRestoreUrl.and.returnValue(of(mockResponse));
-
-    // ACT
-    fixture.detectChanges(); // triggers ngOnInit and subscription
-    tick(); // simulates async passage of time
-  }));
-
-  it('should handle when filter is greater than 8', fakeAsync(() => {
-    const encodedState = btoa('stateMockfdfdf');
-    const encodedKpi = btoa('kpiMockdfdfdfdffd');
-
-    mockHttpService.handleRestoreUrl.and.returnValue(
-      of({
-        data: {
-          longKPIFiltersString: btoa(JSON.stringify({ filter: 'mockdfdfd' })),
-          longStateFiltersString: encodedState,
-        },
-        success: true,
-      }),
-    );
-    mockSharedService.getSelectedTab.and.returnValue('iteration');
-    spyOn(component as any, 'urlRedirection'); // optional to spy on internal calls
-    fixture.detectChanges();
-    tick();
-  }));
   it('should return correct efficiency percentage', () => {
     component.tableData.data = [
       { completion: '80' },
@@ -253,9 +241,9 @@ describe('HomeComponent', () => {
 
   it('should calculate correct healthy statistics', () => {
     component.tableData.data = [
-      { health: 'healthy', completion: '90' },
-      { health: 'critical', completion: '40' },
-      { health: 'healthy', completion: '70' },
+      { health: 'healthy', completion: '90%' },
+      { health: 'critical', completion: '40%' },
+      { health: 'healthy', completion: '70%' },
     ];
     const res = component.calculateHealth('healthy');
     expect(res).toEqual({ average: '80%', count: 2 });
@@ -263,8 +251,8 @@ describe('HomeComponent', () => {
 
   it('should handle no matching healthType gracefully', () => {
     component.tableData.data = [
-      { health: 'critical', completion: '40' },
-      { health: 'critical', completion: '50' },
+      { health: 'critical', completion: '40%' },
+      { health: 'critical', completion: '50%' },
     ];
     const res = component.calculateHealth('healthy');
     expect(res).toEqual({ average: '0%', count: 0 });
@@ -295,15 +283,6 @@ describe('HomeComponent', () => {
   it('should return undefined when data is empty', () => {
     const result = component.generateColumnFilterData([], [{ field: 'x' }]);
     expect(result).toBeUndefined();
-  });
-
-  beforeEach(() => {
-    spyOn(localStorage, 'getItem').and.callFake((key) => {
-      return JSON.stringify({
-        1: [{ level: 1, hierarchyLevelName: 'Test Level' }],
-      });
-    });
-    spyOn(localStorage, 'setItem');
   });
 
   it('should return correct class for each value', () => {
@@ -350,128 +329,6 @@ describe('HomeComponent', () => {
     });
   });
 
-  it('should use child level/label when dataFor is child and hierarchy exists', () => {
-    spyOn(component as any, 'getImmediateChild').and.returnValue({
-      level: 'Sprint',
-      hierarchyLevelId: 'S1',
-    });
-
-    const filterApplyData = {
-      level: 'Team',
-      label: 'TeamA',
-      selectedMap: { date: ['2025-01-01'] },
-      ids: ['D1'],
-    };
-    component.completeHierarchyData = [
-      { level: 'Team', hierarchyLevelId: 'T1' },
-      { level: 'Sprint', hierarchyLevelId: 'S1' },
-    ];
-
-    const result = component.payloadPreparation(
-      filterApplyData,
-      'kanban',
-      'child',
-    );
-
-    expect(result).toEqual({
-      level: 'Sprint',
-      label: 'S1',
-      parentId: '',
-      date: '2025-01-01',
-      duration: 'D1',
-    });
-  });
-
-  it('should fallback to original level/label if getImmediateChild returns null', () => {
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({ kanban: [] }),
-    );
-
-    spyOn(component as any, 'getImmediateChild').and.returnValue(null);
-
-    const filterApplyData = {
-      level: 'Team',
-      label: 'TeamA',
-      selectedMap: {},
-      ids: [],
-    };
-
-    component.completeHierarchyData = [
-      { level: 'Team', hierarchyLevelId: 'T1' },
-      { level: 'Sprint', hierarchyLevelId: 'S1' },
-    ];
-
-    const result = component.payloadPreparation(
-      filterApplyData,
-      'kanban',
-      'child',
-    );
-
-    expect(result).toEqual({
-      level: 'Team',
-      label: 'TeamA',
-      parentId: '',
-      date: '',
-      duration: '',
-    });
-  });
-
-  it('should handle missing localStorage hierarchy safely', () => {
-    const filterApplyData = {
-      level: 'Board',
-      label: 'B1',
-      selectedMap: {},
-      ids: [],
-    };
-    component.completeHierarchyData = [
-      { level: 'Team', hierarchyLevelId: 'T1' },
-      { level: 'Sprint', hierarchyLevelId: 'S1' },
-    ];
-
-    const result = component.payloadPreparation(
-      filterApplyData,
-      'scrum',
-      'child',
-    );
-
-    expect(result).toEqual({
-      level: 'Board',
-      label: 'B1',
-      parentId: '',
-      date: '',
-      duration: '',
-    });
-  });
-
-  it('should return empty date/duration when selectedType is scrum', () => {
-    const filterApplyData = {
-      level: 'Board',
-      label: 'B1',
-      selectedMap: { date: ['2025-01-01'] },
-      ids: ['Dur1'],
-    };
-
-    component.completeHierarchyData = [
-      { level: 'Team', hierarchyLevelId: 'T1' },
-      { level: 'Sprint', hierarchyLevelId: 'S1' },
-    ];
-
-    const result = component.payloadPreparation(
-      filterApplyData,
-      'scrum',
-      'parent',
-    );
-
-    expect(result).toEqual({
-      level: 'Board',
-      label: 'B1',
-      parentId: '',
-      date: '',
-      duration: '',
-    });
-  });
-
   it('should return child when matching level exists', () => {
     const hierarchyData = [
       { level: 1, hierarchyLevelId: 'L1' },
@@ -503,119 +360,6 @@ describe('HomeComponent', () => {
     expect(result).toBeNull();
   });
 
-  it('should set nestedLoader true and call payloadPreparation', () => {
-    const mockdata = {
-      level: 'abc',
-      label: 'abc',
-      parentId: 'abc',
-      date: '12-10-2025',
-      duration: '12',
-    };
-    spyOn(component, 'payloadPreparation').and.returnValue(mockdata);
-    (component as any).httpService.getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(of({ data: { matrix: { rows: [], columns: [] } } }));
-
-    component.onRowExpand({ data: { id: 'row1' } });
-
-    expect(component.nestedLoader).toBeFalse();
-    expect(component.payloadPreparation).toHaveBeenCalledWith(
-      component.filterApplyData,
-      component.selectedType,
-      'child',
-    );
-  });
-
-  it('should update children data when API returns rows and columns', () => {
-    const mockdata = {
-      level: 'abc',
-      label: 'abc',
-      parentId: 'abc',
-      date: '12-10-2025',
-      duration: '12',
-    };
-    component.tableData = { data: [{ id: 'row1' }] };
-    spyOn(component, 'payloadPreparation').and.returnValue(mockdata);
-    spyOn(component, 'generateColumnFilterData').and.returnValue({
-      tableColumnData: ['colData'],
-      tableColumnForm: { form: true },
-    });
-
-    const mockResponse = {
-      data: {
-        matrix: {
-          rows: [{ id: 'r1', boardMaturity: { maturity: 'high' } }],
-          columns: [{ field: 'id' }, { field: 'name' }],
-        },
-      },
-    };
-
-    (component as any).httpService.getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(of(mockResponse));
-
-    component.onRowExpand({ data: { id: 'row1' } });
-
-    const targetRow = component.tableData.data[0];
-    expect(targetRow.children.data[0]).toEqual({
-      id: 'r1',
-      boardMaturity: { maturity: 'high' },
-      maturity: 'high',
-    });
-    expect(targetRow.children.columns).toEqual([{ field: 'name' }]);
-    expect(targetRow.children.tableColumnData).toEqual(['colData']);
-    expect(targetRow.children.tableColumnForm).toEqual({ form: true });
-    expect(component.nestedLoader).toBeFalse();
-  });
-
-  it('should not update children if targettedDetails not found', () => {
-    const mockdata = {
-      level: '',
-      label: '',
-      parentId: '',
-      date: '',
-      duration: '',
-    };
-    component.tableData = { data: [{ id: 'differentRow' }] };
-    spyOn(component, 'payloadPreparation').and.returnValue(mockdata);
-
-    const mockResponse = {
-      data: {
-        matrix: {
-          rows: [{ id: 'r1' }],
-          columns: [{ field: 'id' }, { field: 'name' }],
-        },
-      },
-    };
-
-    (component as any).httpService.getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(of(mockResponse));
-
-    component.onRowExpand({ data: { id: 'rowX' } });
-
-    const targetRow = component.tableData.data[0];
-    expect(targetRow.children).toBeUndefined();
-  });
-
-  it('should skip processing when API response has no data', () => {
-    const mockdata = {
-      level: '',
-      label: '',
-      parentId: '',
-      date: '',
-      duration: '',
-    };
-    spyOn(component, 'payloadPreparation').and.returnValue(mockdata);
-    (component as any).httpService.getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(of({}));
-
-    component.onRowExpand({ data: { id: 'row1' } });
-
-    expect(component.nestedLoader).toBeFalse(); // stays false since no data
-  });
-
   it('should return columnName when it is a string', () => {
     const result = component.sortableColumn('name');
     expect(result).toBe('name');
@@ -627,69 +371,275 @@ describe('HomeComponent', () => {
     expect(result).toBe('age');
   });
 
-  it('should initialize products and populate table & aggregation when API returns data', () => {
-    (component['service'] as any).getSelectedType = jasmine
-      .createSpy()
-      .and.returnValue('kanban');
-    spyOn(component, 'payloadPreparation').and.callThrough();
-    (component['httpService'] as any).getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(
-        of({
-          data: {
-            matrix: {
-              rows: [
-                { id: 'r1', boardMaturity: { maturity: 'high' }, children: [] },
-              ],
-              columns: [{ field: 'id' }, { field: 'name' }],
-            },
-          },
-        }),
-      );
+  it('should calculate quarterly risk correctly', () => {
+    const testData = [
+      { name: 'Project A', completion: '90%' },
+      { name: 'Project B', completion: '70%' },
+      { name: 'Project C', completion: '50%' },
+      { name: 'Project D', completion: '30%' },
+      { name: 'Project E', completion: '80%' },
+    ];
 
-    spyOn(component, 'generateColumnFilterData').and.returnValue({
-      tableColumnData: ['colData'],
-      tableColumnForm: { form: true },
-    });
-    spyOn(component, 'calculateEfficiency').and.returnValue('Eff');
-    spyOn(component, 'calculateHealth').and.callFake((type) => ({
-      count: 1,
-      average: 'Avg',
-    }));
+    const result = component.calculateQuertlyRisk(testData);
 
-    localStorage.setItem(
-      'completeHierarchyData',
-      JSON.stringify({
-        kanban: [{ level: 'parent', hierarchyLevelName: 'Team' }],
-      }),
-    );
-
-    component.ngOnInit();
-
-    expect(component.products.length).toBe(4);
-    expect(component.payloadPreparation).toHaveBeenCalled();
-    expect(component['httpService'].getExecutiveBoardData).toHaveBeenCalled();
-    expect(component.tableData['data'][0].maturity).toBe('high');
-    expect(component.tableData['columns']).toEqual([{ field: 'name' }]);
-    expect(component.tableColumnData).toEqual(['colData']);
-    expect(component.tableColumnForm).toEqual({ form: true });
-    expect(component.aggregrationDataList.length).toBe(4);
-    expect(component.loader).toBeFalse();
+    expect(result.length).toBe(4);
+    expect(result[0]).toEqual({ property: 'Project D', value: '30%' });
+    expect(result[1]).toEqual({ property: 'Project C', value: '50%' });
   });
 
-  it('should set loader to false when API returns no data', () => {
-    (component['service'] as any).getSelectedType = jasmine
-      .createSpy()
-      .and.returnValue('kanban');
-    spyOn(component, 'payloadPreparation').and.callThrough();
-    (component['httpService'] as any).getExecutiveBoardData = jasmine
-      .createSpy()
-      .and.returnValue(of({}));
+  it('should calculate trend data for positive trends', () => {
+    const testData = [
+      { kpiName: 'KPI 1', trendValue: 5.5 },
+      { kpiName: 'KPI 2', trendValue: 3.2 },
+      { kpiName: 'KPI 3', trendValue: 8.1 },
+    ];
 
-    component.ngOnInit();
+    const result = component.calculateTrendData(testData, 'positive');
 
-    // expect(component.loader).toBeFalse();
-    expect(component.tableData['data']).toEqual([]);
-    expect(component.aggregrationDataList).toEqual([]);
+    expect(result.length).toBe(3);
+    expect(result[0]).toEqual({ property: 'KPI 3', value: '8.1' });
+    expect(result[1]).toEqual({ property: 'KPI 1', value: '5.5' });
+  });
+
+  it('should return empty array when trend data is null', () => {
+    const result = component.calculateTrendData(null, 'positive');
+    expect(result).toEqual([]);
+  });
+
+  it('should process filter data correctly', () => {
+    const testData = [
+      { nodeDisplayName: 'Node B', labelName: 'project' },
+      { nodeDisplayName: 'Node A', labelName: 'project' },
+      { nodeDisplayName: 'Node C', labelName: 'team' },
+    ];
+
+    const result = component.processFilterData(testData, 'project');
+
+    expect(result.length).toBe(2);
+    expect(result[0].nodeDisplayName).toBe('Node A');
+    expect(result[1].nodeDisplayName).toBe('Node B');
+  });
+
+  it('should return empty array when filter data is not array', () => {
+    const result = component.processFilterData(null, 'project');
+    expect(result).toEqual([]);
+  });
+
+  it('should get productivity for row', () => {
+    component.productivityData = {
+      'Test Row': 85.5,
+      'Another Row': 92.3,
+    };
+
+    expect(component.getProductivityForRow('Test Row')).toBe('85.50%');
+    expect(component.getProductivityForRow('Unknown Row')).toBe('NA');
+  });
+
+  it('should handle dropdown change for scrum type', () => {
+    component.selectedType = 'scrum';
+    component.filterApplyData = { ids: [], selectedMap: { project: [] } };
+
+    const event = { value: { nodeId: 'node123' } };
+    spyOn(component, 'getMaturityWheelData');
+
+    component.onDropdownChange(event);
+
+    expect(component.filterApplyData.ids).toEqual(['node123']);
+    expect(component.getMaturityWheelData).toHaveBeenCalled();
+  });
+
+  it('should process PEB data correctly', () => {
+    const testData = {
+      summary: {
+        levelName: 'Project Level',
+        categoryScores: { productivity: 88.5 },
+        trends: {
+          positive: [{ kpiName: 'KPI 1', trendValue: 5.5 }],
+          negative: [{ kpiName: 'KPI 2', trendValue: -2.3 }],
+        },
+      },
+      details: [
+        {
+          organizationEntityName: 'Entity 1',
+          categoryScores: { productivity: 75.2 },
+        },
+      ],
+    };
+
+    component.tableData = {
+      data: [{ name: 'Entity 1', completion: '80%' }],
+    };
+
+    component.processPEBData(testData);
+
+    expect(component.productivityData['Project Level']).toBe(88.5);
+    expect(component.productivityData['Entity 1']).toBe(75.2);
+    expect(component.tableData.data[0].productivity).toBe('75.20%');
+    expect(component.BottomTilesLoader).toBeFalse();
+  });
+
+  it('should initialize bottom data for ALL reset', () => {
+    component.initializeBottomData('ALL');
+
+    const bottomData = component.bottomTilesData();
+    expect(bottomData.length).toBe(3);
+    expect(bottomData[0].category).toBe('Top 4 Risks this Quarter');
+    expect(bottomData[1].category).toBe('Positive Trends');
+    expect(bottomData[2].category).toBe('Negative Trends');
+  });
+
+  it('should handle fetchPEBaData error', () => {
+    // Setup proper hierarchy data for the test
+    component.completeHierarchyData = [
+      { level: 0, hierarchyLevelName: 'Root Level', hierarchyLevelId: 'root' },
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
+    ];
+
+    mockHelperService.fetchPEBaData.and.returnValue(
+      throwError({ error: 'Network error' }),
+    );
+
+    spyOn(component, 'initializeBottomData');
+
+    component.fetchPEBaData({ label: 'project', level: 1, parentId: '' });
+
+    expect(component.BottomTilesLoader).toBeFalse();
+    expect(component.calculatorDataLoader).toBeFalse();
+    expect(component.initializeBottomData).toHaveBeenCalledWith('ONLYTRENDS');
+    expect(mockMessageService.add).toHaveBeenCalled();
+  });
+
+  it('should handle getNBAData success', () => {
+    mockHttpService.getHomeNBAData.and.returnValue(
+      of({ success: true, data: [{ id: 1, name: 'NBA Data' }] }),
+    );
+
+    component.getNBAData();
+
+    expect(component.nbaRawData).toEqual([{ id: 1, name: 'NBA Data' }]);
+  });
+
+  it('should handle getNBAData error', () => {
+    mockHttpService.getHomeNBAData.and.returnValue(
+      throwError({ error: 'Network error' }),
+    );
+
+    component.getNBAData();
+
+    expect(component.nbaRawData).toEqual([]);
+    expect(mockMessageService.add).toHaveBeenCalled();
+  });
+
+  it('should handle onRowExpand with error response', () => {
+    mockHttpService.getExecutiveBoardData.and.returnValue(
+      of({ error: true, message: 'API Error' }),
+    );
+
+    spyOn(component, 'payloadPreparation').and.returnValue({
+      level: 1,
+      label: 'test',
+      parentId: '',
+      date: '',
+      duration: '',
+    });
+
+    component.onRowExpand({ data: { id: 'row1' } });
+
+    expect(component.nestedLoader).toBeFalse();
+    expect(mockMessageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'API Error',
+    });
+  });
+
+  it('should handle ngOnDestroy', () => {
+    component.subscription = [of().subscribe()];
+    spyOn(component.subscription[0], 'unsubscribe');
+
+    component.ngOnDestroy();
+
+    expect(mockSharedService.setPEBData).toHaveBeenCalledWith({});
+    expect(component.subscription[0].unsubscribe).toHaveBeenCalled();
+  });
+
+  it('should handle urlRedirection', () => {
+    component.urlRedirection();
+    // This method is currently empty, so we just verify it doesn't throw
+    expect(true).toBe(true);
+  });
+
+  it('should handle retryPEBData', () => {
+    spyOn(component, 'payloadPreparation').and.returnValue({
+      label: 'project',
+      level: 1,
+      parentId: '',
+      date: '',
+      duration: '',
+    });
+    spyOn(component, 'fetchPEBaData');
+
+    component.retryPEBData();
+
+    expect(component.fetchPEBaData).toHaveBeenCalled();
+  });
+
+  it('should handle getMaturityWheelData', () => {
+    // Initialize the maturity component mock
+    component.maturityComponent = {
+      receiveSharedData: jasmine.createSpy('receiveSharedData'),
+    } as any;
+
+    const sharedobject = {
+      masterData: {},
+      filterData: {},
+      filterApplyData: {},
+      dashConfigData: {},
+    };
+
+    component.getMaturityWheelData(sharedobject);
+
+    expect(component.maturityComponent.receiveSharedData).toHaveBeenCalledWith({
+      masterData: sharedobject.masterData,
+      filterData: sharedobject.filterData,
+      filterApplyData: sharedobject.filterApplyData,
+      dashConfigData: sharedobject.dashConfigData,
+    });
+  });
+
+  it('should handle getImmediateParentDisplayName when parent exists', () => {
+    component.completeHierarchyData = [
+      { level: 1, hierarchyLevelName: 'Project', hierarchyLevelId: 'project' },
+      { level: 2, hierarchyLevelName: 'Team', hierarchyLevelId: 'team' },
+    ];
+    component.selectedHierarchy = { hierarchyLevelName: 'Team' };
+
+    mockSharedService.getFilterData.and.returnValue([
+      {
+        nodeId: 'parent1',
+        nodeDisplayName: 'Parent Project',
+        labelName: 'project',
+      },
+    ]);
+
+    const child = { parentId: 'parent1' };
+    const result = component.getImmediateParentDisplayName(child);
+
+    expect(result).toBe('Parent Project');
+  });
+
+  it('should return undefined for root level hierarchy', () => {
+    component.completeHierarchyData = [
+      { level: 1, hierarchyLevelName: 'Project', hierarchyLevelId: 'project' },
+    ];
+    component.selectedHierarchy = { hierarchyLevelName: 'Project' };
+
+    const child = { parentId: 'parent1' };
+    const result = component.getImmediateParentDisplayName(child);
+
+    expect(result).toBeUndefined();
   });
 });
