@@ -58,6 +58,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
     const categories = [];
     const maxYValue = [];
+    const minYValue = [];
     this.formatDateOnXAxis(this.graphData);
 
     this.graphData.forEach((d) => {
@@ -74,15 +75,21 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       });
       d['lineDataCategorywise'] = lineDataCategorywise;
       maxYValue.push(Math.max(...maxY));
+      minYValue.push(Math.min(...maxY));
     });
 
     const xCoordinates = this.graphData.map((d) => d.filter);
 
-    const x = d3
-      .scaleBand()
-      .domain(xCoordinates)
-      .range([0, width])
-      .paddingOuter(0);
+    var x;
+    if (xCoordinates.length === 1) {
+      x = d3
+        .scaleBand()
+        .domain(xCoordinates)
+        .range([width / 2 - 10, width / 2 + 10])
+        .paddingOuter(0); // center the single point
+    } else {
+      x = d3.scaleBand().domain(xCoordinates).range([0, width]).paddingOuter(0);
+    }
 
     /**X-Axis Gaps */
     const xLength = xCoordinates.length;
@@ -112,8 +119,6 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
     /**X-Axis Gaps */
 
-    const initialCoordinate = x(xCoordinates[1]);
-
     const svgX = svg
       .append('g')
       .attr('class', 'xAxis')
@@ -124,10 +129,9 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           .tickFormat((d, i) => (this.VisibleXAxisLbl.includes(d) ? d : '')),
       );
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
-      .range([height, 0]);
+    const yMin = Math.floor(Math.min(...minYValue) / 5) * 5;
+    const yMax = Math.ceil(Math.max(...maxYValue) / 5) * 5;
+    const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
     const svgY = d3
       .select(elem)
@@ -139,6 +143,19 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .attr('transform', `translate(50,${margin.top})`)
       .attr('class', 'yAxis')
       .call(d3.axisLeft(y).ticks(6).tickSize(0));
+
+    // Add zero baseline if data contains negative values
+    if (yMin < 0) {
+      svg
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', y(0))
+        .attr('y2', y(0))
+        .attr('stroke', '#999')
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4,2');
+    }
 
     // highlight todays Date
     if (this.currentDayIndex >= 0) {
@@ -171,8 +188,8 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .data(xCoordinates)
       .enter()
       .append('svg:line')
-      .attr('x1', (d) => x(d) + initialCoordinate / 2)
-      .attr('x2', (d) => x(d) + initialCoordinate / 2)
+      .attr('x1', (d) => x(d) + x.bandwidth() / 2)
+      .attr('x2', (d) => x(d) + x.bandwidth() / 2)
       .attr('y1', 0)
       .attr('y2', -height)
       .style('stroke', '#dedede')
@@ -193,7 +210,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(linedata)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', (d) => x(d.filter) + initialCoordinate / 2 + 'px')
+        .style('left', (d) => x(d.filter) + x.bandwidth() / 2 + 'px')
         .style('top', (d) => y(d.value) + 8 + 'px')
         .text((d) => d.value)
         .transition()
@@ -224,31 +241,51 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       const lineData = this.graphData
         .filter((d) => d['lineDataCategorywise'].hasOwnProperty(kpiGroup))
         .map((d) => d['lineDataCategorywise'][kpiGroup]);
-
-      const line = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('path')
-        .datum(lineData)
-        .attr(
-          'd',
-          d3
-            .line()
-            .x((d) => x(d.filter) + initialCoordinate / 2)
-            .y((d) => y(d.value)),
-        )
-        .attr('stroke', (d) => color(kpiGroup))
-        .style('stroke-width', 2)
-        .style('fill', 'none')
-        .style('cursor', 'pointer')
-        .on('mouseover', function (event, linedata) {
-          d3.select(this).style('stroke-width', 4);
-          showTooltip(linedata);
-        })
-        .on('mouseout', function (event, d) {
-          d3.select(this).style('stroke-width', 2);
-          hideTooltip();
-        });
+      if (lineData.length === 1) {
+        // Just draw a single point instead of a line
+        svg
+          .append('circle')
+          .attr('cx', x(lineData[0].filter) + x.bandwidth() / 2)
+          .attr('cy', y(lineData[0].value))
+          .attr('r', 4)
+          .attr('fill', color(kpiGroup))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('cursor', 'pointer')
+          .on('mouseover', function (event, linedata) {
+            d3.select(this).style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function (event, d) {
+            d3.select(this).style('stroke-width', 2);
+            hideTooltip();
+          });
+      } else {
+        svg
+          .append('g')
+          .attr('transform', `translate(0,0)`)
+          .append('path')
+          .datum(lineData)
+          .attr(
+            'd',
+            d3
+              .line()
+              .x((d) => x(d.filter) + x.bandwidth() / 2)
+              .y((d) => y(d.value)),
+          )
+          .attr('stroke', (d) => color(kpiGroup))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('cursor', 'pointer')
+          .on('mouseover', function (event, linedata) {
+            d3.select(this).style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function (event, d) {
+            d3.select(this).style('stroke-width', 2);
+            hideTooltip();
+          });
+      }
 
       const circlegroup = svg
         .append('g')
@@ -258,7 +295,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(lineData)
         .enter()
         .append('circle')
-        .attr('cx', (d) => x(d.filter) + initialCoordinate / 2)
+        .attr('cx', (d) => x(d.filter) + x.bandwidth() / 2)
         .attr('cy', (d) => y(d.value))
         .attr('r', 3)
         .style('stroke-width', 5)
@@ -368,7 +405,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           'd',
           d3
             .line()
-            .x((d) => x(d.filter) + initialCoordinate / 2)
+            .x((d) => x(d.filter) + x.bandwidth() / 2)
             .y((d) => y(d.value)),
         )
         .attr('stroke', '#D8725F')

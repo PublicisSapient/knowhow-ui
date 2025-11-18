@@ -1,13 +1,23 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
+import { DatePipe } from '@angular/common';
+import { distinctUntilChanged } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 
+interface categoryVariations {
+  speed: number;
+  quality: number;
+  efficiency: number;
+  productivity: number;
+}
 @Component({
   selector: 'app-peb-calculator',
   templateUrl: './peb-calculator.component.html',
   styleUrls: ['./peb-calculator.component.css'],
+  providers: [DatePipe, DynamicCurrencyPipe],
 })
 export class PebCalculatorComponent implements OnInit {
   pebForm: FormGroup;
@@ -15,45 +25,6 @@ export class PebCalculatorComponent implements OnInit {
     { label: 'Per Month', value: 'month' },
     { label: 'Per Quarter', value: 'quarter' },
     { label: 'Per Year', value: 'year' },
-  ];
-
-  roiMetrics = [
-    {
-      label: 'Speed',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-bolt',
-      color: '#d4fbdf',
-      elemColor: '#15ba40',
-      estValueSavingsLabel: 'Estd. Value from Faster Delivery',
-    },
-    {
-      label: 'Efficiency',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-chart-line',
-      color: '#dee8fc',
-      elemColor: '#2f76ff',
-      estValueSavingsLabel: 'Estd. Savings from Reduced Rework',
-    },
-    {
-      label: 'Quality',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-shield',
-      color: '#dce7fc',
-      elemColor: '#8980ed',
-      estValueSavingsLabel: 'Estd. Savings from Better Quality',
-    },
-    {
-      label: 'Productivity',
-      percent: 0,
-      value: 0,
-      icon: 'pi pi-bullseye',
-      color: '#ffecdf',
-      elemColor: '#f68605',
-      estValueSavingsLabel: 'Estd. Savings from Higher Throughput',
-    },
   ];
 
   aiBenefit = 29524;
@@ -65,11 +36,26 @@ export class PebCalculatorComponent implements OnInit {
   @Input() showLoader: boolean = false;
   isError: boolean = false;
   errorMessage: String = '';
+  items: any[] = [];
+  // pebProductivityData: any = [];
+  //require('src/assets/data/peb-productivity.json')['data'];
+  pebProductivityTrendData: any = {};
+  //require('src/assets/data/peb-productivity-details.json')['data'];
+
+  performanceChartData: Array<object> = [];
+  costSavingsChartData: Array<object> = [];
+  subscription = [];
+  selectedLevel: string = '';
+  categoryVariations: categoryVariations;
+  productivityGain: any = {};
+  xAxisLabel: string = '';
 
   constructor(
     private fb: FormBuilder,
     public sharedService: SharedService,
     public httpService: HttpService,
+    private datePipe: DatePipe,
+    private dynamicCurrencyPipe: DynamicCurrencyPipe,
   ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
@@ -92,6 +78,19 @@ export class PebCalculatorComponent implements OnInit {
     this.pebForm.get('devCostControl')!.valueChanges.subscribe((v) => {
       this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
     });
+    this.subscription.push(
+      this.sharedService.passDataToDashboard
+        .pipe(distinctUntilChanged())
+        .subscribe((sharedobject) => {
+          if (sharedobject) {
+            const stateFilters =
+              this.sharedService.getBackupOfFilterSelectionState();
+            this.selectedLevel = stateFilters?.parent_level;
+            this.getPEBData();
+            this.getPebProjectPerformanceData(this.selectedLevel);
+          }
+        }),
+    );
   }
 
   /**
@@ -114,115 +113,158 @@ export class PebCalculatorComponent implements OnInit {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
-  calculatePEB() {
-    const completeHierarchyData = JSON.parse(
-        localStorage.getItem('completeHierarchyData'),
-      ),
-      selectedLevelName =
-        this.sharedService.getDataForSprintGoal()?.selectedLevel.nodeName,
-      reqPayload = {
-        label: '',
-        level: '',
-        parentId: '',
-      },
-      typeOfSelectedTrend = this.sharedService.getSelectedType();
-
-    completeHierarchyData[typeOfSelectedTrend]?.forEach((item) => {
-      if (item.hierarchyLevelName === selectedLevelName) {
-        reqPayload.label = item.hierarchyLevelId;
-        reqPayload.level = item.level;
-      }
-    });
-
+  getPEBData() {
     this.showLoader = true;
 
-    // TODO --> Will handle the logic later. After demo is done.
-    /* const productivityGainData = this.sharedService.getPEBData();
-    if (productivityGainData) {
-      this.showLoader = false;
-      this.showResults = true;
-      const productivityGain =
-        productivityGainData['categorizedProductivityGain'];
-      const overallGain = productivityGain && productivityGain['overall'];
-
-      this.annualPEB = Math.round(
-        this.pebForm.get('devCountControl')!.value *
-          this.pebForm.get('devCostControl')!.value *
-          (overallGain / 100) *
-          (this.pebForm.get('durationControl')!.value === 'month'
-            ? 1 / 12
-            : this.pebForm.get('durationControl')!.value === 'quarter'
-            ? 1 / 4
-            : 1),
-      );
-      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
-
-      this.roiMetrics = this.roiMetrics.map((metric) => {
-        const key = metric.label.toLowerCase();
-        const percent = productivityGain[key]; // CHANGE: Calculate percent directly
-        const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
-        return {
-          ...metric,
-          percent,
-          value: value <= 0 ? 0 : value,
-        };
-      });
-    } else {
-      this.showLoader = false;
-      this.isError = true;
-      console.error('Failed to fetch productivity gain data');
-    } */
-
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
-    this.httpService.getProductivityGain(reqPayload).subscribe({
-      next: (response) => {
-        if (response['success']) {
-          this.showLoader = false;
-          this.showResults = true;
-          const productivityGain =
-            response['data']['categorizedProductivityGain'];
-          // console.log('productivityGain', productivityGain);
-          const overallGain = productivityGain['overall'];
-
-          this.annualPEB = Math.round(
-            this.pebForm.get('devCountControl')!.value *
-              this.pebForm.get('devCostControl')!.value *
-              (overallGain / 100) *
-              (this.pebForm.get('durationControl')!.value === 'month'
-                ? 1 / 12
-                : this.pebForm.get('durationControl')!.value === 'quarter'
-                ? 1 / 4
-                : 1),
-          );
-          this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
-
-          this.roiMetrics = this.roiMetrics.map((metric) => {
-            const key = metric.label.toLowerCase();
-            const percent = productivityGain[key]; // CHANGE: Calculate percent directly
-            const value = Math.round((percent / 100) * this.annualPEB); // CHANGE: Calculate value directly
-            return {
-              ...metric,
-              percent,
-              value: value <= 0 ? 0 : value,
-            };
-          });
-        } else {
+    this.httpService
+      .getPebProductivityData(this.selectedLevel?.toLowerCase())
+      .subscribe({
+        next: (response) => {
+          if (response['success']) {
+            this.showResults = true;
+            this.productivityGain = response['data'];
+            this.calculatePEB();
+          } else {
+            this.showLoader = false;
+            this.isError = true;
+            console.error(
+              'Server returned unsuccessful response:',
+              response['message'],
+            );
+            this.errorMessage = response['message'];
+            return;
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch productivity gain data', err.message);
           this.showLoader = false;
           this.isError = true;
+          this.errorMessage = err['message'];
+        },
+      });
+  }
+
+  calculatePEB() {
+    this.showLoader = true;
+    setTimeout(() => {
+      const overallGain =
+        this.productivityGain['summary']?.categoryScores['overall'];
+
+      this.annualPEB = this.calculateMultipliedDetails(overallGain);
+      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
+
+      const details = this.productivityGain?.details;
+      this.items = details.map((item) => ({
+        ...item,
+        categoryScores: Object.fromEntries(
+          Object.entries(item.categoryScores).map(([key, value]) => [
+            key,
+            this.calculateMultipliedDetails(value as number),
+          ]),
+        ),
+      }));
+
+      this.showLoader = false;
+    }, 1000);
+  }
+
+  getPebProjectPerformanceData(level) {
+    this.httpService.getPebProductivityDetailsData(level).subscribe({
+      next: (response) => {
+        // const response = require('src/assets/data/peb-productivity-details.json');
+        if (response['success']) {
+          this.performanceChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+            );
+          this.costSavingsChartData =
+            this.formatCategoryScoresForCumulativeChart(
+              response['data']['categoryScores'],
+              true,
+            );
+          this.categoryVariations = JSON.parse(
+            JSON.stringify(response['data']?.categoryVariations),
+          ) as categoryVariations;
+          this.xAxisLabel = response['data']?.temporalGrouping;
+        } else {
           console.error(
             'Server returned unsuccessful response:',
             response['message'],
           );
-          this.errorMessage = response['message'];
-          return;
         }
       },
       error: (err) => {
-        console.error('Failed to fetch productivity gain data', err.message);
-        this.showLoader = false;
-        this.isError = true;
-        this.errorMessage = err['message'];
+        console.error('Failed to fetch project performance data', err.message);
       },
     });
+  }
+  /**
+   * Formats raw KPI data into the structure required by Chart
+   */
+  formatCategoryScoresForCumulativeChart(
+    categoryScores: any[],
+    showOverall?: boolean,
+  ): any[] {
+    if (!categoryScores || categoryScores.length === 0) return [];
+
+    // Find all metric names except the date
+    var metrics = [];
+    if (showOverall) {
+      metrics.push('overall');
+    } else {
+      metrics = Object.keys(categoryScores[0]).filter(
+        (key) => key !== 'temporalGroupingStartDate' && key !== 'overall',
+      );
+    }
+
+    // Build dataGroup for the chart
+    const dataGroup = categoryScores.map((entry) => {
+      const values = metrics.map((metric) => ({
+        kpiGroup: metric,
+        value: entry[metric],
+        hoverValue: {
+          Metric: metric.toUpperCase(),
+          Value: this.dynamicCurrencyPipe.transform(
+            this.calculateMultipliedDetails(entry[metric]),
+          ),
+          Date: this.datePipe.transform(
+            entry.temporalGroupingStartDate,
+            'dd/MM/yyyy',
+          ),
+        },
+      }));
+
+      return {
+        filter: entry.temporalGroupingStartDate, // X-axis value
+        value: values,
+      };
+    });
+
+    return [
+      {
+        dataGroup,
+      },
+    ];
+  }
+
+  calculateMultipliedDetails(value: number): any {
+    const devCostControl = this.pebForm.get('devCostControl')?.value;
+    const devCountControl = this.pebForm.get('devCountControl')?.value;
+    const durationControl =
+      this.pebForm.get('durationControl')?.value === 'month'
+        ? 1 / 12
+        : this.pebForm.get('durationControl')?.value === 'quarter'
+        ? 1 / 4
+        : 1;
+
+    const multipliedDetails = Math.round(
+      devCountControl * devCostControl * (value / 100) * durationControl,
+    );
+    return multipliedDetails;
+  }
+
+  ngOnDestroy() {
+    this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
   }
 }

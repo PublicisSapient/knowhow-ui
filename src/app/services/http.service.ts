@@ -209,6 +209,7 @@ export class HttpService {
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
   private homeNBAURL = this.baseUrl;
+  private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
   private kpiAITargetRecommData = this.baseUrl;
 
   constructor(
@@ -1321,16 +1322,22 @@ export class HttpService {
     );
   }
 
-  getProductivityGain(payload) {
-    return this.http.post<any>(this.pebCalculateUrl, payload);
-  }
-
   getAnalyticsMetricsTableData(payLoad) {
     return this.http.post<any>(this.analyticsMetricsTableDataURL, payLoad);
   }
 
   getAIAnalyticsData(payLoad) {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
+  }
+
+  getPebProductivityData(level) {
+    return this.http.get<any>(this.pebProductivityUrl + '/' + level);
+  }
+
+  getPebProductivityDetailsData(level) {
+    return this.http.get<any>(
+      this.pebProductivityUrl + '/' + level + '/trends',
+    );
   }
   fetchScmConnectionInfoByProject(
     basicProjectConfigId: string,
