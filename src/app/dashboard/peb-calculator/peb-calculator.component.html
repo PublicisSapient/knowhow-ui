@@ -190,7 +190,7 @@
       <div class="p-d-flex">
         <div class="p-col-6">
           <div class="p-2">
-            <h4>Core Performance Metrics</h4>
+            <h4 class="font-bold">Core Performance Metrics</h4>
             <ng-container *ngIf="performanceChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Performance'">
@@ -200,7 +200,7 @@
         </div>
         <div class="p-col-6">
           <div class="p-2">
-            <h4>Projected Cost Savings Trend</h4>
+            <h4  class="font-bold">Cost Savings Trend</h4>
             <ng-container *ngIf="costSavingsChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Cost Savings'">
