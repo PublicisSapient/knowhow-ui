@@ -2607,3 +2607,6 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .peb-form span.p-inputnumber.p-component {
   width: 100%;
 }
+.bg-blue-20 {
+  background: #dee8fc;
+}
