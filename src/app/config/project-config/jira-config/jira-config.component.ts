@@ -128,6 +128,7 @@ export class JiraConfigComponent implements OnInit {
   branchListItems: any = [];
   filterText: any;
   selected = [1];
+  originalConfigTools = [];
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -621,6 +622,10 @@ export class JiraConfigComponent implements OnInit {
               this.showAddNewBtn = false;
             }
           }
+
+          this.originalConfigTools = JSON.parse(
+            JSON.stringify(this.configuredTools),
+          );
 
           this.configuredTools = this.mergeRepositoriesKeepBranch(
             this.configuredTools,
@@ -3039,8 +3044,8 @@ export class JiraConfigComponent implements OnInit {
               : response?.['data']
               ? [response['data']]
               : [];
-            this.configuredTools.unshift(...newItems);
-            this.configuredTools.forEach((tool) => {
+            this.originalConfigTools.unshift(...newItems);
+            this.originalConfigTools.forEach((tool) => {
               this.connections?.forEach((connection) => {
                 if (tool.connectionId === connection.id) {
                   tool['connectionName'] = connection.connectionName;
@@ -3048,7 +3053,7 @@ export class JiraConfigComponent implements OnInit {
               });
             });
             this.configuredTools = this.mergeRepositoriesKeepBranch(
-              this.configuredTools,
+              this.originalConfigTools,
             );
 
             if (
@@ -3122,9 +3127,6 @@ export class JiraConfigComponent implements OnInit {
                   }
                 });
               });
-              this.configuredTools = this.mergeRepositoriesKeepBranch(
-                this.configuredTools,
-              );
             }
             // empty the form
             if (
