@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleChange } from '@angular/core';
 import { SemiCircleDonutChartComponent } from './semi-circle-donut-chart.component';
 import { SharedService } from 'src/app/services/shared.service';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import * as d3 from 'd3';
 
 describe('SemiCircleDonutChartComponent', () => {
@@ -78,9 +78,12 @@ describe('SemiCircleDonutChartComponent', () => {
     it('should recreate chart when value changes', () => {
       spyOn<any>(component, 'createDonutChart');
 
-      component.ngOnChanges({
-        value: new SimpleChange(null, 50, false),
-      });
+      const changes = {
+        value: new SimpleChange(null, 50, true),
+      };
+      component.value = 50;
+
+      component.ngOnChanges(changes);
 
       expect(component.value).toBe(50);
       expect(component['createDonutChart']).toHaveBeenCalled();
@@ -374,8 +377,13 @@ describe('SemiCircleDonutChartComponent', () => {
     it('should handle rapid value changes', () => {
       spyOn<any>(component, 'createDonutChart');
 
-      component.ngOnChanges({ value: new SimpleChange(null, 10, false) });
+      component.value = 10;
+      component.ngOnChanges({ value: new SimpleChange(null, 10, true) });
+
+      component.value = 20;
       component.ngOnChanges({ value: new SimpleChange(10, 20, false) });
+
+      component.value = 30;
       component.ngOnChanges({ value: new SimpleChange(20, 30, false) });
 
       expect(component['createDonutChart']).toHaveBeenCalledTimes(3);
@@ -401,10 +409,14 @@ describe('SemiCircleDonutChartComponent', () => {
     });
 
     it('should handle kpi182 with different view types', () => {
+      const viewSubject = new BehaviorSubject('table');
+      Object.defineProperty(mockSharedService, 'showTableViewObs', {
+        get: () => viewSubject.asObservable(),
+      });
+
       component.kpiId = 'kpi182';
       component.chartData = [{ value: [{ value: 50 }] }];
 
-      mockSharedService.showTableViewObs = of('table');
       component.ngOnInit();
 
       expect(component.viewType).toBe('table');
@@ -415,10 +427,14 @@ describe('SemiCircleDonutChartComponent', () => {
     it('should handle multiple input changes simultaneously', () => {
       spyOn<any>(component, 'createDonutChart');
 
+      component.value = 75;
+      component.totalIssues = 100;
+      component.color = '#FF0000';
+
       component.ngOnChanges({
-        value: new SimpleChange(null, 75, false),
-        totalIssues: new SimpleChange(null, 100, false),
-        color: new SimpleChange(null, '#FF0000', false),
+        value: new SimpleChange(null, 75, true),
+        totalIssues: new SimpleChange(null, 100, true),
+        color: new SimpleChange(null, '#FF0000', true),
       });
 
       expect(component.value).toBe(75);
@@ -429,7 +445,7 @@ describe('SemiCircleDonutChartComponent', () => {
       spyOn<any>(component, 'createDonutChart');
 
       component.ngOnChanges({
-        color: new SimpleChange(null, '#FF0000', false),
+        color: new SimpleChange(null, '#FF0000', true),
       });
 
       expect(component['createDonutChart']).not.toHaveBeenCalled();

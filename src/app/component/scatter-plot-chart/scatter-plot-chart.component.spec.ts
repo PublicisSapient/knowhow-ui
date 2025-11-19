@@ -57,6 +57,7 @@ describe('ScatterPlotChartComponent', () => {
     });
 
     it('should initialize elem in ngAfterViewInit', () => {
+      fixture.detectChanges();
       component.ngAfterViewInit();
       // elem is initialized from svgRef.nativeElement.parentElement
       expect(component.elem).toBeDefined();
