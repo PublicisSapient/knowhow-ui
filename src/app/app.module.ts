@@ -149,6 +149,7 @@ import { HomeRecommCardComponent } from './component/home-recomm-card/home-recom
 import { NbaComponent } from './dashboard/home/nba/nba.component';
 import { RecommDetailsComponent } from './component/recomm-details/recomm-details.component';
 import { KpiAiRecommendationTargetComponent } from './dashboardv2/kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
+import { DynamicCurrencyPipe } from './shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 import { IndicatorsComponent } from './dashboard/indicators/indicators.component';
 import { ListBlockComponent } from './dashboard/list-block/list-block.component';
 
@@ -207,6 +208,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     PebCalculatorComponent,
     StackedGroupBarChartComponent,
     HomeComponent,
+    DynamicCurrencyPipe,
     IndicatorsComponent,
     ListBlockComponent,
   ],

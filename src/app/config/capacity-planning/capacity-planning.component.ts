@@ -115,6 +115,8 @@ export class CapacityPlanningComponent implements OnInit {
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
   errorMessage = 'Error in Saving Assignee Details. Please try after sometime!';
+  successMessage = 'Assignee Details saved successfully!';
+  capacityErrMessage = 'Please enter Capacity';
   constructor(
     private http_service: HttpService,
     private messageService: MessageService,
@@ -530,7 +532,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.expandedRows = { [expandedRowsKey]: true };
           this.messageService.add({
             severity: 'success',
-            summary: 'Assignee Details saved successfully!',
+            summary: this.successMessage,
           });
         }
       } else {
@@ -566,7 +568,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.expandedRows = { [expandedRowsKey]: true };
           this.messageService.add({
             severity: 'success',
-            summary: 'Assignee Details saved successfully!',
+            summary: this.successMessage,
           });
         } else {
           this.messageService.add({
@@ -688,7 +690,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.getCapacityData(selectedSprint['basicProjectConfigId']);
           this.messageService.add({
             severity: 'success',
-            summary: 'Assignee Details saved successfully!',
+            summary: this.successMessage,
           });
         }
       } else {
@@ -729,7 +731,7 @@ export class CapacityPlanningComponent implements OnInit {
           this.getCapacityData(selectedSprint['basicProjectConfigId']);
           this.messageService.add({
             severity: 'success',
-            summary: 'Assignee Details saved successfully!',
+            summary: this.successMessage,
           });
         } else {
           this.messageService.add({
@@ -751,7 +753,7 @@ export class CapacityPlanningComponent implements OnInit {
             (value instanceof FormControl && value.value == null)
           ) {
             this.isCapacitySaveDisabled = true;
-            this.capacityErrorMessage = 'Please enter Capacity';
+            this.capacityErrorMessage = this.capacityErrMessage;
           }
         });
       } else {
@@ -766,7 +768,7 @@ export class CapacityPlanningComponent implements OnInit {
       this.popupForm.get('capacity')?.value === 'Enter Value'
     ) {
       this.isCapacitySaveDisabled = true;
-      this.capacityErrorMessage = 'Please enter Capacity';
+      this.capacityErrorMessage = this.capacityErrMessage;
       return;
     }
     if (!!!this.popupForm.get('capacity')?.value) {
@@ -774,7 +776,7 @@ export class CapacityPlanningComponent implements OnInit {
       if (parseInt(this.popupForm.get('capacity')?.value) === 0) {
         this.capacityErrorMessage = 'Capacity Should not be 0';
       } else {
-        this.capacityErrorMessage = 'Please enter Capacity';
+        this.capacityErrorMessage = this.capacityErrMessage;
       }
       return;
     }
