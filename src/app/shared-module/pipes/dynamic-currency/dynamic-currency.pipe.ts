@@ -18,7 +18,8 @@ export class DynamicCurrencyPipe implements PipeTransform {
     });
 
     // Split currency symbol and number
-    const parts = absFormatted.match(/(\D*)([\d.,]+)/);
+    const SAFE_PATTERN = /^(\D*)([\d.,]+)$/;
+    const parts = absFormatted.match(SAFE_PATTERN);
     if (!parts) return absFormatted;
 
     const symbol = parts[1].trim(); // currency symbol
