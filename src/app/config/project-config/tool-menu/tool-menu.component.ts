@@ -22,7 +22,7 @@ import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
 import { KeyValue } from '@angular/common';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
+import { AnalyticsService } from '../../../services/analytics.service';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -59,7 +59,7 @@ export class ToolMenuComponent implements OnInit {
     public sharedService: SharedService,
     private httpService: HttpService,
     public getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
   ) {}
 
   /**
@@ -478,7 +478,7 @@ export class ToolMenuComponent implements OnInit {
           this.selectedProject[item?.hierarchyLevelName];
       });
     }
-    this.ga.setProjectToolsData(gaObj);
+    this.analytics.setProjectToolsData(gaObj);
   }
 
   getProjects() {

@@ -13,7 +13,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Subject, interval, of } from 'rxjs';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
@@ -148,7 +148,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
@@ -2076,7 +2076,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       };
       return obj;
     });
-    this.ga.setProjectData(gaArray);
+    this.analytics.setProjectData(gaArray);
   }
 
   /**

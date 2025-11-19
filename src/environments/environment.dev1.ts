@@ -19,29 +19,29 @@
 import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
-  production: true,
-  baseUrl: '',
+  production: false,
+  baseUrl: '', // Your dev1 backend URL
   SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: '',
-  CENTRAL_API_URL: '',
+  CENTRAL_LOGIN_URL: '', // Your dev1 SSO URL if applicable
+  CENTRAL_API_URL: '', // Your dev1 API URL
   RESOURCE: 'PSKnowHOW',
   AUTHENTICATION_SERVICE: false,
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration for docker
+  // Analytics configuration for dev1 - PostHog testing
   analytics: {
-    provider: 'google', // 'google' | 'posthog' | 'faro' | 'disabled'
-    rolloutPercentage: 10, // Percentage of users to include in new analytics
+    provider: 'posthog', // PostHog for PO evaluation
+    rolloutPercentage: 100, // 100% for testing environment
     // PostHog configuration
     posthog: {
-      apiKey: '${POSTHOG_API_KEY}', // Set via environment variables
-      host: '${POSTHOG_HOST}', // e.g., 'https://us.i.posthog.com'
+      apiKey: '${POSTHOG_API_KEY}', // Will be replaced by deployment
+      host: '${POSTHOG_HOST}', // Will be replaced by deployment
     },
-    // Grafana Faro configuration
+    // Grafana Faro configuration (for future testing)
     faro: {
-      url: '${FARO_COLLECTOR_URL}', // Set via environment variables
-      appName: 'PSKnowHOW',
+      url: '${FARO_COLLECTOR_URL}',
+      appName: 'PSKnowHOW-Dev1',
       appVersion: '14.0.0',
     },
   },

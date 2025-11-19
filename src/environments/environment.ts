@@ -20,9 +20,11 @@
 // `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import { Environment } from '../app/types/environment.types';
+
+export const environment: Environment = {
   production: false,
-  baseUrl: '//customapi:8080',
+  baseUrl: '//localhost:8080',
   SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: 'http://localhost:3000',
   CENTRAL_API_URL: 'http://localhost:8787',
@@ -31,6 +33,22 @@ export const environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
+  // Analytics configuration - Switch between PostHog and Faro for testing
+  analytics: {
+    provider: 'faro', // Switch to Faro for testing (change back to 'posthog' to test PostHog)
+    rolloutPercentage: 100, // 100% for local development
+    // PostHog configuration
+    posthog: {
+      apiKey: 'phc_s8fQ8KLsniaBvs1HFI4s3cBTIFyKmqEYYN8YthQy9NK',
+      host: 'https://eu.i.posthog.com',
+    },
+    // Grafana Faro configuration
+    faro: {
+      url: 'https://faro-collector-prod-ap-south-1.grafana.net/collect/00de3c05c77b353916769c273dcd34d5',
+      appName: 'PSKnowHOW-Dev',
+      appVersion: '14.0.0',
+    },
+  },
 };
 
 /*

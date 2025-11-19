@@ -1,7 +1,7 @@
 {
     "name": "dashboard",
     "version": "14.0.0",
-    "scripts":     {
+    "scripts": {
         "ng": "ng",
         "start": "concurrently \"node --max_old_space_size=2048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange \"src/**/*.{ts,css}\" -- prettier --write --ignore-unknown {{changed}}\"",
         "build": "ng build --configuration=docker --aot --output-hashing=all",
@@ -16,20 +16,26 @@
         "sonar": "sonar-scanner",
         "prettier": "prettier src/**/*.{ts,css} --write"
     },
-    "husky": {"hooks": {"pre-commit": "lint-staged"}},
-    "lint-staged":     {
-        "linters": {"src/**/*.{ts,css}":         [
-            "prettier --write",
-            "git add"
-        ]},
-        "ignore":         [
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "linters": {
+            "src/**/*.{ts,css}": [
+                "prettier --write",
+                "git add"
+            ]
+        },
+        "ignore": [
             "node_modules",
             "dist",
             "package-lock.json"
         ]
     },
     "private": true,
-    "dependencies":     {
+    "dependencies": {
         "@angular/animations": "17.3.12",
         "@angular/cdk": "17.3.10",
         "@angular/common": "17.3.12",
@@ -46,6 +52,7 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fullcalendar/core": "^5.3.1",
+        "@grafana/faro-web-sdk": "^1.19.0",
         "@ng-select/ng-select": "^12.0.7",
         "@popperjs/core": "^2.11.6",
         "chart.js": "^2.9.4",
@@ -56,6 +63,7 @@
         "html2canvas": "^1.4.1",
         "jspdf": "^3.0.1",
         "lz-string": "^1.5.0",
+        "posthog-js": "^1.293.0",
         "primeflex": "^2.0.0",
         "primeicons": "^7.0.0",
         "primeng": "^17.18.15",
@@ -63,7 +71,7 @@
         "uuid": "^9.0.0",
         "zone.js": "^0.14.10"
     },
-    "devDependencies":     {
+    "devDependencies": {
         "@angular-devkit/build-angular": "^17.3.17",
         "@angular-eslint/builder": "^17.5.3",
         "@angular-eslint/eslint-plugin": "^17.5.3",
@@ -72,6 +80,7 @@
         "@angular/cli": "^17.3.17",
         "@angular/compiler-cli": "17.3.12",
         "@angular/language-service": "17.3.12",
+        "@rrweb/types": "^2.0.0-alpha.17",
         "@types/jasmine": "~3.6.0",
         "@types/jasminewd2": "2.0.3",
         "@types/node": "^12.0.2",
@@ -97,6 +106,7 @@
         "lint-staged": "^12.2.2",
         "onchange": "^7.1.0",
         "prettier": "^2.5.1",
+        "rrweb-snapshot": "^2.0.0-alpha.17",
         "sonar-scanner": "^3.1.0",
         "ts-node": "~10.4.0",
         "typescript": "^5.4.5"

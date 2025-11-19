@@ -16,7 +16,9 @@
  *
  ******************************************************************************/
 
-export const environment = {
+import { Environment } from '../app/types/environment.types';
+
+export const environment: Environment = {
   production: true,
   baseUrl: '',
   SSO_LOGIN: false,
@@ -27,4 +29,20 @@ export const environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
+  // Analytics configuration for production
+  analytics: {
+    provider: 'google', // 'google' | 'posthog' | 'faro' | 'disabled'
+    rolloutPercentage: 10, // Percentage of users to include in new analytics
+    // PostHog configuration
+    posthog: {
+      apiKey: '${POSTHOG_API_KEY}', // Set via environment variables
+      host: '${POSTHOG_HOST}', // e.g., 'https://us.i.posthog.com'
+    },
+    // Grafana Faro configuration
+    faro: {
+      url: '${FARO_COLLECTOR_URL}', // Set via environment variables
+      appName: 'PSKnowHOW',
+      appVersion: '14.0.0',
+    },
+  },
 };

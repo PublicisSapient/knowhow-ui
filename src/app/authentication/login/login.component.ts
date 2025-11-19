@@ -26,7 +26,7 @@ import {
 } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     private readonly router: Router,
     private readonly httpService: HttpService,
     private readonly sharedService: SharedService,
-    private readonly ga: GoogleAnalyticsService,
+    private readonly analytics: AnalyticsService,
     private readonly helperService: HelperService,
   ) {}
 
@@ -147,7 +147,7 @@ export class LoginComponent implements OnInit {
       });
 
       /*After successfully login redirect form to dashboard router(Executive page)*/
-      this.ga.setLoginMethod(data.body, 'standard');
+      this.analytics.setLoginMethod(data.body, 'standard');
       if (this.redirectToProfile()) {
         this.router.navigate(['./dashboard/Config/Profile']);
       } else {

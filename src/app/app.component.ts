@@ -20,7 +20,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
-import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { AnalyticsService } from './services/analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import {
   Router,
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
     private readonly getAuth: GetAuthService,
     private readonly httpService: HttpService,
     private readonly primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService,
+    public analytics: AnalyticsService,
     private readonly authorisation: GetAuthorizationService,
   ) {
     this.authorized = this.getAuth.checkAuth();
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
           version: this.httpService.currentVersion,
           uiType: 'New',
         };
-        this.ga.setPageLoad(data);
+        this.analytics.setPageLoad(data);
         const loc = window.location.hash
           ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
           : '';
