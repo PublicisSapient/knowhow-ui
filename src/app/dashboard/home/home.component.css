@@ -90,7 +90,6 @@
 }
 
 .tabularKPI-column-value {
-  font-weight: bold;
   margin-bottom: 15px;
 }
 
@@ -208,22 +207,22 @@
 }
 
 .healthy {
-  background: #00bd24;
+  background: var(--color-green);
   color: white;
 }
 
 .critical {
-  background: #ff1f44;
+  background: var(--color-red);
   color: white;
 }
 
 .unhealthy {
-  background: #c2a778;
+  background: var(--color-red);
   color: white;
 }
 
 .moderate {
-  background: #93856d;
+  background: var(--color-orange);
   color: white;
 }
 

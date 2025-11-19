@@ -226,10 +226,14 @@
       <div class="p-grid p-mt-3">
         <div class="p-col-3 p-mb-2">
           <div class="border border-round p-p-3 position-relative">
-            <i class="fas fa-bolt text-green"></i>
-            <h5 class="p-mb-0">Speed</h5>
-            <p class="text-green font-bold text-2xl p-m-0">{{ (categoryVariations?.speed) +
-              '%' }}</p>
+            <div class="p-d-flex">
+              <i class="fas fa-bolt text-green"></i>
+              <div class="p-ml-2">
+                <h5 class="p-mt-0 p-mb-0">Speed</h5>
+                <p class="text-green font-bold text-2xl p-m-0">{{ (categoryVariations?.speed) +
+                  '%' }}</p>
+              </div>
+            </div>
             <div class="position-absolute top-0 right-0 p-mr-2 p-mt-2">
               @if(categoryVariations?.speed >= 0) {
               <i class="fas fa-arrow-up text-green"></i>
@@ -241,10 +245,14 @@
         </div>
         <div class="p-col-3 p-mb-2">
           <div class="border border-round p-p-3 position-relative">
-            <i class="fas fa-chart-line text-blue"></i>
-            <h5 class="p-mb-0">Efficiency</h5>
-            <p class="text-blue font-bold text-2xl p-m-0">{{
-              (categoryVariations?.efficiency) + '%' }}</p>
+            <div class="p-d-flex">
+              <i class="fas fa-chart-line text-blue"></i>
+              <div class="p-ml-2">
+                <h5 class="p-mt-0 p-mb-0">Efficiency</h5>
+                <p class="text-blue font-bold text-2xl p-m-0">{{
+                  (categoryVariations?.efficiency) + '%' }}</p>
+              </div>
+            </div>
             <div class="position-absolute top-0 right-0 p-mr-2 p-mt-2">
               @if(categoryVariations?.efficiency >= 0) {
               <i class="fas fa-arrow-up text-green"></i>
@@ -256,10 +264,14 @@
         </div>
         <div class="p-col-3 p-mb-2">
           <div class="border border-round p-p-3 position-relative">
-            <i class="fas fa-shield-alt text-purple"></i>
-            <h5 class="p-mb-0">Quality</h5>
-            <p class="text-purple font-bold text-2xl p-m-0">{{ (categoryVariations?.quality)
-              + '%' }}</p>
+            <div class="p-d-flex">
+              <i class="fas fa-shield-alt text-purple"></i>
+              <div class="p-ml-2">
+                <h5 class="p-mt-0 p-mb-0">Quality</h5>
+                <p class="text-purple font-bold text-2xl p-m-0">{{ (categoryVariations?.quality)
+                  + '%' }}</p>
+              </div>
+            </div>
             <div class="position-absolute top-0 right-0 p-mr-2 p-mt-2">
               @if(categoryVariations?.quality >= 0) {
               <i class="fas fa-arrow-up text-green"></i>
@@ -271,10 +283,14 @@
         </div>
         <div class="p-col-3 p-mb-2">
           <div class="border border-round p-p-3 position-relative">
-            <i class="fas fa-bullseye text-orange"></i>
-            <h5 class="p-mb-0">Productivity</h5>
-            <p class="text-orange font-bold text-2xl p-m-0">{{
-              (categoryVariations?.productivity) + '%' }}</p>
+            <div class="p-d-flex">
+              <i class="fas fa-bullseye text-orange"></i>
+              <div class="p-ml-2">
+                <h5 class="p-mt-0 p-mb-0">Productivity</h5>
+                <p class="text-orange font-bold text-2xl p-m-0">{{
+                  (categoryVariations?.productivity) + '%' }}</p>
+            </div>
+            </div>
             <div class="position-absolute top-0 right-0 p-mr-2 p-mt-2">
               @if(categoryVariations?.productivity >= 0) {
               <i class="fas fa-arrow-up text-green"></i>
