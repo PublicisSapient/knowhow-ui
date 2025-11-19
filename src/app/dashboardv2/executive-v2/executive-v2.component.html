@@ -96,7 +96,7 @@
             </div>
             <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
               <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-                <ng-container *ngFor="let kpi of mockUpdatedConfigGlobalData; let i = index;">
+                <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
                   <ng-container *ngIf="kpi?.kpiDetail?.chartType !== 'card'">
                     <div
                       *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
@@ -126,9 +126,9 @@
                         [xAxisLabel]="kpi?.kpiDetail?.xaxisLabel" [yAxisLabel]="kpi?.kpiDetail?.yaxisLabel"
                         [xCaption]="this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                         [kpiTitle]="kpi?.kpiName">
+                        noTabAccess - {{noTabAccess}}
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
-
                             <div [ngSwitch]="kpi?.kpiDetail?.chartType">
                               <ng-container *ngIf="!kpiLoader.has(kpi?.kpiId)">
                                 <ng-container *ngIf="!(showChart === 'table')">
@@ -233,7 +233,7 @@
                                   <ng-container *ngSwitchCase="'progressbar'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
                                       <app-progress-chart
-                                          [chartData]="progressbarChartData"
+                                          [chartData]="kpiChartData[kpi?.kpiId]"
                                           [selectedtype]="selectedtype"
                                           [viewType]="showChart"
                                           [board]="selectedTab"
@@ -372,6 +372,7 @@
                             </div>
                           </ng-container>
                           <ng-container>
+                            checkIfZeroData(kpi) - {{checkIfZeroData(kpi)}}
                             <ng-template #showTable>
                               <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
                                 *ngIf="checkIfZeroData(kpi);else noDataAccess" role="region" aria-label="KPI Details"
@@ -445,7 +446,7 @@
                   <ng-template #noDataForChartWithFilters>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        447 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data Available.</h4>
@@ -453,9 +454,10 @@
                     </div>
                   </ng-template>
                   <ng-template #partialData let-data>
+                    checkIfPartialDataPresent(data) - {{checkIfPartialDataPresent(data)}}
                     <div class="min-ht" *ngIf="checkIfPartialDataPresent(data); else noDataAccess;">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        457 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data
@@ -467,7 +469,7 @@
                   <ng-template #noDataAccess>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        469 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No Data Available.</h4>
