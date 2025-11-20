@@ -94,7 +94,6 @@ import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe'
 import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
 import { ProjectFilterComponent } from './project-filter/project-filter.component';
-import { FilterTopOrderPipe } from './pipes/filter-top-order.pipe';
 @NgModule({
   imports: [
     CommonModule,
@@ -170,7 +169,6 @@ import { FilterTopOrderPipe } from './pipes/filter-top-order.pipe';
     UtcToLocalUserPipe,
     ProgressChartComponent,
     ScatterPlotChartComponent,
-    FilterTopOrderPipe,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -219,7 +217,6 @@ import { FilterTopOrderPipe } from './pipes/filter-top-order.pipe';
     ConditionalInputV2Component,
     ProgressChartComponent,
     ScatterPlotChartComponent,
-    FilterTopOrderPipe,
   ],
   providers: [ConfirmationService, KpiHelperService],
   schemas: [NO_ERRORS_SCHEMA],
