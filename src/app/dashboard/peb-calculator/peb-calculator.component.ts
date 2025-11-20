@@ -49,6 +49,8 @@ export class PebCalculatorComponent implements OnInit {
   categoryVariations: CategoryVariations;
   productivityGain: any = {};
   xAxisLabel: string = '';
+  userCurrency = '';
+  userLocale = navigator.language || 'en-US';
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +64,7 @@ export class PebCalculatorComponent implements OnInit {
       devCostControl: [100000],
       durationControl: ['year'],
     });
+    this.userCurrency = this.detectCurrency(this.userLocale);
   }
 
   /**
@@ -264,6 +267,21 @@ export class PebCalculatorComponent implements OnInit {
       devCountControl * devCostControl * (value / 100) * durationControl,
     );
     return multipliedDetails;
+  }
+
+  detectCurrency(locale: string): string {
+    const country = locale.split('-')[1]?.toUpperCase();
+    const currencyMap: any = {
+      US: 'USD',
+      DE: 'EUR',
+      FR: 'EUR',
+      IN: 'INR',
+      GB: 'GBP',
+      JP: 'JPY',
+      // add more as needed
+    };
+
+    return currencyMap[country] || 'USD';
   }
 
   ngOnDestroy() {
