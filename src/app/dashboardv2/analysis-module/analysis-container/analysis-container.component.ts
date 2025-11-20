@@ -589,6 +589,10 @@ export class AnalysisContainerComponent implements OnInit {
       console.warn('Error saving selected sprint to localStorage:', error);
     }
   }
+    
+  handleKPIReload(event: any) {
+    this.payloadPreparation();
+  }
 
   payloadPreparation() {
     const projectAlongWithSprint = {};
