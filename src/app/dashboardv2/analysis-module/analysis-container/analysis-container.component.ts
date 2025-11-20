@@ -175,15 +175,44 @@ export class AnalysisContainerComponent implements OnInit {
               Project: filteredProjects,
               Sprint: analysisConstant.SPRINT_FILTER_OPTIONS,
             };
-            this.selectedProjects = [
-              this.filterData[analysisConstant.PROJECT_KEY][1],
-            ];
-            this.selectedSprint =
-              this.filterData[analysisConstant.SPRINT_KEY][2];
+
+            this.loadSavedSelections();
             this.payloadPreparation();
           }
         }),
     );
+  }
+
+  private loadSavedSelections() {
+    const defaultProject = [this.filterData[analysisConstant.PROJECT_KEY][1]];
+    const defaultSprint = this.filterData[analysisConstant.SPRINT_KEY][2];
+
+    try {
+      const savedProjects = JSON.parse(
+        localStorage.getItem(analysisConstant.ANALYSIS_SELECTED_PROJECTS_KEY) ||
+          '[]',
+      );
+      const savedSprint = JSON.parse(
+        localStorage.getItem(analysisConstant.ANALYSIS_SELECTED_SPRINT_KEY) ||
+          'null',
+      );
+
+      const validProjects = savedProjects.filter((p) =>
+        this.filterData[analysisConstant.PROJECT_KEY].some(
+          (current) => current.nodeId === p.nodeId,
+        ),
+      );
+      this.selectedProjects =
+        validProjects.length > 0 ? validProjects : defaultProject;
+
+      const validSprint = this.filterData[analysisConstant.SPRINT_KEY].find(
+        (s) => s.nodeId === savedSprint?.nodeId,
+      );
+      this.selectedSprint = validSprint || defaultSprint;
+    } catch {
+      this.selectedProjects = defaultProject;
+      this.selectedSprint = defaultSprint;
+    }
   }
 
   private processAiUsageTableData(apiData: any) {
@@ -465,6 +494,7 @@ export class AnalysisContainerComponent implements OnInit {
       ),
     ];
 
+    this.saveProjectsToLocalStorage();
     this.payloadPreparation();
   }
 
@@ -529,10 +559,34 @@ export class AnalysisContainerComponent implements OnInit {
   handleFilterSelect(event: any) {
     if (event.type === analysisConstant.PROJECT_KEY) {
       this.selectedProjects = event['value'];
+      this.saveProjectsToLocalStorage();
       this.payloadPreparation();
     } else {
       this.selectedSprint = event['value'];
+      this.saveSprintToLocalStorage();
       this.payloadPreparation();
+    }
+  }
+
+  private saveProjectsToLocalStorage() {
+    try {
+      localStorage.setItem(
+        analysisConstant.ANALYSIS_SELECTED_PROJECTS_KEY,
+        JSON.stringify(this.selectedProjects),
+      );
+    } catch (error) {
+      console.warn('Error saving selected projects to localStorage:', error);
+    }
+  }
+
+  private saveSprintToLocalStorage() {
+    try {
+      localStorage.setItem(
+        analysisConstant.ANALYSIS_SELECTED_SPRINT_KEY,
+        JSON.stringify(this.selectedSprint),
+      );
+    } catch (error) {
+      console.warn('Error saving selected sprint to localStorage:', error);
     }
   }
 
