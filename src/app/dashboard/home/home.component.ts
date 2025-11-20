@@ -207,7 +207,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscription.push(
       this.service.pebData$.subscribe((data) => {
-        if (data?.['summary']['trends']) this.processPEBData(data);
+        if (data?.['summary']['trends']) {
+          this.processPEBData(data);
+        }
       }),
     );
   }

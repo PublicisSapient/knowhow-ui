@@ -545,7 +545,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
         let stateFiltersParam = params['stateFilters'];
         const kpiFiltersParam = params['kpiFilters'];
-        let tabParam = params['selectedTab'];
+        const tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
             let selectedTab = decodeURIComponent(this.location.path());
@@ -3484,7 +3484,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createCombinations(arr1, arr2, kpiId) {
-    let arr = [];
+    const arr = [];
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
@@ -3915,12 +3915,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
       }
-      let trendValueList;
       /**Todo: if else condition to be removed after api integration */
       this.allKpiArray.push(data[key]);
-      trendValueList =
-        this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-      const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+
       /** if: for graphs, else: for other than graphs */
       if (
         this.updatedConfigGlobalData.filter((kpi) => kpi?.kpiId == key)[0]
@@ -4072,7 +4069,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
-    let filters = this.kpiSelectedFilterObj[kpiId];
+    const filters = this.kpiSelectedFilterObj[kpiId];
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -5352,7 +5349,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    */
   calcBusinessDays(dDate1, dDate2) {
     // input given as Date objects
-    let iWeeks;
     let iDateDiff;
     let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -5369,7 +5365,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     iWeekday2 = iWeekday2 > 5 ? 5 : iWeekday2;
 
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
-    iWeeks = Math.floor(
+    const iWeeks = Math.floor(
       (new Date(dDate2).getTime() - new Date(dDate1).getTime()) / 604800000,
     );
 

@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  forwardRef,
   Input,
   OnChanges,
   OnInit,
@@ -39,7 +38,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
 import { AI_USAGE_TOOLTIP_INFO } from '../analysis-module/analysis-constant';
 import { KpiAiRecommendationTargetComponent } from '../kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
-import { RecommDetailsComponent } from '../../component/recomm-details/recomm-details.component';
 
 interface SelectedTrend {
   nodeId: string;
@@ -657,7 +655,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
-    let selectedTrend = this.service.getSelectedTrends();
+    const selectedTrend = this.service.getSelectedTrends();
 
     let currentTrendList: SelectedTrend[] = [];
 

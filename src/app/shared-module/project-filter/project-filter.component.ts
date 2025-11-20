@@ -219,7 +219,9 @@ export class ProjectFilterComponent implements OnInit {
   }
 
   resetFiltersSuggestionsToAll() {
-    if (!Array.isArray(this.formData)) return;
+    if (!Array.isArray(this.formData)) {
+      return;
+    }
     for (const level of this.formData) {
       this.filteredSuggestions[level.hierarchyLevelId] = level.list || [];
     }

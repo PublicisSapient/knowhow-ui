@@ -66,7 +66,6 @@ export class ScatterPlotChartComponent {
   ngAfterViewInit(): void {
     if (this.svgRef?.nativeElement) {
       this.elem = this.svgRef.nativeElement.parentElement;
-      // console.log('elem initialized in AfterViewInit:', this.elem);
       this.createChart();
     }
   }
@@ -74,7 +73,6 @@ export class ScatterPlotChartComponent {
   ngOnChanges(changes: SimpleChanges) {
     if (Object.keys(changes)?.length > 0) {
       d3.select(this.svgRef?.nativeElement).selectAll('*').remove();
-      // d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.sprint-legend-container').remove();
       this.counter = 0; // Reset counter for legend
       this.createChart();
@@ -97,8 +95,6 @@ export class ScatterPlotChartComponent {
   private processData(): PlotPoint[] {
     const points: PlotPoint[] = [];
 
-    // console.log('scatter data ', this.data);
-
     // Check if data exists and has the expected structure
     if (!this.data || this.data.length === 0) {
       console.warn('No data available');
@@ -115,9 +111,6 @@ export class ScatterPlotChartComponent {
 
     // Process each week's PR values
     weeklyData.forEach((week, weekIndex) => {
-      // console.log(`Week ${weekIndex + 1}:`, week);
-      // console.log(`bubblePoints for week ${weekIndex + 1}:`, week.bubblePoints);
-
       if (
         week.bubblePoints &&
         Array.isArray(week.bubblePoints) &&
@@ -128,7 +121,6 @@ export class ScatterPlotChartComponent {
         }
 
         week.bubblePoints.forEach((pr) => {
-          // console.log(`Processing PR:`, pr);
           points.push({
             weekNumber: weekIndex + 1,
             size: parseInt(pr.size, 10),
@@ -152,7 +144,6 @@ export class ScatterPlotChartComponent {
       }
     });
 
-    // console.log(`Total points processed: ${points.length}`, points);
     return points;
   }
 
@@ -183,15 +174,15 @@ export class ScatterPlotChartComponent {
   }
 
   private roundToNearestLarge(value: number): number {
-    if (value <= 0) return 0;
+    if (value <= 0) {
+      return 0;
+    }
     const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
     return Math.ceil(value / magnitude) * magnitude;
   }
 
   private createChart(): void {
     const plotPoints = this.processData();
-    // console.log('plotPoints:', plotPoints);
-    // console.log('SVG ref:', this.svgRef?.nativeElement);
 
     if (plotPoints.length === 0) {
       console.warn('No data points to display, but will render empty chart');

@@ -7,7 +7,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 
-interface categoryVariations {
+interface CategoryVariations {
   speed: number;
   quality: number;
   efficiency: number;
@@ -35,7 +35,7 @@ export class PebCalculatorComponent implements OnInit {
   messages: Message[] | undefined;
   @Input() showLoader: boolean = false;
   isError: boolean = false;
-  errorMessage: String = '';
+  errorMessage: string = '';
   items: any[] = [];
   // pebProductivityData: any = [];
   //require('src/assets/data/peb-productivity.json')['data'];
@@ -46,7 +46,7 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryVariations: categoryVariations;
+  categoryVariations: CategoryVariations;
   productivityGain: any = {};
   xAxisLabel: string = '';
 
@@ -185,7 +185,7 @@ export class PebCalculatorComponent implements OnInit {
             );
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
-          ) as categoryVariations;
+          ) as CategoryVariations;
           this.xAxisLabel = response['data']?.temporalGrouping;
         } else {
           console.error(
@@ -206,7 +206,9 @@ export class PebCalculatorComponent implements OnInit {
     categoryScores: any[],
     showOverall?: boolean,
   ): any[] {
-    if (!categoryScores || categoryScores.length === 0) return [];
+    if (!categoryScores || categoryScores.length === 0) {
+      return [];
+    }
 
     // Find all metric names except the date
     var metrics = [];
