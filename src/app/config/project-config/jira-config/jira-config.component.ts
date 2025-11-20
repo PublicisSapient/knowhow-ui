@@ -669,7 +669,7 @@ export class JiraConfigComponent implements OnInit {
         return;
       }
 
-      const key = item.repositoryName.toLowerCase(); // case-insensitive
+      const key = item.repositoryName.toLowerCase();
       const branch = item.branch;
 
       if (map.has(key)) {
@@ -3565,7 +3565,6 @@ export class JiraConfigComponent implements OnInit {
       this.currentFormElement.branchList = [];
     }
 
-    // Add newly selected branch if it comes from the originalEvent (user clicked)
     if (event.originalEvent && event.itemValue) {
       const exists = this.currentFormElement.branchList.some(
         (b: any) => b.branchName === event.itemValue.branchName,
@@ -3575,7 +3574,6 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
-    // Keep only branches that are currently selected
     this.currentFormElement.branchList =
       this.currentFormElement.branchList.filter((b: any) =>
         event.value.some((v: any) => v === b.branchName),
