@@ -4,28 +4,69 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'dynamicCurrency',
 })
 export class DynamicCurrencyPipe implements PipeTransform {
-  transform(value: number, currency: string = 'EUR', locale?: string): string {
+  // Map countries to currencies
+  private currencyMap: Record<string, string> = {
+    US: 'USD',
+    CA: 'CAD',
+    GB: 'GBP',
+    DE: 'EUR',
+    FR: 'EUR',
+    ES: 'EUR',
+    IT: 'EUR',
+    BE: 'EUR',
+    NL: 'EUR',
+    AU: 'AUD',
+    JP: 'JPY',
+    IN: 'INR',
+    CN: 'CNY',
+    // add more as needed
+  };
+
+  transform(
+    value: number,
+    returnType: 'symbol' | 'value' | 'both' = 'both',
+    currency?: string,
+    locale?: string,
+  ): string {
     if (value == null) return '';
 
-    // Use the provided locale or fallback to browser's default
+    // Detect locale
     const userLocale = locale || navigator.language || 'en-US';
 
+    // Extract country: "en-US" → "US"
+    const country = userLocale.split('-')[1]?.toUpperCase();
+
+    // Automatic currency detection if not provided
+    const autoCurrency = currency || this.currencyMap[country] || 'USD';
+
+    // Format the value using detected currency
     const absFormatted = Math.abs(value).toLocaleString(userLocale, {
       style: 'currency',
-      currency,
+      currency: autoCurrency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
 
-    // Split currency symbol and number
+    // Extract symbol + number
     const SAFE_PATTERN = /^(\D*)([\d.,]+)$/;
     const parts = absFormatted.match(SAFE_PATTERN);
+
     if (!parts) return absFormatted;
 
-    const symbol = parts[1].trim(); // currency symbol
-    const number = parts[2]; // numeric value
+    const symbol = parts[1].trim();
+    const number = parts[2];
 
-    // Leading space for positive numbers to align with negative ones
+    // Return ONLY symbol
+    if (returnType === 'symbol') {
+      return symbol;
+    }
+
+    // Return ONLY value
+    if (returnType === 'value') {
+      return number;
+    }
+
+    // Default → return both
     return value < 0 ? `-${symbol}\u00A0${number}` : `${symbol}\u00A0${number}`;
   }
 }

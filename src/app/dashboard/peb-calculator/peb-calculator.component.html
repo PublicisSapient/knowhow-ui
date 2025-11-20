@@ -30,7 +30,7 @@
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
-                  mode="currency" currency="EUR" locale="de-DE" ngDefaultControl></p-inputNumber>
+                  mode="currency"[currency]="userCurrency" [locale]="userLocale" ngDefaultControl></p-inputNumber>
               </div>
             </div>
             <div class="p-col-12">
@@ -80,7 +80,7 @@
             <div class="p-col-6 p-mb-2 p-p-2">
               <div class="p-text-center border border-round">
                 <h5 class="p-mb-0">Total Savings</h5>
-                <p class="text-blue font-bold text-2xl p-mt-0">{{currencySymbol}} {{ annualPEB}}</p>
+                <p class="text-blue font-bold text-2xl p-mt-0"> {{ annualPEB | dynamicCurrency}}</p>
 
               </div>
             </div>
@@ -96,14 +96,14 @@
             <ng-template pTemplate="header">
               <tr>
                 <th style="width: 50%;">{{ items[0]?.levelName }}</th>
-                <th style="width: 30%;" class="p-text-right">Projected Cost Savings ({{currencySymbol}})</th>
+                <th style="width: 30%;" class="p-text-right">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
                 <th></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
               <tr>
                 <td style="width: 50%;">{{ item?.organizationEntityName }}</td>
-                <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | number:'1.2-2'}}</td>
+                <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
                 <td></td>
               </tr>
             </ng-template>
