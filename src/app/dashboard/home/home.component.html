@@ -15,7 +15,7 @@
         {{ item.category }}
       </p>
       <div class="p-d-flex">
-        <p class="tabularKPI-column-value font-bold p-mt-0 p-mr-2" tabindex="0">
+        <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0">
           {{ item.value }}
           {{
           item.average && item.average !== 'NA'
@@ -246,13 +246,15 @@
         <div class="trend-item p-d-flex p-ai-center">
           <div class="trend-content">
             <span class="trend-label">{{ item.property }}</span>
-            <div class="trend-value-container" [style.background-color]="items.color">
-              @if(index !== 0) {
-              <i class="pi {{ item.value.toString().includes('-') ? 'pi-arrow-down' : 'pi-arrow-up' }}" [style.color]="items.fontColor"></i>
-              } @else if(items.icon) {
-              <i class="pi {{ items.icon }}" [style.color]="items.fontColor"></i>
-              }
-              <span class="trend-value" [style.color]="items.fontColor">
+            <div class="trend-value-container">
+              <div class="trend-icon">
+                @if(index !== 0) {
+                <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
+                } @else if(items.icon) {
+                <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
+                }
+              </div>
+              <span class="trend-value" [style.color]="items.color">
                 {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
               </span>
             </div>

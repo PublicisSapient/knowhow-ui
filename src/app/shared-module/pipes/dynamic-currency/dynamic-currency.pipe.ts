@@ -26,8 +26,6 @@ export class DynamicCurrencyPipe implements PipeTransform {
     const number = parts[2]; // numeric value
 
     // Leading space for positive numbers to align with negative ones
-    return value < 0
-      ? `-${symbol}\u00A0${number}`
-      : `\u00A0${symbol}\u00A0${number}`;
+    return value < 0 ? `-${symbol}\u00A0${number}` : `${symbol}\u00A0${number}`;
   }
 }

@@ -447,3 +447,8 @@
   align-items: center;
   justify-content: center;
 }
+.trend-icon {
+  width: 20px; /* fixed width to align icons */
+  display: flex;
+  justify-content: center; /* center arrow horizontally */
+}
