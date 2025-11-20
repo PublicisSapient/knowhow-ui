@@ -72,9 +72,6 @@ export class ScatterPlotChartComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // console.log('ngOnChanges triggered');
-    // console.log('this.elem:', this.elem);
-    // console.log('this.data:', this.data);
     if (Object.keys(changes)?.length > 0) {
       d3.select(this.svgRef?.nativeElement).selectAll('*').remove();
       // d3.select(this.elem).select('svg').remove();

@@ -63,13 +63,11 @@
               [trendValue]="-5"
               [trendLabel]="'from last month'">
             </app-indicators> -->
-        <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
+            <!-- !IMPORTANT: Will uncomment and work on it, once Kunal's changes are ready -->
+        <!-- <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
           <div class="metrics-grid column-4 p-p-3">
             <ng-container *ngFor="let kpi of mockUpdatedConfigGlobalData; let i = index;">
             <ng-container *ngIf="kpi?.kpiDetail?.chartType === 'card'">
-              <!-- kpiChartData - {{ kpiChartData | json }}
-              kpiId - {{ kpi?.kpiId }}
-              kpiSelectedFilterObj - {{ kpiSelectedFilterObj | json }} -->
               <app-indicators
                 [unit]="kpi?.kpiDetail?.kpiUnit"
                 [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
@@ -84,7 +82,7 @@
             </ng-container>
             </ng-container>
           </div>
-        </ng-container>
+        </ng-container> -->
         <div class="clearfix" *ngIf="showChart !== 'table'">
           <div class="right-container col">
             <div class="tabs-container" *ngIf="tabsArr.size > 1">
@@ -126,7 +124,6 @@
                         [xAxisLabel]="kpi?.kpiDetail?.xaxisLabel" [yAxisLabel]="kpi?.kpiDetail?.yaxisLabel"
                         [xCaption]="this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                         [kpiTitle]="kpi?.kpiName">
-                        noTabAccess - {{noTabAccess}}
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
                             <div [ngSwitch]="kpi?.kpiDetail?.chartType">
@@ -372,7 +369,6 @@
                             </div>
                           </ng-container>
                           <ng-container>
-                            checkIfZeroData(kpi) - {{checkIfZeroData(kpi)}}
                             <ng-template #showTable>
                               <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
                                 *ngIf="checkIfZeroData(kpi);else noDataAccess" role="region" aria-label="KPI Details"

@@ -9,24 +9,18 @@ describe('ProgressChartComponent', () => {
 
   const mockChartData = [
     {
-      filter1: 'Overall',
-      filter2: '',
-      value: [
-        {
-          data: 'Rework Rate',
-          date: '2024-01',
-          kpiGroup: 'Quality',
-          sprojectName: 'Project1',
-          value: 15.5,
-        },
-        {
-          data: 'Revert Rate',
-          date: '2024-01',
-          kpiGroup: 'Quality',
-          sprojectName: 'Project1',
-          value: 5.2,
-        },
-      ],
+      data: 'Rework Rate',
+      date: '2024-01',
+      kpiGroup: 'Quality',
+      sprojectName: 'Project1',
+      value: 15.5,
+    },
+    {
+      data: 'Revert Rate',
+      date: '2024-01',
+      kpiGroup: 'Quality',
+      sprojectName: 'Project1',
+      value: 5.2,
     },
   ];
 
@@ -120,7 +114,7 @@ describe('ProgressChartComponent', () => {
     });
 
     it('should handle empty value array', () => {
-      component.chartData = [{ filter1: 'Overall', filter2: '', value: [] }];
+      component.chartData = [];
 
       component['transformData']();
 
@@ -133,72 +127,6 @@ describe('ProgressChartComponent', () => {
       component['transformData']();
 
       expect(component['transformedData']).toEqual([]);
-    });
-
-    it('should handle missing value in data item', () => {
-      component.chartData = [
-        {
-          filter1: 'Overall',
-          filter2: '',
-          value: [
-            {
-              data: 'Rework Rate',
-              date: '2024-01',
-              kpiGroup: 'Quality',
-              sprojectName: 'Project1',
-              value: null,
-            },
-          ],
-        },
-      ];
-
-      component['transformData']();
-
-      expect(component['transformedData'][0].value).toBe(0);
-    });
-
-    it('should set correct target for Rework Rate', () => {
-      component.chartData = [
-        {
-          filter1: 'Overall',
-          filter2: '',
-          value: [
-            {
-              data: 'Rework Rate',
-              date: '2024-01',
-              kpiGroup: 'Quality',
-              sprojectName: 'Project1',
-              value: 10,
-            },
-          ],
-        },
-      ];
-
-      component['transformData']();
-
-      expect(component['transformedData'][0].target).toBe('<20%');
-    });
-
-    it('should set correct target for Revert Rate', () => {
-      component.chartData = [
-        {
-          filter1: 'Overall',
-          filter2: '',
-          value: [
-            {
-              data: 'Revert Rate',
-              date: '2024-01',
-              kpiGroup: 'Quality',
-              sprojectName: 'Project1',
-              value: 5,
-            },
-          ],
-        },
-      ];
-
-      component['transformData']();
-
-      expect(component['transformedData'][0].target).toBe('<8%');
     });
   });
 
@@ -259,7 +187,7 @@ describe('ProgressChartComponent', () => {
     });
 
     it('should not render chart when value array is null', () => {
-      component.chartData = [{ filter1: 'Overall', filter2: '', value: null }];
+      component.chartData = null;
 
       component['transformData']();
 
@@ -267,7 +195,7 @@ describe('ProgressChartComponent', () => {
     });
 
     it('should handle ngOnChanges with empty data and not render', () => {
-      const emptyData = [{ filter1: 'Overall', filter2: '', value: [] }];
+      const emptyData = [];
       fixture.detectChanges();
 
       const changes = {

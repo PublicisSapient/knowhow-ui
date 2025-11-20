@@ -17,11 +17,6 @@ interface MaturityData {
   value: number;
 }
 
-interface ChartData {
-  filter1: string;
-  filter2: string;
-  value: MaturityData[];
-}
 @Component({
   selector: 'app-progress-chart',
   standalone: false,
@@ -30,7 +25,7 @@ interface ChartData {
 })
 export class ProgressChartComponent implements OnChanges, AfterViewInit {
   @ViewChild('chartSvg', { static: false }) svgRef!: ElementRef;
-  @Input() chartData: ChartData[];
+  @Input() chartData: MaturityData[];
 
   private transformedData: {
     label: string;
@@ -43,7 +38,7 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
   constructor() {}
 
   ngAfterViewInit(): void {
-    console.log('progress chart ', this.chartData);
+    // console.log('progress chart ', this.chartData);
     if (this.chartData) {
       this.transformData();
       this.createChart();
@@ -61,13 +56,13 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
   }
 
   private transformData(): void {
-    if (!this.chartData?.[0]?.value || this.chartData[0].value.length === 0) {
+    if (!this.chartData || this.chartData.length === 0) {
       console.warn('Invalid data structure received');
       this.transformedData = [];
       return;
     }
 
-    const valueArray = this.chartData[0].value;
+    const valueArray = this.chartData;
     this.transformedData = valueArray.map((item) => ({
       label: item.data, // 'Rework Rate' or 'Revert Rate'
       value: item.value || 0, // The numeric value (0.0 if empty)
@@ -76,7 +71,7 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
       kpiGroup: item.kpiGroup,
     }));
 
-    console.log('Transformed data:', this.transformedData);
+    // console.log('Transformed data:', this.transformedData);
   }
 
   private createChart(): void {

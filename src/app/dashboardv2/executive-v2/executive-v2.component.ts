@@ -171,145 +171,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     { label: 'Bug Resolution', value: '85%', trend: 'negative' },
   ];
 
-  /* chartData = [
-    {
-      filter1: 'develop -> knowhow-api -> KnowHOW',
-      filter2: 'Overall',
-      value: [
-        {
-          data: 'KnowHOW',
-          maturity: '1',
-          value: [
-            {
-              data: '2170',
-              hoverValue: { 'No of lines': 100 },
-              date: '06-Oct-2025 to 12-Oct-2025',
-              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
-              sprojectName: 'KnowHOW',
-              value: 2170,
-              PullRequests: [
-                { size: '109', ID: '1234' },
-                { size: '1876', ID: '43' },
-                { size: '109', ID: '34' },
-              ],
-            },
-            {
-              data: '0',
-              hoverValue: { 'No of lines': 100 },
-              date: '13-Oct-2025 to 19-Oct-2025',
-              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
-              sprojectName: 'KnowHOW',
-              value: 0,
-              PullRequests: [
-                {
-                  size: '1549',
-                  ID: '12',
-                },
-                {
-                  size: '876',
-                  ID: '438',
-                },
-                {
-                  size: '1879',
-                  ID: '342',
-                },
-              ],
-            },
-            {
-              data: '0',
-              hoverValue: { 'No of lines': 100 },
-              date: '20-Oct-2025 to 26-Oct-2025',
-              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
-              sprojectName: 'KnowHOW',
-              value: 0,
-              PullRequests: [
-                { size: '109', ID: '1234' },
-                { size: '1876', ID: '43' },
-                { size: '109', ID: '34' },
-              ],
-            },
-            {
-              data: '0',
-              hoverValue: { 'No of lines': 100 },
-              date: '27-Oct-2025 to 02-Nov-2025',
-              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
-              sprojectName: 'KnowHOW',
-              value: 0,
-              PullRequests: [
-                {
-                  size: '1549',
-                  ID: '12',
-                },
-                {
-                  size: '876',
-                  ID: '438',
-                },
-                {
-                  size: '1879',
-                  ID: '342',
-                },
-              ],
-            },
-            {
-              data: '0',
-              hoverValue: { 'No of lines': 100 },
-              date: '03-Nov-2025 to 09-Nov-2025',
-              kpiGroup: 'develop -> knowhow-api -> KnowHOW#Overall',
-              sprojectName: 'KnowHOW',
-              value: 0,
-              PullRequests: [
-                { size: '109', ID: '1234' },
-                { size: '1876', ID: '43' },
-                { size: '109', ID: '34' },
-              ],
-            },
-          ],
-          maturityValue: '434',
-        },
-      ],
-    },
-  ]; */
-
   progressbarChartData = [
     {
-      filter1: 'develop -> knowhow-api -> KnowHOW',
-      filter2: 'Overall',
-      value: [
-        {
-          data: 'Rework Rate',
-          date: '10-Nov-2025 to 16-Nov-2025',
-          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
-          value: 15.5,
-          sprojectName: 'KnowHOW',
-        },
-        {
-          data: 'Revert Rate',
-          date: '10-Nov-2025 to 16-Nov-2025',
-          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
-          value: 10.3,
-          sprojectName: 'KnowHOW',
-        },
-      ],
+      data: 'Rework Rate',
+      date: '10-Nov-2025 to 16-Nov-2025',
+      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
+      value: 15.5,
+      sprojectName: 'KnowHOW',
     },
     {
-      filter1: 'develop -> knowhow-common -> KnowHOW',
-      filter2: 'Overall',
-      value: [
-        {
-          data: 'Rework Rate',
-          date: '10-Nov-2025 to 16-Nov-2025',
-          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
-          value: 25.5,
-          sprojectName: 'KnowHOW',
-        },
-        {
-          data: 'Revert Rate',
-          date: '10-Nov-2025 to 16-Nov-2025',
-          kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
-          value: 30.3,
-          sprojectName: 'KnowHOW',
-        },
-      ],
+      data: 'Revert Rate',
+      date: '10-Nov-2025 to 16-Nov-2025',
+      kpiGroup: 'develop -> knowhow-ui -> KnowHOW#Pratik Basak',
+      value: 10.3,
+      sprojectName: 'KnowHOW',
     },
   ];
 
@@ -2426,7 +2301,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .postKpi(postData, source)
       .subscribe(
         (getData) => {
-          console.log('getData ', getData);
           this.setupSearchQuerySubscription();
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
             // creating array into object where key is kpi id
@@ -2563,7 +2437,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    const developerBopardKpis = this.globalConfig[
+    const developerBoardKpis = this.globalConfig[
       this.selectedtype?.toLowerCase()
     ]
       ?.filter(
@@ -2575,7 +2449,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.selectedTab &&
       this.selectedTab.toLowerCase() === 'developer' &&
-      developerBopardKpis?.includes(kpiId)
+      developerBoardKpis?.includes(kpiId)
     ) {
       this.service.setBackupOfFilterSelectionState({ additional_level: null });
       if (!trendValueList?.length) {
@@ -2785,7 +2659,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       }
-
       // when there are no KPI Level Filters
       else if (trendValueList?.length > 0 && !filterPropArr?.length) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
@@ -2797,10 +2670,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
-      this.kpiChartData[kpiId] = this.generateColorObj(
-        kpiId,
-        this.kpiChartData[kpiId],
-      );
+      if (kpiId !== 'kpi201' && this.getChartType(kpiId) !== 'progressbar') {
+        this.kpiChartData[kpiId] = this.generateColorObj(
+          kpiId,
+          this.kpiChartData[kpiId],
+        );
+      }
     }
 
     // For kpi3 and kpi53 generating table column headers and table data
@@ -3696,8 +3571,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
       }
     }
-
-    console.log('this.allKpiArray ', this.allKpiArray);
   }
 
   appendParentName(data) {
