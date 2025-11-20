@@ -67,6 +67,8 @@ export const METRICS_TABLE_DUMMY_KPI = {
 };
 
 export const SELECTED_TAB_ANALYSIS_KEY = 'analysis';
+export const ANALYSIS_SELECTED_PROJECTS_KEY = 'analysis_selected_projects';
+export const ANALYSIS_SELECTED_SPRINT_KEY = 'analysis_selected_sprint';
 
 export const AI_USAGE_TOOLTIP_INFO = {
   definition:
