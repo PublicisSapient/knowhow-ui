@@ -536,6 +536,10 @@ export class AnalysisContainerComponent implements OnInit {
     }
   }
 
+  handleKPIReload(event: any) {
+    this.payloadPreparation();
+  }
+
   payloadPreparation() {
     const projectAlongWithSprint = {};
     this.selectedProjects.forEach((project) => {
