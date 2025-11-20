@@ -21,6 +21,8 @@
             "outputPath": "dist/dashboard",
             "index": "src/index.html",
             "main": "src/main.ts",
+            "baseHref": "/know-how/",
+            "deployUrl": "/know-how/",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets", "src/favicon1.png"],
