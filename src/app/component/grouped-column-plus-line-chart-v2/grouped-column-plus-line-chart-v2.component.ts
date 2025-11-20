@@ -116,6 +116,7 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       } else {
         newObj['value'].push({
@@ -124,13 +125,14 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       }
     }
 
     newObj['value'].forEach((element, index) => {
       const newNewObj = {};
-      newNewObj['categorie'] = index + 1;
+      newNewObj['categorie'] = element?.isForecast ? 'Forecast' : index + 1;
       newNewObj['value'] = [element];
       result.push(newNewObj);
     });
@@ -152,6 +154,7 @@ export class GroupedColumnPlusLineChartV2Component
               hoverValue: data[i].value[j].hoverValue,
               sSprintName: data[i].value[j].sSprintName,
               rate: data[i].data,
+              isForecast: data[i].value[j]?.isForecast,
             });
           } else {
             result[j].value.push({
@@ -159,6 +162,7 @@ export class GroupedColumnPlusLineChartV2Component
               lineValue: data[i].value[j].lineValue,
               sSprintName: data[i].value[j].sSprintName,
               rate: data[i].data,
+              isForecast: data[i].value[j]?.isForecast,
             });
           }
         }
@@ -248,15 +252,17 @@ export class GroupedColumnPlusLineChartV2Component
         }
       }
 
+      const xAxisValues = newRawData[maxObjectNo].value.map((d, i) => {
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          return d.date || d.sortSprint || d.sSprintName;
+        }
+        return d.isForecast ? 'Forecast' : i + 1;
+      });
+
       if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         xScale = d3.scaleBand().rangeRound([0, width]).domain(sprintList);
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
       } else {
-        xScale = d3
-          .scaleBand()
-          .rangeRound([0, width])
-          .domain(newRawData[maxObjectNo].value.map((d, i) => i + 1));
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
+        xScale = d3.scaleBand().rangeRound([0, width]).domain(xAxisValues);
       }
 
       const y = d3.scaleLinear().range([height - margin.top, 0]);
@@ -460,6 +466,16 @@ export class GroupedColumnPlusLineChartV2Component
         .style('opacity', '1')
         .style('font-size', '10px');
 
+      const getXCoordinate = (point, index) => {
+        let key;
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          key = point.sortSprint || point.date || point.sSprintName;
+        } else {
+          key = point.isForecast ? 'Forecast' : index + 1;
+        }
+        const base = x0(key) ?? 0;
+        return base + x0.bandwidth() / 2;
+      };
       const slice = svgX
         .selectAll('.slice')
         .data(data)
@@ -471,6 +487,26 @@ export class GroupedColumnPlusLineChartV2Component
             ? 'translate(' + x0(d.sortName) + ',0)'
             : 'translate(' + x0(d.categorie) + ',0)',
         );
+
+      const forecastGradientId = `forecastGradient-${this.kpiId || 'default'}`;
+      const defs = svgX.append('defs');
+      const forecastGradient = defs
+        .append('pattern')
+        .attr('id', forecastGradientId)
+        .attr('patternUnits', 'userSpaceOnUse')
+        .attr('width', 8)
+        .attr('height', 8)
+        .attr('patternTransform', 'rotate(45)');
+      forecastGradient
+        .append('rect')
+        .attr('width', 8)
+        .attr('height', 8)
+        .attr('fill', 'rgb(255, 255, 255)');
+      forecastGradient
+        .append('rect')
+        .attr('width', 4)
+        .attr('height', 8)
+        .attr('fill', 'rgb(96, 121, 197)');
 
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
       if (this.lineChart === false) {
@@ -520,7 +556,11 @@ export class GroupedColumnPlusLineChartV2Component
         .data((d) => d.value)
         .enter()
         .append('path')
-        .style('fill', (d) => color(d.rate))
+        .style('fill', (d) =>
+          d?.isForecast ? `url(#${forecastGradientId})` : color(d.rate),
+        )
+        .style('stroke', (d) => (d?.isForecast ? color(d.rate) : 'none'))
+        .style('stroke-width', (d) => (d?.isForecast ? 1.5 : 0))
         .attr('d', (d) => {
           if (height - margin.top - y(d.value) >= rx) {
             return `
@@ -651,13 +691,7 @@ export class GroupedColumnPlusLineChartV2Component
 
         const line = d3
           .line()
-          .x((d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .x((d, i) => getXCoordinate(d, i))
           .y((d) => yScale(d.lineValue));
 
         lines
@@ -771,13 +805,7 @@ export class GroupedColumnPlusLineChartV2Component
               .style('opacity', 0);
           })
           .append('circle')
-          .attr('cx', (d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .attr('cx', (d, i) => getXCoordinate(d, i))
           .attr('cy', (d) => yScale(d.lineValue))
           .attr('r', circleRadius)
           .style('stroke-width', 1)
@@ -820,12 +848,7 @@ export class GroupedColumnPlusLineChartV2Component
               return cssClass;
             })
             .style('left', (d, i) => {
-              const left = d.date || d.sortSprint;
-              if (this.isXaxisGroup === true) {
-                return x0(left) + x0.bandwidth() / 2 + 'px';
-              } else {
-                return x0(i + 1) + x0.bandwidth() / 2 + 'px';
-              }
+              return getXCoordinate(d, i) + 'px';
             })
             .style('top', (d) => yScale(d.lineValue) - 25 + 'px')
             .text(

@@ -2008,9 +2008,49 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
+    if (this.kpiChartData[kpiId].some((data: any) => data?.forecasts)) {
+      this.applyForecastData(this.kpiChartData[kpiId]);
+    }
 
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
+  }
+
+  applyForecastData(chartSeries): void {
+    chartSeries.forEach((series) => {
+      const forecastEntries = series?.forecasts;
+      const forecastPoint = forecastEntries[0];
+      const numericValue = Number(
+        forecastPoint?.value ?? forecastPoint?.data ?? 0,
+      );
+      const lastActualPoint =
+        series.value.length > 0 ? series.value[series.value.length - 1] : {};
+      const forecastLabel =
+        forecastPoint?.date ||
+        forecastPoint?.sortSprint ||
+        forecastPoint?.sSprintName ||
+        'Forecast';
+      const newPoint = {
+        ...lastActualPoint,
+        ...forecastPoint,
+        data: forecastPoint.data ?? numericValue.toString(),
+        value: numericValue,
+        lineValue: numericValue,
+        sprojectName:
+          forecastPoint?.sprojectName ||
+          lastActualPoint?.sprojectName ||
+          series?.data,
+        isForecast: true,
+      };
+      newPoint['date'] = forecastPoint?.date || forecastLabel;
+      newPoint['sortSprint'] = forecastPoint?.sortSprint || forecastLabel;
+      newPoint['xAxisTick'] = forecastLabel;
+      newPoint['xName'] = forecastLabel;
+      newPoint['sSprintName'] = forecastLabel;
+      newPoint['sprintNames'] = [forecastLabel];
+      newPoint['xOrder'] = forecastLabel;
+      series.value = [...series.value, newPoint];
+    });
   }
 
   getBackupKPIFilters(kpiId, filterPropArr) {
