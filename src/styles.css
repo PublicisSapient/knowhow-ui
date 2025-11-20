@@ -52,7 +52,7 @@
 :root {
   --color-blue: #0b4bc8;
   --color-green: #15ba40;
-  --color-red: #dc3545;
+  --color-red: #fe414d;
   --color-yellow: #fbcf5f;
   --color-pink: pink;
   --color-white: #ffffff;
@@ -68,6 +68,7 @@
   --color-secondary-blue: #0b4bc8;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00e6c3;
+  --color-orange: #f68605;
   --font-regular: 'Poppins_Regular', sans-serif;
   --font-medium: 'Poppins_Medium', sans-serif;
 }
