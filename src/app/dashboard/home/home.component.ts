@@ -220,7 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Top 4 Risks this Quarter',
           value: [],
           icon: false,
-          color: '#fbcf5f',
+          color: '#cdba38',
           fontColor: 'black',
         },
         {
@@ -228,7 +228,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Positive Trends',
           value: [],
           icon: true,
-          color: '#99cda9',
+          color: '#15ba40',
           fontColor: 'black',
         },
         {
@@ -236,7 +236,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Negative Trends',
           value: [],
           icon: true,
-          color: '#ed8888',
+          color: '#eb3d4b',
           fontColor: 'black',
         },
       ]);
