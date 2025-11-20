@@ -653,42 +653,29 @@ export class JiraConfigComponent implements OnInit {
     });
   }
 
-  mergeRepositoriesKeepBranch(arr: any[]): any[] {
-    if (!Array.isArray(arr)) {
-      return [];
-    }
+  mergeRepositoriesKeepBranch(connectionDatails: any[] = []): any[] {
+    const result: any[] = [];
+    connectionDatails?.forEach((item) => {
+      if (!item || !item?.repositoryName) return;
+      const existing = result.find(
+        (r) => r?.repositoryName === item?.repositoryName,
+      );
 
-    const map = new Map<string, any>();
-    const mergedList: any[] = [];
-
-    arr.forEach((item) => {
-      if (!item || !item.repositoryName) {
-        if (item) {
-          mergedList.push(item);
-        }
-        return;
-      }
-
-      const key = item.repositoryName.toLowerCase();
-      const branch = item.branch;
-
-      if (map.has(key)) {
-        const mappedItem = map.get(key);
-        const existingBranches = new Set(
-          (mappedItem.branches || '').split(',').filter((b) => !!b),
-        );
-        if (branch) {
-          existingBranches.add(branch);
-          mappedItem.branches = Array.from(existingBranches).join(',');
+      if (existing) {
+        if (!existing?._branches.includes(item?.branch)) {
+          existing?._branches.push(item?.branch);
+          existing.branches = existing?._branches.join(',');
         }
       } else {
-        const newItem = { ...item, branches: branch || '' };
-        map.set(key, newItem);
-        mergedList.push(newItem);
+        const newObj = {
+          ...item,
+          _branches: [item?.branch],
+          branches: item?.branch,
+        };
+        result.push(newObj);
       }
     });
-
-    return mergedList;
+    return result;
   }
 
   checkProjectKey = () => {
