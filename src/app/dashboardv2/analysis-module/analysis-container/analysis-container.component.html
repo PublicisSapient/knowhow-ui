@@ -38,7 +38,8 @@
         [selectedTab]="selectedTab"
         [customTooltip]="matrixTableTooltip"
         [immediateLoader]="false" 
-        [selectedBoard]="'analysis'">
+        [selectedBoard]="'analysis'"
+        (reloadKPITab)="handleKPIReload($event)">
         <app-dynamic-kpi-table
           kpiTable
           [tableData]="metricsTableData"
@@ -62,7 +63,8 @@
                        [selectedTab]="selectedTab"
                        [immediateLoader]="false"
                        [customTooltip]="aiUsageTooltip"
-                       [selectedBoard]="'analysis'">
+                       [selectedBoard]="'analysis'"
+                       (reloadKPITab)="handleKPIReload($event)">
         <app-dynamic-kpi-table
           kpiTable
           [tableData]="aiUsageTableData"
