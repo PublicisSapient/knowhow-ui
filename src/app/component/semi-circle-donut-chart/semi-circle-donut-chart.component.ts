@@ -28,9 +28,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
   constructor(private elementRef: ElementRef, private service: SharedService) {}
 
   ngOnInit(): void {
-    console.log('SemiCircleDonutChartComponent initialized');
     if (this.kpiId === 'kpi182') {
-      console.log('Semi Circle Donut Chart Data:', this.chartData);
       this.service.showTableViewObs.subscribe((view) => {
         this.viewType = view;
       });
@@ -40,7 +38,6 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // console.log('Semi Circle Donut Chart On Changes:', this.chartData);
     // Check if the value input has changed
     if (changes.value) {
       this.value = parseInt(this.value + '');
@@ -69,14 +66,11 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
       const dataValue = firstItem.value[0];
       this.value = dataValue.value || 0; // Extract numeric value
       this.totalIssues = 100; // Set max value to 100 for percentage display
-      // console.log('Extracted kpi182 value:', this.value);
     }
   }
 
   private createDonutChart(): void {
     if (this.kpiId === 'kpi182') {
-      // console.log('Semi Circle Donut Chart Value:', this.value);
-      // console.log('Creating kpi182 donut chart with value:', this.value);
       const chartWidth = 250;
       const chartHeight = 250;
       const radius = Math.min(chartWidth, chartHeight) / 2;
