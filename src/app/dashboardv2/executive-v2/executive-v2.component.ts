@@ -2008,7 +2008,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
-    if (this.kpiChartData[kpiId].some((data: any) => data?.forecasts)) {
+    if (
+      Array.isArray(this.kpiChartData[kpiId]) &&
+      this.kpiChartData[kpiId].some((d: any) => d?.forecasts)
+    ) {
       this.applyForecastData(this.kpiChartData[kpiId]);
     }
 
