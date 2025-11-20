@@ -648,7 +648,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       marker
         .append('image')
         .attr('class', 'OverallDueDate')
-        .attr('xlink:href', 'assets/img/OverallDueDate.svg')
+        .attr('xlink:href', '../../../assets/img/OverallDueDate.svg')
         .style('display', (d) => {
           let display = 'block';
           if (d['Due Date'] && d['Due Date'] !== '-') {
@@ -698,7 +698,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       marker
         .append('image')
         .attr('class', 'DevDueDate')
-        .attr('xlink:href', 'assets/img/DevDueDate.svg')
+        .attr('xlink:href', '../../../assets/img/DevDueDate.svg')
         .style('display', (d) =>
           d['Dev Due Date'] &&
           d['Dev Due Date'] !== '-' &&
@@ -738,7 +738,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       marker
         .append('image')
         .attr('class', 'OverallDueDateExceeded')
-        .attr('xlink:href', 'assets/img/OverallDueDateExceeded.svg')
+        .attr('xlink:href', '../../../assets/img/OverallDueDateExceeded.svg')
         .style('display', (d) =>
           self.compareDates(new Date(), d['Due Date']) &&
           !d['Actual-Completion-Date']
@@ -772,7 +772,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // show QA completed if it exists
       marker
         .append('image')
-        .attr('xlink:href', 'assets/img/qa-completed.svg')
+        .attr('xlink:href', '../../../assets/img/qa-completed.svg')
         .style('display', (d) => {
           if (!d['Actual-Completion-Date']) {
             return d['Test-Completed'] !== '-' &&
@@ -823,7 +823,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // Show 'Dev completion' if it exist
       marker
         .append('image')
-        .attr('xlink:href', 'assets/img/dev-completed.svg')
+        .attr('xlink:href', '../../../assets/img/dev-completed.svg')
         .style('display', (d) => {
           if (!d['Actual-Completion-Date']) {
             return d['Dev-Completion-Date'] !== '-' &&
