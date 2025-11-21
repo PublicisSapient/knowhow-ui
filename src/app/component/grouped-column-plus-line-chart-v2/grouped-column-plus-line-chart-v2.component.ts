@@ -634,6 +634,35 @@ export class GroupedColumnPlusLineChartV2Component
             });
         }
 
+        const defs = svgX.append('defs');
+        const forecastPatternIds: Record<string, string> = {};
+        const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+        rateNames.forEach((rate) => {
+          const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+            rate,
+          )}`;
+          forecastPatternIds[rate] = id;
+
+          const forecastPattern = defs
+            .append('pattern')
+            .attr('id', id)
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('patternTransform', 'rotate(45)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('fill', 'rgb(255, 255, 255)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 4)
+            .attr('height', 8)
+            .attr('fill', color(rate));
+        });
+
         const rx = x1.bandwidth() / 2;
         const ry = x1.bandwidth() / 2;
         slice
@@ -641,7 +670,13 @@ export class GroupedColumnPlusLineChartV2Component
           .data((d) => d.value)
           .enter()
           .append('path')
-          .style('fill', (d) => color(d.rate))
+          .style('fill', (d) =>
+            d?.isForecast
+              ? `url(#${forecastPatternIds[d.rate]})`
+              : color(d.rate),
+          )
+          .style('stroke', (d) => (d?.isForecast ? color(d.rate) : 'none'))
+          .style('stroke-width', (d) => (d?.isForecast ? 1.5 : 0))
           .attr('d', (d) => {
             if (height - margin.top - y(d.value) >= rx) {
               return `
