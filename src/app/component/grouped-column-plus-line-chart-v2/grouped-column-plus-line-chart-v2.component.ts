@@ -139,32 +139,31 @@ export class GroupedColumnPlusLineChartV2Component
 
     for (let i = 1; i < data.length; i++) {
       for (let j = 0; j < data[i].value.length; j++) {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const newObj = {};
-        newObj['value'] = [];
         if (
           result[j] &&
           result[j]['categorie'] &&
-          j + 1 === result[j]['categorie']
+          ((data[i].value[j]?.isForecast &&
+            result[j]['categorie'] === 'Forecast') ||
+            (!data[i].value[j]?.isForecast && j + 1 === result[j]['categorie']))
         ) {
-          if (data[i].value[j].hoverValue) {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              hoverValue: data[i].value[j].hoverValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-              isForecast: data[i].value[j]?.isForecast,
-            });
-          } else {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-              isForecast: data[i].value[j]?.isForecast,
-            });
-          }
+          result[j].value.push(
+            data[i].value[j].hoverValue
+              ? {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  hoverValue: data[i].value[j].hoverValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                }
+              : {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                },
+          );
         }
       }
     }
@@ -488,25 +487,34 @@ export class GroupedColumnPlusLineChartV2Component
             : 'translate(' + x0(d.categorie) + ',0)',
         );
 
-      const forecastGradientId = `forecastGradient-${this.kpiId || 'default'}`;
       const defs = svgX.append('defs');
-      const forecastGradient = defs
-        .append('pattern')
-        .attr('id', forecastGradientId)
-        .attr('patternUnits', 'userSpaceOnUse')
-        .attr('width', 8)
-        .attr('height', 8)
-        .attr('patternTransform', 'rotate(45)');
-      forecastGradient
-        .append('rect')
-        .attr('width', 8)
-        .attr('height', 8)
-        .attr('fill', 'rgb(255, 255, 255)');
-      forecastGradient
-        .append('rect')
-        .attr('width', 4)
-        .attr('height', 8)
-        .attr('fill', 'rgb(96, 121, 197)');
+      const forecastPatternIds: Record<string, string> = {};
+      const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+      rateNames.forEach((rate) => {
+        const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+          rate,
+        )}`;
+        forecastPatternIds[rate] = id;
+
+        const forecastPattern = defs
+          .append('pattern')
+          .attr('id', id)
+          .attr('patternUnits', 'userSpaceOnUse')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('patternTransform', 'rotate(45)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('fill', 'rgb(255, 255, 255)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 4)
+          .attr('height', 8)
+          .attr('fill', color(rate));
+      });
 
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
       if (this.lineChart === false) {
@@ -557,7 +565,7 @@ export class GroupedColumnPlusLineChartV2Component
         .enter()
         .append('path')
         .style('fill', (d) =>
-          d?.isForecast ? `url(#${forecastGradientId})` : color(d.rate),
+          d?.isForecast ? `url(#${forecastPatternIds[d.rate]})` : color(d.rate),
         )
         .style('stroke', (d) => (d?.isForecast ? color(d.rate) : 'none'))
         .style('stroke-width', (d) => (d?.isForecast ? 1.5 : 0))
