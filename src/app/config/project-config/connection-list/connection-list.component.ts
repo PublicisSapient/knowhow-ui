@@ -757,7 +757,7 @@ export class ConnectionListComponent implements OnInit {
   isRoleViewer = false;
   currentUser = '';
   zephyrUrl = '';
-  jiraForm: FormGroup<any> = new FormGroup({});
+  jiraForm: FormGroup = new FormGroup({});
   jiraAuthDdwn = [
     {
       label: 'Basic Authentication',
