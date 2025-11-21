@@ -486,6 +486,43 @@ export class GroupedColumnPlusLineChartV2Component
             : 'translate(' + x0(d.categorie) + ',0)',
         );
 
+      const defs = svgX.append('defs');
+      const forecastPatternIds: Record<string, string> = {};
+      const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+      rateNames.forEach((rate) => {
+        const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+          rate,
+        )}`;
+        forecastPatternIds[rate] = id;
+
+        const forecastPattern = defs
+          .append('pattern')
+          .attr('id', id)
+          .attr('patternUnits', 'userSpaceOnUse')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('patternTransform', 'rotate(45)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('fill', 'rgb(255, 255, 255)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 4)
+          .attr('height', 8)
+          .attr('fill', color(rate));
+      });
+
+      // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+      if (this.lineChart === false) {
+        d3.selectAll('.rounded-bar')
+          .on('mouseover', function (event, d) {
+            if (d?.value[0]?.hoverValue) {
+              const circle = event.target;
+              const { top: yPosition, left: xPosition } =
+                circle.getBoundingClientRect();
       // Define the div for the tooltip
       const div = d3
         .select(this.elem)
