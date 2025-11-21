@@ -128,6 +128,7 @@ export class JiraConfigComponent implements OnInit {
   branchListItems: any = [];
   filterText: any;
   selected = [1];
+  originalConfigTools = [];
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -262,6 +263,14 @@ export class JiraConfigComponent implements OnInit {
         branchControl?.reset();
       }
     });
+
+    this.toolForm?.get('branch')?.valueChanges.subscribe((branchValue) => {
+      if (!branchValue) {
+        if (this.currentFormElement) {
+          this.currentFormElement.branchList = [];
+        }
+      }
+    });
   }
 
   @ViewChildren('repoMultiSelect') repoMultiSelectList!: QueryList<any>;
@@ -303,6 +312,10 @@ export class JiraConfigComponent implements OnInit {
         ?.setValue([...currentSelected, newItem.branchName]);
 
       this.currentFormElement.branchList.push(newItem);
+
+      this.repoMultiSelectList?.forEach((ms) => {
+        ms.filterValue = '';
+      });
     }
   }
 
@@ -610,6 +623,14 @@ export class JiraConfigComponent implements OnInit {
             }
           }
 
+          this.originalConfigTools = JSON.parse(
+            JSON.stringify(this.configuredTools),
+          );
+
+          this.configuredTools = this.mergeRepositoriesKeepBranch(
+            this.configuredTools,
+          );
+
           // prefetch boards if projectKey is present
           if (this.urlParam === 'Jira') {
             if (this.toolForm.controls['projectKey'].value) {
@@ -630,6 +651,31 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
+  }
+
+  mergeRepositoriesKeepBranch(connectionDatails: any[] = []): any[] {
+    const result: any[] = [];
+    connectionDatails?.forEach((item) => {
+      if (!item || !item?.repositoryName) return;
+      const existing = result.find(
+        (r) => r?.repositoryName === item?.repositoryName,
+      );
+
+      if (existing) {
+        if (!existing?._branches.includes(item?.branch)) {
+          existing?._branches.push(item?.branch);
+          existing.branches = existing?._branches.join(',');
+        }
+      } else {
+        const newObj = {
+          ...item,
+          _branches: [item?.branch],
+          branches: item?.branch,
+        };
+        result.push(newObj);
+      }
+    });
+    return result;
   }
 
   checkProjectKey = () => {
@@ -1884,7 +1930,8 @@ export class JiraConfigComponent implements OnInit {
               header: 'Repository Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
+
+            { field: 'branches', header: 'Branch', class: 'long-text' },
           ];
 
           //new Changes
@@ -1950,7 +1997,8 @@ export class JiraConfigComponent implements OnInit {
               header: 'Repository Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
+
+            { field: 'branches', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2097,7 +2145,8 @@ export class JiraConfigComponent implements OnInit {
               header: 'Repository Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
+
+            { field: 'branches', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2162,7 +2211,8 @@ export class JiraConfigComponent implements OnInit {
               header: 'Repository Name',
               class: 'long-text',
             },
-            { field: 'branch', header: 'Branch', class: 'long-text' },
+
+            { field: 'branches', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2903,6 +2953,7 @@ export class JiraConfigComponent implements OnInit {
 
     if (!this.checkUrlparams()) {
       submitData['repositoryName'] = null;
+      submitData['branch'] = null;
       submitData['scmToolConfigList'] = this.repositryValuesArray;
       submitData['scmToolConfigList'].forEach((x) => {
         x.branches = JSON.parse(JSON.stringify(x.branchList));
@@ -2980,14 +3031,18 @@ export class JiraConfigComponent implements OnInit {
               : response?.['data']
               ? [response['data']]
               : [];
-            this.configuredTools.unshift(...newItems);
-            this.configuredTools.forEach((tool) => {
+            this.originalConfigTools.unshift(...newItems);
+            this.originalConfigTools.forEach((tool) => {
               this.connections?.forEach((connection) => {
                 if (tool.connectionId === connection.id) {
                   tool['connectionName'] = connection.connectionName;
                 }
               });
             });
+            this.configuredTools = this.mergeRepositoriesKeepBranch(
+              this.originalConfigTools,
+            );
+
             if (
               this.urlParam == 'Jira' ||
               this.urlParam === 'Azure' ||
@@ -3400,12 +3455,8 @@ export class JiraConfigComponent implements OnInit {
         branchList: [],
       };
       this.currentFormElement = obj;
-      const originaldropdownOptions = JSON.parse(
-        JSON.stringify(this.branchAndRepoDropdown),
-      );
-      // this.branchAndRepoDropdown = originaldropdownOptions.filter(item=>item.repositoryName.toLowerCase().includes(event.value))
     } else {
-      this.currentFormElement = event.value;
+      this.currentFormElement = JSON.parse(JSON.stringify(event.value));
     }
     const branches = Array.isArray(this.currentFormElement?.branchList)
       ? this.currentFormElement.branchList
@@ -3453,6 +3504,10 @@ export class JiraConfigComponent implements OnInit {
     });
 
     if (exists) {
+      this.messenger.add({
+        severity: 'error',
+        summary: 'Repository and branch are already configured',
+      });
       return;
     }
 
@@ -3491,7 +3546,26 @@ export class JiraConfigComponent implements OnInit {
     }
   }
 
-  onBranchSelectionChange(event) {}
+  onBranchSelectionChange(event: any) {
+    console.log(event, 'event');
+    if (!this.currentFormElement.branchList) {
+      this.currentFormElement.branchList = [];
+    }
+
+    if (event.originalEvent && event.itemValue) {
+      const exists = this.currentFormElement.branchList.some(
+        (b: any) => b.branchName === event.itemValue.branchName,
+      );
+      if (!exists) {
+        this.currentFormElement.branchList.push(event.itemValue);
+      }
+    }
+
+    this.currentFormElement.branchList =
+      this.currentFormElement.branchList.filter((b: any) =>
+        event.value.some((v: any) => v === b.branchName),
+      );
+  }
 
   clearRepositories(index?: number) {
     if (index !== undefined && index !== null) {

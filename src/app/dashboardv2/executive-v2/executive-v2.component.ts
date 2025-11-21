@@ -41,6 +41,8 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 import { ExcelService } from 'src/app/services/excel.service';
 import { Subject, throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
+import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
+import { mockConfigGlobalData } from './executive-mock-data';
 
 @Component({
   selector: 'app-executive-v2',
@@ -153,6 +155,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
+
+  monthlyMetrics: MetricItem[] = [
+    { label: 'Total PRs', value: 35, trend: 'neutral' },
+    { label: 'Avg Review Time', value: '1.8 days', trend: 'neutral' },
+    { label: 'Lines of Code', value: '12,450', trend: 'neutral' },
+  ];
+  qualityIndicators: MetricItem[] = [
+    { label: 'Test Coverage', value: '94%', trend: 'positive' },
+    { label: 'Code Duplication', value: '3%', trend: 'positive' },
+    { label: 'Technical Debt', value: 'Medium', trend: 'negative' },
+  ];
+  goalsTargets: MetricItem[] = [
+    { label: 'Sprint Velocity', value: 'On Track', trend: 'positive' },
+    { label: 'Feature Completion', value: '89%', trend: 'positive' },
+    { label: 'Bug Resolution', value: '85%', trend: 'negative' },
+  ];
+
+  mockUpdatedConfigGlobalData: any[];
 
   constructor(
     public service: SharedService,
@@ -434,7 +454,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
         let stateFiltersParam = params['stateFilters'];
         const kpiFiltersParam = params['kpiFilters'];
-        let tabParam = params['selectedTab'];
+        const tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
             let selectedTab = decodeURIComponent(this.location.path());
@@ -707,6 +727,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData = this.configGlobalData?.filter(
         (item) => item.shown,
       );
+
+      this.mockUpdatedConfigGlobalData = mockConfigGlobalData;
 
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
@@ -1620,6 +1642,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.handleKPIError(postData);
         },
       );
+
+    this.setupSearchQuerySubscription();
   }
 
   // post request of Jira(Kanban)
@@ -1711,7 +1735,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    const developerBopardKpis = this.globalConfig[
+    const developerBoardKpis = this.globalConfig[
       this.selectedtype?.toLowerCase()
     ]
       ?.filter(
@@ -1723,7 +1747,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.selectedTab &&
       this.selectedTab.toLowerCase() === 'developer' &&
-      developerBopardKpis?.includes(kpiId)
+      developerBoardKpis?.includes(kpiId)
     ) {
       this.service.setBackupOfFilterSelectionState({ additional_level: null });
       if (!trendValueList?.length) {
@@ -1933,7 +1957,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       }
-
       // when there are no KPI Level Filters
       else if (trendValueList?.length > 0 && !filterPropArr?.length) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
@@ -1945,10 +1968,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
-      this.kpiChartData[kpiId] = this.generateColorObj(
-        kpiId,
-        this.kpiChartData[kpiId],
-      );
+      if (kpiId !== 'kpi201' && this.getChartType(kpiId) !== 'progressbar') {
+        this.kpiChartData[kpiId] = this.generateColorObj(
+          kpiId,
+          this.kpiChartData[kpiId],
+        );
+      }
     }
 
     // For kpi3 and kpi53 generating table column headers and table data
@@ -2800,7 +2825,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createCombinations(arr1, arr2, kpiId) {
-    let arr = [];
+    const arr = [];
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
@@ -3231,12 +3256,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
       }
-      let trendValueList;
       /**Todo: if else condition to be removed after api integration */
       this.allKpiArray.push(data[key]);
-      trendValueList =
-        this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-      const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+
       /** if: for graphs, else: for other than graphs */
       if (
         this.updatedConfigGlobalData.filter((kpi) => kpi?.kpiId == key)[0]
@@ -3388,7 +3410,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
-    let filters = this.kpiSelectedFilterObj[kpiId];
+    const filters = this.kpiSelectedFilterObj[kpiId];
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -4668,7 +4690,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    */
   calcBusinessDays(dDate1, dDate2) {
     // input given as Date objects
-    let iWeeks;
     let iDateDiff;
     let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -4685,7 +4706,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     iWeekday2 = iWeekday2 > 5 ? 5 : iWeekday2;
 
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
-    iWeeks = Math.floor(
+    const iWeeks = Math.floor(
       (new Date(dDate2).getTime() - new Date(dDate1).getTime()) / 604800000,
     );
 
@@ -4769,7 +4790,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkKPIPresence(kpi) {
     if (this.tabsArr.size > 1) {
       return (
-        this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']
+        this.selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&
+        kpi['isEnabled']
       );
     } else {
       return kpi['isEnabled'];
