@@ -274,7 +274,7 @@
                                       <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
                                           <ng-container>
                                               <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                              <p-dropdown [options]="this[form_elem.options]" optionLabel="'templateName'" optionValue="templateCode"
+                                              <p-dropdown [options]="this[form_elem.options]" optionLabel="templateName" optionValue="templateCode"
                                                   id="{{form_elem.id}}" formControlName="{{form_elem.id}}" (onChange)="form_elem.onChangeEventHandler($event,this)" [attr.aria-label]="form_elem.label"></p-dropdown>
                                           </ng-container>
                                       </div>
