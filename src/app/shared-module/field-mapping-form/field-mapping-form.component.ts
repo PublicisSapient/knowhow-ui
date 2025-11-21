@@ -490,7 +490,9 @@ export class FieldMappingFormComponent implements OnInit {
       if (element?.originalValue) {
         for (let j = 0; j < element.originalValue.length; j++) {
           for (const prop in element.originalValue[j].structuredValue) {
-            if (!element.originalValue[j].structuredValue[prop]) return true;
+            if (!element.originalValue[j].structuredValue[prop]) {
+              return true;
+            }
           }
         }
       }

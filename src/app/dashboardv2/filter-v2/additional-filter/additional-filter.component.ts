@@ -71,8 +71,10 @@ export class AdditionalFilterComponent implements OnChanges {
 
             if (
               !this.arrayCompare(
-                this.selectedTrends.map((x) => x.nodeId).sort(),
-                this.previousSelectedTrends.map((x) => x.nodeId).sort(),
+                this.selectedTrends.map((x) => x.nodeId).sort((a, b) => a - b),
+                this.previousSelectedTrends
+                  .map((x) => x.nodeId)
+                  .sort((a, b) => a - b),
               )
             ) {
               this.filterData = [];
@@ -155,8 +157,10 @@ export class AdditionalFilterComponent implements OnChanges {
       this.selectedTrends = this.service.getSelectedTrends();
       if (
         !this.arrayCompare(
-          this.selectedTrends.map((x) => x.nodeId).sort(),
-          this.previousSelectedTrends.map((x) => x.nodeId).sort(),
+          this.selectedTrends.map((x) => x.nodeId).sort((a, b) => a - b),
+          this.previousSelectedTrends
+            .map((x) => x.nodeId)
+            .sort((a, b) => a - b),
         )
       ) {
         this.filterData = [];

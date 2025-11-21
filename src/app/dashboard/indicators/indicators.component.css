@@ -1,0 +1,81 @@
+::ng-deep .metric-card {
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep .metric-card .p-card-body {
+  padding: 20px;
+}
+
+::ng-deep .metric-card .p-card-content {
+  padding: 0;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.icon-style {
+  font-size: 18px;
+  color: #10b981;
+}
+
+.metric-value {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.value {
+  font-size: 36px;
+  font-weight: 600;
+  color: #111827;
+  margin-right: 6px;
+}
+
+.unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.trend-container {
+  display: flex;
+  align-items: center;
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.trend.positive {
+  color: #15ba40;
+}
+
+.trend.negative {
+  color: #fe414d;
+}
+
+.trend-icon {
+  font-size: 12px;
+}
+
+.trend-text {
+  font-weight: 400;
+}

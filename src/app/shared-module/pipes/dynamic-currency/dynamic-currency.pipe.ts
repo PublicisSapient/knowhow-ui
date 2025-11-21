@@ -28,7 +28,9 @@ export class DynamicCurrencyPipe implements PipeTransform {
     currency?: string,
     locale?: string,
   ): string {
-    if (value == null) return '';
+    if (value == null) {
+      return '';
+    }
 
     // Detect locale
     const userLocale = locale || navigator.language || 'en-US';
@@ -50,8 +52,9 @@ export class DynamicCurrencyPipe implements PipeTransform {
     // Extract symbol + number
     const SAFE_PATTERN = /^(\D*)([\d.,]+)$/;
     const parts = absFormatted.match(SAFE_PATTERN);
-
-    if (!parts) return absFormatted;
+    if (!parts) {
+      return absFormatted;
+    }
 
     const symbol = parts[1].trim();
     const number = parts[2];
