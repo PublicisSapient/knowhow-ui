@@ -22,7 +22,7 @@ describe('ScatterPlotChartComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      declarations: [ScatterPlotChartComponent],
+      imports: [ScatterPlotChartComponent],
       providers: [
         { provide: HelperService, useValue: helperServiceSpy },
         { provide: SharedService, useValue: sharedServiceSpy },

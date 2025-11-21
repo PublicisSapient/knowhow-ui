@@ -7,7 +7,7 @@ describe('IndicatorsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [IndicatorsComponent],
+      imports: [IndicatorsComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(IndicatorsComponent);

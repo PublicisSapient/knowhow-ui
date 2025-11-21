@@ -7,7 +7,7 @@ describe('ListBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ListBlockComponent],
+      imports: [ListBlockComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListBlockComponent);

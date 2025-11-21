@@ -26,7 +26,7 @@ describe('ProgressChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProgressChartComponent],
+      imports: [ProgressChartComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProgressChartComponent);
