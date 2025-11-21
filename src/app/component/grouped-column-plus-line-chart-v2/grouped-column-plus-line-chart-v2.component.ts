@@ -517,12 +517,14 @@ export class GroupedColumnPlusLineChartV2Component
 
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
       if (this.lineChart === false) {
-        d3.selectAll('.rounded-bar')
-          .on('mouseover', function (event, d) {
-            if (d?.value[0]?.hoverValue) {
-              const circle = event.target;
-              const { top: yPosition, left: xPosition } =
-                circle.getBoundingClientRect();
+        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
+          if (d?.value[0]?.hoverValue) {
+            const circle = event.target;
+            const { top: yPosition, left: xPosition } =
+              circle.getBoundingClientRect();
+          }
+        });
+      }
       // Define the div for the tooltip
       const div = d3
         .select(this.elem)
