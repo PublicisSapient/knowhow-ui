@@ -133,7 +133,9 @@ export class AnalysisContainerComponent implements OnInit {
   }
 
   public camelCaseToTitleCase(camelCase: string): string {
-    if (!camelCase) return '';
+    if (!camelCase) {
+      return '';
+    }
 
     const result = camelCase.replace(/([A-Z])/g, ' $1');
     return result.charAt(0).toUpperCase() + result.slice(1).trim();
@@ -361,7 +363,7 @@ export class AnalysisContainerComponent implements OnInit {
     ];
 
     // 1. Set the dynamic headers: Projects
-    let projectHeaders: ProjectHeader[] = allProjects.map(
+    const projectHeaders: ProjectHeader[] = allProjects.map(
       (projectName: string) => ({
         name: projectName,
         cleanName: this.cleanName(projectName),
@@ -507,7 +509,7 @@ export class AnalysisContainerComponent implements OnInit {
       console.error('cleanName received non-string input:', name);
       return '';
     }
-    let cleaned = name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '');
+    const cleaned = name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '');
     return cleaned.charAt(0).toLowerCase() + cleaned.slice(1);
   }
 

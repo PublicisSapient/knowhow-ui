@@ -162,7 +162,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
     this.dateRangeFilter = {
-      types: ['Days', 'Weeks'],
+      // types: ['Days', 'Weeks'],
+      types: ['Weeks'],
       counts: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     };
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
