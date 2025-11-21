@@ -1,8 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-indicators',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, CardModule],
   templateUrl: './indicators.component.html',
   styleUrl: './indicators.component.css',
 })

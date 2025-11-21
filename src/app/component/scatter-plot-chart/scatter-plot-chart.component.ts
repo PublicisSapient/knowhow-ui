@@ -38,7 +38,8 @@ interface PlotPoint {
 
 @Component({
   selector: 'app-scatter-plot-chart',
-  standalone: false,
+  standalone: true,
+  imports: [],
   templateUrl: './scatter-plot-chart.component.html',
   styleUrl: './scatter-plot-chart.component.css',
 })

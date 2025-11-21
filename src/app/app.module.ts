@@ -209,8 +209,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     StackedGroupBarChartComponent,
     HomeComponent,
     DynamicCurrencyPipe,
-    IndicatorsComponent,
-    ListBlockComponent,
   ],
   imports: [
     SharedModuleModule,
@@ -266,6 +264,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     NbaComponent,
     RecommDetailsComponent,
     KpiAiRecommendationTargetComponent,
+    IndicatorsComponent,
+    ListBlockComponent,
   ],
   providers: [
     ExcelService,
@@ -297,6 +297,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     PrimaryFilterComponent,
     AdditionalFilterComponent,
     AddToReportPopUpComponent,
+    IndicatorsComponent,
+    ListBlockComponent,
   ],
 })
 export class AppModule {}

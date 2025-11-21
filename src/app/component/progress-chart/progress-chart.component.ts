@@ -19,7 +19,8 @@ interface MaturityData {
 
 @Component({
   selector: 'app-progress-chart',
-  standalone: false,
+  standalone: true,
+  imports: [],
   templateUrl: './progress-chart.component.html',
   styleUrl: './progress-chart.component.css',
 })

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 export interface MetricItem {
@@ -8,7 +9,8 @@ export interface MetricItem {
 
 @Component({
   selector: 'app-list-block',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './list-block.component.html',
   styleUrl: './list-block.component.css',
 })

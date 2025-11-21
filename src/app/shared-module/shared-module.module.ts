@@ -122,6 +122,8 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     TableModule,
     ToastModule,
     NgOptimizedImage,
+    ProgressChartComponent,
+    ScatterPlotChartComponent,
   ],
   exports: [
     NgSelectModule,
@@ -215,8 +217,6 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     UtcToLocalUserPipe,
     DashToBulletsPipe,
     ConditionalInputV2Component,
-    ProgressChartComponent,
-    ScatterPlotChartComponent,
   ],
   providers: [ConfirmationService, KpiHelperService],
   schemas: [NO_ERRORS_SCHEMA],
