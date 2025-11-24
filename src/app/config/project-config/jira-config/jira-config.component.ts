@@ -656,23 +656,26 @@ export class JiraConfigComponent implements OnInit {
   mergeRepositoriesKeepBranch(connectionDatails: any[] = []): any[] {
     const result: any[] = [];
     connectionDatails?.forEach((item) => {
-      if (!item || !item?.repositoryName) return;
-      const existing = result.find(
-        (r) => r?.repositoryName === item?.repositoryName,
-      );
+      if (!item || !item?.repositoryName) {
+        const existing = result.find(
+          (r) => r?.repositoryName === item?.repositoryName,
+        );
 
-      if (existing) {
-        if (!existing?._branches.includes(item?.branch)) {
-          existing?._branches.push(item?.branch);
-          existing.branches = existing?._branches.join(',');
+        if (existing) {
+          if (!existing?._branches.includes(item?.branch)) {
+            existing?._branches.push(item?.branch);
+            existing.branches = existing?._branches.join(',');
+          }
+        } else {
+          const newObj = {
+            ...item,
+            _branches: [item?.branch],
+            branches: item?.branch,
+          };
+          result.push(newObj);
         }
       } else {
-        const newObj = {
-          ...item,
-          _branches: [item?.branch],
-          branches: item?.branch,
-        };
-        result.push(newObj);
+        result.push(item);
       }
     });
     return result;
