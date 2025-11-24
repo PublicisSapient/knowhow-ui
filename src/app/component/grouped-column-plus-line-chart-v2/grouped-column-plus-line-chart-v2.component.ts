@@ -116,6 +116,7 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       } else {
         newObj['value'].push({
@@ -124,43 +125,45 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       }
     }
 
     newObj['value'].forEach((element, index) => {
       const newNewObj = {};
-      newNewObj['categorie'] = index + 1;
+      newNewObj['categorie'] = element?.isForecast ? 'Forecast' : index + 1;
       newNewObj['value'] = [element];
       result.push(newNewObj);
     });
 
     for (let i = 1; i < data.length; i++) {
       for (let j = 0; j < data[i].value.length; j++) {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const newObj = {};
-        newObj['value'] = [];
         if (
           result[j] &&
           result[j]['categorie'] &&
-          j + 1 === result[j]['categorie']
+          ((data[i].value[j]?.isForecast &&
+            result[j]['categorie'] === 'Forecast') ||
+            (!data[i].value[j]?.isForecast && j + 1 === result[j]['categorie']))
         ) {
-          if (data[i].value[j].hoverValue) {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              hoverValue: data[i].value[j].hoverValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-            });
-          } else {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-            });
-          }
+          result[j].value.push(
+            data[i].value[j].hoverValue
+              ? {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  hoverValue: data[i].value[j].hoverValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                }
+              : {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                },
+          );
         }
       }
     }
@@ -247,15 +250,17 @@ export class GroupedColumnPlusLineChartV2Component
         }
       }
 
+      const xAxisValues = newRawData[maxObjectNo].value.map((d, i) => {
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          return d.date || d.sortSprint || d.sSprintName;
+        }
+        return d.isForecast ? 'Forecast' : i + 1;
+      });
+
       if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         xScale = d3.scaleBand().rangeRound([0, width]).domain(sprintList);
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
       } else {
-        xScale = d3
-          .scaleBand()
-          .rangeRound([0, width])
-          .domain(newRawData[maxObjectNo].value.map((d, i) => i + 1));
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
+        xScale = d3.scaleBand().rangeRound([0, width]).domain(xAxisValues);
       }
 
       const y = d3.scaleLinear().range([height - margin.top, 0]);
@@ -459,6 +464,16 @@ export class GroupedColumnPlusLineChartV2Component
         .style('opacity', '1')
         .style('font-size', '10px');
 
+      const getXCoordinate = (point, index) => {
+        let key;
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          key = point.sortSprint || point.date || point.sSprintName;
+        } else {
+          key = point.isForecast ? 'Forecast' : index + 1;
+        }
+        const base = x0(key) ?? 0;
+        return base + x0.bandwidth() / 2;
+      };
       const slice = svgX
         .selectAll('.slice')
         .data(data)
@@ -471,6 +486,45 @@ export class GroupedColumnPlusLineChartV2Component
             : 'translate(' + x0(d.categorie) + ',0)',
         );
 
+      const defs = svgX.append('defs');
+      const forecastPatternIds: Record<string, string> = {};
+      const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+      rateNames.forEach((rate) => {
+        const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+          rate,
+        )}`;
+        forecastPatternIds[rate] = id;
+
+        const forecastPattern = defs
+          .append('pattern')
+          .attr('id', id)
+          .attr('patternUnits', 'userSpaceOnUse')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('patternTransform', 'rotate(45)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('fill', 'rgb(255, 255, 255)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 4)
+          .attr('height', 8)
+          .attr('fill', color(rate));
+      });
+
+      // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+      if (this.lineChart === false) {
+        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
+          if (d?.value[0]?.hoverValue) {
+            const circle = event.target;
+            const { top: yPosition, left: xPosition } =
+              circle.getBoundingClientRect();
+          }
+        });
+      }
       // Define the div for the tooltip
       const div = d3
         .select(this.elem)
@@ -619,6 +673,35 @@ export class GroupedColumnPlusLineChartV2Component
             });
         }
 
+        const defs = svgX.append('defs');
+        const forecastPatternIds: Record<string, string> = {};
+        const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+        rateNames.forEach((rate) => {
+          const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+            rate,
+          )}`;
+          forecastPatternIds[rate] = id;
+
+          const forecastPattern = defs
+            .append('pattern')
+            .attr('id', id)
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('patternTransform', 'rotate(45)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('fill', 'rgb(255, 255, 255)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 4)
+            .attr('height', 8)
+            .attr('fill', color(rate));
+        });
+
         const rx = x1.bandwidth() / 2;
         const ry = x1.bandwidth() / 2;
         slice
@@ -626,7 +709,13 @@ export class GroupedColumnPlusLineChartV2Component
           .data((d) => d.value)
           .enter()
           .append('path')
-          .style('fill', (d) => color(d.rate))
+          .style('fill', (d) =>
+            d?.isForecast
+              ? `url(#${forecastPatternIds[d.rate]})`
+              : color(d.rate),
+          )
+          .style('stroke', (d) => (d?.isForecast ? color(d.rate) : 'none'))
+          .style('stroke-width', (d) => (d?.isForecast ? 1.5 : 0))
           .attr('d', (d) => {
             if (height - margin.top - y(d.value) >= rx) {
               return `
@@ -836,13 +925,7 @@ export class GroupedColumnPlusLineChartV2Component
 
         const line = d3
           .line()
-          .x((d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .x((d, i) => getXCoordinate(d, i))
           .y((d) => yScale(d.lineValue));
 
         lines
@@ -956,13 +1039,7 @@ export class GroupedColumnPlusLineChartV2Component
               .style('opacity', 0);
           })
           .append('circle')
-          .attr('cx', (d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .attr('cx', (d, i) => getXCoordinate(d, i))
           .attr('cy', (d) => yScale(d.lineValue))
           .attr('r', circleRadius)
           .style('stroke-width', 1)
@@ -1005,12 +1082,7 @@ export class GroupedColumnPlusLineChartV2Component
               return cssClass;
             })
             .style('left', (d, i) => {
-              const left = d.date || d.sortSprint;
-              if (this.isXaxisGroup === true) {
-                return x0(left) + x0.bandwidth() / 2 + 'px';
-              } else {
-                return x0(i + 1) + x0.bandwidth() / 2 + 'px';
-              }
+              return getXCoordinate(d, i) + 'px';
             })
             .style('top', (d) => yScale(d.lineValue) - 25 + 'px')
             .text(
