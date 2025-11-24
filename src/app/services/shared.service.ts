@@ -166,7 +166,7 @@ export class SharedService {
   appendKpiList: Array<any> = [];
   appendKpiListJenkins: Array<any> = [];
   kpiPostSonarData: object = {};
-  selectedDateFilter: any;
+  selectedDateRangeFilter: any;
 
   constructor(
     private router: Router,
@@ -1002,11 +1002,11 @@ export class SharedService {
     this.flagMultilineChartSubject.next(value);
   }
 
-  setSelectedDateRange(selectedDateFIlter) {
-    this.selectedDateFilter = selectedDateFIlter;
+  setSelectedDateRange(selectedDateFilter) {
+    this.selectedDateRangeFilter = selectedDateFilter;
   }
 
   getSelectedDateRange(): string {
-    return this.selectedDateFilter;
+    return this.selectedDateRangeFilter;
   }
 }
