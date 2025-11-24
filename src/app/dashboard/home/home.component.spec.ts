@@ -76,7 +76,24 @@ describe('HomeComponent', () => {
     ]);
 
     mockHttpService.getPebProductivityData.and.returnValue(
-      of({ success: true, data: [] }),
+      of({
+        message: 'Productivity data was successfully retrieved',
+        success: true,
+        data: {
+          summary: {
+            levelName: 'Test Level',
+            categoryScores: {
+              overall: 85.5,
+              speed: 80.0,
+              quality: 90.0,
+              efficiency: 88.0,
+              productivity: 85.5,
+            },
+            trends: { positive: [], negative: [] },
+          },
+          details: [],
+        },
+      }),
     );
 
     mockHttpService.getHomeNBAData.and.returnValue(
@@ -114,12 +131,19 @@ describe('HomeComponent', () => {
 
     mockHelperService.fetchPEBaData.and.returnValue(
       of({
+        message: 'Productivity data was successfully retrieved',
         success: true,
         data: {
           summary: {
             trends: { positive: [], negative: [] },
             levelName: 'Test Level',
-            categoryScores: { productivity: 85.5 },
+            categoryScores: {
+              overall: 85.5,
+              speed: 80.0,
+              quality: 90.0,
+              efficiency: 88.0,
+              productivity: 85.5,
+            },
           },
           details: [],
         },
@@ -203,6 +227,7 @@ describe('HomeComponent', () => {
     component.tableData = { columns: [], data: [] };
     component.aggregrationDataList = [];
     component.bottomTilesData.set([]);
+    component.productivityExpandRowDataLoader = false;
 
     spyOn(localStorage, 'getItem').and.callFake((key) => {
       if (key === 'completeHierarchyData') {
@@ -467,7 +492,15 @@ describe('HomeComponent', () => {
     };
 
     component.tableData = {
-      data: [{ name: 'Entity 1', completion: '80%' }],
+      data: [
+        {
+          name: 'Entity 1',
+          completion: '80%',
+          children: {
+            data: [{ name: 'Child Entity 1', completion: '70%' }],
+          },
+        },
+      ],
     };
 
     component.processPEBData(testData);
@@ -475,6 +508,9 @@ describe('HomeComponent', () => {
     expect(component.productivityData['Project Level']).toBe(88.5);
     expect(component.productivityData['Entity 1']).toBe(75.2);
     expect(component.tableData.data[0].productivity).toBe('75.20%');
+    expect(component.tableData.data[0].children.data[0].productivity).toBe(
+      'NA',
+    );
     expect(component.BottomTilesLoader).toBeFalse();
   });
 
@@ -550,10 +586,117 @@ describe('HomeComponent', () => {
     component.onRowExpand({ data: { id: 'row1' } });
 
     expect(component.nestedLoader).toBeFalse();
+    expect(component.productivityExpandRowDataLoader).toBeFalse();
     expect(mockMessageService.add).toHaveBeenCalledWith({
       severity: 'error',
       summary: 'API Error',
     });
+  });
+
+  it('should handle onRowExpand success and call fetchNestedPEBData', () => {
+    const mockResponse = {
+      data: {
+        matrix: {
+          rows: [
+            {
+              id: 'child1',
+              name: 'Child Row',
+              completion: '70%',
+              boardMaturity: { maturity: 'M2' },
+            },
+          ],
+          columns: [
+            { field: 'id', header: 'ID' },
+            { field: 'name', header: 'Name' },
+          ],
+        },
+      },
+    };
+
+    mockHttpService.getExecutiveBoardData.and.returnValue(of(mockResponse));
+    spyOn(component, 'payloadPreparation').and.returnValue({
+      level: 2,
+      label: 'team',
+      parentId: 'row1',
+      date: '',
+      duration: '',
+    });
+    spyOn(component, 'fetchNestedPEBData');
+    spyOn(component, 'generateColumnFilterData').and.returnValue({
+      tableColumnData: {},
+      tableColumnForm: {},
+    });
+
+    component.tableData = {
+      data: [{ id: 'row1', name: 'Parent Row' }],
+      columns: [],
+    };
+
+    component.onRowExpand({ data: { id: 'row1' } });
+
+    expect(component.nestedLoader).toBeFalse();
+    expect(component.fetchNestedPEBData).toHaveBeenCalled();
+  });
+
+  it('should handle fetchNestedPEBData success', () => {
+    const mockPEBResponse = {
+      message: 'Productivity data was successfully retrieved',
+      success: true,
+      data: {
+        details: [
+          {
+            organizationEntityName: 'Child Entity',
+            categoryScores: {
+              overall: 78.5,
+              speed: 75.0,
+              quality: 82.0,
+              efficiency: 80.0,
+              productivity: 78.5,
+            },
+          },
+        ],
+      },
+    };
+
+    mockHelperService.fetchPEBaData.and.returnValue(of(mockPEBResponse));
+    component.completeHierarchyData = [
+      { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
+    ];
+
+    const targettedDetails = {
+      children: {
+        data: [{ name: 'Child Entity', productivity: 'NA' }],
+      },
+    };
+
+    component.fetchNestedPEBData(
+      { level: 2, label: 'team', parentId: 'parent1' },
+      targettedDetails,
+    );
+
+    expect(component.productivityData['Child Entity']).toBe(78.5);
+    expect(targettedDetails.children.data[0].productivity).toBe('78.50%');
+  });
+
+  it('should handle fetchNestedPEBData error', () => {
+    mockHelperService.fetchPEBaData.and.returnValue(
+      throwError({ error: 'Network error' }),
+    );
+    component.completeHierarchyData = [
+      { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
+    ];
+
+    spyOn(console, 'error');
+
+    component.fetchNestedPEBData(
+      { level: 2, label: 'team', parentId: 'parent1' },
+      { children: { data: [] } },
+    );
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed to load nested PEBa data:',
+      { error: 'Network error' },
+    );
   });
 
   it('should handle ngOnDestroy', () => {

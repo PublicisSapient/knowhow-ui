@@ -48,6 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculatorDataLoader: boolean = true;
   nbaRawData: Array<any> = [];
   productivityData: any = {};
+  productivityExpandRowDataLoader = false;
 
   constructor(
     private service: SharedService,
@@ -416,6 +417,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onRowExpand(event) {
     this.nestedLoader = true;
+    this.productivityExpandRowDataLoader = true;
     this.selectedRowToExpand = event.data;
     const filterApplyData = this.payloadPreparation(
       this.filterApplyData,
@@ -432,10 +434,11 @@ export class HomeComponent implements OnInit, OnDestroy {
             summary: res.message || 'Looks some problem in fetching the data!',
           });
           this.nestedLoader = false;
+          this.productivityExpandRowDataLoader = false;
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-              return { ...row, ...row?.boardMaturity };
+              return { ...row, ...row?.boardMaturity, productivity: 'NA' };
             });
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
@@ -458,6 +461,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                 );
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+
+              // Fetch PEB data for nested rows
+              this.fetchNestedPEBData(filterApplyData, targettedDetails);
             }
           }
           this.nestedLoader = false;
@@ -604,6 +610,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         ...row,
         productivity: this.getProductivityForRow(row.name),
       }));
+
+      // Update nested table data if exists
+      this.tableData.data.forEach((row) => {
+        if (row.children && row.children.data) {
+          row.children.data = row.children.data.map((childRow) => ({
+            ...childRow,
+            productivity: this.getProductivityForRow(childRow.name),
+          }));
+        }
+      });
     }
 
     const kpiTrends = data['summary']['trends'];
@@ -625,6 +641,38 @@ export class HomeComponent implements OnInit, OnDestroy {
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
     return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
+  }
+
+  fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
+    const label = this.completeHierarchyData.find(
+      (hi) => hi.level === filterApplyData.level,
+    ).hierarchyLevelName;
+
+    this.subscription.push(
+      this.helperService.fetchPEBaData(label.toLowerCase()).subscribe({
+        next: (res) => {
+          if (res.success && res.data.details) {
+            // Update productivity data for nested rows
+            res.data.details.forEach((detail) => {
+              this.productivityData[detail.organizationEntityName] =
+                detail.categoryScores.productivity;
+            });
+
+            // Update nested table data with productivity values
+            targettedDetails['children']['data'] = targettedDetails['children'][
+              'data'
+            ].map((row) => ({
+              ...row,
+              productivity: this.getProductivityForRow(row.name),
+            }));
+            this.productivityExpandRowDataLoader = false;
+          }
+        },
+        error: (error) => {
+          console.error('Failed to load nested PEBa data:', error);
+        },
+      }),
+    );
   }
 
   getNBAData() {
