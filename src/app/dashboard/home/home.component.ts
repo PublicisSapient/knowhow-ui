@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   subscription = [];
   @ViewChild('maturityComponent')
   maturityComponent: MaturityComponent;
+  @ViewChild('mainTable') mainTable: any;
   expandedRows: { [key: string]: boolean } = {};
   selectedType: string = '';
   filterApplyData: any = {};
@@ -419,6 +420,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.nestedLoader = true;
     this.productivityExpandRowDataLoader = true;
     this.selectedRowToExpand = event.data;
+
+    // Store current page before data update
+    const currentPage = this.mainTable?.first || 0;
+
     const filterApplyData = this.payloadPreparation(
       this.filterApplyData,
       this.selectedType,
@@ -461,6 +466,13 @@ export class HomeComponent implements OnInit, OnDestroy {
                 );
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+
+              // Restore pagination state after data update
+              setTimeout(() => {
+                if (this.mainTable && this.mainTable.first !== currentPage) {
+                  this.mainTable.first = currentPage;
+                }
+              });
 
               // Fetch PEB data for nested rows
               this.fetchNestedPEBData(filterApplyData, targettedDetails);
