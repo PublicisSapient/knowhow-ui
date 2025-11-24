@@ -1026,6 +1026,7 @@ export class HelperService {
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
         this.sharedService.setAddtionalFilterBackup({});
+        this.sharedService.clearPEBDataCache();
 
         this.sharedService.setSelectedBoard(null);
         this.sharedService.selectedTab = null;
@@ -1039,6 +1040,7 @@ export class HelperService {
         });
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
+        this.sharedService.clearPEBDataCache();
         localStorage.removeItem('shared_link');
         const redirect_uri = window.location.href;
         window.location.href =

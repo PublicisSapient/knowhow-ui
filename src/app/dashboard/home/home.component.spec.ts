@@ -163,6 +163,9 @@ describe('HomeComponent', () => {
         'getFilterData',
         'setPEBData',
         'getSelectedType',
+        'setPEBDataCache',
+        'getPEBDataCache',
+        'clearPEBDataCache',
       ],
       {
         passDataToDashboard: of({
@@ -182,6 +185,9 @@ describe('HomeComponent', () => {
 
     mockSharedService.getSelectedType.and.returnValue('kanban');
     mockSharedService.getFilterData.and.returnValue([]);
+    mockSharedService.getPEBDataCache.and.returnValue(null);
+    mockSharedService.setPEBDataCache.and.stub();
+    mockSharedService.clearPEBDataCache.and.stub();
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
@@ -535,6 +541,7 @@ describe('HomeComponent', () => {
       },
     ];
 
+    mockSharedService.getPEBDataCache.and.returnValue(null);
     mockHelperService.fetchPEBaData.and.returnValue(
       throwError({ error: 'Network error' }),
     );
@@ -794,5 +801,161 @@ describe('HomeComponent', () => {
     const result = component.getImmediateParentDisplayName(child);
 
     expect(result).toBeUndefined();
+  });
+
+  it('should use cached data when available in fetchPEBaData', () => {
+    const cachedData = {
+      summary: {
+        levelName: 'Cached Level',
+        categoryScores: { productivity: 90.0 },
+        trends: { positive: [], negative: [] },
+      },
+      details: [],
+    };
+
+    mockSharedService.getPEBDataCache.and.returnValue(cachedData);
+    spyOn(component, 'processPEBData');
+
+    component.completeHierarchyData = [
+      { level: 0, hierarchyLevelName: 'Root Level', hierarchyLevelId: 'root' },
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
+    ];
+
+    component.fetchPEBaData({ label: 'project', level: 1, parentId: '' });
+
+    expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
+      'root level',
+    );
+    expect(component.processPEBData).toHaveBeenCalledWith(cachedData);
+    expect(component.calculatorDataLoader).toBeFalse();
+    expect(mockHelperService.fetchPEBaData).not.toHaveBeenCalled();
+  });
+
+  it('should cache data after successful API call in fetchPEBaData', () => {
+    const apiResponse = {
+      success: true,
+      data: {
+        summary: {
+          levelName: 'API Level',
+          categoryScores: { productivity: 85.0 },
+          trends: { positive: [], negative: [] },
+        },
+        details: [],
+      },
+    };
+
+    mockSharedService.getPEBDataCache.and.returnValue(null);
+    mockHelperService.fetchPEBaData.and.returnValue(of(apiResponse));
+    spyOn(component, 'processPEBData');
+
+    component.completeHierarchyData = [
+      { level: 0, hierarchyLevelName: 'Root Level', hierarchyLevelId: 'root' },
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
+    ];
+
+    component.fetchPEBaData({ label: 'project', level: 1, parentId: '' });
+
+    expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
+      'root level',
+      apiResponse.data,
+    );
+    expect(component.processPEBData).toHaveBeenCalledWith(apiResponse.data);
+  });
+
+  it('should use cached data when available in fetchNestedPEBData', () => {
+    const cachedData = {
+      details: [
+        {
+          organizationEntityName: 'Cached Entity',
+          categoryScores: { productivity: 88.0 },
+        },
+      ],
+    };
+
+    mockSharedService.getPEBDataCache.and.returnValue(cachedData);
+    component.completeHierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
+      { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
+    ];
+
+    const targettedDetails = {
+      children: {
+        data: [{ name: 'Cached Entity', productivity: 'NA' }],
+      },
+    };
+
+    component.fetchNestedPEBData(
+      { level: 2, label: 'team', parentId: 'parent1' },
+      targettedDetails,
+    );
+
+    expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
+      'project level',
+    );
+    expect(component.productivityData['Cached Entity']).toBe(88.0);
+    expect(targettedDetails.children.data[0].productivity).toBe('88.00%');
+    expect(component.productivityExpandRowDataLoader).toBeFalse();
+    expect(mockHelperService.fetchPEBaData).not.toHaveBeenCalled();
+  });
+
+  it('should cache data after successful API call in fetchNestedPEBData', () => {
+    const apiResponse = {
+      success: true,
+      data: {
+        details: [
+          {
+            organizationEntityName: 'API Entity',
+            categoryScores: { productivity: 92.0 },
+          },
+        ],
+      },
+    };
+
+    mockSharedService.getPEBDataCache.and.returnValue(null);
+    mockHelperService.fetchPEBaData.and.returnValue(of(apiResponse));
+    component.completeHierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
+      { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
+    ];
+
+    const targettedDetails = {
+      children: {
+        data: [{ name: 'API Entity', productivity: 'NA' }],
+      },
+    };
+
+    component.fetchNestedPEBData(
+      { level: 2, label: 'team', parentId: 'parent1' },
+      targettedDetails,
+    );
+
+    expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
+      'project level',
+      apiResponse.data,
+    );
+    expect(component.productivityData['API Entity']).toBe(92.0);
+    expect(targettedDetails.children.data[0].productivity).toBe('92.00%');
+  });
+
+  it('should clear cache when passDataToDashboard subscription triggers', () => {
+    component.ngOnInit();
+
+    expect(mockSharedService.clearPEBDataCache).toHaveBeenCalled();
   });
 });

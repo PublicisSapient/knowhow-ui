@@ -88,6 +88,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             'parent',
           );
 
+          // Clear PEB data cache when dashboard data changes
+          this.service.clearPEBDataCache();
+
           this.subscription.push(
             this.httpService
               .getExecutiveBoardData(
@@ -268,12 +271,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
   getMaturityWheelData(sharedobject) {
-    this.maturityComponent.receiveSharedData({
-      masterData: sharedobject.masterData,
-      filterData: sharedobject.filterData,
-      filterApplyData: sharedobject.filterApplyData,
-      dashConfigData: sharedobject.dashConfigData,
-    });
+    if (this.maturityComponent) {
+      this.maturityComponent.receiveSharedData({
+        masterData: sharedobject.masterData,
+        filterData: sharedobject.filterData,
+        filterApplyData: sharedobject.filterApplyData,
+        dashConfigData: sharedobject.dashConfigData,
+      });
+    }
   }
 
   payloadPreparation(filterApplyData, selectedType, dataFor) {
@@ -569,14 +574,33 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
-    const label = this.completeHierarchyData.find(
+    const hierarchyItem = this.completeHierarchyData?.find(
       (hi) => hi.level === filterApplyData.level - 1,
-    ).hierarchyLevelName;
+    );
+
+    if (!hierarchyItem) {
+      this.BottomTilesLoader = false;
+      this.calculatorDataLoader = false;
+      return;
+    }
+
+    const label = hierarchyItem.hierarchyLevelName;
+    const labelKey = label.toLowerCase();
+
+    // Check cache first
+    const cachedData = this.service.getPEBDataCache(labelKey);
+    if (cachedData) {
+      this.processPEBData(cachedData);
+      this.calculatorDataLoader = false;
+      return;
+    }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(label.toLowerCase()).subscribe({
+      this.helperService.fetchPEBaData(labelKey).subscribe({
         next: (res) => {
           if (res.success) {
+            // Cache the data
+            this.service.setPEBDataCache(labelKey, res.data);
             this.processPEBData(res.data);
           } else {
             this.messageService.add({
@@ -605,7 +629,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   processPEBData(data) {
     // Store productivity data for table integration
-    if (data.summary) {
+    if (data?.summary?.categoryScores?.productivity !== undefined) {
       this.productivityData[data.summary.levelName] =
         data.summary.categoryScores.productivity;
     }
@@ -656,14 +680,45 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
-    const label = this.completeHierarchyData.find(
+    const hierarchyItem = this.completeHierarchyData?.find(
       (hi) => hi.level === filterApplyData.level - 1,
-    ).hierarchyLevelName;
+    );
+
+    if (!hierarchyItem) {
+      this.productivityExpandRowDataLoader = false;
+      return;
+    }
+
+    const label = hierarchyItem.hierarchyLevelName;
+    const labelKey = label.toLowerCase();
+
+    // Check cache first
+    const cachedData = this.service.getPEBDataCache(labelKey);
+    if (cachedData && cachedData.details) {
+      // Update productivity data for nested rows from cache
+      cachedData.details.forEach((detail) => {
+        this.productivityData[detail.organizationEntityName] =
+          detail.categoryScores.productivity;
+      });
+
+      // Update nested table data with productivity values
+      targettedDetails['children']['data'] = targettedDetails['children'][
+        'data'
+      ].map((row) => ({
+        ...row,
+        productivity: this.getProductivityForRow(row.name),
+      }));
+      this.productivityExpandRowDataLoader = false;
+      return;
+    }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(label.toLowerCase()).subscribe({
+      this.helperService.fetchPEBaData(labelKey).subscribe({
         next: (res) => {
           if (res.success && res.data.details) {
+            // Cache the data
+            this.service.setPEBDataCache(labelKey, res.data);
+
             // Update productivity data for nested rows
             res.data.details.forEach((detail) => {
               this.productivityData[detail.organizationEntityName] =

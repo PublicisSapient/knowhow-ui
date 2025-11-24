@@ -156,6 +156,7 @@ export class SharedService {
   private pebDataSubject = new BehaviorSubject<any>(null);
   public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
+  private pebDataCache: { [key: string]: any } = {};
   kpiPostData: object = {};
   kpiPostJenkinsData: object = {};
 
@@ -930,6 +931,19 @@ export class SharedService {
   // Add method to get current PEBa data
   getPEBData(): any {
     return this.pebDataSubject.getValue();
+  }
+
+  // Cache methods for PEB data
+  setPEBDataCache(label: string, data: any): void {
+    this.pebDataCache[label] = data;
+  }
+
+  getPEBDataCache(label: string): any {
+    return this.pebDataCache[label];
+  }
+
+  clearPEBDataCache(): void {
+    this.pebDataCache = {};
   }
   //#endregion
 
