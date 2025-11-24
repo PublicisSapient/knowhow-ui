@@ -10,33 +10,39 @@ import { CardModule } from 'primeng/card';
   styleUrl: './indicators.component.css',
 })
 export class IndicatorsComponent {
-  @Input() title: string = 'Mean Time to Merge';
+  @Input() title: string;
   @Input() icon: string = 'pi-clock';
-  @Input() metricValue: number = 2.4;
-  @Input() metricUnit: string = 'days';
-  @Input() trendValue: number = -12;
+  @Input() metricValue: number;
+  @Input() metricUnit: string;
+  @Input() trendValue: number;
+  @Input() trendUnit: string;
   @Input() trendLabel: string = 'from last month';
   @Input() iconColor: string = '#0d6efd';
 
   @Input() data: any;
 
-  // @Input() trendBoxColorObj: string;
   @Input() kpiData: any;
   @Input() loader: boolean;
   @Input() kpiChartData: any[];
   // @Input() trendValueList: any[];
   @Input() kpiTrendsObj: any;
   @Input() kpiId: any;
+  @Input() dateFilter: string;
 
   ngOnInit() {
     // console.log('Data: ', this.data);
-    // console.log('KPI Data:', this.kpiData);
-    // console.log('Loader:', this.loader);
-    // // console.log('Trend Box Color Object:', this.trendBoxColorObj);
-    // console.log('KPI Chart Data:', this.kpiChartData);
-    // console.log('Trend Value:', this.trendValueList);
-    // console.log('KPI Trends Object:', this.kpiTrendsObj);
-    // console.log('kpiId ', this.kpiId);
+  }
+
+  private roundToTwoDecimals(value: number): number {
+    return Math.round(value * 100) / 100;
+  }
+
+  get roundedMetricValue(): number {
+    return this.roundToTwoDecimals(this.metricValue);
+  }
+
+  get roundedTrendValue(): number {
+    return this.roundToTwoDecimals(Math.abs(this.trendValue));
   }
 
   get isPositiveTrend(): boolean {

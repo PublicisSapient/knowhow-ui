@@ -211,6 +211,7 @@ export class HttpService {
   private homeNBAURL = this.baseUrl;
   private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
   private kpiAITargetRecommData = this.baseUrl;
+  private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
 
   constructor(
     private router: Router,
@@ -1360,5 +1361,9 @@ export class HttpService {
 
   getkpiAITargetRecommData(payLoad) {
     return this.http.post<any>(this.homeNBAURL, payLoad);
+  }
+
+  getPerformanceSummary(payload) {
+    return this.http.post<any>(this.performanceSummaryURL, payload);
   }
 }
