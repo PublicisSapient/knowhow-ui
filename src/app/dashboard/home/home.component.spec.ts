@@ -660,6 +660,11 @@ describe('HomeComponent', () => {
 
     mockHelperService.fetchPEBaData.and.returnValue(of(mockPEBResponse));
     component.completeHierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
       { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
     ];
 
@@ -683,6 +688,11 @@ describe('HomeComponent', () => {
       throwError({ error: 'Network error' }),
     );
     component.completeHierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelName: 'Project Level',
+        hierarchyLevelId: 'project',
+      },
       { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
     ];
 

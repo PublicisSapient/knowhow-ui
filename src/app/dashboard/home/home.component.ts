@@ -645,7 +645,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
     const label = this.completeHierarchyData.find(
-      (hi) => hi.level === filterApplyData.level,
+      (hi) => hi.level === filterApplyData.level - 1,
     ).hierarchyLevelName;
 
     this.subscription.push(
