@@ -152,6 +152,7 @@ import { KpiAiRecommendationTargetComponent } from './dashboardv2/kpi-ai-recomme
 import { DynamicCurrencyPipe } from './shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 import { IndicatorsComponent } from './dashboard/indicators/indicators.component';
 import { ListBlockComponent } from './dashboard/list-block/list-block.component';
+import { TopTilesComponent } from './dashboard/top-tiles/top-tiles.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -266,6 +267,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     KpiAiRecommendationTargetComponent,
     IndicatorsComponent,
     ListBlockComponent,
+    TopTilesComponent,
   ],
   providers: [
     ExcelService,
