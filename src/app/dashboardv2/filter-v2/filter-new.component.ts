@@ -1671,6 +1671,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   applyDateFilter() {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+    this.service.setSelectedDateRange(this.selectedDateFilter);
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.toggleDateDropdown = false;
     if (this.filterApplyData && this.filterApplyData['selectedMap']) {

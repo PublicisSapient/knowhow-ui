@@ -165,6 +165,8 @@ export class SharedService {
   flag$ = this.flagMultilineChartSubject.asObservable();
   appendKpiList: Array<any> = [];
   appendKpiListJenkins: Array<any> = [];
+  kpiPostSonarData: object = {};
+  selectedDateRangeFilter: any;
 
   constructor(
     private router: Router,
@@ -979,8 +981,32 @@ export class SharedService {
     return this.kpiPostJenkinsData;
   }
 
+  setKPIPostSonarData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostSonarData = argumentData;
+  }
+
+  getKPIPostSonarData() {
+    return this.kpiPostSonarData;
+  }
+
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
     this.flagMultilineChartSubject.next(value);
+  }
+
+  setSelectedDateRange(selectedDateFilter) {
+    this.selectedDateRangeFilter = selectedDateFilter;
+  }
+
+  getSelectedDateRange(): string {
+    return this.selectedDateRangeFilter;
   }
 }

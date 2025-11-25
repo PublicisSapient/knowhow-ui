@@ -15,7 +15,7 @@ export interface MetricItem {
   styleUrl: './list-block.component.css',
 })
 export class ListBlockComponent {
-  @Input() title: string = 'This Month';
-  @Input() metrics: MetricItem[] = [];
+  @Input() dateFilter: string;
+  @Input() data: MetricItem[] = [];
   @Input() trend: 'positive' | 'negative' | 'neutral' = 'neutral';
 }
