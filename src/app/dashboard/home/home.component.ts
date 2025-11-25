@@ -220,7 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscription.push(
       this.service.pebData$.subscribe((data) => {
-        if (data?.['summary']['trends']) {
+        if (data?.['summary']?.['trends']) {
           this.processPEBData(data);
         }
       }),
@@ -449,6 +449,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
+        console.log('Subscribing...');
         if (res?.error) {
           this.messageService.add({
             severity: 'error',
