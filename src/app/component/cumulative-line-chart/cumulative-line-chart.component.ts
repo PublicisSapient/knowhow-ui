@@ -19,7 +19,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   @Input() xCaption;
   @Input() yCaption;
   currentDayIndex;
-  VisibleXAxisLbl = [];
+  visibleXAxisLbl = [];
   graphData;
   elem;
   @Input() onPopup = false;
@@ -53,7 +53,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
   draw() {
     const elem = this.elem;
-    this.VisibleXAxisLbl = [];
+    this.visibleXAxisLbl = [];
     d3.select(elem).select('#chart').select('svg').remove();
     d3.select(elem).select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
@@ -129,10 +129,10 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
 
     for (let i = 0; i < xCoordinates.length; i += gap) {
-      this.VisibleXAxisLbl.push(xCoordinates[i]);
+      this.visibleXAxisLbl.push(xCoordinates[i]);
     }
-    if (!this.VisibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
-      this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] =
+    if (!this.visibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
+      this.visibleXAxisLbl[this.visibleXAxisLbl.length - 1] =
         xCoordinates[xCoordinates.length - 1];
     }
     /**X-Axis Gaps */
@@ -144,7 +144,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .call(
         d3
           .axisBottom(x)
-          .tickFormat((d, i) => (this.VisibleXAxisLbl.includes(d) ? d : '')),
+          .tickFormat((d, i) => (this.visibleXAxisLbl.includes(d) ? d : '')),
       );
 
     const yMin = Math.floor(Math.min(...minYValue) / 5) * 5;
