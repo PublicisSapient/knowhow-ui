@@ -95,7 +95,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.httpService
               .getExecutiveBoardData(
                 filterApplyData,
-                this.selectedType !== 'scrum',
+                this.selectedType.toUpperCase(),
               )
               .subscribe({
                 next: (executiveBoard: any) => {
@@ -444,7 +444,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
 
     this.httpService
-      .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
+      .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
         if (res?.error) {
           this.messageService.add({
