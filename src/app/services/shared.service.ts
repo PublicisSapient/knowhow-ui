@@ -167,6 +167,7 @@ export class SharedService {
   appendKpiListJenkins: Array<any> = [];
   kpiPostSonarData: object = {};
   selectedDateRangeFilter: any;
+  kpiPostZypherData: any;
 
   constructor(
     private router: Router,
@@ -1008,5 +1009,21 @@ export class SharedService {
 
   getSelectedDateRange(): string {
     return this.selectedDateRangeFilter;
+  }
+
+  setKPIPostZypherData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostZypherData = argumentData;
+  }
+
+  getKPIPostZypherData() {
+    return this.kpiPostZypherData;
   }
 }
