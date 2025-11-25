@@ -2067,14 +2067,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   applyForecastData(chartSeries): void {
-    chartSeries.forEach((series) => {
+    chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
       );
       const lastActualPoint =
-        series.value.length > 0 ? series.value[series.value.length - 1] : {};
+        series.value?.length > 0 ? series.value[series?.value?.length - 1] : {};
       const forecastLabel =
         forecastPoint?.date ||
         forecastPoint?.sortSprint ||
@@ -2099,7 +2099,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       newPoint['sSprintName'] = forecastLabel;
       newPoint['sprintNames'] = [forecastLabel];
       newPoint['xOrder'] = forecastLabel;
-      series.value = [...series.value, newPoint];
+      series.value = [...series?.value, newPoint];
     });
   }
 
@@ -2420,6 +2420,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = kpiId === 'kpi3' ? true : false;
       }
     });
+    const chartType = this.getChartType(kpiId);
+    const isLineChart = chartType === 'line';
+    const chartSeries = this.kpiChartData[kpiId];
+
+    if (isLineChart && Array.isArray(chartSeries)) {
+      if (chartSeries.some((d: any) => d?.forecasts)) {
+        this.applyForecastData(chartSeries);
+      }
+    }
   }
 
   getChartType(kpiId) {
