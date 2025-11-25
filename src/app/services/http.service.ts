@@ -201,7 +201,7 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
-  private executivePageURL = this.baseUrl + '/api/executive';
+  private executivePageURL = this.baseUrl + '/api/v1/kpi-maturity';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
   private analyticsMetricsTableDataURL =
@@ -1317,11 +1317,13 @@ export class HttpService {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
   }
 
-  getExecutiveBoardData(payload, selectedType) {
-    return this.http.post<any>(
-      `${this.executivePageURL}?iskanban=${selectedType}`,
-      payload,
-    );
+  getExecutiveBoardData(payLoad, deliveryMethodology) {
+    let params = `levelName=${payLoad.label.toLowerCase()}&deliveryMethodology=${deliveryMethodology}`;
+
+    if (payLoad.parentId && payLoad.parentId !== '') {
+      params += `&parentNodeId=${payLoad.parentId}`;
+    }
+    return this.http.get<any>(`${this.executivePageURL}?${params}`);
   }
 
   getAnalyticsMetricsTableData(payLoad) {
