@@ -154,6 +154,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         icon: 'pi-users',
                         average: 'NA',
                         valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'gauge',
@@ -162,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
                         valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'exclamation',
@@ -170,6 +172,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('critical').average,
                         valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'heart-fill',
@@ -178,6 +181,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
                         valueColor: '#374151',
+                        iconType: 'pi',
                       },
                     ];
 

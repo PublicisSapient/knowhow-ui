@@ -1,7 +1,8 @@
 <div class="p-d-flex data-item p-mt-3 p-mb-1 p-py-4 p-px-6">
   <div class="icon-container">
-    <div class="icon" [ngClass]="item.cssClassName">
-      <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+    <div class="icon" [ngClass]="item.cssClassName" [ngStyle]="{'color': item.valueColor}">
+      <span *ngIf="item?.iconType === 'pi'" class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+      <span *ngIf="item?.iconType === 'fa'"  class="fas" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
     </div>
   </div>
   <div class="data">

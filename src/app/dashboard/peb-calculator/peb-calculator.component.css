@@ -215,4 +215,25 @@
 
 :host ::ng-deep label {
   background-color: transparent !important;
+  color: rgb(32, 36, 41);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+:host ::ng-deep .p-card {
+  color: rgb(32, 36, 41);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.heading {
+  color: rgb(32, 36, 41);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  color: rgb(32, 36, 41);
+  font-weight: 700;
+  font-size: 14px;
 }
