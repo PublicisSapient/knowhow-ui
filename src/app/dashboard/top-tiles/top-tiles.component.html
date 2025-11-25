@@ -1,0 +1,22 @@
+<div class="p-d-flex data-item p-mt-3 p-mb-1 p-py-4 p-px-6">
+  <div class="icon-container">
+    <div class="icon" [ngClass]="item.cssClassName">
+      <span class="pi" [ngClass]="item.icon" aria-hidden="true" style="font-size: 2.5rem"></span>
+    </div>
+  </div>
+  <div class="data">
+    <p class="tabularKPI-column-header" tabindex="0">
+      {{ item.category }}
+    </p>
+    <div class="p-d-flex">
+      <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0" [ngStyle]="{'color': item.valueColor}">
+        {{ item.value }}
+        {{
+        item.average && item.average !== 'NA'
+        ? '(' + item.average + ')'
+        : ''
+        }}
+      </p>
+    </div>
+  </div>
+</div>

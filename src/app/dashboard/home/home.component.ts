@@ -153,6 +153,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
                         average: 'NA',
+                        valueColor: '#374151',
                       },
                       {
                         cssClassName: 'gauge',
@@ -160,6 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
+                        valueColor: '#374151',
                       },
                       {
                         cssClassName: 'exclamation',
@@ -167,6 +169,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('critical').count,
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('critical').average,
+                        valueColor: '#374151',
                       },
                       {
                         cssClassName: 'heart-fill',
@@ -174,6 +177,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('healthy').count,
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
+                        valueColor: '#374151',
                       },
                     ];
 
