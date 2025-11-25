@@ -176,21 +176,21 @@
   display: inline-block;
   background-size: cover;
   margin-bottom: -3px;
-  background-image: url('assets/img/GenericIssue.svg');
+  background-image: url('/assets/img/GenericIssue.svg');
 }
 
 :host ::ng-deep .issueTypeIcon.Task,
 :host ::ng-deep .issueTypeIcon.Studio-Task {
-  background-image: url('assets/img/Subtask_icon.svg');
+  background-image: url('/assets/img/Subtask_icon.svg');
 }
 
 :host ::ng-deep .issueTypeIcon.Bug,
 :host ::ng-deep .issueTypeIcon.Defect {
-  background-image: url('assets/img/Bug.svg');
+  background-image: url('/assets/img/Bug.svg');
 }
 
 :host ::ng-deep .issueTypeIcon.Story {
-  background-image: url('assets/img/Story.svg');
+  background-image: url('/assets/img/Story.svg');
 }
 
 :host ::ng-deep text.assigneeChangeText {

@@ -74,22 +74,22 @@
 
 @font-face {
   font-family: 'Poppins_Medium';
-  src: url('assets/fonts/Poppins/Poppins-Medium.ttf');
+  src: url('/assets/fonts/Poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: 'Poppins_Regular';
-  src: url('assets/fonts/Poppins/Poppins-Regular.ttf');
+  src: url('/assets/fonts/Poppins/Poppins-Regular.ttf');
 }
 
 /* @font-face {
   font-family: 'FuturaNext_Book';
-  src:url('assets/fonts/futura-next/FuturaNext_Book.otf');
+  src:url('/assets/fonts/futura-next/FuturaNext_Book.otf');
 }
 
 @font-face {
   font-family: 'FuturaNext_Medium';
-  src:url('assets/fonts/futura-next/FuturaNext-Medium.otf');
+  src:url('/assets/fonts/futura-next/FuturaNext-Medium.otf');
 } */
 /* width */
 ::-webkit-scrollbar {

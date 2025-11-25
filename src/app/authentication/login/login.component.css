@@ -156,7 +156,7 @@
   margin: -72px auto;
   color: var(--color-white);
   border-radius: 2px;
-  background-image: url('assets/img/logo.png');
+  background-image: url('/assets/img/logo.png');
   background-repeat: no-repeat;
 }
 
