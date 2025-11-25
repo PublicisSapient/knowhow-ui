@@ -212,6 +212,7 @@ export class HttpService {
   private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
   private kpiAITargetRecommData = this.baseUrl;
   private getAiUsagaStats = this.baseUrl + '/api/ai-usage/stats?levelName=';
+  private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
 
   constructor(
     private router: Router,
@@ -1365,5 +1366,9 @@ export class HttpService {
 
   getAiUsagaStatsDetails(levelName: string): Observable<any> {
     return this.http.get<any>(this.getAiUsagaStats + levelName);
+  }
+
+  getPerformanceSummary(payload) {
+    return this.http.post<any>(this.performanceSummaryURL, payload);
   }
 }

@@ -15347,4 +15347,88 @@ describe('ExecutiveV2Component', () => {
       expect(velocityHeaders.length).toBe(1);
     });
   });
+
+  it('should call performanceSummary and set allPerformanceSummaryData on success', () => {
+    const postData = {
+      kpiList: [],
+      ids: ['project1'],
+      level: 5,
+    };
+    const mockResponse = {
+      success: true,
+      data: [
+        { label: 'branch1', value: 100 },
+        { label: 'branch2', value: 200 },
+      ],
+    };
+    spyOn(httpService, 'getPerformanceSummary').and.returnValue(
+      of(mockResponse),
+    );
+    const filterSpy = spyOn<any>(component, 'filterPerformanceSummaryData');
+
+    component.performanceSummary(postData);
+
+    expect(httpService.getPerformanceSummary).toHaveBeenCalledWith(postData);
+    expect(component.allPerformanceSummaryData).toEqual(mockResponse.data);
+    expect(filterSpy).toHaveBeenCalled();
+  });
+
+  it('should handle error in performanceSummary', () => {
+    const postData = { kpiList: [] };
+    const errorResponse = { error: 'API Error' };
+    spyOn(httpService, 'getPerformanceSummary').and.returnValue(
+      throwError(errorResponse),
+    );
+    spyOn(console, 'error');
+
+    component.performanceSummary(postData);
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Error fetching performance summary',
+      errorResponse,
+    );
+  });
+
+  it('should filter performance summary data by current branch', () => {
+    component.currentBranch = 'branch1';
+    component.allPerformanceSummaryData = [
+      { label: 'branch1', value: 100 },
+      { label: 'branch2', value: 200 },
+    ];
+    spyOn(service, 'getSelectedDateRange').and.returnValue(
+      '2023-01-01 to 2023-12-31',
+    );
+
+    component['filterPerformanceSummaryData']();
+
+    expect(component.selectedDateFilterValue).toBe('2023-01-01 to 2023-12-31');
+    expect(component.filteredBranchData).toEqual({
+      label: 'branch1',
+      value: 100,
+    });
+  });
+
+  it('should not filter when currentBranch is not set', () => {
+    component.currentBranch = null;
+    component.allPerformanceSummaryData = [{ label: 'branch1', value: 100 }];
+    spyOn(service, 'getSelectedDateRange').and.returnValue(
+      '2023-01-01 to 2023-12-31',
+    );
+
+    component['filterPerformanceSummaryData']();
+
+    expect(component.filteredBranchData).toBeUndefined();
+  });
+
+  it('should not filter when allPerformanceSummaryData is empty', () => {
+    component.currentBranch = 'branch1';
+    component.allPerformanceSummaryData = [];
+    spyOn(service, 'getSelectedDateRange').and.returnValue(
+      '2023-01-01 to 2023-12-31',
+    );
+
+    component['filterPerformanceSummaryData']();
+
+    expect(component.filteredBranchData).toBeUndefined();
+  });
 });
