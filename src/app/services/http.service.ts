@@ -201,7 +201,7 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
-  private executivePageURL = this.baseUrl + 'api/v1/kpi-maturity';
+  private executivePageURL = this.baseUrl + '/api/v1/kpi-maturity';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
   private analyticsMetricsTableDataURL =
