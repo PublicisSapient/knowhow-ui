@@ -11,12 +11,10 @@ import { CardModule } from 'primeng/card';
 })
 export class IndicatorsComponent {
   @Input() title: string;
-  @Input() icon: string = 'pi-clock';
   @Input() metricValue: number;
   @Input() metricUnit: string;
   @Input() trendValue: number;
   @Input() trendUnit: string;
-  @Input() trendLabel: string = 'from last month';
   @Input() iconColor: string = '#0d6efd';
 
   @Input() data: any;
@@ -28,6 +26,7 @@ export class IndicatorsComponent {
   @Input() kpiTrendsObj: any;
   @Input() kpiId: any;
   @Input() dateFilter: string;
+  @Input() kpiIcon: string;
 
   ngOnInit() {
     // console.log('Data: ', this.data);
