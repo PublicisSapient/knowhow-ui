@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
-
+import { error } from 'console';
 interface CategoryVariations {
   speed: number;
   quality: number;
@@ -51,6 +51,7 @@ export class PebCalculatorComponent implements OnInit {
   xAxisLabel: string = '';
   userCurrency = '';
   userLocale = navigator.language || 'en-US';
+  sub$: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -91,6 +92,7 @@ export class PebCalculatorComponent implements OnInit {
             this.selectedLevel = stateFilters?.parent_level;
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
+            this.getAiUasgestatsDetails(this.selectedLevel);
           }
         }),
     );
@@ -269,6 +271,28 @@ export class PebCalculatorComponent implements OnInit {
     return multipliedDetails;
   }
 
+  getAiUasgestatsDetails(selectedLevel: string): void {
+    this.sub$ = this.httpService
+      .getAiUsagaStatsDetails(selectedLevel)
+      .subscribe({
+        next: (res: any) => {
+          const userCount = res?.summary
+            ? res?.summary
+            : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
+          if (userCount?.userCount) {
+            this.pebForm.patchValue({
+              devCountControl: userCount?.userCount,
+            });
+          } else {
+            console.error('Failed to fetch user count >>');
+          }
+        },
+        error: (err: any) => {
+          console.error('Failed to fetch user count', err.message);
+        },
+      });
+  }
+
   detectCurrency(locale: string): string {
     const country = locale.split('-')[1]?.toUpperCase();
     const currencyMap: any = {
@@ -286,5 +310,6 @@ export class PebCalculatorComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
+    this.sub$?.unsubscribe();
   }
 }
