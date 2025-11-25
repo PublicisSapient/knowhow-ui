@@ -43,6 +43,7 @@ import { Subject, throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
 import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
 import { mockConfigGlobalData } from './executive-mock-data';
+import { error } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
@@ -173,6 +174,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ];
 
   mockUpdatedConfigGlobalData: any[];
+  performanceSummaryCall: Subscription;
+  currentBranch: any;
+  allPerformanceSummaryData: any;
+  filteredBranchData: any;
+  selectedDateFilterValue: string;
 
   constructor(
     public service: SharedService,
@@ -1095,6 +1101,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       );
       kpiArr.forEach((element) => this.kpiLoader.add(element));
       this.postBitBucketKanbanKpi(this.kpiBitBucket, 'bitbucket');
+      this.performanceSummary(this.kpiBitBucket);
     }
   }
 
@@ -1116,6 +1123,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       );
       kpiArr.forEach((element) => this.kpiLoader.add(element));
       this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
+      this.performanceSummary(this.kpiBitBucket);
     }
   }
 
@@ -1216,6 +1224,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of sonar of scrum and storing in sonarKpiData id wise
   postSonarKpi(postData, source): void {
+    this.service.setKPIPostSonarData(postData);
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
     }
@@ -1785,7 +1794,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   : 'developer',
             }));
           });
-
           this.service.setAdditionalFilters(this.additionalFiltersArr);
         }
       }
@@ -1921,9 +1929,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   );
               }
             } else {
-              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
-                ? preAggregatedValues[0]?.value
-                : [];
+              if (
+                kpiId === 'kpi158' ||
+                kpiId === 'kpi160' ||
+                kpiId === 'kpi185' ||
+                kpiId === 'kpi186'
+              ) {
+                this.kpiChartData[kpiId] = preAggregatedValues[0]?.data
+                  ? preAggregatedValues[0]?.data
+                  : [];
+              } else {
+                this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
+                  ? preAggregatedValues[0]?.value
+                  : [];
+              }
             }
           } else if (
             filterPropArr.includes('filter1') ||
@@ -1968,7 +1987,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
-      if (kpiId !== 'kpi201' && this.getChartType(kpiId) !== 'progressbar') {
+      if (
+        this.getChartType(kpiId) !== 'progressbar' &&
+        this.getChartType(kpiId) !== 'card'
+      ) {
         this.kpiChartData[kpiId] = this.generateColorObj(
           kpiId,
           this.kpiChartData[kpiId],
@@ -2045,14 +2067,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   applyForecastData(chartSeries): void {
-    chartSeries.forEach((series) => {
+    chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
       );
       const lastActualPoint =
-        series.value.length > 0 ? series.value[series.value.length - 1] : {};
+        series.value?.length > 0 ? series.value[series?.value?.length - 1] : {};
       const forecastLabel =
         forecastPoint?.date ||
         forecastPoint?.sortSprint ||
@@ -2077,7 +2099,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       newPoint['sSprintName'] = forecastLabel;
       newPoint['sprintNames'] = [forecastLabel];
       newPoint['xOrder'] = forecastLabel;
-      series.value = [...series.value, newPoint];
+      series.value = [...series?.value, newPoint];
     });
   }
 
@@ -2398,6 +2420,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = kpiId === 'kpi3' ? true : false;
       }
     });
+    const chartType = this.getChartType(kpiId);
+    const isLineChart = chartType === 'line';
+    const chartSeries = this.kpiChartData[kpiId];
+
+    if (isLineChart && Array.isArray(chartSeries)) {
+      if (chartSeries.some((d: any) => d?.forecasts)) {
+        this.applyForecastData(chartSeries);
+      }
+    }
   }
 
   getChartType(kpiId) {
@@ -4157,6 +4188,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
+          if (event.value.includes('->')) {
+            this.currentBranch = event.value;
+            this.filterPerformanceSummaryData();
+          }
           const trendValueList =
             this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList;
           if (
@@ -5025,5 +5060,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ? +durationFilter.split(' ')[1]
         : 1,
     };
+  }
+
+  performanceSummary(postData) {
+    const data = postData;
+    data.kpiList = [];
+    this.httpService.getPerformanceSummary(data).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.allPerformanceSummaryData = response.data;
+          this.filterPerformanceSummaryData();
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching performance summary', error);
+      },
+    });
+  }
+
+  private filterPerformanceSummaryData() {
+    this.selectedDateFilterValue = this.service.getSelectedDateRange();
+    if (this.currentBranch && this.allPerformanceSummaryData?.length) {
+      this.filteredBranchData = this.allPerformanceSummaryData.find(
+        (item) => item.label === this.currentBranch,
+      );
+    }
   }
 }

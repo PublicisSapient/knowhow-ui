@@ -49,7 +49,7 @@
       </div>
 
       <div class="kpi-card-body">
-        <p-table *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']" responsiveLayout="scroll"
+        <p-table #mainTable *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']" responsiveLayout="scroll"
           class="mt-3" [expandedRowKeys]="expandedRows" dataKey="id" (onRowExpand)="onRowExpand($event)"
           rowExpandMode="single" [paginator]="true" [rows]="10">
           <ng-template pTemplate="header" let-columns>
@@ -169,6 +169,12 @@
                 <ng-container [ngSwitch]="childCol.field">
                   @if(childCol.field.toLowerCase().includes('name') || childCol.field.toLowerCase().includes('completion')){
                     <span>{{ childRow[childCol.field] }}</span>
+                    }@else if(childCol.field.toLowerCase().includes('productivity')){
+                    @if(productivityExpandRowDataLoader){
+                      <p-skeleton width="60px" height="2rem" />
+                    } @else {
+                      <span class="styled-cell">{{ childRow[childCol.field] }}</span>
+                    }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
                       {{ childRow[childCol.field] === 'M0' ? 'NA' : childRow[childCol.field] }}

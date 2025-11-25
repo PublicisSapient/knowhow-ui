@@ -156,6 +156,7 @@ export class SharedService {
   private pebDataSubject = new BehaviorSubject<any>(null);
   public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
+  private pebDataCache: { [key: string]: any } = {};
   kpiPostData: object = {};
   kpiPostJenkinsData: object = {};
 
@@ -164,6 +165,8 @@ export class SharedService {
   flag$ = this.flagMultilineChartSubject.asObservable();
   appendKpiList: Array<any> = [];
   appendKpiListJenkins: Array<any> = [];
+  kpiPostSonarData: object = {};
+  selectedDateRangeFilter: any;
 
   constructor(
     private router: Router,
@@ -931,6 +934,19 @@ export class SharedService {
   getPEBData(): any {
     return this.pebDataSubject.getValue();
   }
+
+  // Cache methods for PEB data
+  setPEBDataCache(label: string, data: any): void {
+    this.pebDataCache[label] = data;
+  }
+
+  getPEBDataCache(label: string): any {
+    return this.pebDataCache[label];
+  }
+
+  clearPEBDataCache(): void {
+    this.pebDataCache = {};
+  }
   //#endregion
 
   setKPIPostData(data) {
@@ -965,8 +981,32 @@ export class SharedService {
     return this.kpiPostJenkinsData;
   }
 
+  setKPIPostSonarData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostSonarData = argumentData;
+  }
+
+  getKPIPostSonarData() {
+    return this.kpiPostSonarData;
+  }
+
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
     this.flagMultilineChartSubject.next(value);
+  }
+
+  setSelectedDateRange(selectedDateFilter) {
+    this.selectedDateRangeFilter = selectedDateFilter;
+  }
+
+  getSelectedDateRange(): string {
+    return this.selectedDateRangeFilter;
   }
 }

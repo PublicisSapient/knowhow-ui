@@ -19,29 +19,25 @@ describe('ListBlockComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have default title', () => {
-    expect(component.title).toBe('This Month');
-  });
-
   it('should have empty metrics array by default', () => {
-    expect(component.metrics).toEqual([]);
+    expect(component.data).toEqual([]);
   });
 
   it('should have neutral trend by default', () => {
     expect(component.trend).toBe('neutral');
   });
 
-  it('should accept title input', () => {
-    component.title = 'Last Month';
-    expect(component.title).toBe('Last Month');
+  it('should accept dateFilter input', () => {
+    component.dateFilter = 'Last Month';
+    expect(component.dateFilter).toBe('Last Month');
   });
 
-  it('should accept metrics input', () => {
-    const metrics: MetricItem[] = [
+  it('should accept data input', () => {
+    const data: MetricItem[] = [
       { label: 'Total', value: 100, trend: 'positive' },
     ];
-    component.metrics = metrics;
-    expect(component.metrics).toEqual(metrics);
+    component.data = data;
+    expect(component.data).toEqual(data);
   });
 
   it('should accept trend input', () => {

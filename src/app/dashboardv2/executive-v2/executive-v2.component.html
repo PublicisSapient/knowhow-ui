@@ -27,62 +27,30 @@
     <ng-container *ngIf="!noKpis; else noKpiTemplate">
       <div id="message"></div>
       <div class="{{selectedtype}}" id="{{selectedtype}}">
-        <!-- <app-indicators
-              [title]="'Mean Time to Merge'"
-              [icon]="'pi-clock'"
-              [iconColor]="'#99CDA9'"
-              [metricValue]="2.4"
-              [metricUnit]="'days'"
-              [trendValue]="-12"
-              [trendLabel]="'from last month'">
-            </app-indicators>
-            <app-indicators
-              [title]="'Pickup Time'"
-              [icon]="'pi-hourglass'"
-              [iconColor]="'#6079C5'"
-              [metricValue]="4.2"
-              [metricUnit]="'hours'"
-              [trendValue]="8"
-              [trendLabel]="'from last month'">
-            </app-indicators>
-            <app-indicators
-              [title]="'Innovation Rate'"
-              [icon]="'pi-lightbulb'"
-              [iconColor]="'#8980ED'"
-              [metricValue]="31"
-              [metricUnit]="'%'"
-              [trendValue]="15"
-              [trendLabel]="'from last month'">
-            </app-indicators>
-            <app-indicators
-              [title]="'Defect Rate'"
-              [icon]="'pi-exclamation-triangle'"
-              [iconColor]="'#ED8888'"
-              [metricValue]="2.1"
-              [metricUnit]="'%'"
-              [trendValue]="-5"
-              [trendLabel]="'from last month'">
-            </app-indicators> -->
-            <!-- !IMPORTANT: Will uncomment and work on it, once Kunal's changes are ready -->
-        <!-- <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
+        <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
           <div class="metrics-grid column-4 p-p-3">
-            <ng-container *ngFor="let kpi of mockUpdatedConfigGlobalData; let i = index;">
-            <ng-container *ngIf="kpi?.kpiDetail?.chartType === 'card'">
-              <app-indicators
-                [unit]="kpi?.kpiDetail?.kpiUnit"
-                [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                [data]="kpiChartData[kpi?.kpiId]"
-                [kpiId]="kpi?.kpiId"
-                [kpiData]="kpi"
-                [loader]="kpiLoader.has(kpi?.kpiId)"
-                [kpiChartData]="kpiChartData"
-                [kpiTrendsObj]="kpiTrendsObj"
-                [title]="kpi?.kpiName">
-              </app-indicators>
-            </ng-container>
+            <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
+              <ng-container *ngIf="kpi?.kpiDetail?.chartType === 'card' && kpiChartData[kpi?.kpiId]">
+                <app-indicators
+                  [metricUnit]="kpiChartData[kpi?.kpiId][0].unit"
+                  [metricValue]="kpiChartData[kpi?.kpiId][0].value"
+                  [trendUnit]="kpiChartData[kpi?.kpiId][0].unit1"
+                  [trendValue]="kpiChartData[kpi?.kpiId][0].value1"
+                  [kpiIcon]="kpiChartData[kpi?.kpiId][0].labelInfo"
+                  [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                  [data]="kpiChartData[kpi?.kpiId]"
+                  [kpiId]="kpi?.kpiId"
+                  [kpiData]="kpi"
+                  [loader]="kpiLoader.has(kpi?.kpiId)"
+                  [kpiChartData]="kpiChartData"
+                  [kpiTrendsObj]="kpiTrendsObj"
+                  [title]="kpi?.kpiName"
+                  [dateFilter]="selectedDateFilterValue">
+                </app-indicators>
+              </ng-container>
             </ng-container>
           </div>
-        </ng-container> -->
+        </ng-container>
         <div class="clearfix" *ngIf="showChart !== 'table'">
           <div class="right-container col">
             <div class="tabs-container" *ngIf="tabsArr.size > 1">
@@ -485,16 +453,8 @@
             <p-panel header="Team Performance Summary">
               <div class="metrics-grid column-3 p-p-3">
                 <app-list-block
-                  [title]="'This Month'"
-                  [metrics]="monthlyMetrics">
-                </app-list-block>
-                <app-list-block
-                  [title]="'Quality Indicators'"
-                  [metrics]="qualityIndicators">
-                </app-list-block>
-                <app-list-block
-                  [title]="'Goals & Targets'"
-                  [metrics]="goalsTargets">
+                  [data]="filteredBranchData.value"
+                  [dateFilter]="selectedDateFilterValue">
                 </app-list-block>
               </div>
             </p-panel>
