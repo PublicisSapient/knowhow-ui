@@ -230,6 +230,7 @@
   color: rgb(32, 36, 41);
   font-weight: 500;
   font-size: 14px;
+  margin-bottom: 7px;
 }
 
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
