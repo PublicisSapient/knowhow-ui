@@ -70,7 +70,7 @@
           <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
             (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
             aria-label="Show KPI Information" (focus)="showTooltip(true); showWarning(false)">
-            <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
+            <img alt="info" class="" src="assets/img/Info.svg" aria-hidden="true" />
             <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
               (mouseleave)="showTooltip(false)" (blur)="showTooltip(false)" [showChartView]="showChartView"
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
@@ -80,7 +80,7 @@
           (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}"
           role="alert" tabindex="0" aria-label="Show KPI Warning Information" (focus)="showWarning(true); showTooltip(false)">
           <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
-            aria-hidden="true" src="../../../assets/img/Warning.svg" />
+            aria-hidden="true" src="assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
             [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true" (blur)="showWarning(false)"></app-tooltip-v2>
         </span>
@@ -196,7 +196,7 @@
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
           <div class="p-w-100  p-d-flex p-justify-center">
-            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+            <img alt="no-data" src="assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
             <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
@@ -217,7 +217,7 @@
         <div class="min-ht"
           *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
           <div class="p-w-100  p-d-flex p-justify-center">
-            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+            <img alt="no-data" src="assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
             <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
@@ -301,7 +301,7 @@
       </ng-container>
       <ng-template #showNoDataMessage>
         <div role="alert" aria-live="assertive">
-          <img alt="no-data" src="../../../assets/img/setting-icon.svg" />
+          <img alt="no-data" src="assets/img/setting-icon.svg" />
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
             <h4 *ngSwitchCase="'400'" class="p-text-center" role="alert" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
             <h4 *ngSwitchCase="'202'" class="p-text-center" role="alert" tabindex="0">Required Tool not configured. Contact your administrator.</h4>
@@ -328,9 +328,9 @@
         [attr.aria-label]="'Last Sync: ' + lastSyncTime + (isSyncPassedOrFailed === true ? ' Successful' : ' Failed')">
         Last Sync: {{lastSyncTime}}
         <span *ngIf="lastSyncTime !== 'NA'">
-          <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg" alt="Success"
+          <img *ngIf="isSyncPassedOrFailed === true" src="assets/img/icon-success.svg" alt="Success"
             class="p-mr-1" role="img" />
-          <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg" alt="Failure"
+          <img *ngIf="isSyncPassedOrFailed === false" src="assets/img/icon-failure.svg" alt="Failure"
             class="p-mr-1" role="img" />
         </span>
       </span>
@@ -366,7 +366,7 @@
 <ng-template #noDataRawDataKPIs>
   <div class="min-ht" *ngIf="!loader && (!currentChartData?.chartData?.length || !currentChartData?.chartData?.data?.length || !currentChartData?.chartData?.chartData?.length) else defaultMessage">
     <div class="p-w-100  p-d-flex p-justify-center">
-      <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
+      <img alt="no-data" src="assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
     <h4 class="p-text-center" tabindex="0">No Data Available.</h4>
@@ -379,7 +379,7 @@
 <ng-template #defaultMessage>
   <div class="min-ht">
     <div class="p-w-100  p-d-flex p-justify-center">
-      <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
+      <img alt="no-data" src="assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
     <h4 class="p-text-center" tabindex="0">Data is Loading. Please wait.</h4>

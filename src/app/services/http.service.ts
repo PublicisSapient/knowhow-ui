@@ -46,7 +46,7 @@ export class HttpService {
   public unauthorisedAccess = false;
   public createdProjectName = '';
   /*use to change the base url according to the environment variable */
-  private baseUrl = environment.baseUrl+'/know-how'; // Servers Env
+  private baseUrl = environment.baseUrl + '/know-how'; // Servers Env
   private filterDataUrl = this.baseUrl + '/api/filterdata';
   private getDataUrl = this.baseUrl + '/api/'; // URL to web api
   private masterDataUrl = this.baseUrl + '/api/masterData';

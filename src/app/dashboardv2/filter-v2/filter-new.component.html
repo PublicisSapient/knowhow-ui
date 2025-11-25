@@ -129,12 +129,12 @@
         <span class="refresh-state p-p-2" (click)="displayModal = true" (keydown.enter)="displayModal = true" (keydown.space)="displayModal = true"
           *ngIf=" ((lastSyncData | json) == '{}' || lastSyncData.errorInFetch) && isAzureProect === false"
           role="button" tabindex="0" aria-label="Refresh Sprint Data">
-          <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" aria-hidden="true" />Refresh
+          <img src="assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" aria-hidden="true" />Refresh
         </span>
         <span class="refresh-state p-p-2"
         aria-live="polite"
           *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
-          <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" aria-hidden="true" />Syncing
+          <img src="assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" aria-hidden="true" />Syncing
         </span>
       </div>
 
@@ -156,16 +156,16 @@
             tooltipStyleClass="tooltiptext">
             <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'" aria-label="Switch to Chart View">
             <label class="label1" for="chart-view" (click)="showChartToggle('chart')" (keydown.enter)="showChartToggle('chart')" id="Layout-Chart" tabindex="0">
-              <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
-              <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
+              <img src="assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
+              <img src="assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
             </label>
           </div>
           <div pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
             tooltipStyleClass="tooltiptext">
             <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'" tabindex="0" aria-label="Switch to Table View">
             <label class="label2" for="table-view" (click)="showChartToggle('table')" (keydown.enter)="showChartToggle('table')" tabindex="0" id="Layout-Table">
-              <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
-              <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+              <img src="assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
+              <img src="assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
             </label>
           </div>
       </div>
@@ -173,9 +173,9 @@
       <div pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default' && this.selectedTab?.toLowerCase()  !== 'home' ">
         <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)" (keydown.enter)="copyUrlToClipboard($event)" [ngClass]="buttonStyleClass" aria-label="Copy URL" tabindex="0">
-          <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
+          <img src="assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-default" />
-          <img src="../../../assets/img/Check-white.svg" *ngIf="isSuccess" style="height: 18px; margin-left: -2px;"
+          <img src="assets/img/Check-white.svg" *ngIf="isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-active" />
         </span>
       </div>
