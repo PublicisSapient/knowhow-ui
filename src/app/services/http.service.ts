@@ -1318,9 +1318,12 @@ export class HttpService {
   }
 
   getExecutiveBoardData(payLoad, deliveryMethodology) {
-    return this.http.get<any>(
-      `${this.executivePageURL}?levelName=${payLoad.label}&deliveryMethodology=${deliveryMethodology}&parentNodeId=${payLoad.parentId}`,
-    );
+    let params = `levelName=${payLoad.label.toLowerCase()}&deliveryMethodology=${deliveryMethodology}`;
+
+    if (payLoad.parentId && payLoad.parentId !== '') {
+      params += `&parentNodeId=${payLoad.parentId}`;
+    }
+    return this.http.get<any>(`${this.executivePageURL}?${params}`);
   }
 
   getAnalyticsMetricsTableData(payLoad) {

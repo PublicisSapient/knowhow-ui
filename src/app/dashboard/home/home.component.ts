@@ -293,7 +293,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     const hierarchy = this.completeHierarchyData;
 
     let targetLevel = filterApplyData.level;
-    let targetLabel = filterApplyData.label;
+    let targetLabel = this.getImmediateChild(
+      hierarchy,
+      filterApplyData.level,
+    ).hierarchyLevelName;
     this.selectedHierarchy = this.getImmediateChild(
       hierarchy,
       filterApplyData.level,
@@ -305,7 +308,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         filterApplyData.level + 1,
       );
       targetLevel = child?.level ?? targetLevel;
-      targetLabel = child?.hierarchyLevelId ?? targetLabel;
+      targetLabel = child?.hierarchyLevelName ?? targetLabel;
     }
 
     return {
