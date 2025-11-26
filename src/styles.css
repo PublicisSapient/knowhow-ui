@@ -74,12 +74,12 @@
 
 @font-face {
   font-family: 'Poppins_Medium';
-  src: url('/assets/fonts/Poppins/Poppins-Medium.ttf');
+  src: url('assets/fonts/Poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: 'Poppins_Regular';
-  src: url('/assets/fonts/Poppins/Poppins-Regular.ttf');
+  src: url('assets/fonts/Poppins/Poppins-Regular.ttf');
 }
 
 /* @font-face {
@@ -1734,25 +1734,25 @@ a:hover {
 }
 .dashboard-config-tabs .tab-scrum .p-tabview-nav-link:before,
 .pi-scrum-button .pi-scrum:before {
-  background: url('./assets/img/scrum_b.svg') no-repeat;
+  background: url('/assets/img/scrum_b.svg') no-repeat;
 }
 .dashboard-config-tabs .tab-scrum.p-highlight .p-tabview-nav-link:before,
 .pi-scrum-button.btn-active .pi-scrum:before {
-  background: url('./assets/img/scrum_w.svg') no-repeat;
+  background: url('/assets/img/scrum_w.svg') no-repeat;
 }
 .dashboard-config-tabs .tab-kanban .p-tabview-nav-link:before,
 .pi-kanban-button .pi-kanban:before {
-  background: url('./assets/img/kanban_b.svg') no-repeat;
+  background: url('/assets/img/kanban_b.svg') no-repeat;
 }
 .dashboard-config-tabs .tab-kanban.p-highlight .p-tabview-nav-link:before,
 .pi-kanban-button.btn-active .pi-kanban:before {
-  background: url('./assets/img/kanban_w.svg') no-repeat;
+  background: url('/assets/img/kanban_w.svg') no-repeat;
 }
 .dashboard-config-tabs .tab-others .p-tabview-nav-link:before {
-  background: url('./assets/img/others_b.svg') no-repeat;
+  background: url('/assets/img/others_b.svg') no-repeat;
 }
 .dashboard-config-tabs .tab-others.p-highlight .p-tabview-nav-link:before {
-  background: url('./assets/img/others_w.svg') no-repeat;
+  background: url('/assets/img/others_w.svg') no-repeat;
 }
 .kpi-dropdown {
   width: 130px !important;
@@ -2002,19 +2002,19 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
   background-size: 100% !important;
 }
 .upload-screen p-panelmenu .p-menuitem-icon.pi.pi-pw.pi-test-execution {
-  background: url(./assets/img/test-execution-black-icon.svg) no-repeat;
+  background: url(/assets/img/test-execution-black-icon.svg) no-repeat;
 }
 .upload-screen
   p-panelmenu
   .p-highlight
   .p-menuitem-icon.pi.pi-pw.pi-test-execution {
-  background: url(./assets/img/test-execution-white-icon.svg) no-repeat;
+  background: url(/assets/img/test-execution-white-icon.svg) no-repeat;
 }
 .upload-screen p-panelmenu .p-menuitem-icon.pi.pi-pw.pi-capacity {
-  background: url(./assets/img/capacity-black-icon.svg) no-repeat;
+  background: url(/assets/img/capacity-black-icon.svg) no-repeat;
 }
 .upload-screen p-panelmenu .p-highlight .p-menuitem-icon.pi.pi-pw.pi-capacity {
-  background: url(./assets/img/capacity-white-icon.svg) no-repeat;
+  background: url(/assets/img/capacity-white-icon.svg) no-repeat;
 }
 .defect-priority-dropdown .multiselect-container p-multiselect {
   width: 100%;

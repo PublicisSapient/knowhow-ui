@@ -195,7 +195,7 @@ export class AppInitializerService {
           .then((res) => res);
         this.validateToken(loc);
       } else {
-        const env$ = this.http.get('/assets/env.json').pipe(
+        const env$ = this.http.get('assets/env.json').pipe(
           tap((env) => {
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] =
