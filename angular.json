@@ -38,12 +38,12 @@
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
               "node_modules/d3/dist/d3.min.js"
-            ]
+            ],
+            "baseHref": "/know-how/",
+            "deployUrl": "/know-how/"
           },
           "configurations": {
             "production": {
-              "baseHref": "/know-how/",
-              "deployUrl": "/know-how/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -124,8 +124,6 @@
               "buildOptimizer": false
             },
             "dev1": {
-              "baseHref": "/know-how/",
-              "deployUrl": "/know-how/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
