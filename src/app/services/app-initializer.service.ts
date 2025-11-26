@@ -218,6 +218,8 @@ export class AppInitializerService {
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap((env) => {
+            console.log("env------------->", env);
+            console.log("env[baseUrl]------------->", env['baseUrl']);
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] =
               env['SSO_LOGIN'] === 'true' ? true : false;
