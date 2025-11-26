@@ -208,7 +208,9 @@ export class HttpService {
     private http: HttpClient,
     @Inject(APP_CONFIG) private config: IAppConfig,
     private sharedService: SharedService,
-  ) {}
+  ) {
+    console.log('baseUrl--------------------->', this.baseUrl);
+  }
 
   setCurrentUserDetails(details) {
     if (
