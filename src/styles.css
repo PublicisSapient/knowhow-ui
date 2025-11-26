@@ -68,7 +68,9 @@
   --color-secondary-blue: #0b4bc8;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00e6c3;
+  --color-semantic-4: #d38eec;
   --color-orange: #f68605;
+  --color-grey-30: #5b6876;
   --font-regular: 'Poppins_Regular', sans-serif;
   --font-medium: 'Poppins_Medium', sans-serif;
 }
@@ -2607,4 +2609,10 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .peb-form .p-inputnumber,
 .peb-form span.p-inputnumber.p-component {
   width: 100%;
+}
+.text-purple {
+  color: var(--color-semantic-4);
+}
+.text-grey {
+  color: var(--color-grey-30);
 }

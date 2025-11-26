@@ -142,9 +142,15 @@
       </div>
       <p-menu #usermenu [popup]="true" [model]="userMenuItems">
         <ng-template pTemplate="item" let-item>
-          <div role="menuitem" tabindex="0">
-            <i [class]="item.icon" aria-hidden="true"></i>
-            <span> {{ item.label }}</span>
+          <div role="menuitem" tabindex="0" class="p-d-flex p-justify-between">
+            <div class="p-d-flex p-align-center">
+              <i [class]="item.icon" aria-hidden="true"></i>
+              <div>
+                <span> {{ item.label }}</span>
+                <p>{{ item.subheading }}</p>
+              </div>
+            </div>
+            <i *ngIf="item.externalLink" class="fa-solid fa-arrow-up-right-from-square"></i>
           </div>
         </ng-template>
       </p-menu>

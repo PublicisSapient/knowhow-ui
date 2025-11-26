@@ -73,11 +73,69 @@ export class HeaderComponent implements OnInit {
     this.ifProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.userMenuItems = [
       {
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
+        label: 'My Account',
+        items: [
+          {
+            label: 'Product Documentation',
+            subheading: 'Guides and references',
+            externalLink: true,
+            icon: 'fas fa-book-open',
+            iconColorClass: 'text-blue',
+            command: () => {
+              this.logout();
+            },
+          },
+          {
+            label: 'API Documentation',
+            subheading: 'Developer Resources',
+            externalLink: true,
+            icon: 'far fa-file-alt',
+            iconColorClass: 'text-purple',
+            command: () => {
+              this.logout();
+            },
+          },
+          {
+            label: 'Video Tutorials',
+            subheading: 'Step-by-step guides',
+            externalLink: true,
+            icon: 'fas fa-video',
+            iconColorClass: 'text-red',
+            command: () => {
+              this.logout();
+            },
+          },
+          {
+            label: 'Raise a Ticket',
+            subheading: 'Get Personalized help',
+            externalLink: false,
+            icon: 'fas fa-ticket-alt',
+            iconColorClass: 'text-green',
+            command: () => {
+              this.logout();
+            },
+          },
+          {
+            label: 'Support Channel',
+            subheading: 'Chat with our team',
+            externalLink: true,
+            icon: 'far fa-comment-alt',
+            iconColorClass: 'text-orange',
+            command: () => {
+              this.logout();
+            },
+          },
+          {
+            label: 'Logout',
+            subheading: '',
+            externalLink: false,
+            icon: 'fas fa-sign-out-alt',
+            iconColorClass: 'text-grey',
+            command: () => {
+              this.logout();
+            },
+          },
+        ],
       },
     ];
     let authoritiesArr;
@@ -89,23 +147,23 @@ export class HeaderComponent implements OnInit {
     }
 
     if (!this.isGuest) {
-      this.userMenuItems.unshift({
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          const hashWithoutQuery = window.location.hash.split('?')[0];
-          const urlWithoutHash = window.location.hash.substring(1);
-          if (!hashWithoutQuery.includes('Config')) {
-            this.lastVisitedFromUrl = window.location.hash.substring(1);
-            if (hashWithoutQuery.includes('Report')) {
-              this.saveReportsUrl = urlWithoutHash;
-            } else {
-              this.saveDashboardUrl = urlWithoutHash;
-            }
-          }
-          this.router.navigate(['/dashboard/Config/ProjectList']);
-        },
-      });
+      // this.userMenuItems.unshift({
+      //   label: 'Settings',
+      //   icon: 'fas fa-cog',
+      //   command: () => {
+      //     const hashWithoutQuery = window.location.hash.split('?')[0];
+      //     const urlWithoutHash = window.location.hash.substring(1);
+      //     if (!hashWithoutQuery.includes('Config')) {
+      //       this.lastVisitedFromUrl = window.location.hash.substring(1);
+      //       if (hashWithoutQuery.includes('Report')) {
+      //         this.saveReportsUrl = urlWithoutHash;
+      //       } else {
+      //         this.saveDashboardUrl = urlWithoutHash;
+      //       }
+      //     }
+      //     this.router.navigate(['/dashboard/Config/ProjectList']);
+      //   },
+      // });
 
       this.httpService.getAllConnections().subscribe((response) => {
         if (response['data'].length < 1) {
