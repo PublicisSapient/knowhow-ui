@@ -1330,6 +1330,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Zypher(scrum)
   postZypherKpi(postData, source): void {
+    if (postData?.kpiList?.length) {
+      this.service.setKPIPostZypherData(postData);
+    }
     this.zypherKpiRequest = this.httpService
       .postKpi(postData, source)
       .subscribe(
@@ -1350,6 +1353,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       postData?.kpiList?.forEach((element) => {
         this.kpiLoader.delete(element.kpiId);
       });
+    }
+    if (postData?.kpiList?.length) {
+      this.service.setKPIPostZypherData(postData);
     }
     this.zypherKpiRequest = this.httpService
       .postKpiKanban(postData, source)

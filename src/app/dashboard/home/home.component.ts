@@ -95,7 +95,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.httpService
               .getExecutiveBoardData(
                 filterApplyData,
-                this.selectedType !== 'scrum',
+                this.selectedType.toUpperCase(),
               )
               .subscribe({
                 next: (executiveBoard: any) => {
@@ -153,6 +153,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
                         average: 'NA',
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'gauge',
@@ -160,6 +162,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'exclamation',
@@ -167,6 +171,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('critical').count,
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('critical').average,
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'heart-fill',
@@ -174,6 +180,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('healthy').count,
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                     ];
 
@@ -212,7 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscription.push(
       this.service.pebData$.subscribe((data) => {
-        if (data?.['summary']['trends']) {
+        if (data?.['summary']?.['trends']) {
           this.processPEBData(data);
         }
       }),
@@ -285,7 +293,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     const hierarchy = this.completeHierarchyData;
 
     let targetLevel = filterApplyData.level;
-    let targetLabel = filterApplyData.label;
+    let targetLabel = this.getImmediateChild(
+      hierarchy,
+      filterApplyData.level,
+    ).hierarchyLevelName;
     this.selectedHierarchy = this.getImmediateChild(
       hierarchy,
       filterApplyData.level,
@@ -297,7 +308,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         filterApplyData.level + 1,
       );
       targetLevel = child?.level ?? targetLevel;
-      targetLabel = child?.hierarchyLevelId ?? targetLabel;
+      targetLabel = child?.hierarchyLevelName ?? targetLabel;
     }
 
     return {
@@ -436,8 +447,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
 
     this.httpService
-      .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
+      .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
+        console.log('Subscribing...');
         if (res?.error) {
           this.messageService.add({
             severity: 'error',
