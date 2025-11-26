@@ -122,6 +122,8 @@
               "buildOptimizer": false
             },
             "dev1": {
+              "baseHref": "/know-how/",
+              "deployUrl": "/know-how/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
