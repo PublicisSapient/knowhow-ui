@@ -5073,9 +5073,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     data.kpiList = [];
     this.httpService.getPerformanceSummary(data).subscribe({
       next: (response) => {
-        if (response.success) {
+        if (response && response.success) {
           this.allPerformanceSummaryData = response.data;
           this.filterPerformanceSummaryData();
+        } else {
+          console.error('Missing Configuration');
         }
       },
       error: (error) => {

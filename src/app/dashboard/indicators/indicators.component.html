@@ -4,15 +4,21 @@
     <i [class]="'pi ' + kpiIcon + ' icon-style'" [style]="'color:' + iconColor"></i>
   </div>
 
-  <div class="metric-value">
-    <span class="value">{{ metricValue }}</span>
-    <span class="unit">{{ metricUnit }}</span>
-  </div>
-
-  <div class="trend-container">
-    <div [class]="'trend ' + (isPositiveTrend ? 'positive' : 'negative')">
-      <i [class]="'pi ' + trendIcon + ' trend-icon'"></i>
-      <span class="trend-text">{{ absoluteTrendValue }}{{ trendUnit }} from last {{dateFilter}}</span>
+  @if(metricValue || metricUnit) {
+    <div class="metric-value">
+      <span class="value">{{ metricValue }}</span>
+      <span class="unit">{{ metricUnit }}</span>
     </div>
-  </div>
+  } @else {
+    <div class="no-data"><strong>N/A</strong></div>
+  }
+
+  @if(absoluteTrendValue) {
+    <div class="trend-container">
+      <div [class]="'trend ' + (isPositiveTrend ? 'positive' : 'negative')">
+        <i [class]="'pi ' + trendIcon + ' trend-icon'"></i>
+        <span class="trend-text">{{ absoluteTrendValue }}{{ trendUnit }} from last {{dateFilter}}</span>
+      </div>
+    </div>
+  }
 </p-card>

@@ -79,3 +79,8 @@
 .trend-text {
   font-weight: 400;
 }
+
+.no-data {
+  font-size: 36px;
+  color: #374151;
+}
