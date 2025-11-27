@@ -61,26 +61,6 @@
           "isDeleted": "False"
         }
       ]
-    },
-    {
-      "_id": "5da46000e645ca33dc927b4a",
-      "roleName": "ROLE_PROJECT_VIEWER",
-      "roleDescription": "read kpi data at project level",
-      "createdDate": 1570783012645,
-      "lastModifiedDate": 1570783012646,
-      "isDeleted": "False",
-      "permissions": [
-        {
-          "_id": "5d96dbb1abcd3e3e10b772f6",
-          "permissionName": "View",
-          "operationName": "Read",
-          "resourceName": "resource4",
-          "resourceId": "5d932a126c7b0f37981a2cdc",
-          "createdDate": 1570167729143,
-          "lastModifiedDate": 1570167729143,
-          "isDeleted": "False"
-        }
-      ]
     }
   ]
 }

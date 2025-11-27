@@ -227,7 +227,7 @@ export class HelperService {
 
       let arrayDetails = [];
       arrayDetails = Array.from(uniqueKeys);
-      arrayDetails.sort();
+      arrayDetails.sort((a, b) => a - b);
       arrayDetails.unshift('aggregatedValue');
       arrayDetails.forEach((obj) => {
         let tempobj;
@@ -288,7 +288,7 @@ export class HelperService {
     }
     let arrayDetails = [];
     arrayDetails = Array.from(uniqueKeys);
-    arrayDetails.sort();
+    arrayDetails.sort((a, b) => a - b);
     let hasOverallValue = false;
     arrayDetails.forEach((obj) => {
       hasOverallValue =
@@ -381,7 +381,7 @@ export class HelperService {
   sortObject(unordered) {
     if (unordered) {
       return Object.keys(unordered)
-        .sort()
+        .sort((a, b) => String(a).localeCompare(String(b)))
         .reduce((obj, key) => {
           obj[key] = unordered[key];
           return obj;
@@ -1026,6 +1026,7 @@ export class HelperService {
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
         this.sharedService.setAddtionalFilterBackup({});
+        this.sharedService.clearPEBDataCache();
 
         this.sharedService.setSelectedBoard(null);
         this.sharedService.selectedTab = null;
@@ -1039,6 +1040,7 @@ export class HelperService {
         });
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
+        this.sharedService.clearPEBDataCache();
         localStorage.removeItem('shared_link');
         const redirect_uri = window.location.href;
         window.location.href =

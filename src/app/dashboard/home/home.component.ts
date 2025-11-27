@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   subscription = [];
   @ViewChild('maturityComponent')
   maturityComponent: MaturityComponent;
+  @ViewChild('mainTable') mainTable: any;
   expandedRows: { [key: string]: boolean } = {};
   selectedType: string = '';
   filterApplyData: any = {};
@@ -48,6 +49,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculatorDataLoader: boolean = true;
   nbaRawData: Array<any> = [];
   productivityData: any = {};
+  productivityExpandRowDataLoader = false;
 
   constructor(
     private service: SharedService,
@@ -86,11 +88,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             'parent',
           );
 
+          // Clear PEB data cache when dashboard data changes
+          this.service.clearPEBDataCache();
+
           this.subscription.push(
             this.httpService
               .getExecutiveBoardData(
                 filterApplyData,
-                this.selectedType !== 'scrum',
+                this.selectedType.toUpperCase(),
               )
               .subscribe({
                 next: (executiveBoard: any) => {
@@ -148,6 +153,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
                         average: 'NA',
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'gauge',
@@ -155,6 +162,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.tableData['data'].length,
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'exclamation',
@@ -162,6 +171,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('critical').count,
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('critical').average,
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                       {
                         cssClassName: 'heart-fill',
@@ -169,6 +180,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         value: this.calculateHealth('healthy').count,
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
+                        valueColor: '#374151',
+                        iconType: 'pi',
                       },
                     ];
 
@@ -207,7 +220,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscription.push(
       this.service.pebData$.subscribe((data) => {
-        if (data?.['summary']['trends']) this.processPEBData(data);
+        if (data?.['summary']?.['trends']) {
+          this.processPEBData(data);
+        }
       }),
     );
   }
@@ -220,7 +235,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Top 4 Risks this Quarter',
           value: [],
           icon: false,
-          color: '#fbcf5f',
+          color: '#cdba38',
           fontColor: 'black',
         },
         {
@@ -228,7 +243,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Positive Trends',
           value: [],
           icon: true,
-          color: '#99cda9',
+          color: '#15ba40',
           fontColor: 'black',
         },
         {
@@ -236,7 +251,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           category: 'Negative Trends',
           value: [],
           icon: true,
-          color: '#ed8888',
+          color: '#eb3d4b',
           fontColor: 'black',
         },
       ]);
@@ -264,19 +279,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
   getMaturityWheelData(sharedobject) {
-    this.maturityComponent.receiveSharedData({
-      masterData: sharedobject.masterData,
-      filterData: sharedobject.filterData,
-      filterApplyData: sharedobject.filterApplyData,
-      dashConfigData: sharedobject.dashConfigData,
-    });
+    if (this.maturityComponent) {
+      this.maturityComponent.receiveSharedData({
+        masterData: sharedobject.masterData,
+        filterData: sharedobject.filterData,
+        filterApplyData: sharedobject.filterApplyData,
+        dashConfigData: sharedobject.dashConfigData,
+      });
+    }
   }
 
   payloadPreparation(filterApplyData, selectedType, dataFor) {
     const hierarchy = this.completeHierarchyData;
 
     let targetLevel = filterApplyData.level;
-    let targetLabel = filterApplyData.label;
+    let targetLabel = this.getImmediateChild(
+      hierarchy,
+      filterApplyData.level,
+    ).hierarchyLevelName;
     this.selectedHierarchy = this.getImmediateChild(
       hierarchy,
       filterApplyData.level,
@@ -288,7 +308,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         filterApplyData.level + 1,
       );
       targetLevel = child?.level ?? targetLevel;
-      targetLabel = child?.hierarchyLevelId ?? targetLabel;
+      targetLabel = child?.hierarchyLevelName ?? targetLabel;
     }
 
     return {
@@ -414,7 +434,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onRowExpand(event) {
     this.nestedLoader = true;
+    this.productivityExpandRowDataLoader = true;
     this.selectedRowToExpand = event.data;
+
+    // Store current page before data update
+    const currentPage = this.mainTable?.first || 0;
+
     const filterApplyData = this.payloadPreparation(
       this.filterApplyData,
       this.selectedType,
@@ -422,18 +447,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
 
     this.httpService
-      .getExecutiveBoardData(filterApplyData, this.selectedType !== 'scrum')
+      .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
+        console.log('Subscribing...');
         if (res?.error) {
           this.messageService.add({
             severity: 'error',
             summary: res.message || 'Looks some problem in fetching the data!',
           });
           this.nestedLoader = false;
+          this.productivityExpandRowDataLoader = false;
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-              return { ...row, ...row?.boardMaturity };
+              return { ...row, ...row?.boardMaturity, productivity: 'NA' };
             });
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
@@ -456,6 +483,16 @@ export class HomeComponent implements OnInit, OnDestroy {
                 );
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
+
+              // Restore pagination state after data update
+              setTimeout(() => {
+                if (this.mainTable && this.mainTable.first !== currentPage) {
+                  this.mainTable.first = currentPage;
+                }
+              });
+
+              // Fetch PEB data for nested rows
+              this.fetchNestedPEBData(filterApplyData, targettedDetails);
             }
           }
           this.nestedLoader = false;
@@ -549,14 +586,33 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
-    const label = this.completeHierarchyData.find(
+    const hierarchyItem = this.completeHierarchyData?.find(
       (hi) => hi.level === filterApplyData.level - 1,
-    ).hierarchyLevelName;
+    );
+
+    if (!hierarchyItem) {
+      this.BottomTilesLoader = false;
+      this.calculatorDataLoader = false;
+      return;
+    }
+
+    const label = hierarchyItem.hierarchyLevelName;
+    const labelKey = label.toLowerCase();
+
+    // Check cache first
+    const cachedData = this.service.getPEBDataCache(labelKey);
+    if (cachedData) {
+      this.processPEBData(cachedData);
+      this.calculatorDataLoader = false;
+      return;
+    }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(label.toLowerCase()).subscribe({
+      this.helperService.fetchPEBaData(labelKey).subscribe({
         next: (res) => {
           if (res.success) {
+            // Cache the data
+            this.service.setPEBDataCache(labelKey, res.data);
             this.processPEBData(res.data);
           } else {
             this.messageService.add({
@@ -585,7 +641,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   processPEBData(data) {
     // Store productivity data for table integration
-    if (data.summary) {
+    if (data?.summary?.categoryScores?.productivity !== undefined) {
       this.productivityData[data.summary.levelName] =
         data.summary.categoryScores.productivity;
     }
@@ -602,6 +658,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         ...row,
         productivity: this.getProductivityForRow(row.name),
       }));
+
+      // Update nested table data if exists
+      this.tableData.data.forEach((row) => {
+        if (row.children && row.children.data) {
+          row.children.data = row.children.data.map((childRow) => ({
+            ...childRow,
+            productivity: this.getProductivityForRow(childRow.name),
+          }));
+        }
+      });
     }
 
     const kpiTrends = data['summary']['trends'];
@@ -623,6 +689,69 @@ export class HomeComponent implements OnInit, OnDestroy {
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
     return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
+  }
+
+  fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
+    const hierarchyItem = this.completeHierarchyData?.find(
+      (hi) => hi.level === filterApplyData.level - 1,
+    );
+
+    if (!hierarchyItem) {
+      this.productivityExpandRowDataLoader = false;
+      return;
+    }
+
+    const label = hierarchyItem.hierarchyLevelName;
+    const labelKey = label.toLowerCase();
+
+    // Check cache first
+    const cachedData = this.service.getPEBDataCache(labelKey);
+    if (cachedData && cachedData.details) {
+      // Update productivity data for nested rows from cache
+      cachedData.details.forEach((detail) => {
+        this.productivityData[detail.organizationEntityName] =
+          detail.categoryScores.productivity;
+      });
+
+      // Update nested table data with productivity values
+      targettedDetails['children']['data'] = targettedDetails['children'][
+        'data'
+      ].map((row) => ({
+        ...row,
+        productivity: this.getProductivityForRow(row.name),
+      }));
+      this.productivityExpandRowDataLoader = false;
+      return;
+    }
+
+    this.subscription.push(
+      this.helperService.fetchPEBaData(labelKey).subscribe({
+        next: (res) => {
+          if (res.success && res.data.details) {
+            // Cache the data
+            this.service.setPEBDataCache(labelKey, res.data);
+
+            // Update productivity data for nested rows
+            res.data.details.forEach((detail) => {
+              this.productivityData[detail.organizationEntityName] =
+                detail.categoryScores.productivity;
+            });
+
+            // Update nested table data with productivity values
+            targettedDetails['children']['data'] = targettedDetails['children'][
+              'data'
+            ].map((row) => ({
+              ...row,
+              productivity: this.getProductivityForRow(row.name),
+            }));
+            this.productivityExpandRowDataLoader = false;
+          }
+        },
+        error: (error) => {
+          console.error('Failed to load nested PEBa data:', error);
+        },
+      }),
+    );
   }
 
   getNBAData() {

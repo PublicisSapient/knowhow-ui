@@ -2,12 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
-
-interface categoryVariations {
+import { error } from 'console';
+interface CategoryVariations {
   speed: number;
   quality: number;
   efficiency: number;
@@ -35,7 +35,7 @@ export class PebCalculatorComponent implements OnInit {
   messages: Message[] | undefined;
   @Input() showLoader: boolean = false;
   isError: boolean = false;
-  errorMessage: String = '';
+  errorMessage: string = '';
   items: any[] = [];
   // pebProductivityData: any = [];
   //require('src/assets/data/peb-productivity.json')['data'];
@@ -46,9 +46,12 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryVariations: categoryVariations;
+  categoryVariations: CategoryVariations;
   productivityGain: any = {};
   xAxisLabel: string = '';
+  userCurrency = '';
+  userLocale = navigator.language || 'en-US';
+  sub$: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +65,7 @@ export class PebCalculatorComponent implements OnInit {
       devCostControl: [100000],
       durationControl: ['year'],
     });
+    this.userCurrency = this.detectCurrency(this.userLocale);
   }
 
   /**
@@ -88,6 +92,7 @@ export class PebCalculatorComponent implements OnInit {
             this.selectedLevel = stateFilters?.parent_level;
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
+            this.getAiUasgestatsDetails(this.selectedLevel);
           }
         }),
     );
@@ -185,7 +190,7 @@ export class PebCalculatorComponent implements OnInit {
             );
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
-          ) as categoryVariations;
+          ) as CategoryVariations;
           this.xAxisLabel = response['data']?.temporalGrouping;
         } else {
           console.error(
@@ -206,7 +211,9 @@ export class PebCalculatorComponent implements OnInit {
     categoryScores: any[],
     showOverall?: boolean,
   ): any[] {
-    if (!categoryScores || categoryScores.length === 0) return [];
+    if (!categoryScores || categoryScores.length === 0) {
+      return [];
+    }
 
     // Find all metric names except the date
     var metrics = [];
@@ -264,7 +271,45 @@ export class PebCalculatorComponent implements OnInit {
     return multipliedDetails;
   }
 
+  getAiUasgestatsDetails(selectedLevel: string): void {
+    this.sub$ = this.httpService
+      .getAiUsagaStatsDetails(selectedLevel)
+      .subscribe({
+        next: (res: any) => {
+          const userCount = res?.summary
+            ? res?.summary
+            : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
+          if (userCount?.userCount) {
+            this.pebForm.patchValue({
+              devCountControl: userCount?.userCount,
+            });
+          } else {
+            console.error('Failed to fetch user count >>');
+          }
+        },
+        error: (err: any) => {
+          console.error('Failed to fetch user count', err.message);
+        },
+      });
+  }
+
+  detectCurrency(locale: string): string {
+    const country = locale.split('-')[1]?.toUpperCase();
+    const currencyMap: any = {
+      US: 'USD',
+      DE: 'EUR',
+      FR: 'EUR',
+      IN: 'INR',
+      GB: 'GBP',
+      JP: 'JPY',
+      // add more as needed
+    };
+
+    return currencyMap[country] || 'USD';
+  }
+
   ngOnDestroy() {
     this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
+    this.sub$?.unsubscribe();
   }
 }

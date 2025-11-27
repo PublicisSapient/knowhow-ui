@@ -43,7 +43,9 @@ export class ConditionalInputV2Component implements OnChanges {
         Array.isArray(this.valueObj)
       ) {
         this.fieldConfig.options.forEach((x) => {
-          if (!x || !x.label) return;
+          if (!x || !x.label) {
+            return;
+          }
 
           const matched = this.valueObj.find(
             (y) => y && y.label && y.label === x.label,

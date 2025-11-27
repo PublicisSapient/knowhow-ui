@@ -82,7 +82,6 @@ export class MultilineV2Component implements OnChanges {
   }
 
   ngOnInit(): void {
-    console.log('MultilineV2Component initialized');
     this.service.setMultilineChartFlag(true);
     this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
@@ -413,6 +412,9 @@ export class MultilineV2Component implements OnChanges {
           )
             ? data[i]?.value[j]?.xAxisTick
             : j + 1;
+          data[i].value[j].xOrder = data[i].value[j]?.isForecast
+            ? 'Forecast'
+            : j + 1;
           if (maxYValue < parseInt(data[i].value[j]?.value, 10)) {
             maxYValue = data[i].value[j].value;
           }
@@ -454,12 +456,21 @@ export class MultilineV2Component implements OnChanges {
               if (board == 'dora') {
                 returnObj = d.date;
               } else {
-                returnObj = i + 1;
+                returnObj = d.xOrder || i + 1;
               }
               return returnObj;
             }),
           );
       }
+      const getXCoordinate = (point, index) => {
+        if (board == 'dora') {
+          return xScale(point.date);
+        } else if (kpiId === 'kpi997') {
+          return xScale(point.date || point.sortSprint);
+        } else {
+          return xScale(point.xOrder || index + 1);
+        }
+      };
 
       let divisor = 10;
       let power = 1;
@@ -544,16 +555,7 @@ export class MultilineV2Component implements OnChanges {
             return cssClass;
           })
           .style('left', (d, i) => {
-            const left = d.date || d.sortSprint;
-            if (
-              viewType === 'large' ||
-              (board === 'dora' && viewType === 'chart') ||
-              this.kpiId === 'kpi997'
-            ) {
-              return xScale(left) + xScale.bandwidth() / 2 + 'px';
-            } else {
-              return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
-            }
+            return getXCoordinate(d, i) + xScale.bandwidth() / 2 + 'px';
           })
           .style(
             'top',
@@ -749,15 +751,13 @@ export class MultilineV2Component implements OnChanges {
       /* Add line into SVG acoording to data */
       const line = d3
         .line()
-        .x((d, i) => {
-          if (board == 'dora') {
-            return xScale(d.date);
-          } else if (kpiId === 'kpi997') {
-            return xScale(d.date || d.sortSprint);
-          } else {
-            return xScale(i + 1);
-          }
-        })
+        .defined((d: any) => !d?.isForecast)
+        .x((d, i) => getXCoordinate(d, i))
+        .y((d) => yScale(d.value));
+
+      const forecastLine = d3
+        .line()
+        .x((d, i) => getXCoordinate(d, i))
         .y((d) => yScale(d.value));
 
       const lines = svgX
@@ -783,7 +783,7 @@ export class MultilineV2Component implements OnChanges {
           });
       }
 
-      lines
+      const lineGroup = lines
         .selectAll('.line-group')
         .data(data)
         .enter()
@@ -799,9 +799,11 @@ export class MultilineV2Component implements OnChanges {
             .attr('x', (width - margin) / 2)
             .attr('y', -10);
         })
-        .on('mouseout', function (d) {
+        .on('mouseout', function () {
           svgX.select('.title-text').remove();
-        })
+        });
+
+      lineGroup
         .append('path')
         .attr('class', function (d, i) {
           const className = 'line' + i;
@@ -841,8 +843,30 @@ export class MultilineV2Component implements OnChanges {
             .style('cursor', 'none');
         });
 
+      lineGroup.each(function (series, seriesIndex) {
+        const forecastIdx = series?.value?.findIndex(
+          (point: any) => point?.isForecast,
+        );
+        if (forecastIdx === undefined || forecastIdx <= 0) return;
+
+        const segment = [
+          series.value[forecastIdx - 1],
+          series.value[forecastIdx],
+        ];
+        if (segment.some((point: any) => !point)) return;
+
+        d3.select(this)
+          .append('path')
+          .attr('class', `line forecast-line-${seriesIndex}`)
+          .attr('d', forecastLine(segment))
+          .style('stroke', (color && color[seriesIndex]) || '#0b4bc8')
+          .style('opacity', lineOpacity)
+          .style('fill', 'none')
+          .style('stroke-width', '2')
+          .style('stroke-dasharray', '4,4');
+      });
+
       /* Add circles (data) on the line */
-      // console.log('data ', data);
       lines
         .selectAll('circle-group')
         .data(data)
@@ -859,6 +883,7 @@ export class MultilineV2Component implements OnChanges {
         .append('g')
         .attr('class', 'circle')
         .on('mouseover', function (event, d) {
+          if (d?.isForecast) return;
           const topValue = 80;
           if (d.hoverValue) {
             div
@@ -900,6 +925,7 @@ export class MultilineV2Component implements OnChanges {
           }
         })
         .on('mouseout', function (d) {
+          if (d?.isForecast) return;
           div
             .transition()
             .duration(500)
@@ -908,25 +934,21 @@ export class MultilineV2Component implements OnChanges {
         })
         .append('circle')
         .attr('cx', function (d, i) {
-          if (board == 'dora') {
-            return xScale(d.date);
-          } else if (kpiId === 'kpi997') {
-            return xScale(d.date || d.sortSprint);
-          } else {
-            return xScale(i + 1);
-          }
+          return getXCoordinate(d, i);
         })
         .attr('cy', (d) => yScale(d.value))
         .attr('r', circleRadius)
         .style('stroke-width', 1)
         .style('opacity', circleOpacity)
         .on('mouseover', function (d) {
+          if (d?.isForecast) return;
           d3.select(this)
             .transition()
             .duration(duration)
             .attr('r', circleRadiusHover);
         })
         .on('mouseout', function (d) {
+          if (d?.isForecast) return;
           d3.select(this)
             .transition()
             .duration(duration)
@@ -945,7 +967,11 @@ export class MultilineV2Component implements OnChanges {
             !(viewType === 'large' && selectedProjectCount === 1)
           ) {
             const textElement = this.getElementsByTagName('text');
-            textElement[0].textContent = data[0].value[dataObj - 1]?.xAxisTick;
+            const point = data[0].value[dataObj - 1];
+            const fallbackLabel = point?.xAxisTick || dataObj;
+            textElement[0].textContent = point?.isForecast
+              ? point?.xAxisTick || point?.xName || 'Forecast'
+              : fallbackLabel;
           }
           const string = tick.attr('transform');
           const translate = string
@@ -1030,13 +1056,6 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi184'
       ) {
         // Render Sprint Legend
-        // console.log('data ', data);
-        // console.log(
-        //   'xCaption ',
-        //   'flatten data ',
-        //   this.xCaption,
-        //   this.flattenData(data),
-        // );
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
       }
     }

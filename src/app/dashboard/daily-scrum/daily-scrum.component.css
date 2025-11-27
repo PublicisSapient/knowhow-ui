@@ -39,7 +39,6 @@
   max-width: calc(75%);
   overflow-x: auto;
   display: flex;
-  overflow: visible;
 }
 
 .filter-header {
@@ -205,6 +204,6 @@ button.unassignedBtn {
   }
 
   /* .assignee-scroller {
-        max-width: 880px; 
+        max-width: 880px;
     } */
 }

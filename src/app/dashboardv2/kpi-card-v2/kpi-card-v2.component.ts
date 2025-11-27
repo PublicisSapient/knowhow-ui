@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  forwardRef,
   Input,
   OnChanges,
   OnInit,
@@ -39,7 +38,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
 import { AI_USAGE_TOOLTIP_INFO } from '../analysis-module/analysis-constant';
 import { KpiAiRecommendationTargetComponent } from '../kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
-import { RecommDetailsComponent } from '../../component/recomm-details/recomm-details.component';
 
 interface SelectedTrend {
   nodeId: string;
@@ -174,9 +172,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
-  @Input() kpiTitle: string = '';
+  @Input() kpiTitle;
   public selectedTrendObject: SelectedTrend | null = null;
-  chartType: String = '';
+  chartType;
   @Input() selectedBoard: string = 'dashboard';
 
   constructor(
@@ -659,7 +657,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
-    let selectedTrend = this.service.getSelectedTrends();
+    const selectedTrend = this.service.getSelectedTrends();
 
     let currentTrendList: SelectedTrend[] = [];
 
@@ -1595,12 +1593,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportDataToConfluence(event) {
-    console.log('kpiData > ', this.kpiData);
     let payloadDataFromKPIGroup;
     if (this.kpiData.kpiDetail.kpiSource === 'Jira') {
       payloadDataFromKPIGroup = this.service.getKPIPostData();
     } else if (this.kpiData.kpiDetail.kpiSource === 'Jenkins') {
       payloadDataFromKPIGroup = this.service.getKPIPostJenkinsData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Sonar') {
+      payloadDataFromKPIGroup = this.service.getKPIPostSonarData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Zypher') {
+      payloadDataFromKPIGroup = this.service.getKPIPostZypherData();
     }
     console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
@@ -1608,30 +1609,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
       kpiFilters = JSON.stringify(queryParams.get('kpiFilters'));
 
-    // APPROACH 1
-    const payload = {
-      longStateFiltersString: stateFilters || '',
-      longKPIFiltersString: kpiFilters || '',
-    };
-    /* this.http.handleUrlShortener(payload).subscribe((response: any) => {
-      const shortStateFilterString = response.data.shortStateFiltersString;
-      const shortKPIFilterString = response.data.shortKPIFilterString;
-      const shortUrl = `stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}&kpiName=${this.kpiData.kpiId}`;
-      navigator.clipboard
-        .writeText(shortUrl)
-        .then(() => {
-          this.messageService.add({
-            severity: 'success',
-            summary:
-              'Embed link copied. Paste the link in the confluence page.',
-          });
-        })
-        .catch((err) => {
-          console.error('Failed to copy URL: ', err);
-        });
-    }); */
-
-    // APPROACH 2
     const infoLink = {
       kpiData: this.kpiData,
       kpiGroupPayload: payloadDataFromKPIGroup,
