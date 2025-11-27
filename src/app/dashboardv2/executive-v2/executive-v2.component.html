@@ -32,11 +32,11 @@
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
               <ng-container *ngIf="kpi?.kpiDetail?.chartType === 'card' && kpiChartData[kpi?.kpiId]">
                 <app-indicators
-                  [metricUnit]="kpiChartData[kpi?.kpiId][0].unit"
-                  [metricValue]="kpiChartData[kpi?.kpiId][0].value"
-                  [trendUnit]="kpiChartData[kpi?.kpiId][0].unit1"
-                  [trendValue]="kpiChartData[kpi?.kpiId][0].value1"
-                  [kpiIcon]="kpiChartData[kpi?.kpiId][0].labelInfo"
+                  [metricUnit]="kpiChartData[kpi?.kpiId][0]?.unit"
+                  [metricValue]="kpiChartData[kpi?.kpiId][0]?.value"
+                  [trendUnit]="kpiChartData[kpi?.kpiId][0]?.unit1"
+                  [trendValue]="kpiChartData[kpi?.kpiId][0]?.value1"
+                  [kpiIcon]="kpiChartData[kpi?.kpiId][0]?.labelInfo"
                   [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                   [data]="kpiChartData[kpi?.kpiId]"
                   [kpiId]="kpi?.kpiId"
@@ -410,7 +410,7 @@
                   <ng-template #noDataForChartWithFilters>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        447 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data Available.</h4>
@@ -418,10 +418,9 @@
                     </div>
                   </ng-template>
                   <ng-template #partialData let-data>
-                    checkIfPartialDataPresent(data) - {{checkIfPartialDataPresent(data)}}
                     <div class="min-ht" *ngIf="checkIfPartialDataPresent(data); else noDataAccess;">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        457 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data
@@ -433,7 +432,7 @@
                   <ng-template #noDataAccess>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        469 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No Data Available.</h4>
@@ -448,12 +447,12 @@
         <app-kpi-table *ngIf="showChart === 'table'" [kpiConfigData]="kpiConfigData" [cols]="kpiTableHeadingArr"
           [kpiData]="kpiTableDataObj" [colorObj]="colorObj"></app-kpi-table>
 
-        <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
+        <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer' && filteredBranchData">
           <div class="p-p-3">
             <p-panel header="Team Performance Summary">
               <div class="metrics-grid column-3 p-p-3">
                 <app-list-block
-                  [data]="filteredBranchData.value"
+                  [data]="filteredBranchData?.value"
                   [dateFilter]="selectedDateFilterValue">
                 </app-list-block>
               </div>
