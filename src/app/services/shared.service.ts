@@ -20,6 +20,7 @@ import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharelinkService } from './share-link.service';
+import { AnalyticsService } from './analytics.service';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -169,6 +170,7 @@ export class SharedService {
     private router: Router,
     private route: ActivatedRoute,
     private injector: Injector,
+    private analytics: AnalyticsService,
   ) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -214,14 +216,27 @@ export class SharedService {
   // end here
 
   setScrumKanban(selectedType) {
+    const previousType = this.selectedtype;
     this.selectedtype = selectedType;
     this.onScrumKanbanSwitch.next({ selectedType });
+
+    // Track UI type change for analytics (only if it actually changed)
+    if (previousType && previousType !== selectedType) {
+      this.analytics.setUIType({
+        uiType: selectedType,
+        previousType: previousType,
+        userRole: localStorage.getItem('user_role') || 'unknown',
+      });
+    }
   }
 
   setSelectedBoard(selectedBoard) {
     this.selectedTab = selectedBoard;
     if (selectedBoard) {
       this.onTabSwitch.next({ selectedBoard });
+
+      // Track tab navigation for analytics
+      this.analytics.trackTabNavigation(selectedBoard);
     }
   }
 

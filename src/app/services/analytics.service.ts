@@ -18,10 +18,8 @@
 
 import { Injectable } from '@angular/core';
 import { GoogleAnalyticsService } from './google-analytics.service';
-import { PostHogService } from './posthog.service';
-import { FaroService } from './faro.service';
+import { MetricsService } from './metrics.service';
 import { environment } from '../../environments/environment';
-import { AnalyticsProvider } from '../types/environment.types';
 
 interface AnalyticsData {
   url?: string;
@@ -35,233 +33,276 @@ interface AnalyticsData {
   providedIn: 'root',
 })
 export class AnalyticsService {
-  private currentProvider: AnalyticsProvider = 'google';
-  private isUserInRollout = false;
+  private useGrafanaAnalytics = false;
+  private useGoogleAnalytics = false;
   private userId: string | null = null;
+  private sessionStartTime: number | null = null;
+  private pageViewCount = 0;
 
   constructor(
     private googleAnalytics: GoogleAnalyticsService,
-    private postHog: PostHogService,
-    private faro: FaroService,
+    private metrics: MetricsService,
   ) {
-    this.initializeProvider();
+    this.initializeAnalytics();
+
+    // Start metrics collection only if user is in Grafana rollout
+    if (this.useGrafanaAnalytics) {
+      this.metrics.exposeMetricsEndpoint();
+
+      // Send metrics to backend every 15 seconds for Prometheus scraping
+      setInterval(() => {
+        this.metrics.sendMetricsToBackend();
+      }, 15000);
+    }
   }
 
-  private initializeProvider(): void {
-    this.currentProvider =
-      (environment.analytics?.provider as AnalyticsProvider) || 'google';
+  private initializeAnalytics(): void {
+    // A/B Testing: Determine which analytics systems to use
+    this.useGoogleAnalytics =
+      environment.analytics?.enableGoogleAnalytics || false;
 
-    // Determine if user should be in rollout for new analytics
-    if (
-      this.currentProvider !== 'google' &&
-      this.currentProvider !== 'disabled'
-    ) {
-      this.isUserInRollout = this.shouldIncludeUserInRollout();
+    // Determine if user should get Grafana analytics (A/B test)
+    this.useGrafanaAnalytics = this.shouldUseGrafanaAnalytics();
+  }
+
+  private shouldUseGrafanaAnalytics(): boolean {
+    if (!environment.analytics?.enableGrafanaAnalytics) {
+      return false;
     }
 
-    // Initialize the appropriate service
-    this.initializeServices();
-  }
-
-  private shouldIncludeUserInRollout(): boolean {
-    // Use a deterministic approach based on session or user ID
-    // For now, use a simple random approach that's consistent per session
-    if (!sessionStorage.getItem('analytics_rollout_decision')) {
+    // Use consistent rollout decision per session
+    if (!sessionStorage.getItem('grafana_analytics_rollout')) {
       const random = Math.random() * 100;
       const inRollout =
-        random < (environment.analytics?.rolloutPercentage || 0);
-      sessionStorage.setItem(
-        'analytics_rollout_decision',
-        inRollout.toString(),
-      );
+        random < (environment.analytics?.grafanaRolloutPercentage || 0);
+      sessionStorage.setItem('grafana_analytics_rollout', inRollout.toString());
       return inRollout;
     }
-    return sessionStorage.getItem('analytics_rollout_decision') === 'true';
-  }
 
-  private async initializeServices(): Promise<void> {
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        await this.postHog.init();
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        await this.faro.init();
-      }
-      // Google Analytics is already initialized via the existing mechanism
-    } catch (error) {
-      console.error('Failed to initialize analytics service:', error);
-      // Fallback to Google Analytics
-      this.currentProvider = 'google';
-      this.isUserInRollout = false;
-    }
+    return sessionStorage.getItem('grafana_analytics_rollout') === 'true';
   }
 
   setPageLoad(data: AnalyticsData): void {
-    if (this.currentProvider === 'disabled') return;
+    // A/B Testing: Send to appropriate analytics systems
 
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setPageLoad(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setPageLoad(data);
-      } else {
-        // Default to Google Analytics
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setPageLoad(data);
+      } catch (error) {
+        console.error('Google Analytics setPageLoad error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setPageLoad error:', error);
-      // Fallback to Google Analytics
-      this.googleAnalytics.setPageLoad(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackPageLoad(data); // Now uses same rich data as GA
+
+        // Track page view count for session duration
+        this.pageViewCount++;
+      } catch (error) {
+        console.error('Grafana Analytics setPageLoad error:', error);
+      }
     }
   }
 
   setLoginMethod(data: AnalyticsData, loginType: string): void {
-    if (this.currentProvider === 'disabled') return;
-
     this.userId = data.user_id || null;
 
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setLoginMethod(data, loginType);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setLoginMethod(data, loginType);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setLoginMethod(data, loginType);
+      } catch (error) {
+        console.error('Google Analytics setLoginMethod error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setLoginMethod error:', error);
-      this.googleAnalytics.setLoginMethod(data, loginType);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackLoginMethod(data, loginType); // Now uses same rich data as GA
+
+        // Track active user
+        if (data.user_id) {
+          this.metrics.trackActiveUser(
+            data.user_id,
+            data.userRole || localStorage.getItem('user_role') || 'unknown',
+            false, // Not tracking new vs returning yet
+          );
+
+          // Start session timer
+          this.sessionStartTime = Date.now();
+          this.pageViewCount = 0;
+
+          // Track session end on page unload
+          window.addEventListener('beforeunload', () => this.trackSessionEnd());
+        }
+      } catch (error) {
+        console.error('Grafana Analytics setLoginMethod error:', error);
+      }
     }
   }
 
   setProjectData(data: any[]): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setProjectData(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setProjectData(data);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setProjectData(data);
+      } catch (error) {
+        console.error('Google Analytics setProjectData error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setProjectData error:', error);
-      this.googleAnalytics.setProjectData(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics && data?.length) {
+      try {
+        this.metrics.trackProjectData(data); // Now uses same rich data as GA
+
+        // Track filter usage (project selection is a filter action)
+        this.trackFilterUsage('project_selection', `${data.length} project(s)`);
+      } catch (error) {
+        console.error('Grafana Analytics setProjectData error:', error);
+      }
     }
   }
 
   setProjectToolsData(data: any): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setProjectToolsData(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setProjectToolsData(data);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setProjectToolsData(data);
+      } catch (error) {
+        console.error('Google Analytics setProjectToolsData error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setProjectToolsData error:', error);
-      this.googleAnalytics.setProjectToolsData(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackProjectToolsData(data); // Now uses same rich data as GA
+      } catch (error) {
+        console.error('Grafana Analytics setProjectToolsData error:', error);
+      }
     }
   }
 
   setKpiData(data: any): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setKpiData(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setKpiData(data);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setKpiData(data);
+      } catch (error) {
+        console.error('Google Analytics setKpiData error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setKpiData error:', error);
-      this.googleAnalytics.setKpiData(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackKpiData(data); // Now uses same rich data as GA
+      } catch (error) {
+        console.error('Grafana Analytics setKpiData error:', error);
+      }
     }
   }
 
   createProjectData(data: any): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.createProjectData(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.createProjectData(data);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.createProjectData(data);
+      } catch (error) {
+        console.error('Google Analytics createProjectData error:', error);
       }
-    } catch (error) {
-      console.error('Analytics createProjectData error:', error);
-      this.googleAnalytics.createProjectData(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackCreateProjectData(data); // Now uses same rich data as GA
+      } catch (error) {
+        console.error('Grafana Analytics createProjectData error:', error);
+      }
     }
   }
 
   setUIType(data: any): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.setUIType(data);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.setUIType(data);
-      } else {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
         this.googleAnalytics.setUIType(data);
+      } catch (error) {
+        console.error('Google Analytics setUIType error:', error);
       }
-    } catch (error) {
-      console.error('Analytics setUIType error:', error);
-      this.googleAnalytics.setUIType(data);
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackUITypeChange(data); // Now uses same rich data as GA
+
+        // Track UI preference for analytics
+        if (data.uiType && this.userId) {
+          this.metrics.trackUIPreference(
+            data.uiType,
+            this.userId,
+            data.userRole || 'unknown',
+          );
+        }
+      } catch (error) {
+        console.error('Grafana Analytics setUIType error:', error);
+      }
     }
   }
 
-  // Additional methods for new analytics providers
-  captureError(error: Error, context?: any): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.captureError(error, context);
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.captureError(error, context);
+  trackTabNavigation(tabName: string): void {
+    if (this.useGrafanaAnalytics && this.userId) {
+      try {
+        this.metrics.trackTabNavigation(
+          tabName,
+          this.userId,
+          localStorage.getItem('user_role') || 'unknown',
+        );
+      } catch (error) {
+        console.error('Grafana Analytics trackTabNavigation error:', error);
       }
-      // Google Analytics doesn't have a direct error capture method
-    } catch (captureError) {
-      console.error('Analytics captureError failed:', captureError);
     }
   }
 
-  captureWebVitals(): void {
-    if (this.currentProvider === 'disabled') return;
-
-    try {
-      if (this.currentProvider === 'posthog' && this.isUserInRollout) {
-        this.postHog.captureWebVitals();
-      } else if (this.currentProvider === 'faro' && this.isUserInRollout) {
-        this.faro.captureWebVitals();
+  trackFilterUsage(filterType: string, filterValue: string): void {
+    if (this.useGrafanaAnalytics && this.userId) {
+      try {
+        this.metrics.trackFilterUsage(filterType, filterValue, this.userId);
+      } catch (error) {
+        console.error('Grafana Analytics trackFilterUsage error:', error);
       }
-      // Google Analytics web vitals would need separate implementation
-    } catch (error) {
-      console.error('Analytics captureWebVitals error:', error);
     }
   }
 
-  // Utility methods
-  getCurrentProvider(): AnalyticsProvider {
-    return this.currentProvider;
+  private trackSessionEnd(): void {
+    if (this.useGrafanaAnalytics && this.userId && this.sessionStartTime) {
+      try {
+        const durationSeconds = Math.floor(
+          (Date.now() - this.sessionStartTime) / 1000,
+        );
+        this.metrics.trackSessionDuration(
+          this.userId,
+          durationSeconds,
+          this.pageViewCount,
+        );
+      } catch (error) {
+        console.error('Grafana Analytics trackSessionEnd error:', error);
+      }
+    }
   }
 
-  isInRollout(): boolean {
-    return this.isUserInRollout;
-  }
-
-  getProviderInfo(): { provider: AnalyticsProvider; inRollout: boolean } {
+  getProviderInfo(): any {
     return {
-      provider: this.currentProvider,
-      inRollout: this.isUserInRollout,
+      useGoogleAnalytics: this.useGoogleAnalytics,
+      useGrafanaAnalytics: this.useGrafanaAnalytics,
+      userId: this.userId,
     };
   }
 }

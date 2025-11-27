@@ -16,44 +16,33 @@
  *
  ******************************************************************************/
 
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
-
 import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
-  production: false,
-  baseUrl: '//localhost:8080',
-  SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: 'http://localhost:3000',
-  CENTRAL_API_URL: 'http://localhost:8787',
+  production: true,
+  baseUrl: '//your-production-domain.com',
+  SSO_LOGIN: true,
+  CENTRAL_LOGIN_URL: 'https://your-central-login.com',
+  CENTRAL_API_URL: 'https://your-central-api.com',
   RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: false,
-  SPEED_SUITE: false,
-  MAP_URL: '',
-  RETROS_URL: '',
+  AUTHENTICATION_SERVICE: true,
+  SPEED_SUITE: true,
+  MAP_URL: 'https://your-map-url.com',
+  RETROS_URL: 'https://your-retros-url.com',
+
   // Analytics configuration - A/B Testing: GA + Self-hosted Grafana
   analytics: {
-    // A/B Testing configuration
-    grafanaRolloutPercentage: 100, // 100% for local development, 5-10% for production
-    enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: true,
+    // A/B Testing configuration - 10% rollout for production
+    grafanaRolloutPercentage: 10, // 10% of users get Grafana analytics
+    enableGoogleAnalytics: true, // Keep GA for 90% of users
+    enableGrafanaAnalytics: true, // Enable self-hosted for 10%
 
     // Self-hosted analytics configuration
     selfHosted: {
       enabled: true,
       metricsEndpoint: '/api/metrics-proxy/send',
-      appName: 'PSKnowHOW-Dev',
+      appName: 'PSKnowHOW-Production',
       appVersion: '14.0.0',
     },
   },
 };
-
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
- */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.

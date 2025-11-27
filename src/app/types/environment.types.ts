@@ -16,17 +16,16 @@
  *
  ******************************************************************************/
 
-export type AnalyticsProvider = 'google' | 'posthog' | 'faro' | 'disabled';
-
 export interface AnalyticsConfig {
-  provider: AnalyticsProvider;
-  rolloutPercentage: number;
-  posthog: {
-    apiKey: string;
-    host: string;
-  };
-  faro: {
-    url: string;
+  // A/B Testing configuration
+  grafanaRolloutPercentage: number;
+  enableGoogleAnalytics: boolean;
+  enableGrafanaAnalytics: boolean;
+
+  // Self-hosted analytics configuration
+  selfHosted: {
+    enabled: boolean;
+    metricsEndpoint: string;
     appName: string;
     appVersion: string;
   };

@@ -610,10 +610,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
     const gaObj = {
+      kpiId: this.kpiData?.kpiId,
       kpiName: this.kpiData?.kpiName,
       filter1: this.filterOptions?.['filter1'] || [value],
       filter2: this.filterOptions?.['filter2'] || null,
       kpiSource: this.kpiData?.kpiDetail?.kpiSource,
+      userRole: localStorage.getItem('user_role') || 'unknown',
     };
     this.triggerGaEvent(gaObj);
   }
