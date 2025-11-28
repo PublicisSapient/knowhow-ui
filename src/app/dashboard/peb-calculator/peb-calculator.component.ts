@@ -184,8 +184,9 @@ export class PebCalculatorComponent implements OnInit {
   calculatePEB() {
     this.showLoader = true;
     setTimeout(() => {
-      const overallGain =
-        this.productivityGain['summary']?.categoryScores['overall'];
+      const overallGain = this.productivityGain['details']?.reduce((a, b) => {
+        return a + (b['categoryScores']['overall'] || 0);
+      }, 0);
 
       this.annualPEB = this.calculateMultipliedDetails(overallGain);
       this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
