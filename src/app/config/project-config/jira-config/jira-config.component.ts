@@ -329,6 +329,17 @@ export class JiraConfigComponent implements OnInit {
     return !(repo && repo.length > 0);
   }
 
+  canAddRepository(): boolean {
+    const repo = this.toolForm?.get('Repository')?.value?.toString().trim();
+    const branches = this.toolForm?.get('branch')?.value;
+
+    if (!repo) return false;
+
+    return (
+      Array.isArray(branches) && branches.some((b) => b?.toString().trim())
+    );
+  }
+
   getPlansForBamboo(connectionId) {
     if (connectionId) {
       this.bambooPlanList = [];
@@ -656,26 +667,26 @@ export class JiraConfigComponent implements OnInit {
   mergeRepositoriesKeepBranch(connectionDatails: any[] = []): any[] {
     const result: any[] = [];
     connectionDatails?.forEach((item) => {
-      if (!item || !item?.repositoryName) {
-        const existing = result.find(
-          (r) => r?.repositoryName === item?.repositoryName,
-        );
+      if (!item?.repositoryName) {
+        result.push(item);
+        return;
+      }
+      const existing = result.find(
+        (r) => r?.repositoryName === item?.repositoryName,
+      );
 
-        if (existing) {
-          if (!existing?._branches.includes(item?.branch)) {
-            existing?._branches.push(item?.branch);
-            existing.branches = existing?._branches.join(',');
-          }
-        } else {
-          const newObj = {
-            ...item,
-            _branches: [item?.branch],
-            branches: item?.branch,
-          };
-          result.push(newObj);
+      if (existing) {
+        if (!existing?._branches.includes(item?.branch)) {
+          existing?._branches.push(item?.branch);
+          existing.branches = existing?._branches.join(',');
         }
       } else {
-        result.push(item);
+        const newObj = {
+          ...item,
+          _branches: [item?.branch],
+          branches: item?.branch,
+        };
+        result.push(newObj);
       }
     });
     return result;
@@ -3482,6 +3493,13 @@ export class JiraConfigComponent implements OnInit {
     if (!this.currentFormElement?.repositoryName) {
       return;
     }
+    const selectedRepoName = this.currentFormElement.repositoryName
+      ?.trim()
+      .toLowerCase();
+
+    const selectedBranches = (this.currentFormElement.branchList || [])
+      .map((b) => b?.branchName?.trim().toLowerCase())
+      .filter(Boolean);
 
     const exists = this.repositryValuesArray.some((repo) => {
       if (
@@ -3506,7 +3524,44 @@ export class JiraConfigComponent implements OnInit {
       );
     });
 
-    if (exists) {
+    const getConfiguredBranches = (repo: any): string[] => {
+      const list = Array.isArray(repo?._branches)
+        ? repo._branches
+        : typeof repo?.branches === 'string'
+        ? repo.branches.split(',')
+        : typeof repo?.branch === 'string'
+        ? repo.branch.split(',')
+        : [];
+
+      return list
+        .map((b) =>
+          typeof b === 'string'
+            ? b.trim().toLowerCase()
+            : b?.branchName?.trim().toLowerCase(),
+        )
+        .filter(Boolean);
+    };
+
+    const alreadyConfigured = (this.configuredTools || []).some((repo) => {
+      if (repo?.repositoryName?.toLowerCase() !== selectedRepoName)
+        return false;
+
+      if (
+        repo?.connectionId &&
+        this.selectedConnection?.id &&
+        repo.connectionId !== this.selectedConnection.id
+      ) {
+        return false;
+      }
+
+      const configuredBranches = getConfiguredBranches(repo);
+
+      return selectedBranches.every((branch) =>
+        configuredBranches.includes(branch),
+      );
+    });
+
+    if (exists || alreadyConfigured) {
       this.messenger.add({
         severity: 'error',
         summary: 'Repository and branch are already configured',
