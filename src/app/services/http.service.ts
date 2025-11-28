@@ -1335,7 +1335,9 @@ export class HttpService {
   }
 
   getPebProductivityData(level) {
-    return this.http.get<any>(`${this.pebProductivityUrl}?levelName=${level.toLowerCase()}`);
+    return this.http.get<any>(
+      `${this.pebProductivityUrl}?levelName=${level.toLowerCase()}`,
+    );
   }
 
   getPebProductivityDetailsData(level) {
