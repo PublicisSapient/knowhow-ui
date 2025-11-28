@@ -230,7 +230,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Speed',
-            value: (categoryVariations?.speed || 0) + '%',
+            value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'N/A'),
             icon: 'fas fa-bolt',
             average: '',
             valueColor: '#15ba40',
@@ -241,7 +241,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Efficiency',
-            value: (categoryVariations?.efficiency || 0) + '%',
+            value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'N/A'),
             icon: 'fas fa-chart-line',
             average: '',
             valueColor: '#0b4bc8',
@@ -252,7 +252,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Quality',
-            value: (categoryVariations?.quality || 0) + '%',
+            value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'N/A'),
             icon: 'fas fa-shield-alt',
             average: '',
             valueColor: '#9810fa',
@@ -263,7 +263,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Productivity',
-            value:  (categoryVariations?.productivity || 0) + '%',
+            value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'N/A'),
             icon: 'fas fa-bullseye',
             average: '',
             valueColor: '#ff5c5d',
