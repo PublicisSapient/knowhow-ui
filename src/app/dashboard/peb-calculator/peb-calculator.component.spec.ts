@@ -198,6 +198,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { of, throwError, Subject } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { ActivatedRoute } from '@angular/router';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 
 class MockHttpService {
@@ -236,7 +237,14 @@ describe('PebCalculatorComponent', () => {
   let fixture: ComponentFixture<PebCalculatorComponent>;
   let mockSharedService: jasmine.SpyObj<SharedService>;
   let productivityGain = require('src/assets/data/peb-productivity.json');
+  let activatedRouteMock: any;
   beforeEach(async () => {
+    activatedRouteMock = {
+      queryParams: of({
+        selectedTab: 'potential-economic-benefits',
+      }),
+    };
+
     await TestBed.configureTestingModule({
       declarations: [PebCalculatorComponent, DynamicCurrencyPipe],
       imports: [
@@ -248,6 +256,7 @@ describe('PebCalculatorComponent', () => {
       providers: [
         FormBuilder,
         { provide: HttpService, useClass: MockHttpService },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: SharedService, useClass: MockSharedService },
       ],
     }).compileComponents();
