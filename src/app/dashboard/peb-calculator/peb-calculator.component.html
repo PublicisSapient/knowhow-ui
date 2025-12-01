@@ -63,9 +63,10 @@
         <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
           <div class="p-d-flex p-flex-wrap">
             <div class="p-col-4 grid-flex-wrap-100">
-              <div class="p-col-12">
-                <label for="devCount">Total Team Size <i class="pi pi-exclamation-triangle"
-                    pTooltip="You can edit the no. of developers" tooltipPosition="top"></i></label>
+              <div class="p-col-12 p-d-flex p-align-center">
+                <label for="devCount">Total Team Size</label>
+                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                    pTooltip="You can edit the no. of developers" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCountControl" inputId="devCount"
@@ -77,9 +78,10 @@
               </div>
             </div>
             <div class="p-col-4 grid-flex-wrap-100">
-              <div class="p-col-12">
-                <label for="devCost">Avg. Cost per Team Member <i class="pi pi-exclamation-triangle"
-                    pTooltip="You can edit the avg cost per developer" tooltipPosition="top"></i></label>
+              <div class="p-col-12 p-d-flex p-align-center">
+                <label for="devCost">Avg. Cost per Team Member </label>
+                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                    pTooltip="You can edit the avg cost per developer" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
@@ -149,14 +151,18 @@
             *ngIf="items.length">
             <ng-template pTemplate="header">
               <tr>
-                <th style="width: 50%;" class="p-text-center">{{ items[0]?.levelName }}</th>
-                <th style="width: 50%;" class="p-text-center">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
+                <th></th>
+                <th style="width: 30%;" class="p-text-left">{{ items[0]?.levelName }}</th>
+                <th style="width: 30%;" class="p-text-right">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
+                <th></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
               <tr>
-                <td style="width: 50%;" class="p-text-center">{{ item?.organizationEntityName }}</td>
-                <td style="width: 50%;" class="p-text-center">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
+                <td></td>
+                <td style="width: 30%;" class="p-text-left">{{ item?.organizationEntityName }}</td>
+                <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
+                <td></td>
               </tr>
             </ng-template>
           </p-table>
@@ -244,7 +250,7 @@
       <div class="p-d-flex">
         <div class="p-col-6">
           <div class="p-2">
-            <h4 class="font-bold">Core Performance Metrics</h4>
+            <h4>Core Performance Metrics</h4>
             <ng-container *ngIf="performanceChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Performance'">
@@ -254,7 +260,7 @@
         </div>
         <div class="p-col-6">
           <div class="p-2">
-            <h4  class="font-bold">Cost Savings Trend</h4>
+            <h4>Cost Savings Trend</h4>
             <ng-container *ngIf="costSavingsChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Cost Savings'">

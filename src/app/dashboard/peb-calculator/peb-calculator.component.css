@@ -246,3 +246,7 @@
   border: 1px solid #d5dbe1;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
+.info-icon {
+  height: 20px;
+  margin-left: 4px;
+}
