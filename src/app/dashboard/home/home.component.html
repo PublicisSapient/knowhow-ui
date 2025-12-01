@@ -2,7 +2,7 @@
 
 <!-- TOP TILES  -->
 <div class="p-d-flex maturity-tablur-view p-jc-between">
-  @if(!loader){
+  @if(!loader || aggregrationDataList.length > 0){
   @for (item of aggregrationDataList; track item) {
   <div class="p-col-3">
     <app-top-tiles [item]="item"></app-top-tiles>
@@ -168,7 +168,10 @@
           <ng-template pTemplate="emptymessage" let-columns>
             <tr>
               <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
-                <h3>Data not found. </h3>
+                <div class="p-d-flex p-flex-column p-align-center">
+                  <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                  <h4>No Data Available. </h4>
+                </div>
               </td>
             </tr>
           </ng-template>
@@ -194,7 +197,10 @@
       <ng-template pTemplate="emptymessage" let-columns>
         <tr>
           <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
-            <h3>Data not found. </h3>
+            <div class="p-d-flex p-flex-column p-align-center">
+              <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+              <h4 style="color: rgb(32, 36, 41);">No Data Available. </h4>
+            </div>
           </td>
         </tr>
       </ng-template>
@@ -250,9 +256,15 @@
         }
       </div>
       } @else if(isFirst && !loader && items.value.length === 0){
-        <h3>Data not found.</h3>
+        <div class="p-d-flex p-flex-column p-align-center">
+          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+          <h4>No Data Available.</h4>
+        </div>
       } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
-       <h3>Data not found.</h3>
+        <div class="p-d-flex p-flex-column p-align-center">
+          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+          <h4>No Data Available.</h4>
+        </div>
       } @else {
       <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
       <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>

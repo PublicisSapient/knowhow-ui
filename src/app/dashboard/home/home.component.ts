@@ -107,6 +107,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         executiveBoard.message ||
                         'Error in fetching Executive data!',
                     });
+                    this.initializeAggregationDataWithNA();
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
                       executiveBoard.data.matrix.rows.map((row) => ({
@@ -779,6 +780,59 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
       },
     });
+  }
+
+  initializeAggregationDataWithNA() {
+    const hierarchy = this.completeHierarchyData;
+    const label =
+      hierarchy?.find(
+        (hi) =>
+          hi.level ===
+          this.payloadPreparation(
+            this.filterApplyData,
+            this.selectedType,
+            'parent',
+          ).level,
+      )?.hierarchyLevelName || 'Entity';
+
+    this.aggregrationDataList = [
+      {
+        cssClassName: 'users',
+        category: 'Active ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-users',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'gauge',
+        category: 'Avg. Efficiency',
+        value: 'NA',
+        icon: 'pi-gauge',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'exclamation',
+        category: 'Critical ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-exclamation-triangle',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'heart-fill',
+        category: 'Healthy ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-heart-fill',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+    ];
   }
 
   ngOnDestroy() {
