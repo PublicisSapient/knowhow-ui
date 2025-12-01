@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-wrap">
     <div class="p-col-4">
       <p-card class="p-mb-3 peb-calculator-card">
-        <div class="form-title p-px-4 calculator-header">
+        <div class="p-px-4 calculator-header">
           <i class="fas fa-calculator text-blue"></i>
           <span class="calculator-header-label p-ml-2">Potential Economic Benefits Calculator</span>
         </div>
@@ -70,7 +70,7 @@
     </div>
     <div class="p-col-8">
       <p-card class="p-mb-3 peb-calculator-card">
-        <div class="form-title p-px-4 calculator-header">
+        <div class="p-px-4 calculator-header">
           <i class="fas fa-user-friends text-blue"></i>
           <span class="calculator-header-label p-ml-2">Standings</span>
           <small class="tag beta">BETA</small>
@@ -97,14 +97,12 @@
               <tr>
                 <th style="width: 50%;" class="p-text-center">{{ items[0]?.levelName }}</th>
                 <th style="width: 50%;" class="p-text-center">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
-                <!-- <th></th> -->
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
               <tr>
                 <td style="width: 50%;" class="p-text-center">{{ item?.organizationEntityName }}</td>
                 <td style="width: 50%;" class="p-text-center">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
-                <!-- <td></td> -->
               </tr>
             </ng-template>
           </p-table>
@@ -184,7 +182,7 @@
   <!-- } -->
   <div class="p-col-12">
     <p-card class="p-mb-3 peb-calculator-card">
-      <div class="form-title p-px-4 calculator-header">
+      <div class="p-px-4 calculator-header">
         <i class="far fa-chart-bar text-blue"></i>
         <span class="calculator-header-label p-ml-2">Performance Tracking Over Time</span>
       </div>
@@ -230,7 +228,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Speed',
-            value: (categoryVariations?.speed) + '%',
+            value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'N/A'),
             icon: 'fas fa-bolt',
             average: '',
             valueColor: '#15ba40',
@@ -241,7 +239,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Efficiency',
-            value: (categoryVariations?.efficiency) + '%',
+            value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'N/A'),
             icon: 'fas fa-chart-line',
             average: '',
             valueColor: '#0b4bc8',
@@ -252,7 +250,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Quality',
-            value: (categoryVariations?.quality) + '%',
+            value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'N/A'),
             icon: 'fas fa-shield-alt',
             average: '',
             valueColor: '#9810fa',
@@ -263,7 +261,7 @@
           <app-top-tiles [item]="{
             cssClassName: 'exclamation',
             category: 'Productivity',
-            value:  (categoryVariations?.productivity) + '%',
+            value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'N/A'),
             icon: 'fas fa-bullseye',
             average: '',
             valueColor: '#ff5c5d',

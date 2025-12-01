@@ -66,7 +66,7 @@ export class DynamicCurrencyPipe implements PipeTransform {
 
     // Return ONLY value
     if (returnType === 'value') {
-      return number;
+      return value < 0 ? `-${number}` : number;
     }
 
     // Default → return both
