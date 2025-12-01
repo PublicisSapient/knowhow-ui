@@ -36,8 +36,8 @@
 .exec-title,
 .ai-section-title,
 .form-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .metric-row .roi-card {
@@ -216,7 +216,7 @@
 :host ::ng-deep label {
   background-color: transparent !important;
   color: rgb(32, 36, 41);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
 }
 
@@ -234,7 +234,15 @@
 }
 
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  color: rgb(32, 36, 41);
+  color: rgb(55, 65, 81);
   font-weight: 700;
   font-size: 14px;
+}
+
+:host .data-item {
+  width: 24%;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #d5dbe1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
