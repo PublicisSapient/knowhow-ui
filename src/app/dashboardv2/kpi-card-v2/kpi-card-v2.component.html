@@ -152,15 +152,14 @@
             <div *ngFor="let option of dropdownArr[0]?.options"
                  class="p-ripple p-element p-button p-component"
                  [ngClass]="{'p-highlight': radioOption === option}">
-
-              <p-radioButton [inputId]="option"
+              <p-radioButton [inputId]="kpiData?.kpiId + '-' + option"
                              [value]="option"
                              [(ngModel)]="radioOption"
                              [name]="kpiData?.kpiId"
                              class="p-hidden-accessible"
-                             (onClick)="handleChange('radio', $event,option)"></p-radioButton>
+                             (onClick)="handleChange('radio', $event, option)"></p-radioButton>
 
-              <label [for]="option" class="p-button-label">{{ option }}</label>
+              <label [for]="kpiData?.kpiId + '-' + option" class="p-button-label">{{ option }}</label>
             </div>
           </div>
         </ng-container>
