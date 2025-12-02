@@ -68,6 +68,14 @@
   background: rgb(255, 236, 223);
 }
 
+:host .icon.speed {
+  background-color: #e2efe5;
+}
+
+:host .icon.productivity {
+  background-color: rgb(240, 229, 229);
+}
+
 :host .icon.exclamation .pi {
   color: #f68605;
 }
@@ -87,10 +95,14 @@
 
 .tabularKPI-column-header {
   margin-top: 15px;
+  color: rgb(55, 65, 81);
 }
 
 .tabularKPI-column-value {
   margin-bottom: 15px;
+  color: rgb(17, 24, 39);
+  font-weight: 600;
+  font-size: 25px;
 }
 
 /* Maturity tablur Styles End  */
