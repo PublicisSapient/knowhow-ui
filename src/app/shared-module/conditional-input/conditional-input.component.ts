@@ -41,12 +41,13 @@ export class ConditionalInputComponent implements OnChanges {
     }
   }
 
-  templateLabelToLowercase = (arr: []) =>
-    arr.map((val: any) => val.toLowerCase());
+  templateLabelToLowercase = (arr: []) => {
+    return arr.map((val: any) => val.toLowerCase());
+  };
 
   setValue(event) {
     this.templateLabels = this.templateLabelToLowercase(
-      event.value.map((val) => val.labelValue),
+      event.value.map((val) => (val?.labelValue ? val?.labelValue : val)),
     );
     this.templateData = this.fieldConfig.options.filter((opt) =>
       this.templateLabels.includes(opt.labelValue),
@@ -81,6 +82,6 @@ export class ConditionalInputComponent implements OnChanges {
   }
 
   setOutput() {
-    this.conditionalInputChange.emit(this.finalValue);
+    this.conditionalInputChange.emit(this.templateData);
   }
 }
