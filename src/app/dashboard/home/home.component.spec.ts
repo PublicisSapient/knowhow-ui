@@ -283,7 +283,7 @@ describe('HomeComponent', () => {
   it('should calculate correct healthy statistics', () => {
     component.tableData.data = [
       { health: 'healthy', completion: '90%' },
-      { health: 'critical', completion: '40%' },
+      { health: 'unhealthy', completion: '40%' },
       { health: 'healthy', completion: '70%' },
     ];
     const res = component.calculateHealth('healthy');
@@ -292,8 +292,8 @@ describe('HomeComponent', () => {
 
   it('should handle no matching healthType gracefully', () => {
     component.tableData.data = [
-      { health: 'critical', completion: '40%' },
-      { health: 'critical', completion: '50%' },
+      { health: 'unhealthy', completion: '40%' },
+      { health: 'unhealthy', completion: '50%' },
     ];
     const res = component.calculateHealth('healthy');
     expect(res).toEqual({ average: '0%', count: 0 });

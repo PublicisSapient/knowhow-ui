@@ -62,11 +62,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('------home component oninit');
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.subscription.push(
       this.service.passDataToDashboard
-        .pipe(distinctUntilChanged())
+        .pipe(
+          distinctUntilChanged(
+            (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+          ),
+        )
         .subscribe((sharedobject) => {
+          console.log('****** filter subscription *******');
           this.tableData = {
             columns: [],
             data: [],
@@ -169,9 +175,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                       {
                         cssClassName: 'exclamation',
                         category: 'Critical ' + label + ' (s)',
-                        value: this.calculateHealth('critical').count,
+                        value: this.calculateHealth('unhealthy').count,
                         icon: 'pi-exclamation-triangle',
-                        average: this.calculateHealth('critical').average,
+                        average: this.calculateHealth('unhealthy').average,
                         valueColor: '#374151',
                         iconType: 'pi',
                       },
@@ -836,7 +842,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    console.log('home component destroyed');
     this.service.setPEBData({});
     this.subscription.forEach((subscription) => subscription.unsubscribe());
+    this.subscription = [];
   }
 }

@@ -86,14 +86,14 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
-        if (
-          this.selectedTab.toLowerCase() === 'home' ||
-          this.selectedTab.toLowerCase() === 'potential-economic-benefits'
-        ) {
-          this.filterLevels = this.filterLevels.filter((e) => {
-            return !result.includes(e.nodeName.toLowerCase());
-          });
-        }
+        // if (
+        //   this.selectedTab.toLowerCase() === 'home' ||
+        //   this.selectedTab.toLowerCase() === 'potential-economic-benefits'
+        // ) {
+        //   this.filterLevels = this.filterLevels.filter((e) => {
+        //     return !result.includes(e.nodeName.toLowerCase());
+        //   });
+        // }
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
@@ -253,35 +253,35 @@ export class ParentFilterComponent implements OnChanges {
     } else if (this.stateFilters && typeof this.stateFilters !== 'string') {
       tempStateFilters = this.stateFilters['nodeId'];
     }
-    if (
-      (this.selectedTab.toLowerCase() === 'home' &&
-        tempStateFilters.toLowerCase() === 'project') ||
-      (this.selectedTab.toLowerCase() === 'potential-economic-benefits' &&
-        tempStateFilters.toLowerCase() === 'project')
-    ) {
-      const hierarchy = JSON.parse(
-        localStorage.getItem('completeHierarchyData') || '{}',
-      )[this.selectedType];
-      const projectHierarchyDetails = hierarchy.find(
-        (hi) => hi.hierarchyLevelId === 'project',
-      );
-      if (projectHierarchyDetails) {
-        const leafNodePlusOneDetails = hierarchy.find(
-          (item) => item.level === projectHierarchyDetails.level - 1,
-        );
+    // if (
+    //   (this.selectedTab.toLowerCase() === 'home' &&
+    //     tempStateFilters.toLowerCase() === 'project') ||
+    //   (this.selectedTab.toLowerCase() === 'potential-economic-benefits' &&
+    //     tempStateFilters.toLowerCase() === 'project')
+    // ) {
+    //   const hierarchy = JSON.parse(
+    //     localStorage.getItem('completeHierarchyData') || '{}',
+    //   )[this.selectedType];
+    //   const projectHierarchyDetails = hierarchy.find(
+    //     (hi) => hi.hierarchyLevelId === 'project',
+    //   );
+    //   if (projectHierarchyDetails) {
+    //     const leafNodePlusOneDetails = hierarchy.find(
+    //       (item) => item.level === projectHierarchyDetails.level - 1,
+    //     );
 
-        this.selectedLevel = this.filterLevels.filter((level) => {
-          return (
-            level.nodeId.toLowerCase() ===
-            leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
-          );
-        })[0];
-      }
-    } else {
-      this.selectedLevel = this.filterLevels.filter((level) => {
-        return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
-      })[0];
-    }
+    //     this.selectedLevel = this.filterLevels.filter((level) => {
+    //       return (
+    //         level.nodeId.toLowerCase() ===
+    //         leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
+    //       );
+    //     })[0];
+    //   }
+    // } else {
+    this.selectedLevel = this.filterLevels.filter((level) => {
+      return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
+    })[0];
+    // }
   }
 
   /**
