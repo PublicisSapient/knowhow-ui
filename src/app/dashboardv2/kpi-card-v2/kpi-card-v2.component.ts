@@ -224,7 +224,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
                       ? { filter1: null }
                       : [...currentFilterArray];
                 } else {
-                  this.dropdownArr.forEach((filter, idx) => {
+                  this.dropdownArr?.forEach((filter, idx) => {
                     if (filter?.options?.length) {
                       this.filterOptions['filter' + (idx + 1)] =
                         filter.options[0];
