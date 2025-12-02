@@ -432,6 +432,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .select('.yaxis-container')
       .append('div')
       .attr('class', 'y-caption')
+      .style('margin-left', '-5px')
       .append('span')
       .text(this.yCaption);
 
