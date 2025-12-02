@@ -34,7 +34,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       const analytics = this.injector.get(AnalyticsService, null);
 
       if (analytics) {
-        // Capture error in analytics (PostHog/Faro only)
+        // Capture error in analytics
         analytics.captureError(error, {
           source: 'global_error_handler',
           timestamp: new Date().toISOString(),

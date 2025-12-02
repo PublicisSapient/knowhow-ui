@@ -86,14 +86,6 @@ import { MessageModule } from 'primeng/message';
               (onClick)="testErrorCapture()"
               class="mb-2">
             </p-button>
-
-            <p-button
-              label="Test Web Vitals"
-              icon="pi pi-gauge"
-              severity="info"
-              (onClick)="testWebVitals()"
-              class="mb-2">
-            </p-button>
           </div>
         </div>
 
@@ -102,23 +94,15 @@ import { MessageModule } from 'primeng/message';
           <h3>Testing Instructions</h3>
           <ul>
             <li>
-              <strong>PostHog:</strong> Check browser Network tab for requests
-              to PostHog API
-            </li>
-            <li>
-              <strong>Grafana Faro:</strong> Check browser Network tab for
-              requests to Faro collector
-            </li>
-            <li>
               <strong>Google Analytics:</strong> Check browser Network tab for
               Google Analytics requests
             </li>
             <li>
-              Open browser DevTools Console to see initialization and event logs
+              <strong>Grafana/Prometheus:</strong> Check metrics at
+              http://localhost:9092/metrics
             </li>
             <li>
-              For session replay (PostHog/Faro), interact with the page and
-              check the respective dashboards
+              Open browser DevTools Console to see initialization and event logs
             </li>
           </ul>
         </div>
@@ -224,9 +208,4 @@ export class AnalyticsTestComponent {
     console.log('Error capture event sent');
   }
 
-  testWebVitals(): void {
-    console.log('Testing web vitals capture...');
-    this.analytics.captureWebVitals();
-    console.log('Web vitals capture triggered (automatic in PostHog/Faro)');
-  }
 }

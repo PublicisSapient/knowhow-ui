@@ -47,12 +47,18 @@ export class AnalyticsService {
 
     // Start metrics collection only if user is in Grafana rollout
     if (this.useGrafanaAnalytics) {
+      console.log(
+        '[Analytics] 🚀 Grafana analytics enabled - starting metrics collection',
+      );
       this.metrics.exposeMetricsEndpoint();
 
       // Send metrics to backend every 15 seconds for Prometheus scraping
+      console.log('[Analytics] ⏰ Scheduling metrics push every 15 seconds');
       setInterval(() => {
         this.metrics.sendMetricsToBackend();
       }, 15000);
+    } else {
+      console.log('[Analytics] Grafana analytics disabled for this session');
     }
   }
 
@@ -63,23 +69,41 @@ export class AnalyticsService {
 
     // Determine if user should get Grafana analytics (A/B test)
     this.useGrafanaAnalytics = this.shouldUseGrafanaAnalytics();
+
+    console.log('[Analytics] Initialized:', {
+      googleAnalytics: this.useGoogleAnalytics,
+      grafanaAnalytics: this.useGrafanaAnalytics,
+      rolloutPercentage: environment.analytics?.grafanaRolloutPercentage,
+    });
   }
 
   private shouldUseGrafanaAnalytics(): boolean {
     if (!environment.analytics?.enableGrafanaAnalytics) {
+      console.log('[Analytics] Grafana analytics disabled in environment');
       return false;
     }
 
     // Use consistent rollout decision per session
     if (!sessionStorage.getItem('grafana_analytics_rollout')) {
       const random = Math.random() * 100;
-      const inRollout =
-        random < (environment.analytics?.grafanaRolloutPercentage || 0);
+      const rolloutPercentage =
+        environment.analytics?.grafanaRolloutPercentage || 0;
+      const inRollout = random < rolloutPercentage;
       sessionStorage.setItem('grafana_analytics_rollout', inRollout.toString());
+      console.log(
+        `[Analytics] A/B Test: ${
+          inRollout ? 'IN' : 'OUT'
+        } of rollout (${random.toFixed(2)}% vs ${rolloutPercentage}%)`,
+      );
       return inRollout;
     }
 
-    return sessionStorage.getItem('grafana_analytics_rollout') === 'true';
+    const inRollout =
+      sessionStorage.getItem('grafana_analytics_rollout') === 'true';
+    console.log(
+      `[Analytics] Using cached rollout decision: ${inRollout ? 'IN' : 'OUT'}`,
+    );
+    return inRollout;
   }
 
   setPageLoad(data: AnalyticsData): void {
@@ -294,6 +318,28 @@ export class AnalyticsService {
         );
       } catch (error) {
         console.error('Grafana Analytics trackSessionEnd error:', error);
+      }
+    }
+  }
+
+  captureError(error: any, context?: Record<string, any>): void {
+    // Send to Google Analytics if enabled
+    if (this.useGoogleAnalytics) {
+      try {
+        // Google Analytics doesn't have built-in error tracking in our implementation
+        // Could be extended to use GA4 exception tracking if needed
+        console.debug('Error captured for Google Analytics:', error);
+      } catch (gaError) {
+        console.error('Google Analytics captureError error:', gaError);
+      }
+    }
+
+    // Send to Grafana analytics if user is in rollout
+    if (this.useGrafanaAnalytics) {
+      try {
+        this.metrics.trackErrorWithContext(error, context);
+      } catch (metricsError) {
+        console.error('Grafana Analytics captureError error:', metricsError);
       }
     }
   }

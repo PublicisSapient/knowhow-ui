@@ -29,18 +29,15 @@ export const environment: Environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration for dev1 - PostHog testing
+  // Analytics configuration for dev1
   analytics: {
-    provider: 'posthog', // PostHog for PO evaluation
-    rolloutPercentage: 100, // 100% for testing environment
-    // PostHog configuration
-    posthog: {
-      apiKey: '${POSTHOG_API_KEY}', // Will be replaced by deployment
-      host: '${POSTHOG_HOST}', // Will be replaced by deployment
-    },
-    // Grafana Faro configuration (for future testing)
-    faro: {
-      url: '${FARO_COLLECTOR_URL}',
+    grafanaRolloutPercentage: 100,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: true, // Enable Grafana for testing
+
+    selfHosted: {
+      enabled: true,
+      metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Dev1',
       appVersion: '14.0.0',
     },

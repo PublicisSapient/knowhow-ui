@@ -17,16 +17,15 @@
  ******************************************************************************/
 
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AnalyticsService } from './analytics.service';
 import { GoogleAnalyticsService } from './google-analytics.service';
-import { PostHogService } from './posthog.service';
-import { FaroService } from './faro.service';
+import { MetricsService } from './metrics.service';
 
 describe('AnalyticsService', () => {
   let service: AnalyticsService;
   let googleAnalyticsSpy: jasmine.SpyObj<GoogleAnalyticsService>;
-  let postHogSpy: jasmine.SpyObj<PostHogService>;
-  let faroSpy: jasmine.SpyObj<FaroService>;
+  let metricsSpy: jasmine.SpyObj<MetricsService>;
 
   beforeEach(() => {
     const googleSpy = jasmine.createSpyObj('GoogleAnalyticsService', [
@@ -39,38 +38,19 @@ describe('AnalyticsService', () => {
       'setUIType',
     ]);
 
-    const postHogSpyObj = jasmine.createSpyObj('PostHogService', [
-      'init',
-      'setPageLoad',
-      'setLoginMethod',
-      'setProjectData',
-      'setProjectToolsData',
-      'setKpiData',
-      'createProjectData',
-      'setUIType',
-      'captureError',
-      'captureWebVitals',
-    ]);
-
-    const faroSpyObj = jasmine.createSpyObj('FaroService', [
-      'init',
-      'setPageLoad',
-      'setLoginMethod',
-      'setProjectData',
-      'setProjectToolsData',
-      'setKpiData',
-      'createProjectData',
-      'setUIType',
-      'captureError',
-      'captureWebVitals',
+    const metricsSpyObj = jasmine.createSpyObj('MetricsService', [
+      'increment',
+      'set',
+      'sendMetricsToBackend',
+      'exposeMetricsEndpoint',
     ]);
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
         AnalyticsService,
         { provide: GoogleAnalyticsService, useValue: googleSpy },
-        { provide: PostHogService, useValue: postHogSpyObj },
-        { provide: FaroService, useValue: faroSpyObj },
+        { provide: MetricsService, useValue: metricsSpyObj },
       ],
     });
 
@@ -78,35 +58,16 @@ describe('AnalyticsService', () => {
     googleAnalyticsSpy = TestBed.inject(
       GoogleAnalyticsService,
     ) as jasmine.SpyObj<GoogleAnalyticsService>;
-    postHogSpy = TestBed.inject(
-      PostHogService,
-    ) as jasmine.SpyObj<PostHogService>;
-    faroSpy = TestBed.inject(FaroService) as jasmine.SpyObj<FaroService>;
+    metricsSpy = TestBed.inject(
+      MetricsService,
+    ) as jasmine.SpyObj<MetricsService>;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return current provider', () => {
-    const provider = service.getCurrentProvider();
-    expect(['google', 'posthog', 'faro', 'disabled']).toContain(provider);
-  });
-
-  it('should return rollout status', () => {
-    const inRollout = service.isInRollout();
-    expect(typeof inRollout).toBe('boolean');
-  });
-
-  it('should return provider info', () => {
-    const info = service.getProviderInfo();
-    expect(info).toHaveProperty('provider');
-    expect(info).toHaveProperty('inRollout');
-    expect(['google', 'posthog', 'faro', 'disabled']).toContain(info.provider);
-    expect(typeof info.inRollout).toBe('boolean');
-  });
-
-  it('should call setPageLoad on the appropriate service', () => {
+  it('should call setPageLoad on Google Analytics when enabled', () => {
     const testData = {
       url: '/test',
       userRole: 'admin',
@@ -116,18 +77,12 @@ describe('AnalyticsService', () => {
 
     service.setPageLoad(testData);
 
-    // At least one service should be called (depending on configuration)
-    const totalCalls =
-      googleAnalyticsSpy.setPageLoad.calls.count() +
-      postHogSpy.setPageLoad.calls.count() +
-      faroSpy.setPageLoad.calls.count();
-
-    expect(totalCalls).toBeGreaterThan(0);
+    // Google Analytics should be called
+    expect(googleAnalyticsSpy.setPageLoad).toHaveBeenCalled();
   });
 
   it('should handle errors gracefully', () => {
-    // Mock an error in PostHog
-    postHogSpy.setPageLoad.and.throwError('PostHog error');
+    googleAnalyticsSpy.setPageLoad.and.throwError('GA error');
 
     const testData = { url: '/test' };
 
@@ -135,11 +90,9 @@ describe('AnalyticsService', () => {
     expect(() => service.setPageLoad(testData)).not.toThrow();
   });
 
-  it('should call captureError for supported providers', () => {
+  it('should call captureError', () => {
     const testError = new Error('Test error');
     const context = { component: 'test' };
-
-    service.captureError(testError, context);
 
     // Should not throw an error
     expect(() => service.captureError(testError, context)).not.toThrow();

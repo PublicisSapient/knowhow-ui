@@ -35,6 +35,11 @@ export class MetricsService {
     const key = this.buildMetricKey(metricName, labels);
     const current = this.metrics.get(key) || 0;
     this.metrics.set(key, current + 1);
+    console.log(
+      `[Metrics] Incremented ${metricName}:`,
+      labels,
+      `-> ${current + 1}`,
+    );
   }
 
   // Set a metric value
@@ -45,6 +50,7 @@ export class MetricsService {
   ): void {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
+    console.log(`[Metrics] Set ${metricName}:`, labels, `-> ${value}`);
   }
 
   // Get all metrics in Prometheus format
@@ -65,6 +71,9 @@ export class MetricsService {
       }
     }
 
+    console.log(
+      `[Metrics] Generated Prometheus metrics (${this.metrics.size} metrics)`,
+    );
     return output;
   }
 
@@ -184,6 +193,28 @@ export class MetricsService {
   // Track error
   trackError(errorType: string, page: string): void {
     this.increment('errors_total', { error_type: errorType, page });
+  }
+
+  // Track error with rich context (for global error handler)
+  trackErrorWithContext(error: any, context?: Record<string, any>): void {
+    const errorType = error?.name || error?.constructor?.name || 'UnknownError';
+    const page = context?.url || window.location.pathname;
+    const errorMessage = error?.message || String(error);
+
+    this.increment('errors_total', {
+      error_type: errorType,
+      page: page,
+      source: context?.source || 'unknown',
+    });
+
+    // Track error details for debugging
+    if (context) {
+      this.increment('error_details_total', {
+        error_type: errorType,
+        user_agent: context.userAgent || 'unknown',
+        timestamp: context.timestamp || new Date().toISOString(),
+      });
+    }
   }
 
   // === USER JOURNEY & ENGAGEMENT TRACKING (GA-equivalent) ===
@@ -344,6 +375,10 @@ export class MetricsService {
 
   // Expose metrics endpoint (for development)
   exposeMetricsEndpoint(): void {
+    console.log(
+      '[Metrics] Metrics endpoint exposed on window.getKnowHowMetrics()',
+    );
+
     // Log metrics to console for debugging
     setInterval(() => {}, 30000); // Every 30 seconds
 
@@ -355,11 +390,13 @@ export class MetricsService {
 
   // Send metrics to backend (simulate for demo)
   sendMetricsToBackend(): void {
+    console.log('[Metrics] Preparing to send metrics to backend...');
     const metrics = this.getPrometheusMetrics();
 
     // Store locally for debugging
     localStorage.setItem('knowhow_metrics', metrics);
     localStorage.setItem('knowhow_metrics_timestamp', Date.now().toString());
+    console.log('[Metrics] Metrics saved to localStorage');
 
     // Send to Pushgateway
     this.sendToPushgateway(metrics);
@@ -368,6 +405,9 @@ export class MetricsService {
   // Send metrics to Pushgateway
   private async sendToPushgateway(metrics: string): Promise<void> {
     try {
+      console.log(
+        '[Metrics] Sending metrics to Pushgateway at /api/metrics-proxy/send...',
+      );
       const response = await fetch('/api/metrics-proxy/send', {
         method: 'POST',
         headers: {
@@ -378,12 +418,17 @@ export class MetricsService {
 
       if (!response.ok) {
         console.error(
-          'Failed to send metrics to Pushgateway:',
+          '[Metrics] ❌ Failed to send metrics to Pushgateway:',
           response.statusText,
         );
+      } else {
+        console.log('[Metrics] ✅ Successfully sent metrics to Pushgateway');
       }
     } catch (error) {
-      console.error('Error sending metrics to Pushgateway:', error);
+      console.error(
+        '[Metrics] ❌ Error sending metrics to Pushgateway:',
+        error,
+      );
     }
   }
 }

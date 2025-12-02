@@ -31,17 +31,14 @@ export const environment: Environment = {
   RETROS_URL: '',
   // Analytics configuration for production
   analytics: {
-    provider: 'google', // 'google' | 'posthog' | 'faro' | 'disabled'
-    rolloutPercentage: 10, // Percentage of users to include in new analytics
-    // PostHog configuration
-    posthog: {
-      apiKey: '${POSTHOG_API_KEY}', // Set via environment variables
-      host: '${POSTHOG_HOST}', // e.g., 'https://us.i.posthog.com'
-    },
-    // Grafana Faro configuration
-    faro: {
-      url: '${FARO_COLLECTOR_URL}', // Set via environment variables
-      appName: 'PSKnowHOW',
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false, // Set to true to enable Grafana/Prometheus metrics
+
+    selfHosted: {
+      enabled: false,
+      metricsEndpoint: '/api/metrics-proxy/send',
+      appName: 'PSKnowHOW-Production',
       appVersion: '14.0.0',
     },
   },
