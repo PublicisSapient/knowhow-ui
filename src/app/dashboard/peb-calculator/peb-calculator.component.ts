@@ -161,6 +161,7 @@ export class PebCalculatorComponent implements OnInit {
             this.showResults = true;
             this.productivityGain = response['data'];
             this.calculatePEB();
+            this.errorMessage = '';
           } else {
             this.showLoader = false;
             this.isError = true;
@@ -189,7 +190,6 @@ export class PebCalculatorComponent implements OnInit {
       }, 0);
 
       this.annualPEB = this.calculateMultipliedDetails(overallGain);
-      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
       const details = this.productivityGain?.details;
       this.items = details.map((item) => ({
