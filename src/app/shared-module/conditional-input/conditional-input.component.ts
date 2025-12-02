@@ -59,7 +59,6 @@ export class ConditionalInputComponent implements OnChanges {
       selectedOption['countValue'] = selectedOption['minValue'];
     }
     this.setOutput();
-    console.log(this.templateLabels);
   }
 
   setCounter(event, option) {
