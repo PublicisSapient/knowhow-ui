@@ -161,6 +161,7 @@ export class PebCalculatorComponent implements OnInit {
             this.showResults = true;
             this.productivityGain = response['data'];
             this.calculatePEB();
+            this.errorMessage = '';
           } else {
             this.showLoader = false;
             this.isError = true;
