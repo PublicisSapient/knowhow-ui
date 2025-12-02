@@ -5081,11 +5081,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.allPerformanceSummaryData = response.data;
           this.filterPerformanceSummaryData();
         } else {
+          this.allPerformanceSummaryData = [];
+          this.filteredBranchData = [];
           console.error('Missing Configuration');
         }
       },
       error: (error) => {
         this.perfSummaryLoader = false;
+        this.allPerformanceSummaryData = [];
+        this.filteredBranchData = [];
         console.error('Error fetching performance summary', error);
       },
     });
@@ -5093,11 +5097,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   private filterPerformanceSummaryData() {
     this.selectedDateFilterValue = this.service.getSelectedDateRange();
-    console.log(
-      this.selectedDateFilterValue,
-      this.currentBranch,
-      this.allPerformanceSummaryData,
-    );
     if (this.currentBranch && this.allPerformanceSummaryData?.length) {
       this.filteredBranchData = this.allPerformanceSummaryData.find(
         (item) => item.label === this.currentBranch,
