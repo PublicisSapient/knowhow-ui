@@ -42,16 +42,10 @@ export class ConditionalInputComponent implements OnChanges {
   }
 
   templateLabelToLowercase = (arr: []) => {
-    console.log('arr', arr);
     return arr.map((val: any) => val.toLowerCase());
   };
 
   setValue(event) {
-    console.log('event', event);
-    const newValue = [...event.value, event.itemValue].filter(
-      (val) => val?.labelValue,
-    );
-    event.value = newValue;
     this.templateLabels = this.templateLabelToLowercase(
       event.value.map((val) => val.labelValue),
     );

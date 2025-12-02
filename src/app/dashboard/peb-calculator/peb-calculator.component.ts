@@ -189,7 +189,6 @@ export class PebCalculatorComponent implements OnInit {
       }, 0);
 
       this.annualPEB = this.calculateMultipliedDetails(overallGain);
-      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
       const details = this.productivityGain?.details;
       this.items = details.map((item) => ({
