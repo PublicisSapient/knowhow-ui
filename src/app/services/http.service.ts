@@ -1335,12 +1335,14 @@ export class HttpService {
   }
 
   getPebProductivityData(level) {
-    return this.http.get<any>(this.pebProductivityUrl + '/' + level);
+    return this.http.get<any>(
+      `${this.pebProductivityUrl}?levelName=${level.toLowerCase()}`,
+    );
   }
 
   getPebProductivityDetailsData(level) {
     return this.http.get<any>(
-      this.pebProductivityUrl + '/' + level + '/trends',
+      `${this.pebProductivityUrl}/trends?levelName=${level.toLowerCase()}`,
     );
   }
   fetchScmConnectionInfoByProject(
