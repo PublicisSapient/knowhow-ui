@@ -86,6 +86,7 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
+        // TODO : Currently PEB/Home hierarchy option would behave as per other tabs. Need this code in future to retain this functinality
         // if (
         //   this.selectedTab.toLowerCase() === 'home' ||
         //   this.selectedTab.toLowerCase() === 'potential-economic-benefits'
@@ -253,6 +254,7 @@ export class ParentFilterComponent implements OnChanges {
     } else if (this.stateFilters && typeof this.stateFilters !== 'string') {
       tempStateFilters = this.stateFilters['nodeId'];
     }
+    // TODO : Currently PEB/Home hierarchy option would behave as per other tabs. Need this code in future to retain this functinality.
     // if (
     //   (this.selectedTab.toLowerCase() === 'home' &&
     //     tempStateFilters.toLowerCase() === 'project') ||

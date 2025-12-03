@@ -62,7 +62,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('------home component oninit');
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.subscription.push(
       this.service.passDataToDashboard
@@ -72,7 +71,6 @@ export class HomeComponent implements OnInit, OnDestroy {
           ),
         )
         .subscribe((sharedobject) => {
-          console.log('****** filter subscription *******');
           this.tableData = {
             columns: [],
             data: [],
@@ -456,7 +454,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
-        console.log('Subscribing...');
         if (res?.error) {
           this.messageService.add({
             severity: 'error',
@@ -842,7 +839,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('home component destroyed');
     this.service.setPEBData({});
     this.subscription.forEach((subscription) => subscription.unsubscribe());
     this.subscription = [];
