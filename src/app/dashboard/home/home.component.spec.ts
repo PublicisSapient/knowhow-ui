@@ -746,13 +746,16 @@ describe('HomeComponent', () => {
   });
 
   it('should handle ngOnDestroy', () => {
-    component.subscription = [of().subscribe()];
-    spyOn(component.subscription[0], 'unsubscribe');
+    const mockSubscription = jasmine.createSpyObj('Subscription', [
+      'unsubscribe',
+    ]);
+    component.subscription = [mockSubscription];
 
     component.ngOnDestroy();
 
     expect(mockSharedService.setPEBData).toHaveBeenCalledWith({});
-    expect(component.subscription[0].unsubscribe).toHaveBeenCalled();
+    expect(mockSubscription.unsubscribe).toHaveBeenCalled();
+    expect(component.subscription).toEqual([]);
   });
 
   it('should handle urlRedirection', () => {
