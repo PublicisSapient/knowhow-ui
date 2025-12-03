@@ -587,10 +587,6 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   getImmediateParentDisplayName(child) {
-    if (this.selectedLevel === 'Project') {
-      return null;
-    }
-
     const completeHiearchyData = JSON.parse(
       localStorage.getItem('completeHierarchyData'),
     )[this.selectedType.toLowerCase()];
