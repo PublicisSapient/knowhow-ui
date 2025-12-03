@@ -422,31 +422,47 @@ export class AccessMgmtComponent implements OnInit {
     }
     if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
       this.uniqueArrUserData = [];
-      this.httpService.updateAccess(userData).subscribe((response) => {
-        if (response['success']) {
-          this.getUsers();
-          if (this.showAddUserForm) {
-            this.showAddUserForm = false;
-            this.messageService.add({
-              severity: 'success',
-              summary: 'User added.',
-              detail: '',
-            });
-            this.resetAddDataForm();
+      this.httpService.updateAccess(userData).subscribe({
+        next: (response) => {
+          if (response['success']) {
+            this.getUsers();
+            if (this.showAddUserForm) {
+              this.showAddUserForm = false;
+              this.messageService.add({
+                severity: 'success',
+                summary: 'User added.',
+                detail: '',
+              });
+              this.resetAddDataForm();
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Access updated.',
+                detail: '',
+              });
+            }
           } else {
             this.messageService.add({
-              severity: 'success',
-              summary: 'Access updated.',
+              severity: 'error',
+              summary:
+                response['message'] ||
+                'Error in updating project access. Please try after some time.',
               detail: '',
             });
           }
-        } else {
+        },
+        error: (error) => {
+          const errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Error in updating project access. Please try after some time.';
+
           this.messageService.add({
             severity: 'error',
-            summary:
-              'Error in updating project access. Please try after some time.',
+            summary: errorMessage,
+            detail: '',
           });
-        }
+        },
       });
     }
   }
