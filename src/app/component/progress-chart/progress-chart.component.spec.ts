@@ -153,7 +153,7 @@ describe('ProgressChartComponent', () => {
       const svg = d3.select(component.svgRef.nativeElement);
       const viewBox = svg.attr('viewBox');
 
-      expect(viewBox).toBe('0 0 825 215');
+      expect(viewBox).toBe('0 0 825 300');
       expect(svg.attr('preserveAspectRatio')).toBe('xMidYMid meet');
       expect(svg.style('width')).toBe('100%');
       expect(svg.style('height')).toBe('auto');
