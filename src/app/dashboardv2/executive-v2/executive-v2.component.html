@@ -326,6 +326,7 @@
                                     <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                       [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                       [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
+                                      [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                       [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                   </ng-container>
 
