@@ -115,7 +115,11 @@ export class PebCalculatorComponent implements OnInit {
 
     this.subscription.push(
       this.sharedService.passDataToDashboard
-        .pipe(distinctUntilChanged())
+        .pipe(
+          distinctUntilChanged(
+            (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+          ),
+        )
         .subscribe((sharedobject) => {
           if (sharedobject) {
             const stateFilters =
