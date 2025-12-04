@@ -6,7 +6,7 @@
     tabindex="0"
     aria-label="Recommendations icon, on click will open the dialog to generate recommendations"
   >
-    <span> <i class="pi pi-sparkles" style="font-size: 2rem"></i>
+    <span class="ai-insights-formatting"> <i class="pi pi-sparkles" style="font-size: 1rem"></i> AI Insights
 </span>
   </div>
 </div>
@@ -303,12 +303,12 @@
           pTooltip="Link strength indicates the correlation level between KPIs, from 0 (none) to 100 (perfect)"
           tooltipPosition="top" ></i>
         </h2>
-      
+
         <section class="recommendation-box-main">
           <div class="recommendation-box-container">
             <ng-container *ngFor="let recommendation of recommendationsList; let i = index">
               <div class="recommendation-wrapper">
-      
+
                 <div class="recommendation-box"  tabindex="0"
                   aria-label="{{ getCleanRecommendationType(recommendation.recommendationType) + ' recommendation' }}">
                   <section class="top-recommendation-header">
@@ -319,10 +319,9 @@
                         {{ getCleanRecommendationType(recommendation.recommendationType) | uppercase }}
                       </span>
                     </div>
-      
-                    
+
                   </section>
-      
+
                   <div class="recommendation-content">
                     <div class="recomendations-summary">
                       <div class="recommendation-observation">
@@ -341,7 +340,7 @@
                             <span class="kpi-name">{{ formatKpiLabel(kpi.split(':')[0]) }}</span>
                         </div>
                         <ng-container *ngIf="kpi.split(':')[1]">
-                        <div class="isc-change" 
+                        <div class="isc-change"
                           [ngClass]="{ 'positive': getNumericValue(kpi) > 0, 'negative': getNumericValue(kpi) < 0 }">
                           <span class="value">
                            {{ getNumericValue(kpi) > 0 ? '+' : ''}}{{getDisplayValue(kpi)}}
@@ -356,8 +355,6 @@
             </ng-container>
           </div>
         </section>
-      
-      
       </article>
 
       <article class="p-p-6 share-email-container p-mb-4" id="shareViaEmail" *ngIf="toShareViaEmail">

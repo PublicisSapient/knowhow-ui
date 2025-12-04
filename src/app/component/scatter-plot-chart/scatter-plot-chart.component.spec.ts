@@ -310,11 +310,31 @@ describe('ScatterPlotChartComponent', () => {
       expect(() => component['createChart']()).not.toThrow();
     });
 
-    it('should set SVG width and height correctly', () => {
+    it('should set SVG viewBox correctly', () => {
+      component['data'] = [
+        {
+          data: 'Project1',
+          value: [
+            {
+              date: '2025-01-01',
+              kpiGroup: 'group1',
+              sprojectName: 'Project1',
+              bubblePoints: [
+                {
+                  size: '100',
+                  label: 'PR001',
+                  hoverValue: { 'No of lines': 100 },
+                },
+              ],
+            },
+          ],
+        },
+      ];
       component['createChart']();
+      fixture.detectChanges();
+
       const svg = fixture.debugElement.query(By.css('svg'));
-      expect(svg.nativeElement.getAttribute('width')).toBe('825');
-      expect(svg.nativeElement.getAttribute('height')).toBe('215');
+      expect(svg.nativeElement.getAttribute('viewBox')).toBe('0 0 825 350');
     });
 
     it('should render grid lines', () => {
