@@ -20,6 +20,7 @@ import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharelinkService } from './share-link.service';
+import { Portal } from '@angular/cdk/portal';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -168,6 +169,9 @@ export class SharedService {
   kpiPostSonarData: object = {};
   selectedDateRangeFilter: any;
   kpiPostZypherData: any;
+
+  private recommendationsPortalSubject = new BehaviorSubject<Portal<any>>(null);
+  recommendationsPortal$ = this.recommendationsPortalSubject.asObservable();
 
   constructor(
     private router: Router,
@@ -1025,5 +1029,9 @@ export class SharedService {
 
   getKPIPostZypherData() {
     return this.kpiPostZypherData;
+  }
+
+  setRecommendationsPortal(portal: Portal<any>) {
+    this.recommendationsPortalSubject.next(portal);
   }
 }

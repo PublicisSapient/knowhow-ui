@@ -76,7 +76,7 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
   private createChart(): void {
     const svg = d3.select(this.svgRef?.nativeElement);
     const width = 825;
-    const height = 215;
+    const height = 300;
     const margin = { top: 20, right: 20, bottom: 40, left: 20 };
 
     svg
