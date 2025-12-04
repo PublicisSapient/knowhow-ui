@@ -25,6 +25,8 @@ import {
   ChangeDetectorRef,
   Renderer2,
   ElementRef,
+  TemplateRef,
+  ViewContainerRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -37,6 +39,7 @@ import {
   mergeMap,
   takeUntil,
 } from 'rxjs/operators';
+import { TemplatePortal } from '@angular/cdk/portal';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
 import { Subject, throwError, Subscription } from 'rxjs';
@@ -180,6 +183,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   filteredBranchData: any;
   selectedDateFilterValue: string;
   perfSummaryLoader: boolean = true;
+  @ViewChild('recommendationsPortal') recommendationsPortal: TemplateRef<any>;
 
   constructor(
     public service: SharedService,
@@ -191,7 +195,38 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private renderer2: Renderer2,
+    private viewContainerRef: ViewContainerRef,
   ) {}
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+
+    // Watch for changes and update portal
+    this.service.passDataToDashboard.subscribe(() => {
+      setTimeout(() => this.updateRecommendationsPortal(), 0);
+    });
+  }
+
+  private updateRecommendationsPortal() {
+    if (this.recommendationsPortal && this.shouldShowRecommendations()) {
+      const portal = new TemplatePortal(
+        this.recommendationsPortal,
+        this.viewContainerRef,
+      );
+      this.service.setRecommendationsPortal(portal);
+    } else {
+      this.service.setRecommendationsPortal(null);
+    }
+  }
+
+  shouldShowRecommendations() {
+    return (
+      this.floatingRecommendation &&
+      this.isRecommendationsEnabled &&
+      this.selectedtype?.toLowerCase() == 'scrum' &&
+      this.projectCount <= 2
+    );
+  }
 
   arrayDeepCompare(a1, a2) {
     for (let idx = 0; idx < a1.length; idx++) {

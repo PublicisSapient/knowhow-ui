@@ -15431,4 +15431,37 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.filteredBranchData).toBeUndefined();
   });
+
+  describe('Recommendations Portal', () => {
+    describe('ngAfterViewInit', () => {
+      it('should call detectChanges', () => {
+        spyOn(component['cdr'], 'detectChanges');
+        component.ngAfterViewInit();
+        expect(component['cdr'].detectChanges).toHaveBeenCalled();
+      });
+    });
+
+    describe('shouldShowRecommendations', () => {
+      it('should return true when all conditions are met', () => {
+        component.floatingRecommendation = true;
+        component.isRecommendationsEnabled = true;
+        component.selectedtype = 'Scrum';
+        component.projectCount = 2;
+        expect(component.shouldShowRecommendations()).toBeTrue();
+      });
+
+      it('should return false when any condition fails', () => {
+        component.floatingRecommendation = false;
+        expect(component.shouldShowRecommendations()).toBeFalse();
+      });
+    });
+
+    describe('updateRecommendationsPortal', () => {
+      it('should call setRecommendationsPortal', () => {
+        spyOn(component.service, 'setRecommendationsPortal');
+        component['updateRecommendationsPortal']();
+        expect(component.service.setRecommendationsPortal).toHaveBeenCalled();
+      });
+    });
+  });
 });

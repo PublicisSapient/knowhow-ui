@@ -32,9 +32,11 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { BlockUIModule } from 'primeng/blockui';
+import { CdkPortalOutlet, Portal, PortalModule } from '@angular/cdk/portal';
 import { ParentFilterComponent } from './parent-filter/parent-filter.component';
 import { PrimaryFilterComponent } from './primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './additional-filter/additional-filter.component';
+import { ChatbotComponent } from 'src/app/dashboard/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-filter-new',
@@ -61,6 +63,8 @@ import { AdditionalFilterComponent } from './additional-filter/additional-filter
     JsonPipe,
     ButtonDirective,
     NgForOf,
+    ChatbotComponent,
+    PortalModule,
   ],
 })
 export class FilterNewComponent implements OnInit, OnDestroy {
@@ -139,6 +143,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   @ViewChild('autoComplete') autoComplete: AutoComplete;
   isSearchingKPI: boolean = false;
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
+
+  recommendationsPortal: Portal<any>;
 
   // Add this property to your component class
 
@@ -271,6 +277,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.refreshCounter++;
     }
+
+    this.service.recommendationsPortal$.subscribe((portal) => {
+      this.recommendationsPortal = portal;
+    });
   }
 
   setDateFilter() {

@@ -502,11 +502,13 @@ describe('NavNewComponent', () => {
         label: 'Board 1',
         slug: 'board-1',
         command: jasmine.any(Function),
+        disabled: false,
       },
       {
         label: 'Board 2',
         slug: 'board-2',
         command: jasmine.any(Function),
+        disabled: false,
       },
     ]);
   });
