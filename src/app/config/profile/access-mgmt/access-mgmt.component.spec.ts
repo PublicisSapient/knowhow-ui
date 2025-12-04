@@ -739,6 +739,7 @@ describe('AccessMgmtComponent', () => {
     expect(spy).toHaveBeenCalledWith({
       severity: 'error',
       summary: 'Error in updating project access. Please try after some time.',
+      detail: '',
     });
   });
 
