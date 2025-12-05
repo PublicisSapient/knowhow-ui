@@ -207,5 +207,4 @@ export class AnalyticsTestComponent {
     });
     console.log('Error capture event sent');
   }
-
 }
