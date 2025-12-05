@@ -860,7 +860,7 @@ describe('HomeComponent', () => {
     component.fetchPEBaData({ label: 'project', level: 1, parentId: '' });
 
     expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
-      'root level',
+      'project level',
     );
     expect(component.processPEBData).toHaveBeenCalledWith(cachedData);
     expect(component.calculatorDataLoader).toBeFalse();
@@ -897,7 +897,7 @@ describe('HomeComponent', () => {
     tick();
 
     expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
-      'root level',
+      'project level',
       apiResponse.data,
     );
     expect(component.processPEBData).toHaveBeenCalledWith(apiResponse.data);
