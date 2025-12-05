@@ -129,6 +129,7 @@ export class JiraConfigComponent implements OnInit {
   filterText: any;
   selected = [1];
   originalConfigTools = [];
+  scmTools = ['Bitbucket', 'GitLab', 'GitHub', 'AzureRepository'];
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -288,6 +289,10 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
+  }
+
+  get showConfiguredToolFilters(): boolean {
+    return this.scmTools.includes(this.urlParam);
   }
 
   addRepositoryIfNotExists(value: string) {
@@ -638,10 +643,6 @@ export class JiraConfigComponent implements OnInit {
             JSON.stringify(this.configuredTools),
           );
 
-          this.configuredTools = this.mergeRepositoriesKeepBranch(
-            this.configuredTools,
-          );
-
           // prefetch boards if projectKey is present
           if (this.urlParam === 'Jira') {
             if (this.toolForm.controls['projectKey'].value) {
@@ -662,34 +663,6 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-  }
-
-  mergeRepositoriesKeepBranch(connectionDatails: any[] = []): any[] {
-    const result: any[] = [];
-    connectionDatails?.forEach((item) => {
-      if (!item?.repositoryName) {
-        result.push(item);
-        return;
-      }
-      const existing = result.find(
-        (r) => r?.repositoryName === item?.repositoryName,
-      );
-
-      if (existing) {
-        if (!existing?._branches.includes(item?.branch)) {
-          existing?._branches.push(item?.branch);
-          existing.branches = existing?._branches.join(',');
-        }
-      } else {
-        const newObj = {
-          ...item,
-          _branches: [item?.branch],
-          branches: item?.branch,
-        };
-        result.push(newObj);
-      }
-    });
-    return result;
   }
 
   checkProjectKey = () => {
@@ -1945,7 +1918,7 @@ export class JiraConfigComponent implements OnInit {
               class: 'long-text',
             },
 
-            { field: 'branches', header: 'Branch', class: 'long-text' },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
           //new Changes
@@ -2012,7 +1985,7 @@ export class JiraConfigComponent implements OnInit {
               class: 'long-text',
             },
 
-            { field: 'branches', header: 'Branch', class: 'long-text' },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2160,7 +2133,7 @@ export class JiraConfigComponent implements OnInit {
               class: 'long-text',
             },
 
-            { field: 'branches', header: 'Branch', class: 'long-text' },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2226,7 +2199,7 @@ export class JiraConfigComponent implements OnInit {
               class: 'long-text',
             },
 
-            { field: 'branches', header: 'Branch', class: 'long-text' },
+            { field: 'branch', header: 'Branch', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -3053,9 +3026,6 @@ export class JiraConfigComponent implements OnInit {
                 }
               });
             });
-            this.configuredTools = this.mergeRepositoriesKeepBranch(
-              this.originalConfigTools,
-            );
 
             if (
               this.urlParam == 'Jira' ||
