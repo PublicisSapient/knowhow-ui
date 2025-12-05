@@ -28,3 +28,15 @@
 .bar:hover {
   opacity: 0.8;
 }
+
+:host ::ng-deep .thresholdline {
+  stroke: #333333;
+  stroke-dasharray: 3, 3;
+}
+
+:host ::ng-deep .thresholdlinetext {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Poppins_Regular, sans-serif;
+  fill: #333333;
+}

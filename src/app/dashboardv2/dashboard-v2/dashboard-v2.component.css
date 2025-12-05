@@ -40,6 +40,11 @@
   border-radius: 10px;
 }
 
+::ng-deep .p-scrolltop {
+  right: 20px;
+  bottom: 100px;
+}
+
 :host ::ng-deep .p-scrolltop.p-link {
   background: #0b4bc8 !important;
 }

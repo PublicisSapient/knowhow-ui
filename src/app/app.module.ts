@@ -153,6 +153,7 @@ import { DynamicCurrencyPipe } from './shared-module/pipes/dynamic-currency/dyna
 import { IndicatorsComponent } from './dashboard/indicators/indicators.component';
 import { ListBlockComponent } from './dashboard/list-block/list-block.component';
 import { TopTilesComponent } from './dashboard/top-tiles/top-tiles.component';
+import { ChatbotComponent } from './dashboard/chatbot/chatbot.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -268,6 +269,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     IndicatorsComponent,
     ListBlockComponent,
     TopTilesComponent,
+    ChatbotComponent,
   ],
   providers: [
     ExcelService,
