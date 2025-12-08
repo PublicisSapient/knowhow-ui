@@ -18,7 +18,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div class="p-col-12">
+  <div [ngClass]="{'p-col-12': !nbaRawData.length, 'p-col-9' : nbaRawData.length}">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -332,7 +332,7 @@
   </div>
 </div>
 
-<div class="p-col-3" *ngIf="false">
+<div class="p-col-3" *ngIf="nbaRawData.length">
  <app-nba [rawData]="nbaRawData"></app-nba>
 
 </div>
