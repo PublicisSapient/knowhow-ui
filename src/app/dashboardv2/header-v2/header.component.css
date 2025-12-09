@@ -179,3 +179,10 @@ header {
     display: none;
   }
 }
+:host ::ng-deep .custom-menu .p-menu .p-submenu-header {
+  border-bottom: 1px solid #dcdcdc;
+}
+
+:host ::ng-deep .custom-menu .p-menu .p-menuitem:last-child > div {
+  border-top: 1px solid #dcdcdc;
+}

@@ -2616,3 +2616,6 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .text-grey {
   color: var(--color-grey-30);
 }
+.font-xs {
+  font-size: 0.75rem;
+}

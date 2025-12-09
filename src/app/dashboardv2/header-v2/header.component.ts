@@ -43,6 +43,7 @@ export class HeaderComponent implements OnInit {
   saveReportsUrl: string = '';
   saveDashboardUrl: string = '';
   isAnalsisFlag = new BehaviorSubject(false);
+  configDetails: object = {};
 
   constructor(
     private httpService: HttpService,
@@ -78,51 +79,51 @@ export class HeaderComponent implements OnInit {
           {
             label: 'Product Documentation',
             subheading: 'Guides and references',
-            externalLink: true,
+            // externalLink: true,
             icon: 'fas fa-book-open',
             iconColorClass: 'text-blue',
             command: () => {
-              this.logout();
+              window.open(this.configDetails['productDocumentation'], '_blank');
             },
           },
           {
             label: 'API Documentation',
             subheading: 'Developer Resources',
-            externalLink: true,
+            // externalLink: true,
             icon: 'far fa-file-alt',
             iconColorClass: 'text-purple',
             command: () => {
-              this.logout();
+              window.open(this.configDetails['apiDocumentation'], '_blank');
             },
           },
           {
             label: 'Video Tutorials',
             subheading: 'Step-by-step guides',
-            externalLink: true,
+            // externalLink: true,
             icon: 'fas fa-video',
             iconColorClass: 'text-red',
             command: () => {
-              this.logout();
+              window.open(this.configDetails['videoTutorials'], '_blank');
             },
           },
           {
             label: 'Raise a Ticket',
             subheading: 'Get Personalized help',
-            externalLink: false,
+            // externalLink: false,
             icon: 'fas fa-ticket-alt',
             iconColorClass: 'text-green',
             command: () => {
-              this.logout();
+              window.open(this.configDetails['raiseTicket'], '_blank');
             },
           },
           {
             label: 'Support Channel',
             subheading: 'Chat with our team',
-            externalLink: true,
+            // externalLink: true,
             icon: 'far fa-comment-alt',
             iconColorClass: 'text-orange',
             command: () => {
-              this.logout();
+              window.open(this.configDetails['supportChannel'], '_blank');
             },
           },
           {
@@ -342,6 +343,7 @@ export class HeaderComponent implements OnInit {
     this.httpService.getConfigurationDetails().subscribe(
       (response) => {
         if (response && response.success) {
+          this.configDetails = response.data;
           this.sharedService.setConfigurationDetails(response.data);
         }
       },

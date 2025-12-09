@@ -140,17 +140,17 @@
           </div>
         </div>
       </div>
-      <p-menu #usermenu [popup]="true" [model]="userMenuItems">
+      <p-menu #usermenu [popup]="true" [model]="userMenuItems" class="custom-menu" [style]="{ width: '210px' }">
         <ng-template pTemplate="item" let-item>
           <div role="menuitem" tabindex="0" class="p-d-flex p-justify-between">
             <div class="p-d-flex p-align-center">
-              <i [class]="item.icon" aria-hidden="true"></i>
-              <div>
+              <i [class]="item.icon + ' ' + item.iconColorClass" aria-hidden="true"></i>
+              <div class="p-ml-3">
                 <span> {{ item.label }}</span>
-                <p>{{ item.subheading }}</p>
+                <p class="font-xs text-grey p-mt-1 p-mb-0">{{ item.subheading }}</p>
               </div>
             </div>
-            <i *ngIf="item.externalLink" class="fa-solid fa-arrow-up-right-from-square"></i>
+            <!-- <i *ngIf="item.externalLink" class="fa-solid fa-arrow-up-right-from-square"></i> -->
           </div>
         </ng-template>
       </p-menu>
