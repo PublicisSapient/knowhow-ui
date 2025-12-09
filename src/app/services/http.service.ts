@@ -213,6 +213,7 @@ export class HttpService {
   private kpiAITargetRecommData = this.baseUrl;
   private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
   private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
+  private configurationUrl = `${this.baseUrl}/api/config`;
 
   constructor(
     private router: Router,
@@ -1376,5 +1377,9 @@ export class HttpService {
 
   getPerformanceSummary(payload) {
     return this.http.post<any>(this.performanceSummaryURL, payload);
+  }
+
+  getConfigurationDetails() {
+    return this.http.get<any>(this.configurationUrl);
   }
 }

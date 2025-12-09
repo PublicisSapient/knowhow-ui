@@ -201,6 +201,7 @@ export class HeaderComponent implements OnInit {
 
     this.getExistingReports();
     this.getFeatureFlag();
+    this.getConfigDetails();
   }
 
   getFeatureFlag() {
@@ -335,5 +336,22 @@ export class HeaderComponent implements OnInit {
       .then(() => {
         this.lastVisitedFromUrl = this.router.url;
       });
+  }
+
+  getConfigDetails() {
+    this.httpService.getConfigurationDetails().subscribe(
+      (response) => {
+        if (response && response.success) {
+          this.sharedService.setConfigurationDetails(response.data);
+        }
+      },
+      (error) => {
+        this.sharedService.setConfigurationDetails(null);
+        this.messageService.add({
+          severity: 'error',
+          summary: error.message,
+        });
+      },
+    );
   }
 }
