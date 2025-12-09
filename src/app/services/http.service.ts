@@ -1362,10 +1362,7 @@ export class HttpService {
     return this.http.get(`${this.scmConfigConnectionUrl}/${connectionId}`);
   }
   getHomeNBAData(payload) {
-    // return this.http.post<any>(this.homeNBAURL, payload);
-    // TODO : for demo purpose only
-    const aiRecommData = require('../../test/resource/ai-recomm.json');
-    return of(aiRecommData);
+    return this.http.post<any>(this.homeNBAURL, payload);
   }
 
   getkpiAITargetRecommData(payLoad) {
