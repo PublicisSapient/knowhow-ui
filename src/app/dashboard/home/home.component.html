@@ -18,7 +18,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div [ngClass]="{'p-col-12':!nbaFlag, 'p-col-9' : nbaFlag}">
+  <div [ngClass]="{'p-col-12':!(nbaFlag | async), 'p-col-9' : (nbaFlag | async)}">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">

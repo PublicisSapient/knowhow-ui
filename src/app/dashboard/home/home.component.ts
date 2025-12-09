@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   nbaRawData: Array<any> = [];
   productivityData: any = {};
   productivityExpandRowDataLoader = false;
-  nbaFlag = new BehaviorSubject(true);
+  nbaFlag = new BehaviorSubject(false);
 
   constructor(
     private service: SharedService,
@@ -238,7 +238,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getNBAFeatureFlag() {
     this.featureFlagService
-      .isFeatureEnabled('ANALYSIS')
+      .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
       .then((res) => this.nbaFlag.next(res));
   }
 
