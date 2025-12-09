@@ -208,7 +208,7 @@ export class HttpService {
     this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
-  private homeNBAURL = this.baseUrl;
+  private homeNBAURL = this.baseUrl + 'NBA';
   private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
   private kpiAITargetRecommData = this.baseUrl;
   private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
