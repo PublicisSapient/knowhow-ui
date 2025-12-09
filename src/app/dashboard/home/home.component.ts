@@ -4,10 +4,11 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-home',
@@ -50,6 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   nbaRawData: Array<any> = [];
   productivityData: any = {};
   productivityExpandRowDataLoader = false;
+  nbaFlag = new BehaviorSubject(false);
 
   constructor(
     private service: SharedService,
@@ -59,10 +61,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
     private readonly messageService: MessageService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
+    this.getNBAFeatureFlag();
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(
@@ -219,7 +223,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
-          // this.getNBAData(); // temporary commented
+          this.getNBAData();
         }),
     );
 
@@ -230,6 +234,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  getNBAFeatureFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
+      .then((res) => this.nbaFlag.next(res));
   }
 
   initializeBottomData(typeOfReset) {
