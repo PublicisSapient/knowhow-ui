@@ -591,7 +591,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
     const hierarchyItem = this.completeHierarchyData?.find(
-      (hi) => hi.level === filterApplyData.level - 1,
+      (hi) => hi.level === filterApplyData.level,
     );
 
     if (!hierarchyItem) {
