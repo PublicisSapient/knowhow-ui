@@ -1,0 +1,114 @@
+{
+  "message": "Successfully Fetched Recommendations",
+  "success": true,
+  "data": [
+    {
+      "nodeId": "a4fbe170-8667-4878-a877-20930",
+      "nodeName": "eCommerce",
+      "recommendations": {
+        "observation": "Reduce Technical Debt in Mobile App.",
+        "recommendationDetails": "Mobile team shows 35% slower velocity.",
+        "recommendationType": "High",
+        "saving": "$20,156",
+        "timeToVale": "3-4 months",
+        "keyPerformanceIndicator": [
+          "Development Speed",
+          "Code Quality",
+          "Bug Reduction"
+        ],
+        "recommendedActionPlan": {
+          "title": "Recommended Action Plan",
+          "actionPlan": [
+            {
+              "step": 1,
+              "title": "Assess Current State",
+              "description": "Evaluate existing technical debt and team readiness"
+            },
+            {
+              "step": 2,
+              "title": "Pilot Implementation",
+              "description": "Start with a small team to validate approach and ROI"
+            },
+            {
+              "step": 3,
+              "title": "Scale Across Organization",
+              "description": "Roll out successful practices to all relevant teams"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeId": "a4fbe170-8667-4878-a877-20930",
+      "nodeName": "KnowHow",
+      "recommendations": {
+        "observation": "Reduce Technical Debt in Mobile App.",
+        "recommendationDetails": "Mobile team shows 35% slower velocity.",
+        "recommendationType": "Medium",
+        "saving": "$20,156",
+        "timeToVale": "3-4 months",
+        "keyPerformanceIndicator": [
+          "Development Speed",
+          "Code Quality",
+          "Bug Reduction"
+        ],
+        "recommendedActionPlan": {
+          "title": "Recommended Action Plan",
+          "actionPlan": [
+            {
+              "step": 1,
+              "title": "Assess Current State",
+              "description": "Evaluate existing technical debt and team readiness"
+            },
+            {
+              "step": 2,
+              "title": "Pilot Implementation",
+              "description": "Start with a small team to validate approach and ROI"
+            },
+            {
+              "step": 3,
+              "title": "Scale Across Organization",
+              "description": "Roll out successful practices to all relevant teams"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeId": "a4fbe170-8667-4878-a877-20930",
+      "nodeName": "Code AI",
+      "recommendations": {
+        "observation": "Reduce Technical Debt in Mobile App.",
+        "recommendationDetails": "Mobile team shows 35% slower velocity.",
+        "recommendationType": "Low",
+        "saving": "$20,156",
+        "timeToVale": "3-4 months",
+        "keyPerformanceIndicator": [
+          "Development Speed",
+          "Code Quality",
+          "Bug Reduction"
+        ],
+        "recommendedActionPlan": {
+          "title": "Recommended Action Plan",
+          "actionPlan": [
+            {
+              "step": 1,
+              "title": "Assess Current State",
+              "description": "Evaluate existing technical debt and team readiness"
+            },
+            {
+              "step": 2,
+              "title": "Pilot Implementation",
+              "description": "Start with a small team to validate approach and ROI"
+            },
+            {
+              "step": 3,
+              "title": "Scale Across Organization",
+              "description": "Roll out successful practices to all relevant teams"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
