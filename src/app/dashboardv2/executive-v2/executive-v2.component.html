@@ -29,26 +29,32 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
           <div class="metrics-grid column-4 p-p-3">
-            <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-              <ng-container *ngIf="kpi?.kpiDetail?.chartType === 'card' && kpiChartData[kpi?.kpiId]">
-                <app-indicators
-                  [metricUnit]="kpiChartData[kpi?.kpiId][0].unit"
-                  [metricValue]="kpiChartData[kpi?.kpiId][0].value"
-                  [trendUnit]="kpiChartData[kpi?.kpiId][0].unit1"
-                  [trendValue]="kpiChartData[kpi?.kpiId][0].value1"
-                  [kpiIcon]="kpiChartData[kpi?.kpiId][0].labelInfo"
-                  [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                  [data]="kpiChartData[kpi?.kpiId]"
-                  [kpiId]="kpi?.kpiId"
-                  [kpiData]="kpi"
-                  [loader]="kpiLoader.has(kpi?.kpiId)"
-                  [kpiChartData]="kpiChartData"
-                  [kpiTrendsObj]="kpiTrendsObj"
-                  [title]="kpi?.kpiName"
-                  [dateFilter]="selectedDateFilterValue">
-                </app-indicators>
-              </ng-container>
-            </ng-container>
+            @for (kpi of updatedConfigGlobalData; track $index) {
+              @if (kpi?.kpiDetail?.chartType === 'card') {
+                @if (kpiChartData[kpi?.kpiId]) {
+                  <app-indicators
+                    [metricUnit]="kpiChartData[kpi?.kpiId][0]?.unit"
+                    [metricValue]="kpiChartData[kpi?.kpiId][0]?.value"
+                    [trendUnit]="kpiChartData[kpi?.kpiId][0]?.unit1"
+                    [trendValue]="kpiChartData[kpi?.kpiId][0]?.value1"
+                    [kpiIcon]="kpiChartData[kpi?.kpiId][0]?.labelInfo"
+                    [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                    [data]="kpiChartData[kpi?.kpiId]"
+                    [kpiId]="kpi?.kpiId"
+                    [kpiData]="kpi"
+                    [loader]="kpiLoader.has(kpi?.kpiId)"
+                    [kpiChartData]="kpiChartData"
+                    [kpiTrendsObj]="kpiTrendsObj"
+                    [title]="kpi?.kpiName"
+                    [dateFilter]="selectedDateFilterValue">
+                  </app-indicators>
+                } @else if(kpiLoader.has(kpi?.kpiId)) {
+                  <div class="p-d-flex p-flex-column data-item p-col-12 loader-background">
+                    <p-skeleton width="100%" height="7rem" />
+                  </div>
+                }
+              }
+            }
           </div>
         </ng-container>
         <div class="clearfix" *ngIf="showChart !== 'table'">
@@ -320,6 +326,7 @@
                                     <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                       [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                       [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
+                                      [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                       [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                   </ng-container>
 
@@ -410,7 +417,7 @@
                   <ng-template #noDataForChartWithFilters>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        447 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data Available.</h4>
@@ -418,10 +425,9 @@
                     </div>
                   </ng-template>
                   <ng-template #partialData let-data>
-                    checkIfPartialDataPresent(data) - {{checkIfPartialDataPresent(data)}}
                     <div class="min-ht" *ngIf="checkIfPartialDataPresent(data); else noDataAccess;">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        457 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data
@@ -433,7 +439,7 @@
                   <ng-template #noDataAccess>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        469 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No Data Available.</h4>
@@ -448,18 +454,24 @@
         <app-kpi-table *ngIf="showChart === 'table'" [kpiConfigData]="kpiConfigData" [cols]="kpiTableHeadingArr"
           [kpiData]="kpiTableDataObj" [colorObj]="colorObj"></app-kpi-table>
 
-        <ng-container *ngIf="this.selectedTab?.toLowerCase() === 'developer'">
-          <div class="p-p-3">
-            <p-panel header="Team Performance Summary">
-              <div class="metrics-grid column-3 p-p-3">
-                <app-list-block
-                  [data]="filteredBranchData.value"
-                  [dateFilter]="selectedDateFilterValue">
-                </app-list-block>
+          @if (this.selectedTab?.toLowerCase() === 'developer') {
+            @if (perfSummaryLoader) {
+              <div class="p-d-flex p-flex-column data-item p-col-12 loader-background">
+                <p-skeleton width="33.33%" height="7rem" />
               </div>
-            </p-panel>
-          </div>
-        </ng-container>
+            } @else {
+              <div class="p-p-3 team-summary-panel">
+                <p-panel header="Team Performance Summary">
+                  <div class="metrics-grid column-3 p-p-3">
+                    <app-list-block
+                      [data]="filteredBranchData?.value"
+                      [dateFilter]="selectedDateFilterValue">
+                    </app-list-block>
+                    </div>
+                  </p-panel>
+                </div>
+            }
+          }
       </div>
     </ng-container>
   </ng-container>
@@ -487,12 +499,16 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container
-  *ngIf="floatingRecommendation && isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <= 2 && this.filterApplyData?.label === 'project' &&
-!(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')">
-  <app-recommendations #recommendationsComponent [filterData]="filterApplyData"
-    [kpiList]="kpiList"></app-recommendations>
-</ng-container>
+<ng-template #recommendationsPortal>
+  <ng-container
+    *ngIf="floatingRecommendation && isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <= 2 && this.filterApplyData?.label === 'project' &&
+  !(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')">
+    <app-recommendations #recommendationsComponent [filterData]="filterApplyData"
+      [kpiList]="kpiList"></app-recommendations>
+  </ng-container>
+</ng-template>
+
+<app-chatbot></app-chatbot>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>

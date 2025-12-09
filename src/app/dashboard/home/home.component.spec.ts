@@ -283,7 +283,7 @@ describe('HomeComponent', () => {
   it('should calculate correct healthy statistics', () => {
     component.tableData.data = [
       { health: 'healthy', completion: '90%' },
-      { health: 'critical', completion: '40%' },
+      { health: 'unhealthy', completion: '40%' },
       { health: 'healthy', completion: '70%' },
     ];
     const res = component.calculateHealth('healthy');
@@ -292,8 +292,8 @@ describe('HomeComponent', () => {
 
   it('should handle no matching healthType gracefully', () => {
     component.tableData.data = [
-      { health: 'critical', completion: '40%' },
-      { health: 'critical', completion: '50%' },
+      { health: 'unhealthy', completion: '40%' },
+      { health: 'unhealthy', completion: '50%' },
     ];
     const res = component.calculateHealth('healthy');
     expect(res).toEqual({ average: '0%', count: 0 });
@@ -746,13 +746,16 @@ describe('HomeComponent', () => {
   });
 
   it('should handle ngOnDestroy', () => {
-    component.subscription = [of().subscribe()];
-    spyOn(component.subscription[0], 'unsubscribe');
+    const mockSubscription = jasmine.createSpyObj('Subscription', [
+      'unsubscribe',
+    ]);
+    component.subscription = [mockSubscription];
 
     component.ngOnDestroy();
 
     expect(mockSharedService.setPEBData).toHaveBeenCalledWith({});
-    expect(component.subscription[0].unsubscribe).toHaveBeenCalled();
+    expect(mockSubscription.unsubscribe).toHaveBeenCalled();
+    expect(component.subscription).toEqual([]);
   });
 
   it('should handle urlRedirection', () => {
@@ -857,7 +860,7 @@ describe('HomeComponent', () => {
     component.fetchPEBaData({ label: 'project', level: 1, parentId: '' });
 
     expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
-      'root level',
+      'project level',
     );
     expect(component.processPEBData).toHaveBeenCalledWith(cachedData);
     expect(component.calculatorDataLoader).toBeFalse();
@@ -894,7 +897,7 @@ describe('HomeComponent', () => {
     tick();
 
     expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
-      'root level',
+      'project level',
       apiResponse.data,
     );
     expect(component.processPEBData).toHaveBeenCalledWith(apiResponse.data);

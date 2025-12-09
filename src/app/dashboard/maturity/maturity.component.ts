@@ -107,7 +107,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
             board?.boardName.toLowerCase() !== 'dora' &&
             board?.boardName.toLowerCase() !== 'release' &&
             board?.boardName.toLowerCase() !== 'backlog' &&
-            board?.boardName.toLowerCase() !== 'home',
+            board?.boardName.toLowerCase() !== 'home' &&
+            !board?.boardName?.toLowerCase()?.includes('potential economic'),
         );
         this.checkShownTabs();
         this.selectedTabKpis = this.tabs[0].kpis.filter(
@@ -748,7 +749,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
         board?.boardName.toLowerCase() !== 'dora' &&
         board?.boardName.toLowerCase() !== 'release' &&
         board?.boardName.toLowerCase() !== 'backlog' &&
-        board?.boardName.toLowerCase() !== 'home',
+        board?.boardName.toLowerCase() !== 'home' &&
+        !board?.boardName?.toLowerCase()?.includes('potential economic'),
     );
     this.selectedTabKpis = this.tabs[index].kpis
       .filter(

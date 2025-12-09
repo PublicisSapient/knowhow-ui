@@ -1,11 +1,17 @@
-<div class="metrics-card">
-  <h3 class="metrics-title">Last {{ dateFilter }}</h3>
-  <div class="metrics-list">
-    @for (metric of data; track metric.label) {
-      <div class="metric-item">
-        <span class="metric-label">{{ metric.label }}</span>
-        <span class="metric-value" [ngClass]="metric.trend">{{ metric.value }}</span>
-      </div>
+@if(data) {
+  <div class="metrics-card">
+    @if(dateFilter) {
+      <h3 class="metrics-title">Last {{ dateFilter }}</h3>
     }
+    <div class="metrics-list">
+      @for (metric of data; track metric.label) {
+        <div class="metric-item">
+          <span class="metric-label">{{ metric.label }}</span>
+          <span class="metric-value" [ngClass]="metric.trend">{{ metric.value }}</span>
+        </div>
+      }
+    </div>
   </div>
-</div>
+} @else {
+  <div class="no-data"><strong>NA</strong></div>
+}

@@ -1,17 +1,72 @@
 <div class="dashboard-container">
+  <div class="p-d-flex p-p-2 p-jc-between">
+    @if(!showLoader){
+      <div class="p-col-3 p-mb-2">
+        <app-top-tiles [item]="{
+          cssClassName: 'speed',
+          category: 'Speed',
+          value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'NA'),
+          icon: 'fas fa-bolt',
+          average: '',
+          valueColor: '#15ba40',
+          iconType : 'fa'
+        }"></app-top-tiles>
+      </div>
+      <div class="p-col-3 p-mb-2">
+        <app-top-tiles [item]="{
+          cssClassName: 'users',
+          category: 'Efficiency',
+          value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'NA'),
+          icon: 'fas fa-chart-line',
+          average: '',
+          valueColor: '#0b4bc8',
+          iconType : 'fa'
+        }"></app-top-tiles>
+      </div>
+      <div class="p-col-3 p-mb-2">
+        <app-top-tiles [item]="{
+          cssClassName: 'users',
+          category: 'Quality',
+          value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'NA'),
+          icon: 'fas fa-shield-alt',
+          average: '',
+          valueColor: '#9810fa',
+          iconType : 'fa'
+        }"></app-top-tiles>
+      </div>
+      <div class="p-col-3 p-mb-2">
+        <app-top-tiles [item]="{
+          cssClassName: 'productivity',
+          category: 'Productivity',
+          value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'NA'),
+          icon: 'fas fa-bullseye',
+          average: '',
+          valueColor: '#ff5c5d',
+          iconType : 'fa'
+        }"></app-top-tiles>
+      </div>
+    } @else{
+      @for (c of [1,2,3,4]; track c) {
+        <div class="p-d-flex p-flex-column data-item p-col-2">
+          <p-skeleton width="100%" height="7rem" />
+        </div>
+        }
+    }
+  </div>
   <div class="p-d-flex p-flex-wrap">
     <div class="p-col-4">
       <p-card class="p-mb-3 peb-calculator-card">
-        <div class="form-title p-px-4 calculator-header">
+        <div class="p-px-4 calculator-header">
           <i class="fas fa-calculator text-blue"></i>
           <span class="calculator-header-label p-ml-2">Potential Economic Benefits Calculator</span>
         </div>
         <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
           <div class="p-d-flex p-flex-wrap">
             <div class="p-col-4 grid-flex-wrap-100">
-              <div class="p-col-12">
-                <label for="devCount">Total No. of Developers <i class="pi pi-exclamation-triangle"
-                    pTooltip="You can edit the no. of developers" tooltipPosition="top"></i></label>
+              <div class="p-col-12 p-d-flex p-align-center">
+                <label for="devCount">Total Team Size</label>
+                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                    pTooltip="You can edit the no. of developers" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCountControl" inputId="devCount"
@@ -23,9 +78,10 @@
               </div>
             </div>
             <div class="p-col-4 grid-flex-wrap-100">
-              <div class="p-col-12">
-                <label for="devCost">Avg. Cost Per Developer <i class="pi pi-exclamation-triangle"
-                    pTooltip="You can edit the avg cost per developer" tooltipPosition="top"></i></label>
+              <div class="p-col-12 p-d-flex p-align-center">
+                <label for="devCost">Avg. Cost per Team Member </label>
+                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                    pTooltip="You can edit the avg cost per developer" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
@@ -70,7 +126,7 @@
     </div>
     <div class="p-col-8">
       <p-card class="p-mb-3 peb-calculator-card">
-        <div class="form-title p-px-4 calculator-header">
+        <div class="p-px-4 calculator-header">
           <i class="fas fa-user-friends text-blue"></i>
           <span class="calculator-header-label p-ml-2">Standings</span>
           <small class="tag beta">BETA</small>
@@ -95,16 +151,18 @@
             *ngIf="items.length">
             <ng-template pTemplate="header">
               <tr>
-                <th style="width: 50%;" class="p-text-center">{{ items[0]?.levelName }}</th>
-                <th style="width: 50%;" class="p-text-center">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
-                <!-- <th></th> -->
+                <th></th>
+                <th style="width: 30%;" class="p-text-left">{{ items[0]?.levelName }}</th>
+                <th style="width: 30%;" class="p-text-right">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
+                <th></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
               <tr>
-                <td style="width: 50%;" class="p-text-center">{{ item?.organizationEntityName }}</td>
-                <td style="width: 50%;" class="p-text-center">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
-                <!-- <td></td> -->
+                <td></td>
+                <td style="width: 30%;" class="p-text-left">{{ item?.organizationEntityName }}</td>
+                <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
+                <td></td>
               </tr>
             </ng-template>
           </p-table>
@@ -184,7 +242,7 @@
   <!-- } -->
   <div class="p-col-12">
     <p-card class="p-mb-3 peb-calculator-card">
-      <div class="form-title p-px-4 calculator-header">
+      <div class="p-px-4 calculator-header">
         <i class="far fa-chart-bar text-blue"></i>
         <span class="calculator-header-label p-ml-2">Performance Tracking Over Time</span>
       </div>
@@ -192,7 +250,7 @@
       <div class="p-d-flex">
         <div class="p-col-6">
           <div class="p-2">
-            <h4 class="font-bold">Core Performance Metrics</h4>
+            <h4>Core Performance Metrics</h4>
             <ng-container *ngIf="performanceChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Performance'">
@@ -202,7 +260,7 @@
         </div>
         <div class="p-col-6">
           <div class="p-2">
-            <h4  class="font-bold">Cost Savings Trend</h4>
+            <h4>Cost Savings Trend</h4>
             <ng-container *ngIf="costSavingsChartData?.length else noDataAccess">
               <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="xAxisLabel"
                 [yCaption]="'Cost Savings'">
@@ -222,60 +280,6 @@
           </div>
         </ng-template>
       </div>
-
-      <hr />
-
-      <div class="p-grid p-mt-3">
-        <div class="p-col-3 p-mb-2">
-          <app-top-tiles [item]="{
-            cssClassName: 'exclamation',
-            category: 'Speed',
-            value: (categoryVariations?.speed) + '%',
-            icon: 'fas fa-bolt',
-            average: '',
-            valueColor: '#15ba40',
-            iconType : 'fa'
-          }"></app-top-tiles>
-        </div>
-        <div class="p-col-3 p-mb-2">
-          <app-top-tiles [item]="{
-            cssClassName: 'exclamation',
-            category: 'Efficiency',
-            value: (categoryVariations?.efficiency) + '%',
-            icon: 'fas fa-chart-line',
-            average: '',
-            valueColor: '#0b4bc8',
-            iconType : 'fa'
-          }"></app-top-tiles>
-        </div>
-        <div class="p-col-3 p-mb-2">
-          <app-top-tiles [item]="{
-            cssClassName: 'exclamation',
-            category: 'Quality',
-            value: (categoryVariations?.quality) + '%',
-            icon: 'fas fa-shield-alt',
-            average: '',
-            valueColor: '#9810fa',
-            iconType : 'fa'
-          }"></app-top-tiles>
-        </div>
-        <div class="p-col-3 p-mb-2">
-          <app-top-tiles [item]="{
-            cssClassName: 'exclamation',
-            category: 'Productivity',
-            value:  (categoryVariations?.productivity) + '%',
-            icon: 'fas fa-bullseye',
-            average: '',
-            valueColor: '#ff5c5d',
-            iconType : 'fa'
-          }"></app-top-tiles>
-        </div>
-      </div>
-      @if (showLoader) {
-      <div class="loader">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-      </div>
-      }
     </p-card>
   </div>
 </div>

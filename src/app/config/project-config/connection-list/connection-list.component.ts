@@ -1183,7 +1183,7 @@ export class ConnectionListComponent implements OnInit {
     if (this.jiraForm.invalid && this.basicConnectionForm.invalid) {
       return;
     }
-    if (this.connection?.type?.toLowerCase() == 'jira') {
+    if (this.connection?.type?.toLowerCase() === 'jira') {
       for (const key in this.jiraForm.controls) {
         if (this.jiraForm.controls[key]?.value) {
           reqData[key] = this.jiraForm.controls[key]?.value;
@@ -1311,7 +1311,7 @@ export class ConnectionListComponent implements OnInit {
     this.connection['username'] = '';
     this.isNewlyConfigAdded = false;
     this.selectedConnectionType = this.connection.type;
-    if (connection.type?.toLowerCase() == 'jira') {
+    if (connection.type?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
       this.focusOnModalElement('#jiraConnectionForm');
       this.initializeForms(this.connection, true);
@@ -1325,15 +1325,15 @@ export class ConnectionListComponent implements OnInit {
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
       if (
-        connection.type.toLowerCase() == 'bitbucket' &&
-        connection.cloudEnv == true
+        connection.type.toLowerCase() === 'bitbucket' &&
+        connection.cloudEnv === true
       ) {
         this.checkBitbucketValue(
           true,
           'cloudEnv',
           connection.type.toLowerCase(),
         );
-      } else if (connection.type.toLowerCase() == 'zephyr') {
+      } else if (connection.type.toLowerCase() === 'zephyr') {
         this.checkZephyr();
       }
     }
@@ -1520,7 +1520,7 @@ export class ConnectionListComponent implements OnInit {
     }
 
     this.checkBitbucketValue(event.checked, field, type);
-    if (type?.toLowerCase() == 'zephyr') {
+    if (type?.toLowerCase() === 'zephyr') {
       this.checkZephyr();
     }
     this.enableDisableFieldsOnIsCloudSwithChange();
@@ -1537,7 +1537,7 @@ export class ConnectionListComponent implements OnInit {
   testConnection() {
     this.testingConnection = true;
     const reqData = {};
-    if (this.connection?.type?.toLowerCase() == 'jira') {
+    if (this.connection?.type?.toLowerCase() === 'jira') {
       for (const key in this.jiraForm.controls) {
         reqData[key] = this.jiraForm.controls[key]?.value;
       }
@@ -1569,7 +1569,7 @@ export class ConnectionListComponent implements OnInit {
       reqData['baseUrl'] =
         this.basicConnectionForm.controls['baseUrl']['value'];
     }
-    if (reqData['vault'] == true) {
+    if (reqData['vault'] === true) {
       reqData['password'] = '';
       reqData['pat'] = '';
       reqData['accessToken'] = '';
@@ -1989,11 +1989,11 @@ export class ConnectionListComponent implements OnInit {
 
   showInfo(type, field) {
     let tooltipText = '';
-    if (type == 'github' && field == 'baseUrl') {
+    if (type === 'github' && field === 'baseUrl') {
       tooltipText =
         'Url i.e : for public github this url will be https://api.github.com.';
     }
-    if (type == 'github' && field == 'username') {
+    if (type === 'github' && field === 'username') {
       tooltipText =
         'The name appended before your repository name (i.e. ownerName/repositoryName).';
     }

@@ -65,7 +65,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.subscription.push(
       this.service.passDataToDashboard
-        .pipe(distinctUntilChanged())
+        .pipe(
+          distinctUntilChanged(
+            (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+          ),
+        )
         .subscribe((sharedobject) => {
           this.tableData = {
             columns: [],
@@ -107,6 +111,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         executiveBoard.message ||
                         'Error in fetching Executive data!',
                     });
+                    this.initializeAggregationDataWithNA();
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
                       executiveBoard.data.matrix.rows.map((row) => ({
@@ -168,9 +173,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                       {
                         cssClassName: 'exclamation',
                         category: 'Critical ' + label + ' (s)',
-                        value: this.calculateHealth('critical').count,
+                        value: this.calculateHealth('unhealthy').count,
                         icon: 'pi-exclamation-triangle',
-                        average: this.calculateHealth('critical').average,
+                        average: this.calculateHealth('unhealthy').average,
                         valueColor: '#374151',
                         iconType: 'pi',
                       },
@@ -449,7 +454,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.httpService
       .getExecutiveBoardData(filterApplyData, this.selectedType.toUpperCase())
       .subscribe((res: any) => {
-        console.log('Subscribing...');
         if (res?.error) {
           this.messageService.add({
             severity: 'error',
@@ -587,7 +591,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public fetchPEBaData(filterApplyData: any): void {
     this.BottomTilesLoader = true;
     const hierarchyItem = this.completeHierarchyData?.find(
-      (hi) => hi.level === filterApplyData.level - 1,
+      (hi) => hi.level === filterApplyData.level,
     );
 
     if (!hierarchyItem) {
@@ -781,8 +785,62 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  initializeAggregationDataWithNA() {
+    const hierarchy = this.completeHierarchyData;
+    const label =
+      hierarchy?.find(
+        (hi) =>
+          hi.level ===
+          this.payloadPreparation(
+            this.filterApplyData,
+            this.selectedType,
+            'parent',
+          ).level,
+      )?.hierarchyLevelName || 'Entity';
+
+    this.aggregrationDataList = [
+      {
+        cssClassName: 'users',
+        category: 'Active ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-users',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'gauge',
+        category: 'Avg. Efficiency',
+        value: 'NA',
+        icon: 'pi-gauge',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'exclamation',
+        category: 'Critical ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-exclamation-triangle',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+      {
+        cssClassName: 'heart-fill',
+        category: 'Healthy ' + label + ' (s)',
+        value: 'NA',
+        icon: 'pi-heart-fill',
+        average: 'NA',
+        valueColor: '#374151',
+        iconType: 'pi',
+      },
+    ];
+  }
+
   ngOnDestroy() {
     this.service.setPEBData({});
     this.subscription.forEach((subscription) => subscription.unsubscribe());
+    this.subscription = [];
   }
 }

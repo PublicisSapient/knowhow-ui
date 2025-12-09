@@ -151,8 +151,12 @@ describe('ProgressChartComponent', () => {
       component['createChart']();
 
       const svg = d3.select(component.svgRef.nativeElement);
-      expect(svg.attr('width')).toBe('825');
-      expect(svg.attr('height')).toBe('215');
+      const viewBox = svg.attr('viewBox');
+
+      expect(viewBox).toBe('0 0 825 300');
+      expect(svg.attr('preserveAspectRatio')).toBe('xMidYMid meet');
+      expect(svg.style('width')).toBe('100%');
+      expect(svg.style('height')).toBe('auto');
     });
   });
 

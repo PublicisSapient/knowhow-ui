@@ -71,17 +71,19 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
       target: item.data.includes('Rework') ? '<20%' : '<8%', // Determine target based on label
       kpiGroup: item.kpiGroup,
     }));
-
-    // console.log('Transformed data:', this.transformedData);
   }
 
   private createChart(): void {
     const svg = d3.select(this.svgRef?.nativeElement);
     const width = 825;
-    const height = 215;
+    const height = 300;
     const margin = { top: 20, right: 20, bottom: 40, left: 20 };
 
-    svg.attr('width', width).attr('height', height);
+    svg
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .style('width', '100%')
+      .style('height', 'auto');
 
     const g = svg
       .append('g')

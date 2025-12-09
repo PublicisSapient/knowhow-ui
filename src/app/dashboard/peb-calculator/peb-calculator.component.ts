@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
-import { error } from 'console';
+import { ActivatedRoute } from '@angular/router';
+
 interface CategoryVariations {
   speed: number;
   quality: number;
@@ -52,6 +53,8 @@ export class PebCalculatorComponent implements OnInit {
   userCurrency = '';
   userLocale = navigator.language || 'en-US';
   sub$: Subscription;
+  queryParamsSubscription!: Subscription;
+  selectedTab = '';
 
   constructor(
     private fb: FormBuilder,
@@ -59,6 +62,8 @@ export class PebCalculatorComponent implements OnInit {
     public httpService: HttpService,
     private datePipe: DatePipe,
     private dynamicCurrencyPipe: DynamicCurrencyPipe,
+    private route: ActivatedRoute,
+    private location: Location,
   ) {
     this.pebForm = this.fb.group({
       devCountControl: [30],
@@ -82,9 +87,39 @@ export class PebCalculatorComponent implements OnInit {
     this.pebForm.get('devCostControl')!.valueChanges.subscribe((v) => {
       this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
     });
+
+    this.queryParamsSubscription = this.route.queryParams
+      // .pipe(first())
+      .subscribe((params) => {
+        // let stateFiltersParam = params['stateFilters'];
+        // const kpiFiltersParam = params['kpiFilters'];
+        const tabParam = params['selectedTab'];
+        if (!tabParam) {
+          if (!this.sharedService.getSelectedTab()) {
+            let selectedTab = decodeURIComponent(this.location.path());
+            selectedTab = selectedTab?.split('/')[2]
+              ? selectedTab?.split('/')[2]
+              : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.sharedService.setSelectedBoard(this.selectedTab);
+          } else {
+            this.selectedTab = this.sharedService.getSelectedTab();
+            this.sharedService.setSelectedBoard(this.selectedTab);
+          }
+        } else {
+          this.selectedTab = tabParam;
+          this.sharedService.setSelectedBoard(this.selectedTab);
+        }
+      });
+
     this.subscription.push(
       this.sharedService.passDataToDashboard
-        .pipe(distinctUntilChanged())
+        .pipe(
+          distinctUntilChanged(
+            (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+          ),
+        )
         .subscribe((sharedobject) => {
           if (sharedobject) {
             const stateFilters =
@@ -130,6 +165,7 @@ export class PebCalculatorComponent implements OnInit {
             this.showResults = true;
             this.productivityGain = response['data'];
             this.calculatePEB();
+            this.errorMessage = '';
           } else {
             this.showLoader = false;
             this.isError = true;
@@ -153,11 +189,11 @@ export class PebCalculatorComponent implements OnInit {
   calculatePEB() {
     this.showLoader = true;
     setTimeout(() => {
-      const overallGain =
-        this.productivityGain['summary']?.categoryScores['overall'];
+      const overallGain = this.productivityGain['details']?.reduce((a, b) => {
+        return a + (b['categoryScores']['overall'] || 0);
+      }, 0);
 
       this.annualPEB = this.calculateMultipliedDetails(overallGain);
-      this.annualPEB = this.annualPEB < 0 ? 0 : this.annualPEB;
 
       const details = this.productivityGain?.details;
       this.items = details.map((item) => ({
@@ -276,15 +312,17 @@ export class PebCalculatorComponent implements OnInit {
       .getAiUsagaStatsDetails(selectedLevel)
       .subscribe({
         next: (res: any) => {
-          const userCount = res?.summary
-            ? res?.summary
-            : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
-          if (userCount?.userCount) {
-            this.pebForm.patchValue({
-              devCountControl: userCount?.userCount,
-            });
-          } else {
-            console.error('Failed to fetch user count >>');
+          if (res && res.summary) {
+            const userCount = res?.summary
+              ? res?.summary
+              : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
+            if (userCount?.userCount) {
+              this.pebForm.patchValue({
+                devCountControl: userCount?.userCount,
+              });
+            } else {
+              console.error('Failed to fetch user count >>');
+            }
           }
         },
         error: (err: any) => {

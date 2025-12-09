@@ -1,0 +1,121 @@
+@if (!isOpen) {
+  <div class="chat-launcher" (click)="toggleChat()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span style="margin-left: 5px;">Ask Me</span>
+  </div>
+}
+
+<!-- Chat Window -->
+@if (isOpen) {
+  <div class="chat-window">
+    <div class="chat-header">
+      <h3>KnowHOW Assistant</h3>
+      <button class="close-btn" (click)="toggleChat()">×</button>
+    </div>
+
+    <div class="chat-messages" #scrollContainer>
+      @for (msg of messages; track $index) {
+        <div class="message-container">
+          <div class="message" [ngClass]="{'user-message': msg.isUser, 'bot-message': !msg.isUser}">
+            @if (msg.isUser) {
+              <span>{{ msg.text }}</span>
+            }
+            @if (!msg.isUser) {
+              <span [innerHTML]="linkifyUrls(msg.text)"></span>
+            }
+          </div>
+          @if (!msg.isUser && msg.question) {
+            <div class="feedback-buttons">
+              <button class="feedback-btn" [class.active]="msg.feedbackGiven === 'like'"
+                (click)="submitFeedback($index, true)" title="Like this response">
+                👍
+              </button>
+              <button class="feedback-btn" [class.active]="msg.feedbackGiven === 'dislike'"
+                (click)="submitFeedback($index, false)" title="Dislike this response">
+                👎
+              </button>
+            </div>
+          }
+          @if (msg.suggestedQuestions && msg.suggestedQuestions.length > 0) {
+            <div class="suggested-questions">
+              <p>You might also be interested in:</p>
+              @for (suggestion of msg.suggestedQuestions; track suggestion) {
+                <button class="suggestion-btn" (click)="onSuggestionClick(suggestion)">
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+      @if (isLoading) {
+        <div class="loading">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="chat-input-area">
+      <div class="options">
+        <label>
+          <input type="checkbox" [(ngModel)]="includeWebContent">
+          <span style="display: inline-block; vertical-align: middle; margin-left: 5px;">Include Web Search</span>
+        </label>
+        <button class="support-btn" (click)="openSupportPopup()">I Need Support</button>
+      </div>
+      <div class="input-wrapper">
+        <input type="text" [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Ask a question..."
+          [disabled]="isLoading">
+        <button (click)="sendMessage()" [disabled]="isLoading">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Support Popup -->
+@if (showSupportPopup) {
+  <div class="support-popup-overlay" (click)="closeSupportPopup()">
+    <div class="support-popup" (click)="$event.stopPropagation()">
+      <div class="support-header">
+        <h3>I Need Support</h3>
+        <button class="popup-close-btn" (click)="closeSupportPopup()">×</button>
+      </div>
+      <div class="support-content">
+        <div class="user-info">
+          <div class="info-row">
+            <span class="info-label">Username:</span>
+            <span class="info-value">{{ userName || 'Not provided' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Project:</span>
+            <span class="info-value">{{ getCurrentSelectedProject || 'Not provided' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ userEmail || 'Not provided' }}</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Issue Description *</label>
+          <textarea [(ngModel)]="supportForm.issueDescription" placeholder="Describe the issue you're facing..."
+            rows="5" resize="none"></textarea>
+        </div>
+        <div class="support-actions">
+          <button class="cancel-btn" (click)="closeSupportPopup()">Cancel</button>
+          <button class="send-btn" (click)="submitSupport()" [disabled]="!isSupportFormValid()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
