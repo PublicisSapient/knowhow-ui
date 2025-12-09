@@ -213,6 +213,7 @@ export class HttpService {
   private kpiAITargetRecommData = this.baseUrl;
   private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
   private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
+  private featureConfigURL = `${this.baseUrl}/api/config`;
 
   constructor(
     private router: Router,
@@ -1379,5 +1380,17 @@ export class HttpService {
 
   getPerformanceSummary(payload) {
     return this.http.post<any>(this.performanceSummaryURL, payload);
+  }
+
+  getFeatureConfigs() {
+    return this.http.get<any>(this.featureConfigURL);
+    // const mockData = {
+    //   message: 'Feature Configs fetched successfully',
+    //   success: true,
+    //   data: {
+    //     defaultAiProvider: true,
+    //   },
+    // };
+    // return of(mockData);
   }
 }
