@@ -702,7 +702,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'N/A';
+    return productivity !== undefined && this.selectedType === 'scrum'
+      ? `${productivity.toFixed(2)}%`
+      : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
