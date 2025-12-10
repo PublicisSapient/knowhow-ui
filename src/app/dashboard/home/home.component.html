@@ -223,69 +223,7 @@
 
       <div *ngIf="loader" class="loader"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div>
     </div>
-  </div>
-
-  <!-- BOTTOM TREND SECTION -->
-  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2">
-    @if(!BottomTilesLoader){
-    @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
-    <div class="trend-card p-col-4 p-p-3">
-      <div class="trend-card-header p-mb-3">
-        <h3 class="trend-card-title">{{ items.category }}</h3>
-      </div>
-      @if(items.value.length){
-      <div class="trend-items-container">
-        @for (item of items.value; track item) {
-        <div class="trend-item p-d-flex p-ai-center">
-          <div class="trend-content">
-            <span class="trend-label">{{ item.property }}</span>
-            <div class="trend-value-container">
-              <div class="trend-icon">
-                @if(index !== 0) {
-                <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
-                } @else if(items.icon) {
-                <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
-                }
-              </div>
-              <span class="trend-value" [style.color]="items.color">
-                {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
-              </span>
-            </div>
-          </div>
-        </div>
-        }
-      </div>
-      } @else if(isFirst && !loader && items.value.length === 0){
-        <div class="p-d-flex p-flex-column p-align-center">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
-          <h4>No Data Available.</h4>
-        </div>
-      } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
-        <div class="p-d-flex p-flex-column p-align-center">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
-          <h4>No Data Available.</h4>
-        </div>
-      } @else {
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
-      }
-    </div>
-    }
-    } @else {
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    <div class="p-d-flex p-flex-column data-item p-col-2">
-      <p-skeleton width="100%" height="7rem" />
-    </div>
-    }
-
-  </div>
-  
+  </div>  
 
   <!-- MATURITY WHEEL -->
   <div class="kpi-details-table-container p-mt-3" [hidden]="true">
@@ -335,6 +273,67 @@
 <div class="p-col-3" *ngIf="true">
     <app-nba [rawData]="nbaRawData" ></app-nba>
 </div>
+
+</div>
+
+ <!-- BOTTOM TREND SECTION -->
+ <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2" *ngIf="selectedType === 'scrum'">
+  @if(!BottomTilesLoader){
+  @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
+  <div class="trend-card p-col-4 p-p-3">
+    <div class="trend-card-header p-mb-3">
+      <h3 class="trend-card-title">{{ items.category }}</h3>
+    </div>
+    @if(items.value.length){
+    <div class="trend-items-container">
+      @for (item of items.value; track item) {
+      <div class="trend-item p-d-flex p-ai-center">
+        <div class="trend-content">
+          <span class="trend-label">{{ item.property }}</span>
+          <div class="trend-value-container">
+            <div class="trend-icon">
+              @if(index !== 0) {
+              <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
+              } @else if(items.icon) {
+              <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
+              }
+            </div>
+            <span class="trend-value" [style.color]="items.color">
+              {{ (item.value + '').includes('%') ? item.value : (item.value + '%') }}
+            </span>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } @else if(isFirst && !loader && items.value.length === 0){
+      <div class="p-d-flex p-flex-column p-align-center">
+        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        <h4>No Data Available.</h4>
+      </div>
+    } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
+      <div class="p-d-flex p-flex-column p-align-center">
+        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        <h4>No Data Available.</h4>
+      </div>
+    } @else {
+    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+    <div class="p-my-2"><p-skeleton width="100%" height="1.5rem"  /></div>
+    }
+  </div>
+  }
+  } @else {
+  <div class="p-d-flex p-flex-column data-item p-col-2">
+    <p-skeleton width="100%" height="7rem" />
+  </div>
+  <div class="p-d-flex p-flex-column data-item p-col-2">
+    <p-skeleton width="100%" height="7rem" />
+  </div>
+  <div class="p-d-flex p-flex-column data-item p-col-2">
+    <p-skeleton width="100%" height="7rem" />
+  </div>
+  }
 
 </div>
 
