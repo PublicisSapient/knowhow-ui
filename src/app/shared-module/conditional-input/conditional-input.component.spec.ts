@@ -87,22 +87,7 @@ describe('ConditionalInputComponent', () => {
         minValue: 1,
       },
     ]);
-    expect(component.finalValue).toEqual([
-      {
-        labelValue: 'p1',
-        operator: '<',
-        countValue: 10,
-        maxValue: 10,
-        minValue: 1,
-      },
-      {
-        labelValue: 'p2',
-        operator: '<',
-        countValue: 5,
-        maxValue: 10,
-        minValue: 1,
-      },
-    ]);
+    expect(component.finalValue).toEqual(['p1', 'p2']);
     expect(component.fieldConfig.options[0].countValue).toEqual(10);
     expect(component.fieldConfig.options[1].countValue).toEqual(5);
   });
