@@ -73,6 +73,9 @@
   flex-direction: column;
   gap: 16px;
   padding: 0 16px 16px;
+  max-height: 53vh;
+  min-height: 53vh;
+  overflow-y: auto;
 }
 
 .kpi-chip {
@@ -96,4 +99,10 @@
   right: 10px;
   border: none;
   padding: 5px;
+}
+
+.kpi-card-body {
+  min-height: 58vh;
+  max-height: 58vh;
+  overflow-y: auto;
 }
