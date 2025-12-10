@@ -161,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         category: 'Active ' + label + ' (s)',
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
-                        average: 'NA',
+                        average: 'N/A',
                         valueColor: '#374151',
                         iconType: 'pi',
                       },
@@ -474,7 +474,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-              return { ...row, ...row?.boardMaturity, productivity: 'NA' };
+              return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
@@ -702,7 +702,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
+    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
@@ -812,36 +812,36 @@ export class HomeComponent implements OnInit, OnDestroy {
       {
         cssClassName: 'users',
         category: 'Active ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-users',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'gauge',
         category: 'Avg. Efficiency',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-gauge',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'exclamation',
         category: 'Critical ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-exclamation-triangle',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'heart-fill',
         category: 'Healthy ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-heart-fill',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },

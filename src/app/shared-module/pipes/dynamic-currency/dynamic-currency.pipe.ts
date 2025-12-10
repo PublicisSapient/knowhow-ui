@@ -66,10 +66,12 @@ export class DynamicCurrencyPipe implements PipeTransform {
 
     // Return ONLY value
     if (returnType === 'value') {
-      return value < 0 ? `-${number}` : number;
+      return value < 0 ? `- ${number}` : number;
     }
 
     // Default → return both
-    return value < 0 ? `-${symbol}\u00A0${number}` : `${symbol}\u00A0${number}`;
+    return value < 0
+      ? `${symbol}\u00A0-\u00A0${number}`
+      : `${symbol}\u00A0${number}`;
   }
 }
