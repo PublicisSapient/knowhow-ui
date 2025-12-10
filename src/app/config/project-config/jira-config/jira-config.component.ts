@@ -129,7 +129,17 @@ export class JiraConfigComponent implements OnInit {
   filterText: any;
   selected = [1];
   originalConfigTools = [];
-  scmTools = ['Bitbucket', 'GitLab', 'GitHub', 'AzureRepository'];
+  scmTools = [
+    'Bitbucket',
+    'GitLab',
+    'GitHub',
+    'AzureRepository',
+    'Jenkins',
+    'Sonar',
+    'AzurePipeline',
+    'GitHubAction',
+    'ArgoCD',
+  ];
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
