@@ -208,11 +208,12 @@ export class HttpService {
     this.baseUrl + '/api/analysis/analytics/sprint/query';
   private AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
-  private homeNBAURL = this.baseUrl;
+  private homeNBAURL = this.baseUrl + 'NBA';
   private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
   private kpiAITargetRecommData = this.baseUrl;
-  private getAiUsagaStats = this.baseUrl + '/api/ai-usage/stats?levelName=';
+  private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
   private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
+  private featureConfigURL = `${this.baseUrl}/api/config`;
 
   constructor(
     private router: Router,
@@ -1369,10 +1370,24 @@ export class HttpService {
   }
 
   getAiUsagaStatsDetails(levelName: string): Observable<any> {
-    return this.http.get<any>(this.getAiUsagaStats + levelName);
+    return this.http.get<any>(
+      `${this.getAiUsagaStats}${levelName.toLocaleLowerCase()}`,
+    );
   }
 
   getPerformanceSummary(payload) {
     return this.http.post<any>(this.performanceSummaryURL, payload);
+  }
+
+  getFeatureConfigs() {
+    return this.http.get<any>(this.featureConfigURL);
+    // const mockData = {
+    //   message: 'Feature Configs fetched successfully',
+    //   success: true,
+    //   data: {
+    //     defaultAiProvider: true,
+    //   },
+    // };
+    // return of(mockData);
   }
 }
