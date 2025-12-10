@@ -1029,16 +1029,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       const previousEventParentNode = ['sprint', 'release'].includes(
         this.previousFilterEvent[0]?.labelName?.toLowerCase(),
       )
-        ? this.filterDataArr[this.selectedType]['Project'].filter(
+        ? this.filterDataArr[this.selectedType]?.['Project']?.filter(
             (proj) => proj.nodeId === this.previousFilterEvent[0].parentId,
-          )
+          ) || []
         : [];
       const currentEventParentNode = ['sprint', 'release'].includes(
         event[0]?.labelName?.toLowerCase(),
       )
-        ? this.filterDataArr[this.selectedType]['Project'].filter(
+        ? this.filterDataArr[this.selectedType]?.['Project']?.filter(
             (proj) => proj.nodeId === event[0].parentId,
-          )
+          ) || []
         : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
         //event different than before
@@ -1220,7 +1220,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.filterType = '';
     }
-    if (Object.keys(this.filterDataArr[this.selectedType]).length) {
+    if (
+      this.filterDataArr[this.selectedType] &&
+      Object.keys(this.filterDataArr[this.selectedType]).length
+    ) {
       if (typeof this.selectedLevel === 'string') {
         Object.keys(this.filterDataArr[this.selectedType]).forEach(
           (filterLevel) => {
