@@ -195,8 +195,8 @@
       </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage" let-columns>
-        <tr>
-          <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
+        <tr style="border: none;">
+          <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0" style="border: none;">
             <div class="p-d-flex p-flex-column p-align-center">
               <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
               <h4 style="color: rgb(32, 36, 41);">No Data Available. </h4>
