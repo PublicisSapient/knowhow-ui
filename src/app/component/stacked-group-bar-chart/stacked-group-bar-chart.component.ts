@@ -457,6 +457,10 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         const projectName = project.data.trim();
         project.value.forEach((entry, index) => {
           const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
+          const sprintLabel =
+            entry.sSprintName?.trim() ||
+            entry.sprintNames?.[0]?.trim() ||
+            dateRange;
           const sprintKey = index; // assuming index-based alignment
 
           if (!sprintMap.has(sprintKey)) {
@@ -471,8 +475,8 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
           const sprintData = sprintEntry.projects;
 
           // Add date range to x-axis labels if not already present
-          if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
-            sprintEntry.sprints.push(entry.sSprintName);
+          if (sprintLabel && !sprintEntry.sprints.includes(sprintLabel)) {
+            sprintEntry.sprints.push(sprintLabel);
           }
 
           // Assign hoverValue data (use empty object if missing)
