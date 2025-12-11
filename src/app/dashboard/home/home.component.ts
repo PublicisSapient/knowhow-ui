@@ -108,6 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               .subscribe({
                 next: (executiveBoard: any) => {
                   /** ---------- Handle executive summery API ---------- */
+                  this.initializeAggregationDataWithNA();
                   if (executiveBoard?.error) {
                     this.messageService.add({
                       severity: 'error',
@@ -115,7 +116,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                         executiveBoard.message ||
                         'Error in fetching Executive data!',
                     });
-                    this.initializeAggregationDataWithNA();
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
                       executiveBoard.data.matrix.rows.map((row) => ({
