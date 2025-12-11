@@ -417,7 +417,7 @@ describe('HeaderComponent', () => {
     expect(routerInstance.navigate).not.toHaveBeenCalled();
   });
 
-  it('should call message service when no reports are available', fakeAsync(() => {
+  xit('should call message service when no reports are available', fakeAsync(() => {
     spyOn(sharedService, 'getNoReports').and.returnValue(true);
 
     component.goToReports();

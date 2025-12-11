@@ -70,7 +70,8 @@ export class PebCalculatorComponent implements OnInit {
       devCostControl: [100000],
       durationControl: ['year'],
     });
-    this.userCurrency = this.detectCurrency(this.userLocale);
+    // this.userCurrency = this.detectCurrency(this.userLocale);
+    this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
   }
 
   /**
@@ -312,17 +313,14 @@ export class PebCalculatorComponent implements OnInit {
       .getAiUsagaStatsDetails(selectedLevel)
       .subscribe({
         next: (res: any) => {
-          if (res && res.summary) {
-            const userCount = res?.summary
-              ? res?.summary
-              : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
-            if (userCount?.userCount) {
-              this.pebForm.patchValue({
-                devCountControl: userCount?.userCount,
-              });
-            } else {
-              console.error('Failed to fetch user count >>');
-            }
+          const summary = res?.data?.summary?.usageSummary;
+
+          const userCount = summary?.userCount;
+
+          if (userCount != null) {
+            this.pebForm.patchValue({
+              devCountControl: userCount,
+            });
           }
         },
         error: (err: any) => {

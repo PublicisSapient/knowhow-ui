@@ -39,7 +39,8 @@ export class DynamicCurrencyPipe implements PipeTransform {
     const country = userLocale.split('-')[1]?.toUpperCase();
 
     // Automatic currency detection if not provided
-    const autoCurrency = currency || this.currencyMap[country] || 'USD';
+    // const autoCurrency = currency || this.currencyMap[country] || 'USD';
+    const autoCurrency = 'EUR'; // Default to EUR, but keep original logic for future use
 
     // Format the value using detected currency
     const absFormatted = Math.abs(value).toLocaleString(userLocale, {
@@ -66,10 +67,12 @@ export class DynamicCurrencyPipe implements PipeTransform {
 
     // Return ONLY value
     if (returnType === 'value') {
-      return value < 0 ? `-${number}` : number;
+      return value < 0 ? `- ${number}` : number;
     }
 
     // Default → return both
-    return value < 0 ? `-${symbol}\u00A0${number}` : `${symbol}\u00A0${number}`;
+    return value < 0
+      ? `${symbol}\u00A0-\u00A0${number}`
+      : `${symbol}\u00A0${number}`;
   }
 }
