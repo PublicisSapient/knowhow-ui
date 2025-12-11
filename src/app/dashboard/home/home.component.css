@@ -369,7 +369,10 @@
 }
 
 /* Scroll wrapper (important for height) - only for main table */
-:host ::ng-deep .p-datatable:not(.expanded-table) > .p-datatable-wrapper {
+:host
+  ::ng-deep
+  .p-datatable:not(.expanded-table-wrapper)
+  > .p-datatable-wrapper {
   max-height: 33vh;
   min-height: 33vh;
   overflow-y: auto;
