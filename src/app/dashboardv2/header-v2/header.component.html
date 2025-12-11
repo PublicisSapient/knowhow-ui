@@ -71,29 +71,34 @@
     <div class="p-d-flex p-align-center p-p-1">
       <app-recent-comments *ngIf="isNotConfigPage"></app-recent-comments>
 
-      <div
-        class="p-p-2 rounded p-mr-3 position-relative filter-btn"
+      <button
+        class="p-p-2 ico-button p-mr-3 position-relative filter-btn"
         role="button"
         tabindex="0"
         aria-label="Open Notifications"
         (keydown.enter)="notification.toggle($event)"
         (click)="notification.toggle($event)">
-        <img
-          src="../../../assets/img/ico-notifications.svg"
-          alt="Notification" />
+       
+          <i class="far fa-bell cursor-pointer font-large"></i>
         <span
           *ngIf="notificationCount > 0"
           class="count noti-count"
           aria-label="Number of unread notifications"
           >{{ notificationCount }}</span
         >
-      </div>
+    </button>
       <p-menu
         #notification
         [popup]="true"
         [model]="notificationList"
         class="custom-menu"></p-menu>
-
+        <button class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button" role="button" 
+        tabindex="0" aria-label="Open Settings" [routerLink]="'/dashboard/Config/ProjectList'"
+        *ngIf="
+            !router.url.split('/').includes('Config')
+          ">
+          <i class="fas fa-cog font-large"></i>
+        </button>
       <div
         class="back-btn-wraper"
         *ngIf="

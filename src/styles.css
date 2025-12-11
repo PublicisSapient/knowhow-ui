@@ -2619,3 +2619,6 @@ p-dialog .p-button-cancel.p-button-secondary:not(.p-button-text) {
 .font-xs {
   font-size: 0.75rem;
 }
+.font-large {
+  font-size: 1.25rem;
+}
