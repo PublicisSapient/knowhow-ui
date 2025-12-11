@@ -4,10 +4,11 @@ import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { MaturityComponent } from '../maturity/maturity.component';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-home',
@@ -50,6 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   nbaRawData: Array<any> = [];
   productivityData: any = {};
   productivityExpandRowDataLoader = false;
+  nbaFlag = new BehaviorSubject(false);
 
   constructor(
     private service: SharedService,
@@ -59,10 +61,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
     private readonly messageService: MessageService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
+    this.getNBAFeatureFlag();
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(
@@ -104,6 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               .subscribe({
                 next: (executiveBoard: any) => {
                   /** ---------- Handle executive summery API ---------- */
+                  this.initializeAggregationDataWithNA();
                   if (executiveBoard?.error) {
                     this.messageService.add({
                       severity: 'error',
@@ -111,7 +116,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                         executiveBoard.message ||
                         'Error in fetching Executive data!',
                     });
-                    this.initializeAggregationDataWithNA();
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
                       executiveBoard.data.matrix.rows.map((row) => ({
@@ -157,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         category: 'Active ' + label + ' (s)',
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
-                        average: 'NA',
+                        average: 'N/A',
                         valueColor: '#374151',
                         iconType: 'pi',
                       },
@@ -219,7 +223,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
-          // this.getNBAData(); // temporary commented
+          this.getNBAData();
         }),
     );
 
@@ -230,6 +234,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  getNBAFeatureFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
+      .then((res) => this.nbaFlag.next(res));
   }
 
   initializeBottomData(typeOfReset) {
@@ -464,7 +474,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-              return { ...row, ...row?.boardMaturity, productivity: 'NA' };
+              return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
@@ -692,7 +702,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
+    return productivity !== undefined && this.selectedType === 'scrum'
+      ? `${productivity.toFixed(2)}%`
+      : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
@@ -802,36 +814,36 @@ export class HomeComponent implements OnInit, OnDestroy {
       {
         cssClassName: 'users',
         category: 'Active ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-users',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'gauge',
         category: 'Avg. Efficiency',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-gauge',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'exclamation',
         category: 'Critical ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-exclamation-triangle',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'heart-fill',
         category: 'Healthy ' + label + ' (s)',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-heart-fill',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },

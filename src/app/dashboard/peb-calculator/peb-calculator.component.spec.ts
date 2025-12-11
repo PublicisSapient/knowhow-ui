@@ -13,6 +13,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { ActivatedRoute } from '@angular/router';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DatePipe, Location } from '@angular/common';
 
 class MockHttpService {
   getPebProductivityData() {
@@ -76,10 +78,16 @@ describe('PebCalculatorComponent', () => {
       ],
       providers: [
         FormBuilder,
+        DatePipe,
         { provide: HttpService, useClass: MockHttpService },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: SharedService, useClass: MockSharedService },
+        {
+          provide: Location,
+          useValue: { path: () => '/dashboard/potential-economic-benefits' },
+        },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PebCalculatorComponent);
