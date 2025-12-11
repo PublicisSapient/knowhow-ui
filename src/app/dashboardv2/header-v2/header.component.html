@@ -71,29 +71,34 @@
     <div class="p-d-flex p-align-center p-p-1">
       <app-recent-comments *ngIf="isNotConfigPage"></app-recent-comments>
 
-      <div
-        class="p-p-2 rounded p-mr-3 position-relative filter-btn"
+      <button
+        class="p-p-2 ico-button p-mr-3 position-relative filter-btn"
         role="button"
         tabindex="0"
         aria-label="Open Notifications"
         (keydown.enter)="notification.toggle($event)"
         (click)="notification.toggle($event)">
-        <img
-          src="../../../assets/img/ico-notifications.svg"
-          alt="Notification" />
+       
+          <i class="far fa-bell cursor-pointer font-large"></i>
         <span
           *ngIf="notificationCount > 0"
           class="count noti-count"
           aria-label="Number of unread notifications"
           >{{ notificationCount }}</span
         >
-      </div>
+    </button>
       <p-menu
         #notification
         [popup]="true"
         [model]="notificationList"
         class="custom-menu"></p-menu>
-
+        <button class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button" role="button" 
+        tabindex="0" aria-label="Open Settings" [routerLink]="'/dashboard/Config/ProjectList'"
+        *ngIf="
+            !router.url.split('/').includes('Config')
+          ">
+          <i class="fas fa-cog font-large"></i>
+        </button>
       <div
         class="back-btn-wraper"
         *ngIf="
@@ -140,11 +145,17 @@
           </div>
         </div>
       </div>
-      <p-menu #usermenu [popup]="true" [model]="userMenuItems">
+      <p-menu #usermenu [popup]="true" [model]="userMenuItems" class="custom-menu" [style]="{ width: '210px' }">
         <ng-template pTemplate="item" let-item>
-          <div role="menuitem" tabindex="0">
-            <i [class]="item.icon" aria-hidden="true"></i>
-            <span> {{ item.label }}</span>
+          <div role="menuitem" tabindex="0" class="p-d-flex p-justify-between">
+            <div class="p-d-flex p-align-center">
+              <i [class]="item.icon + ' ' + item.iconColorClass" aria-hidden="true"></i>
+              <div class="p-ml-3">
+                <span> {{ item.label }}</span>
+                <p class="font-xs text-grey p-mt-1 p-mb-0">{{ item.subheading }}</p>
+              </div>
+            </div>
+            <!-- <i *ngIf="item.externalLink" class="fa-solid fa-arrow-up-right-from-square"></i> -->
           </div>
         </ng-template>
       </p-menu>

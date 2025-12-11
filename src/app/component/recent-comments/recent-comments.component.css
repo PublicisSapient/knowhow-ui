@@ -54,3 +54,7 @@
   border-radius: 50%;
   background: var(--color-black);
 }
+.ico-button {
+  background: none;
+  border: none;
+}
