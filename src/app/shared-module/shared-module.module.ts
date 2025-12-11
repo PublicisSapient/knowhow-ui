@@ -79,6 +79,7 @@ import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component
 import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
 import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
 import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { AddToReportPopUpComponent } from '../component/add-to-report-pop-up/add-to-report-pop-up.component';
 
 import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
 import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
@@ -165,6 +166,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
+    AddToReportPopUpComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
     TableComponent,
@@ -211,6 +213,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
+    AddToReportPopUpComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
     TableComponent,
