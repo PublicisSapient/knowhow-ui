@@ -70,7 +70,8 @@ export class PebCalculatorComponent implements OnInit {
       devCostControl: [100000],
       durationControl: ['year'],
     });
-    this.userCurrency = this.detectCurrency(this.userLocale);
+    // this.userCurrency = this.detectCurrency(this.userLocale);
+    this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
   }
 
   /**

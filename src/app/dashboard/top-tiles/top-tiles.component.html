@@ -11,9 +11,9 @@
     </p>
     <div class="p-d-flex">
       <p class="tabularKPI-column-value p-mt-0 p-mr-2" tabindex="0" [ngStyle]="{'color': item.valueColor}">
-        {{ item.value }}
+        {{ item.value?.toString().startsWith('-') ? '- ' + item.value?.toString().substring(1) : item.value }}
         {{
-        item.average && item.average !== 'NA'
+        item.average && item.average !== 'N/A'
         ? '(' + item.average + ')'
         : ''
         }}
