@@ -158,7 +158,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this.aggregrationDataList = [
                       {
                         cssClassName: 'users',
-                        category: 'Active ' + label + ' (s)',
+                        category: 'Active ' + label + '(s)',
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
                         average: 'N/A',
@@ -176,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'exclamation',
-                        category: 'Critical ' + label + ' (s)',
+                        category: 'Critical ' + label + '(s)',
                         value: this.calculateHealth('unhealthy').count,
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('unhealthy').average,
@@ -185,7 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'heart-fill',
-                        category: 'Healthy ' + label + ' (s)',
+                        category: 'Healthy ' + label + '(s)',
                         value: this.calculateHealth('healthy').count,
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
@@ -709,7 +709,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
     const hierarchyItem = this.completeHierarchyData?.find(
-      (hi) => hi.level === filterApplyData.level - 1,
+      (hi) => hi.level === filterApplyData.level,
     );
 
     if (!hierarchyItem) {
@@ -813,7 +813,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.aggregrationDataList = [
       {
         cssClassName: 'users',
-        category: 'Active ' + label + ' (s)',
+        category: 'Active ' + label + '(s)',
         value: 'N/A',
         icon: 'pi-users',
         average: 'N/A',
@@ -831,7 +831,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       {
         cssClassName: 'exclamation',
-        category: 'Critical ' + label + ' (s)',
+        category: 'Critical ' + label + '(s)',
         value: 'N/A',
         icon: 'pi-exclamation-triangle',
         average: 'N/A',
@@ -840,7 +840,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       {
         cssClassName: 'heart-fill',
-        category: 'Healthy ' + label + ' (s)',
+        category: 'Healthy ' + label + '(s)',
         value: 'N/A',
         icon: 'pi-heart-fill',
         average: 'N/A',
