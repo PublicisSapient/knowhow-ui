@@ -709,7 +709,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
     const hierarchyItem = this.completeHierarchyData?.find(
-      (hi) => hi.level === filterApplyData.level - 1,
+      (hi) => hi.level === filterApplyData.level,
     );
 
     if (!hierarchyItem) {

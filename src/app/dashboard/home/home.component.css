@@ -370,7 +370,7 @@
 
 /* Scroll wrapper (important for height) */
 :host ::ng-deep .p-datatable > .p-datatable-wrapper {
-  max-height: 52vh;
-  min-height: 52vh;
+  max-height: 33vh;
+  min-height: 33vh;
   overflow-y: auto;
 }
