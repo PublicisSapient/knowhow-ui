@@ -340,9 +340,9 @@ export class HeaderComponent implements OnInit {
   }
 
   getConfigDetails() {
-    this.httpService.getConfigurationDetails().subscribe(
+    this.httpService.getAppConfigurationDetails().subscribe(
       (response) => {
-        if (response && response.success) {
+        if (response?.success) {
           this.configDetails = response.data;
           this.sharedService.setConfigurationDetails(response.data);
         }
