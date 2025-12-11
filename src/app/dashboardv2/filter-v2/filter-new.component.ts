@@ -400,9 +400,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedBoard) {
-      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch;
+      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch ?? {
+        enabled: true,
+      };
+      const kanbanDisabledForBoard =
+        this.kanbanRequired?.enabled === false &&
+        this.selectedTab?.toLowerCase() !== 'developer';
 
-      if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
+      if (kanbanDisabledForBoard && this.selectedType === 'kanban') {
         this.kanban = false;
         this.selectedType = 'scrum';
         this.setSelectedType(this.selectedType);

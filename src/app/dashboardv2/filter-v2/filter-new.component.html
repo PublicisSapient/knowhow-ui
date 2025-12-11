@@ -3,7 +3,7 @@
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
-        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }"
+        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !scrumProjectsAvailable }"
         role="tab"
         tabindex="0"
         [attr.aria-selected]="selectedType === 'scrum'"
@@ -12,7 +12,7 @@
         Scrum
       </div>
       <div class="tab" (click)="selectedType !== 'kanban' ? setSelectedType('Kanban') : ''"
-        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable || this.selectedTab?.toLowerCase()  === 'potential-economic-benefits' }"
+        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !kanbanProjectsAvailable || this.selectedTab?.toLowerCase()  === 'potential-economic-benefits' }"
         role="tab"
         tabindex="0"
         [attr.aria-selected]="selectedType === 'kanban'"
