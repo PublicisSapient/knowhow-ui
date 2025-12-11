@@ -43,6 +43,7 @@ export class HeaderComponent implements OnInit {
   saveReportsUrl: string = '';
   saveDashboardUrl: string = '';
   isAnalsisFlag = new BehaviorSubject(false);
+  configDetails: object = {};
 
   constructor(
     private httpService: HttpService,
@@ -73,11 +74,69 @@ export class HeaderComponent implements OnInit {
     this.ifProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.userMenuItems = [
       {
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
+        label: 'My Account',
+        items: [
+          {
+            label: 'Product Documentation',
+            subheading: 'Guides and references',
+            // externalLink: true,
+            icon: 'fas fa-book-open',
+            iconColorClass: 'text-blue',
+            command: () => {
+              window.open(this.configDetails['productDocumentation'], '_blank');
+            },
+          },
+          {
+            label: 'API Documentation',
+            subheading: 'Developer Resources',
+            // externalLink: true,
+            icon: 'far fa-file-alt',
+            iconColorClass: 'text-purple',
+            command: () => {
+              window.open(this.configDetails['apiDocumentation'], '_blank');
+            },
+          },
+          {
+            label: 'Video Tutorials',
+            subheading: 'Step-by-step guides',
+            // externalLink: true,
+            icon: 'fas fa-video',
+            iconColorClass: 'text-red',
+            command: () => {
+              window.open(this.configDetails['videoTutorials'], '_blank');
+            },
+          },
+          {
+            label: 'Raise a Ticket',
+            subheading: 'Get Personalized help',
+            // externalLink: false,
+            icon: 'fas fa-ticket-alt',
+            iconColorClass: 'text-green',
+            command: () => {
+              window.open(this.configDetails['raiseTicket'], '_blank');
+            },
+          },
+          {
+            label: 'Support Channel',
+            subheading: 'Chat with our team',
+            // externalLink: true,
+            icon: 'far fa-comment-alt',
+            iconColorClass: 'text-orange',
+            command: () => {
+              window.open(this.configDetails['supportChannel'], '_blank');
+            },
+          },
+          {
+            label: 'Logout',
+            subheading: '',
+            externalLink: false,
+            icon: 'fas fa-sign-out-alt',
+            iconColorClass: 'text-grey',
+            command: () => {
+              this.logout();
+            },
+          },
+        ],
       },
     ];
     let authoritiesArr;
@@ -89,23 +148,23 @@ export class HeaderComponent implements OnInit {
     }
 
     if (!this.isGuest) {
-      this.userMenuItems.unshift({
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          const hashWithoutQuery = window.location.hash.split('?')[0];
-          const urlWithoutHash = window.location.hash.substring(1);
-          if (!hashWithoutQuery.includes('Config')) {
-            this.lastVisitedFromUrl = window.location.hash.substring(1);
-            if (hashWithoutQuery.includes('Report')) {
-              this.saveReportsUrl = urlWithoutHash;
-            } else {
-              this.saveDashboardUrl = urlWithoutHash;
-            }
-          }
-          this.router.navigate(['/dashboard/Config/ProjectList']);
-        },
-      });
+      // this.userMenuItems.unshift({
+      //   label: 'Settings',
+      //   icon: 'fas fa-cog',
+      //   command: () => {
+      //     const hashWithoutQuery = window.location.hash.split('?')[0];
+      //     const urlWithoutHash = window.location.hash.substring(1);
+      //     if (!hashWithoutQuery.includes('Config')) {
+      //       this.lastVisitedFromUrl = window.location.hash.substring(1);
+      //       if (hashWithoutQuery.includes('Report')) {
+      //         this.saveReportsUrl = urlWithoutHash;
+      //       } else {
+      //         this.saveDashboardUrl = urlWithoutHash;
+      //       }
+      //     }
+      //     this.router.navigate(['/dashboard/Config/ProjectList']);
+      //   },
+      // });
 
       this.httpService.getAllConnections().subscribe((response) => {
         if (response['data'].length < 1) {
@@ -143,6 +202,7 @@ export class HeaderComponent implements OnInit {
 
     this.getExistingReports();
     this.getFeatureFlag();
+    this.getConfigDetails();
   }
 
   getFeatureFlag() {
@@ -277,5 +337,23 @@ export class HeaderComponent implements OnInit {
       .then(() => {
         this.lastVisitedFromUrl = this.router.url;
       });
+  }
+
+  getConfigDetails() {
+    this.httpService.getAppConfigurationDetails().subscribe(
+      (response) => {
+        if (response?.success) {
+          this.configDetails = response.data;
+          this.sharedService.setConfigurationDetails(response.data);
+        }
+      },
+      (error) => {
+        this.sharedService.setConfigurationDetails(null);
+        this.messageService.add({
+          severity: 'error',
+          summary: error.message,
+        });
+      },
+    );
   }
 }
