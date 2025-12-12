@@ -288,26 +288,22 @@ export class PebCalculatorComponent implements OnInit {
       };
     });
 
-    // Normalize forecasts → always an array
     const normalizedForecasts = Array.isArray(forecasts) ? forecasts : [];
 
-    // Build formatted forecast objects
     const formattedForecasts = normalizedForecasts
       .map((forecast: any) => {
         const value = Number(forecast?.value);
 
-        // Skip invalid numbers
         if (!Number.isFinite(value)) return null;
 
         return {
-          kpiGroup: forecast?.category ?? metrics[0], // API gives category directly
+          kpiGroup: forecast?.category ?? metrics[0],
           value,
           isForecast: true,
         };
       })
       .filter(Boolean);
 
-    // Final return shape
     return [
       {
         dataGroup,
