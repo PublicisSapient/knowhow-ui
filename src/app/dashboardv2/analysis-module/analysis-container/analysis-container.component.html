@@ -34,10 +34,11 @@
     <div class="p-card-content p-p-0">
       <app-kpi-card-v2 #kpiCard
         [kpiData]="metricsKpiSettings"
+        [kpiTitle]="metricsTitle"
         [loader]="false"
         [selectedTab]="selectedTab"
         [customTooltip]="matrixTableTooltip"
-        [immediateLoader]="false" 
+        [immediateLoader]="false"
         [selectedBoard]="'analysis'"
         (reloadKPITab)="handleKPIReload($event)">
         <app-dynamic-kpi-table
@@ -59,6 +60,7 @@
     <div class="p-card-content p-p-0">
       <app-kpi-card-v2 #kpiCard
                        [kpiData]="aiUsageKpiSettings"
+                       [kpiTitle]="aiUsageTitle"
                        [loader]="false"
                        [selectedTab]="selectedTab"
                        [immediateLoader]="false"

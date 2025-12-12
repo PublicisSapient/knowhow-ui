@@ -2124,12 +2124,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         forecastPoint?.sortSprint ||
         forecastPoint?.sSprintName ||
         'Forecast';
+      const mergeRequestKeys = [
+        'No. of Merge Requests',
+        'No. of Merge Request',
+      ];
+      const rawValue =
+        forecastPoint?.lineValue ??
+        mergeRequestKeys
+          .map((k) => forecastPoint?.hoverValue?.[k])
+          .find((v) => v !== undefined);
+
+      const normalizedLineValue = Number.isFinite(Number(rawValue))
+        ? Number(rawValue)
+        : null;
       const newPoint = {
         ...lastActualPoint,
         ...forecastPoint,
         data: forecastPoint.data ?? numericValue.toString(),
         value: numericValue,
-        lineValue: numericValue,
+        lineValue: normalizedLineValue,
         sprojectName:
           forecastPoint?.sprojectName ||
           lastActualPoint?.sprojectName ||

@@ -8,20 +8,16 @@ describe('NbaComponent', () => {
 
   const mockRawData = [
     {
-      nodeId: '1',
-      nodeName: 'Test Node',
+      projectId: '1',
+      projectName: 'Test Project',
       recommendations: {
-        recommendationType: 'High',
-        observation: 'Test Observation',
-        recommendationDetails: 'Test Details',
+        severity: 'High',
+        title: 'Test Observation',
+        description: 'Test Details',
         saving: '$1000',
         keyPerformanceIndicator: ['KPI1', 'KPI2'],
-        recommendedActionPlan: {
-          actionPlan: [
-            { step: 1, title: 'Step 1', description: 'Description 1' },
-          ],
-        },
-        timeToVale: '2 weeks',
+        actionPlans: [{ title: 'Step 1', description: 'Description 1' }],
+        timeToValue: '2 weeks',
       },
     },
   ];
@@ -84,7 +80,12 @@ describe('NbaComponent', () => {
     const mockItem = {
       title: 'Test Title',
       category: 'Test Category',
-      rawData: mockRawData[0].recommendations,
+      rawData: {
+        severity: 'High',
+        timeToValue: '2 weeks',
+        keyPerformanceIndicator: ['KPI1', 'KPI2'],
+        actionPlans: [{ title: 'Step 1', description: 'Description 1' }],
+      },
     };
 
     component.openProjectDetailsPopup(mockItem);
@@ -92,9 +93,9 @@ describe('NbaComponent', () => {
     expect(component.displayModal).toBeTrue();
     expect(component.selectedRecommendation.title).toBe('Test Title');
     expect(component.selectedRecommendation.nodeName).toBe('Test Category');
-    expect(component.selectedRecommendation.infoBoxes.length).toBe(3);
+    expect(component.selectedRecommendation.infoBoxes.length).toBe(2);
     expect(component.selectedRecommendation.infoBoxes[0].label).toBe(
-      'Projected Benefit',
+      'Implementation',
     );
   });
 

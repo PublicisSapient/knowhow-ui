@@ -2,13 +2,19 @@
   <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
     <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
       <div class="kpi-card-title-container">
-        <h3 tabindex="0" [attr.aria-label]="'KPI Details'">Next Best Actions</h3>
+        <h3 tabindex="0" [attr.aria-label]="'Recommended Next Actions'">Recommended Next Actions</h3>
       </div>
     </div>
   </div>
 
   <div class="kpi-card-body">
-    @if(rawData.length){
+    @if(isLoading){
+      <div class="nba-cards p-mt-3">
+        @for (c of [1,2,3]; track c) {
+          <p-skeleton width="100%" height="7rem" styleClass="p-mb-3" />
+        }
+      </div>
+    }@else if(rawData && rawData.length){
       <p class="nba-subtitle">
         Top recommendations to improve efficiency and quality:
       </p>
@@ -26,7 +32,7 @@
   
       </div>
     }@else{
-      <div class="p-d-flex p-flex-column p-align-center" style="min-height: 53vh">
+      <div class="p-d-flex p-flex-column p-align-center" style="min-height: 34vh">
         <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         <h4>No Data Available. </h4>
       </div>
@@ -36,7 +42,7 @@
 </div>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true" (onHide)="displayModal=false" role="dialog"
-  #templateOfReference tabindex="0" aria-labelledby="dialogHeader" [style]="{'min-width': '35vw'}">
+  #templateOfReference tabindex="0" aria-labelledby="dialogHeader" [style]="{'min-width': '35vw','max-width' : '50vw'}">
   <p-header id="dialogHeader">
     <div>
       <div>

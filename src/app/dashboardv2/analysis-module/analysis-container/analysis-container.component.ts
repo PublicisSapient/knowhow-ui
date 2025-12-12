@@ -9,8 +9,10 @@ import { GenericFilterComponent } from '../analysis-generic-filter/generic-filte
 import { ButtonModule } from 'primeng/button';
 import * as analysisConstant from '../analysis-constant';
 import {
+  AI_USAGE_TABLE_TITLE,
   AI_USAGE_TOOLTIP_INFO,
   MATRIX_TABLE_TOOLTIP_INFO,
+  METRICS_TABLE_TITLE,
 } from '../analysis-constant';
 
 interface SubColumn {
@@ -68,6 +70,8 @@ export class AnalysisContainerComponent implements OnInit {
   selectedTab: any;
   aiUsageTooltip: typeof AI_USAGE_TOOLTIP_INFO;
   matrixTableTooltip: typeof MATRIX_TABLE_TOOLTIP_INFO;
+  aiUsageTitle = AI_USAGE_TABLE_TITLE;
+  metricsTitle = METRICS_TABLE_TITLE;
 
   // --- VARIABLES FOR AI USAGE TABLE ---
   public aiUsageKpiSettings: any;
