@@ -35,7 +35,6 @@ describe('AnalyticsService', () => {
       'setProjectToolsData',
       'setKpiData',
       'createProjectData',
-      'setUIType',
     ]);
 
     const metricsSpyObj = jasmine.createSpyObj('MetricsService', [

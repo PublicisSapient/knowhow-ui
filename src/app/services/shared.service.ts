@@ -225,18 +225,8 @@ export class SharedService {
   // end here
 
   setScrumKanban(selectedType) {
-    const previousType = this.selectedtype;
     this.selectedtype = selectedType;
     this.onScrumKanbanSwitch.next({ selectedType });
-
-    // Track UI type change for analytics (only if it actually changed)
-    if (previousType && previousType !== selectedType) {
-      this.analytics.setUIType({
-        uiType: selectedType,
-        previousType: previousType,
-        userRole: localStorage.getItem('user_role') || 'unknown',
-      });
-    }
   }
 
   setSelectedBoard(selectedBoard) {

@@ -24,7 +24,7 @@ import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
   production: false,
-  baseUrl: '//customapi:8080',
+  baseUrl: '//localhost:8080',
   SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: 'http://localhost:3000',
   CENTRAL_API_URL: 'http://localhost:8787',
@@ -33,14 +33,10 @@ export const environment: Environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration - A/B Testing: GA + Self-hosted Grafana
   analytics: {
-    // A/B Testing configuration
-    grafanaRolloutPercentage: 100, // 100% for local development, 5-10% for production
-    enableGoogleAnalytics: true,
+    grafanaRolloutPercentage: 100,
+    enableGoogleAnalytics: false,
     enableGrafanaAnalytics: true,
-
-    // Self-hosted analytics configuration
     selfHosted: {
       enabled: true,
       metricsEndpoint: '/api/metrics-proxy/send',

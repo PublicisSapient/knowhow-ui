@@ -48,15 +48,9 @@ export class AnalyticsService {
     // Start metrics collection only if user is in Grafana rollout
     if (this.useGrafanaAnalytics) {
       console.log(
-        '[Analytics] 🚀 Grafana analytics enabled - starting metrics collection',
+        '[Analytics] 🚀 Grafana analytics enabled - metrics will be sent automatically when changed',
       );
       this.metrics.exposeMetricsEndpoint();
-
-      // Send metrics to backend every 15 seconds for Prometheus scraping
-      console.log('[Analytics] ⏰ Scheduling metrics push every 15 seconds');
-      setInterval(() => {
-        this.metrics.sendMetricsToBackend();
-      }, 15000);
     } else {
       console.log('[Analytics] Grafana analytics disabled for this session');
     }
@@ -182,10 +176,19 @@ export class AnalyticsService {
     // Send to Grafana analytics if user is in rollout
     if (this.useGrafanaAnalytics && data?.length) {
       try {
-        this.metrics.trackProjectData(data); // Now uses same rich data as GA
+        this.metrics.trackProjectData(data); // Track selection pattern (how many projects)
 
-        // Track filter usage (project selection is a filter action)
-        this.trackFilterUsage('project_selection', `${data.length} project(s)`);
+        // Track individual project access for Top 5 Projects
+        if (this.userId) {
+          data.forEach((project: any) => {
+            this.metrics.trackProjectAccess(
+              project.id || project.projectId || 'unknown',
+              project.projectName || project.name || 'unknown',
+              this.userId!,
+              localStorage.getItem('user_role') || 'unknown',
+            );
+          });
+        }
       } catch (error) {
         console.error('Grafana Analytics setProjectData error:', error);
       }
@@ -252,35 +255,6 @@ export class AnalyticsService {
     }
   }
 
-  setUIType(data: any): void {
-    // Send to Google Analytics if enabled
-    if (this.useGoogleAnalytics) {
-      try {
-        this.googleAnalytics.setUIType(data);
-      } catch (error) {
-        console.error('Google Analytics setUIType error:', error);
-      }
-    }
-
-    // Send to Grafana analytics if user is in rollout
-    if (this.useGrafanaAnalytics) {
-      try {
-        this.metrics.trackUITypeChange(data); // Now uses same rich data as GA
-
-        // Track UI preference for analytics
-        if (data.uiType && this.userId) {
-          this.metrics.trackUIPreference(
-            data.uiType,
-            this.userId,
-            data.userRole || 'unknown',
-          );
-        }
-      } catch (error) {
-        console.error('Grafana Analytics setUIType error:', error);
-      }
-    }
-  }
-
   trackTabNavigation(tabName: string): void {
     if (this.useGrafanaAnalytics && this.userId) {
       try {
@@ -291,16 +265,6 @@ export class AnalyticsService {
         );
       } catch (error) {
         console.error('Grafana Analytics trackTabNavigation error:', error);
-      }
-    }
-  }
-
-  trackFilterUsage(filterType: string, filterValue: string): void {
-    if (this.useGrafanaAnalytics && this.userId) {
-      try {
-        this.metrics.trackFilterUsage(filterType, filterValue, this.userId);
-      } catch (error) {
-        console.error('Grafana Analytics trackFilterUsage error:', error);
       }
     }
   }

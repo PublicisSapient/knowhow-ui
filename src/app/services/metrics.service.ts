@@ -24,6 +24,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class MetricsService {
   private metrics: Map<string, number> = new Map();
+  private isDirty = false;
+  private sendTimeout: any = null;
 
   constructor(private http: HttpClient) {
     // Metrics are created automatically when first incremented with labels
@@ -40,6 +42,7 @@ export class MetricsService {
       labels,
       `-> ${current + 1}`,
     );
+    this.markDirty();
   }
 
   // Set a metric value
@@ -51,6 +54,7 @@ export class MetricsService {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
     console.log(`[Metrics] Set ${metricName}:`, labels, `-> ${value}`);
+    this.markDirty();
   }
 
   // Get all metrics in Prometheus format
@@ -77,6 +81,23 @@ export class MetricsService {
     return output;
   }
 
+  // Mark metrics as dirty and schedule a debounced send
+  private markDirty(): void {
+    this.isDirty = true;
+
+    // Clear existing timeout
+    if (this.sendTimeout) {
+      clearTimeout(this.sendTimeout);
+    }
+
+    // Schedule send after 5 seconds of inactivity (debounce)
+    this.sendTimeout = setTimeout(() => {
+      if (this.isDirty) {
+        this.sendMetricsToBackend();
+      }
+    }, 5000);
+  }
+
   // Build metric key with labels
   private buildMetricKey(
     metricName: string,
@@ -93,17 +114,18 @@ export class MetricsService {
     return `${metricName}{${labelPairs}}`;
   }
 
+  // Helper method to strip query parameters from URL
+  private stripQueryParams(url: string): string {
+    if (!url) return 'unknown';
+    // Remove query parameters and hash fragments
+    return url.split('?')[0].split('#')[0];
+  }
+
   // Track page view with rich data (equivalent to GA setPageLoad)
-  trackPageView(
-    page: string,
-    userRole?: string,
-    uiType?: string,
-    version?: string,
-  ): void {
+  trackPageView(page: string, userRole?: string, version?: string): void {
     this.increment('page_views_total', {
-      page,
+      page: this.stripQueryParams(page),
       user_role: userRole || 'unknown',
-      ui_type: uiType || 'unknown',
       version: version || 'unknown',
     });
   }
@@ -111,9 +133,8 @@ export class MetricsService {
   // Track page load with full analytics data (GA equivalent)
   trackPageLoad(data: any): void {
     this.increment('page_views_total', {
-      page: data.url || 'unknown',
+      page: this.stripQueryParams(data.url || 'unknown'),
       user_role: data.userRole || 'unknown',
-      ui_type: data.uiType || 'unknown',
       version: data.version || 'unknown',
     });
   }
@@ -131,7 +152,6 @@ export class MetricsService {
     this.increment('user_sessions_total', {
       login_type: loginType,
       user_role: data.userRole || 'unknown',
-      ui_type: data.uiType || 'unknown',
       user_id: data.user_id || 'anonymous',
     });
   }
@@ -177,15 +197,6 @@ export class MetricsService {
     this.increment('project_creation_total', {
       project_name: data?.projectName || 'unknown',
       project_type: data?.projectType || 'unknown',
-      user_role: data?.userRole || 'unknown',
-    });
-  }
-
-  // Track UI type changes (GA setUIType equivalent)
-  trackUITypeChange(data: any): void {
-    this.increment('ui_type_changes_total', {
-      ui_type: data?.uiType || 'unknown',
-      previous_type: data?.previousType || 'unknown',
       user_role: data?.userRole || 'unknown',
     });
   }
@@ -300,46 +311,6 @@ export class MetricsService {
     });
   }
 
-  // Track filter usage (replicate GA filter interactions)
-  trackFilterUsage(
-    filterType: string,
-    filterValue: string,
-    userId: string,
-  ): void {
-    this.increment('filter_usage_events_total', {
-      filter_type: filterType,
-      filter_value: filterValue,
-      user_id: userId,
-    });
-  }
-
-  // Track UI preferences (replicate GA Scrum vs Kanban)
-  trackUIPreference(uiType: string, userId: string, userRole: string): void {
-    this.increment('ui_preference_selections_total', {
-      ui_type: uiType, // scrum, kanban
-      user_id: userId,
-      user_role: userRole,
-    });
-  }
-
-  // Track geographic sessions (replicate GA country map)
-  trackGeographicSession(country: string, city: string, userId: string): void {
-    this.increment('geographic_sessions_total', {
-      country: country,
-      city: city,
-      user_id: userId,
-    });
-  }
-
-  // Track device usage (replicate GA device analytics)
-  trackDeviceUsage(deviceType: string, browser: string, userId: string): void {
-    this.increment('device_type_usage_total', {
-      device_type: deviceType, // desktop, mobile, tablet
-      browser: browser,
-      user_id: userId,
-    });
-  }
-
   // Track sprint workflow events (KnowHow-specific)
   trackSprintWorkflow(
     workflowType: string,
@@ -390,6 +361,12 @@ export class MetricsService {
 
   // Send metrics to backend (simulate for demo)
   sendMetricsToBackend(): void {
+    // Only send if there are changes
+    if (!this.isDirty) {
+      console.log('[Metrics] No changes to send, skipping...');
+      return;
+    }
+
     console.log('[Metrics] Preparing to send metrics to backend...');
     const metrics = this.getPrometheusMetrics();
 
@@ -400,6 +377,9 @@ export class MetricsService {
 
     // Send to Pushgateway
     this.sendToPushgateway(metrics);
+
+    // Reset dirty flag after sending
+    this.isDirty = false;
   }
 
   // Send metrics to Pushgateway
