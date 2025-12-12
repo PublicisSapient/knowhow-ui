@@ -9,9 +9,7 @@ describe('KpiAiRecommendationTargetComponent', () => {
   let httpService: jasmine.SpyObj<HttpService>;
 
   beforeEach(async () => {
-    const httpSpy = jasmine.createSpyObj('HttpService', [
-      'getkpiAITargetRecommData',
-    ]);
+    const httpSpy = jasmine.createSpyObj('HttpService', ['getHomeNBAData']);
 
     await TestBed.configureTestingModule({
       imports: [KpiAiRecommendationTargetComponent],
@@ -38,11 +36,23 @@ describe('KpiAiRecommendationTargetComponent', () => {
   });
 
   it('should update aiRecommendationData on successful fetchData', () => {
-    const mockData = { success: true, data: {} };
+    const mockData = {
+      success: true,
+      data: {
+        infoBoxes: [{ label: 'Test', value: 'Test Value', color: 'blue' }],
+        kpis: ['Test KPI'],
+        actionPlan: [
+          { step: 1, title: 'Test Plan', description: 'Test Description' },
+        ],
+        kpiSectionTitle: 'Test Section',
+        actionPlanTitle: 'Test Action Plan',
+        aiRationaleDescription: 'Test Description',
+      },
+    };
     httpService.getHomeNBAData.and.returnValue(of(mockData));
 
     component.fetchData();
 
-    expect(component.aiRecommendationData).toBeDefined();
+    expect(component.aiRecommendationData).toEqual(mockData.data);
   });
 });
