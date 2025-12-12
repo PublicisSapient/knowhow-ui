@@ -39,7 +39,7 @@ describe('KpiAiRecommendationTargetComponent', () => {
 
   it('should update aiRecommendationData on successful fetchData', () => {
     const mockData = { success: true, data: {} };
-    httpService.getkpiAITargetRecommData.and.returnValue(of(mockData));
+    httpService.getHomeNBAData.and.returnValue(of(mockData));
 
     component.fetchData();
 
