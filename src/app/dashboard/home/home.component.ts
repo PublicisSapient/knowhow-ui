@@ -52,6 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   productivityData: any = {};
   productivityExpandRowDataLoader = false;
   nbaFlag = new BehaviorSubject(false);
+  nbaLoader = true;
 
   constructor(
     private service: SharedService,
@@ -82,6 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.initializeBottomData('ALL');
           this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
+          this.nbaRawData = [];
+          this.nbaLoader = true;
           this.loader = true;
           this.BottomTilesLoader = true;
           this.selectedType = this.service.getSelectedType();
@@ -773,25 +776,26 @@ export class HomeComponent implements OnInit, OnDestroy {
   getNBAData(label) {
     this.httpService.getHomeNBAData(label).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.nbaRawData = res?.data?.details;
+        if (res?.success) {
+          this.nbaRawData = res?.data?.details || [];
+          this.nbaLoader = false;
         } else {
           this.nbaRawData = [];
+          this.nbaLoader = false;
           console.error('NBA data having some problem.');
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to load NBA data. Please try again.',
+            summary: 'Failed to load NBA data. Please try again.',
           });
         }
       },
       error: (error) => {
         this.nbaRawData = [];
+        this.nbaLoader = false;
         console.error('Failed to load NBA data:', error);
         this.messageService.add({
           severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load NBA data. Please try again.',
+          summary: 'Failed to load NBA data. Please try again.',
         });
       },
     });

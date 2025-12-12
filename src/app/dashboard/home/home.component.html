@@ -271,7 +271,7 @@
 </div>
 
 <div class="p-col-3" *ngIf="(nbaFlag | async) && selectedType === 'scrum'">
-    <app-nba [rawData]="nbaRawData" ></app-nba>
+    <app-nba [rawData]="nbaRawData" [isLoading]="nbaLoader"></app-nba>
 </div>
 
 </div>

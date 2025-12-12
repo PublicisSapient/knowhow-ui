@@ -8,7 +8,13 @@
   </div>
 
   <div class="kpi-card-body">
-    @if(rawData.length){
+    @if(isLoading){
+      <div class="nba-cards p-mt-3">
+        @for (c of [1,2,3]; track c) {
+          <p-skeleton width="100%" height="7rem" styleClass="p-mb-3" />
+        }
+      </div>
+    }@else if(rawData && rawData.length){
       <p class="nba-subtitle">
         Top recommendations to improve efficiency and quality:
       </p>

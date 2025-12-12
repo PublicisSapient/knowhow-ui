@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
+import { SkeletonModule } from 'primeng/skeleton';
 import { HomeRecommCardComponent } from 'src/app/component/home-recomm-card/home-recomm-card.component';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
 
@@ -14,6 +15,7 @@ import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-
     HomeRecommCardComponent,
     RecommDetailsComponent,
     DialogModule,
+    SkeletonModule,
   ],
 })
 export class NbaComponent implements OnChanges {
@@ -22,6 +24,7 @@ export class NbaComponent implements OnChanges {
   recommendations: any[] = [];
 
   @Input() rawData: any[] = [];
+  @Input() isLoading: boolean = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['rawData']) {
