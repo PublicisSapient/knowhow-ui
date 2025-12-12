@@ -225,6 +225,7 @@ export class PebCalculatorComponent implements OnInit {
             this.formatCategoryScoresForCumulativeChart(
               response['data']['categoryScores'],
               true,
+              response['data']?.forecasts,
             );
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
@@ -248,6 +249,7 @@ export class PebCalculatorComponent implements OnInit {
   formatCategoryScoresForCumulativeChart(
     categoryScores: any[],
     showOverall?: boolean,
+    forecasts?: any[],
   ): any[] {
     if (!categoryScores || categoryScores.length === 0) {
       return [];
@@ -286,9 +288,30 @@ export class PebCalculatorComponent implements OnInit {
       };
     });
 
+    // Normalize forecasts → always an array
+    const normalizedForecasts = Array.isArray(forecasts) ? forecasts : [];
+
+    // Build formatted forecast objects
+    const formattedForecasts = normalizedForecasts
+      .map((forecast: any) => {
+        const value = Number(forecast?.value);
+
+        // Skip invalid numbers
+        if (!Number.isFinite(value)) return null;
+
+        return {
+          kpiGroup: forecast?.category ?? metrics[0], // API gives category directly
+          value,
+          isForecast: true,
+        };
+      })
+      .filter(Boolean);
+
+    // Final return shape
     return [
       {
         dataGroup,
+        ...(formattedForecasts.length ? { forecasts: formattedForecasts } : {}),
       },
     ];
   }

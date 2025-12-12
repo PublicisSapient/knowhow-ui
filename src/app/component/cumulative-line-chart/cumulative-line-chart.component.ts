@@ -223,9 +223,15 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     const tooltipContainer = d3.select(elem).select('.tooltip-container');
 
     const showTooltip = (linedata) => {
+      const tooltipData = Array.isArray(linedata)
+        ? linedata.filter((point) => !point?.isForecast)
+        : [];
+      if (!tooltipData.length) {
+        return;
+      }
       tooltipContainer
         .selectAll('div')
-        .data(linedata)
+        .data(tooltipData)
         .join('div')
         .attr('class', 'tooltip')
         .style('left', (d) => x(d.filter) + x.bandwidth() / 2 + 'px')
@@ -260,21 +266,30 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .filter((d) => d['lineDataCategorywise'].hasOwnProperty(kpiGroup))
         .map((d) => d['lineDataCategorywise'][kpiGroup]);
       if (lineData.length === 1) {
+        const singlePoint = lineData[0];
+        const isForecastPoint = singlePoint?.isForecast;
         // Just draw a single point instead of a line
         svg
           .append('circle')
-          .attr('cx', x(lineData[0].filter) + x.bandwidth() / 2)
-          .attr('cy', y(lineData[0].value))
+          .attr('cx', x(singlePoint.filter) + x.bandwidth() / 2)
+          .attr('cy', y(singlePoint.value))
           .attr('r', 4)
           .attr('fill', color(kpiGroup))
           .style('stroke-width', 2)
           .style('fill', 'none')
-          .style('cursor', 'pointer')
+          .style('cursor', isForecastPoint ? 'default' : 'pointer')
+          .style('pointer-events', isForecastPoint ? 'none' : 'all')
           .on('mouseover', function (event, linedata) {
+            if (isForecastPoint) {
+              return;
+            }
             d3.select(this).style('stroke-width', 4);
             showTooltip(linedata);
           })
           .on('mouseout', function (event, d) {
+            if (isForecastPoint) {
+              return;
+            }
             d3.select(this).style('stroke-width', 2);
             hideTooltip();
           });
@@ -338,15 +353,8 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
               .style('stroke-width', 2)
               .style('fill', 'none')
               .style('stroke-dasharray', '4 4')
-              .style('cursor', 'pointer')
-              .on('mouseover', function (event, linedata) {
-                d3.select(this).style('stroke-width', 4);
-                showTooltip(linedata);
-              })
-              .on('mouseout', function (event, d) {
-                d3.select(this).style('stroke-width', 2);
-                hideTooltip();
-              });
+              .style('cursor', 'default')
+              .style('pointer-events', 'none');
           }
         }
       }
@@ -365,7 +373,11 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
+        .style('pointer-events', (d) => (d?.isForecast ? 'none' : 'all'))
         .on('mouseover', function (event, d) {
+          if (d?.isForecast) {
+            return;
+          }
           // This hover will triger for the circle only i.e. if data have hovervalue then it will appear for same otherwise on circle hover it will show the all joint line data.
           if (d && d?.hoverValue) {
             d3.select(this)
@@ -395,6 +407,9 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
               .style('left', xPosition + 'px')
               .style('top', yPosition + 20 + 'px');
           } else {
+            if (d?.isForecast) {
+              return;
+            }
             d3.select(this)
               .transition()
               .duration(500)
@@ -405,6 +420,9 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           }
         })
         .on('mouseout', function (event, d) {
+          if (d?.isForecast) {
+            return;
+          }
           if (d && d?.hoverValue) {
             circleToolTipContainer
               .transition()
