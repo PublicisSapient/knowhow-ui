@@ -223,7 +223,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
-          this.getNBAData();
+          this.getNBAData(filterApplyData.label);
         }),
     );
 
@@ -770,11 +770,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
-  getNBAData() {
-    this.httpService.getHomeNBAData({}).subscribe({
+  getNBAData(label) {
+    this.httpService.getHomeNBAData(label).subscribe({
       next: (res) => {
         if (res.success) {
-          this.nbaRawData = res.data;
+          this.nbaRawData = res?.data?.details;
         } else {
           this.nbaRawData = [];
           console.error('NBA data having some problem.');
