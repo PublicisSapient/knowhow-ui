@@ -29,14 +29,12 @@ export const environment: Environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration for docker
   analytics: {
-    grafanaRolloutPercentage: 0,
-    enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: false, // Set to true to enable Grafana/Prometheus metrics
-
+    grafanaRolloutPercentage: 100,
+    enableGoogleAnalytics: false,
+    enableGrafanaAnalytics: true,
     selfHosted: {
-      enabled: false,
+      enabled: true,
       metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Docker',
       appVersion: '14.0.0',
