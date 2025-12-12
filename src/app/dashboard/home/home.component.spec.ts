@@ -590,10 +590,10 @@ describe('HomeComponent', () => {
 
   it('should handle getNBAData success', () => {
     mockHttpService.getHomeNBAData.and.returnValue(
-      of({ success: true, data: [{ id: 1, name: 'NBA Data' }] }),
+      of({ success: true, data: { details: [{ id: 1, name: 'NBA Data' }] } }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([{ id: 1, name: 'NBA Data' }]);
   });
@@ -603,7 +603,7 @@ describe('HomeComponent', () => {
       throwError({ error: 'Network error' }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([]);
     expect(mockMessageService.add).toHaveBeenCalled();

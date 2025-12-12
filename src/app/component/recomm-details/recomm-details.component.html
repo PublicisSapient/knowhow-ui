@@ -8,7 +8,7 @@
   </div>
 
   <!-- KPI Section -->
-  <div class="kpi-section">
+  <div class="kpi-section" *ngIf="kpis && kpis.length">
     <div class="kpi-title">
       <span class="icon">{{ kpiSectionIcon }}</span>
       <span>{{ kpiSectionTitle }}</span>
