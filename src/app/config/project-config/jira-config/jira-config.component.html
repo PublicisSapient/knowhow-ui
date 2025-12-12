@@ -59,6 +59,15 @@
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
                                       formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr' &&formTitle?.toLowerCase() !== 'rally'">Delete</th>
                         </tr>
+                        <tr class="w-100" *ngIf="showConfiguredToolFilters && columns.length > 0">
+                            <th *ngFor="let col of columns" scope="col">
+                                <input pInputText [id]="col.field" type="text" class="p-column-filter" placeholder="Search"
+                                    [style]="{width:'100%'}" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                                <label [for]="col.field" class="p-sr-only">{{ col.header }} Filter</label>
+                            </th>
+                            <th id="empty-header"></th>
+                            </tr>
+
                     </ng-template>
 
                     <ng-template pTemplate="body" let-tool let-columns="columns">

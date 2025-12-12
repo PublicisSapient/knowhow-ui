@@ -52,6 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   productivityData: any = {};
   productivityExpandRowDataLoader = false;
   nbaFlag = new BehaviorSubject(false);
+  nbaLoader = true;
 
   constructor(
     private service: SharedService,
@@ -82,6 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.initializeBottomData('ALL');
           this.calculatorDataLoader = false;
           this.aggregrationDataList = [];
+          this.nbaRawData = [];
+          this.nbaLoader = true;
           this.loader = true;
           this.BottomTilesLoader = true;
           this.selectedType = this.service.getSelectedType();
@@ -108,6 +111,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               .subscribe({
                 next: (executiveBoard: any) => {
                   /** ---------- Handle executive summery API ---------- */
+                  this.initializeAggregationDataWithNA();
                   if (executiveBoard?.error) {
                     this.messageService.add({
                       severity: 'error',
@@ -115,7 +119,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                         executiveBoard.message ||
                         'Error in fetching Executive data!',
                     });
-                    this.initializeAggregationDataWithNA();
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
                       executiveBoard.data.matrix.rows.map((row) => ({
@@ -158,10 +161,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this.aggregrationDataList = [
                       {
                         cssClassName: 'users',
-                        category: 'Active ' + label + ' (s)',
+                        category: 'Active ' + label + '(s)',
                         value: this.tableData['data'].length,
                         icon: 'pi-users',
-                        average: 'NA',
+                        average: 'N/A',
                         valueColor: '#374151',
                         iconType: 'pi',
                       },
@@ -176,7 +179,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'exclamation',
-                        category: 'Critical ' + label + ' (s)',
+                        category: 'Critical ' + label + '(s)',
                         value: this.calculateHealth('unhealthy').count,
                         icon: 'pi-exclamation-triangle',
                         average: this.calculateHealth('unhealthy').average,
@@ -185,7 +188,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'heart-fill',
-                        category: 'Healthy ' + label + ' (s)',
+                        category: 'Healthy ' + label + '(s)',
                         value: this.calculateHealth('healthy').count,
                         icon: 'pi-heart-fill',
                         average: this.calculateHealth('healthy').average,
@@ -223,7 +226,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.selectedFilters = [this.filters[0]];
           this.getMaturityWheelData(sharedobject);
-          this.getNBAData();
+          this.getNBAData(filterApplyData.label);
         }),
     );
 
@@ -474,7 +477,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         } else {
           if (res?.data) {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
-              return { ...row, ...row?.boardMaturity, productivity: 'NA' };
+              return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
@@ -702,12 +705,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'NA';
+    return productivity !== undefined && this.selectedType === 'scrum'
+      ? `${productivity.toFixed(2)}%`
+      : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
     const hierarchyItem = this.completeHierarchyData?.find(
-      (hi) => hi.level === filterApplyData.level - 1,
+      (hi) => hi.level === filterApplyData.level,
     );
 
     if (!hierarchyItem) {
@@ -768,28 +773,29 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
-  getNBAData() {
-    this.httpService.getHomeNBAData({}).subscribe({
+  getNBAData(label) {
+    this.httpService.getHomeNBAData(label).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.nbaRawData = res.data;
+        if (res?.success) {
+          this.nbaRawData = res?.data?.details || [];
+          this.nbaLoader = false;
         } else {
           this.nbaRawData = [];
+          this.nbaLoader = false;
           console.error('NBA data having some problem.');
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to load NBA data. Please try again.',
+            summary: 'Failed to load NBA data. Please try again.',
           });
         }
       },
       error: (error) => {
         this.nbaRawData = [];
+        this.nbaLoader = false;
         console.error('Failed to load NBA data:', error);
         this.messageService.add({
           severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load NBA data. Please try again.',
+          summary: 'Failed to load NBA data. Please try again.',
         });
       },
     });
@@ -811,37 +817,37 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.aggregrationDataList = [
       {
         cssClassName: 'users',
-        category: 'Active ' + label + ' (s)',
-        value: 'NA',
+        category: 'Active ' + label + '(s)',
+        value: 'N/A',
         icon: 'pi-users',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'gauge',
         category: 'Avg. Efficiency',
-        value: 'NA',
+        value: 'N/A',
         icon: 'pi-gauge',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'exclamation',
-        category: 'Critical ' + label + ' (s)',
-        value: 'NA',
+        category: 'Critical ' + label + '(s)',
+        value: 'N/A',
         icon: 'pi-exclamation-triangle',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },
       {
         cssClassName: 'heart-fill',
-        category: 'Healthy ' + label + ' (s)',
-        value: 'NA',
+        category: 'Healthy ' + label + '(s)',
+        value: 'N/A',
         icon: 'pi-heart-fill',
-        average: 'NA',
+        average: 'N/A',
         valueColor: '#374151',
         iconType: 'pi',
       },

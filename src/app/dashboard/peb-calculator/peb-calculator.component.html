@@ -5,7 +5,7 @@
         <app-top-tiles [item]="{
           cssClassName: 'speed',
           category: 'Speed',
-          value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'NA'),
+          value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'N/A'),
           icon: 'fas fa-bolt',
           average: '',
           valueColor: '#15ba40',
@@ -16,7 +16,7 @@
         <app-top-tiles [item]="{
           cssClassName: 'users',
           category: 'Efficiency',
-          value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'NA'),
+          value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'N/A'),
           icon: 'fas fa-chart-line',
           average: '',
           valueColor: '#0b4bc8',
@@ -27,7 +27,7 @@
         <app-top-tiles [item]="{
           cssClassName: 'users',
           category: 'Quality',
-          value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'NA'),
+          value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'N/A'),
           icon: 'fas fa-shield-alt',
           average: '',
           valueColor: '#9810fa',
@@ -38,7 +38,7 @@
         <app-top-tiles [item]="{
           cssClassName: 'productivity',
           category: 'Productivity',
-          value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'NA'),
+          value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'N/A'),
           icon: 'fas fa-bullseye',
           average: '',
           valueColor: '#ff5c5d',
@@ -85,7 +85,7 @@
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
-                  mode="currency"[currency]="userCurrency" [locale]="userLocale" ngDefaultControl></p-inputNumber>
+                  mode="currency" [currency]="userCurrency" [locale]="userLocale" ngDefaultControl></p-inputNumber>
               </div>
             </div>
             <div class="p-col-12">

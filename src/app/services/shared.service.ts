@@ -170,6 +170,7 @@ export class SharedService {
   kpiPostSonarData: object = {};
   selectedDateRangeFilter: any;
   kpiPostZypherData: any;
+  configData: any;
 
   private recommendationsPortalSubject = new BehaviorSubject<Portal<any>>(null);
   recommendationsPortal$ = this.recommendationsPortalSubject.asObservable();
@@ -1048,5 +1049,13 @@ export class SharedService {
 
   setRecommendationsPortal(portal: Portal<any>) {
     this.recommendationsPortalSubject.next(portal);
+  }
+
+  setConfigurationDetails(configData: any) {
+    this.configData = configData;
+  }
+
+  getConfigurationDetails() {
+    return this.configData;
   }
 }

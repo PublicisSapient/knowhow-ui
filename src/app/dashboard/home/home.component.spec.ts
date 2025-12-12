@@ -490,9 +490,10 @@ describe('HomeComponent', () => {
       'Test Row': 85.5,
       'Another Row': 92.3,
     };
+    component.selectedType = 'scrum';
 
     expect(component.getProductivityForRow('Test Row')).toBe('85.50%');
-    expect(component.getProductivityForRow('Unknown Row')).toBe('NA');
+    expect(component.getProductivityForRow('Unknown Row')).toBe('N/A');
   });
 
   it('should handle dropdown change for scrum type', () => {
@@ -537,6 +538,7 @@ describe('HomeComponent', () => {
         },
       ],
     };
+    component.selectedType = 'scrum';
 
     component.processPEBData(testData);
 
@@ -544,7 +546,7 @@ describe('HomeComponent', () => {
     expect(component.productivityData['Entity 1']).toBe(75.2);
     expect(component.tableData.data[0].productivity).toBe('75.20%');
     expect(component.tableData.data[0].children.data[0].productivity).toBe(
-      'NA',
+      'N/A',
     );
     expect(component.BottomTilesLoader).toBeFalse();
   });
@@ -588,10 +590,10 @@ describe('HomeComponent', () => {
 
   it('should handle getNBAData success', () => {
     mockHttpService.getHomeNBAData.and.returnValue(
-      of({ success: true, data: [{ id: 1, name: 'NBA Data' }] }),
+      of({ success: true, data: { details: [{ id: 1, name: 'NBA Data' }] } }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([{ id: 1, name: 'NBA Data' }]);
   });
@@ -601,7 +603,7 @@ describe('HomeComponent', () => {
       throwError({ error: 'Network error' }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([]);
     expect(mockMessageService.add).toHaveBeenCalled();
@@ -716,10 +718,11 @@ describe('HomeComponent', () => {
       },
       { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
     ];
+    component.selectedType = 'scrum';
 
     const targettedDetails = {
       children: {
-        data: [{ name: 'Child Entity', productivity: 'NA' }],
+        data: [{ name: 'Child Entity', productivity: 'N/A' }],
       },
     };
 
@@ -937,10 +940,11 @@ describe('HomeComponent', () => {
       },
       { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
     ];
+    component.selectedType = 'scrum';
 
     const targettedDetails = {
       children: {
-        data: [{ name: 'Cached Entity', productivity: 'NA' }],
+        data: [{ name: 'Cached Entity', productivity: 'N/A' }],
       },
     };
 
@@ -950,7 +954,7 @@ describe('HomeComponent', () => {
     );
 
     expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
-      'project level',
+      'team level',
     );
     expect(component.productivityData['Cached Entity']).toBe(88.0);
     expect(targettedDetails.children.data[0].productivity).toBe('88.00%');
@@ -981,10 +985,11 @@ describe('HomeComponent', () => {
       },
       { level: 2, hierarchyLevelName: 'Team Level', hierarchyLevelId: 'team' },
     ];
+    component.selectedType = 'scrum';
 
     const targettedDetails = {
       children: {
-        data: [{ name: 'API Entity', productivity: 'NA' }],
+        data: [{ name: 'API Entity', productivity: 'N/A' }],
       },
     };
 
@@ -995,7 +1000,7 @@ describe('HomeComponent', () => {
     tick();
 
     expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
-      'project level',
+      'team level',
       apiResponse.data,
     );
     expect(component.productivityData['API Entity']).toBe(92.0);

@@ -63,7 +63,7 @@ export class KpiAiRecommendationTargetComponent {
   }
 
   fetchData() {
-    this.httpService.getkpiAITargetRecommData({}).subscribe({
+    this.httpService.getHomeNBAData('').subscribe({
       next: (responce) => {
         if (responce.success) {
           this.aiRecommendationData = responce.data;

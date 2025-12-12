@@ -23,9 +23,9 @@ interface CategoryVariations {
 export class PebCalculatorComponent implements OnInit {
   pebForm: FormGroup;
   durationOptions = [
-    { label: 'Per Month', value: 'month' },
-    { label: 'Per Quarter', value: 'quarter' },
-    { label: 'Per Year', value: 'year' },
+    { label: 'Per Month', value: 'per month' },
+    { label: 'Per Quarter', value: 'per quarter' },
+    { label: 'Per Year', value: 'per year' },
   ];
 
   aiBenefit = 29524;
@@ -38,10 +38,7 @@ export class PebCalculatorComponent implements OnInit {
   isError: boolean = false;
   errorMessage: string = '';
   items: any[] = [];
-  // pebProductivityData: any = [];
-  //require('src/assets/data/peb-productivity.json')['data'];
   pebProductivityTrendData: any = {};
-  //require('src/assets/data/peb-productivity-details.json')['data'];
 
   performanceChartData: Array<object> = [];
   costSavingsChartData: Array<object> = [];
@@ -55,6 +52,7 @@ export class PebCalculatorComponent implements OnInit {
   sub$: Subscription;
   queryParamsSubscription!: Subscription;
   selectedTab = '';
+  appConfig: any;
 
   constructor(
     private fb: FormBuilder,
@@ -65,12 +63,16 @@ export class PebCalculatorComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
   ) {
+    this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
+    this.appConfig = this.sharedService.getConfigurationDetails();
+
     this.pebForm = this.fb.group({
-      devCountControl: [30],
-      devCostControl: [100000],
-      durationControl: ['year'],
+      devCountControl: this.appConfig?.totalTeamSize || [30],
+      devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
+      durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
+        'per year',
+      ],
     });
-    this.userCurrency = this.detectCurrency(this.userLocale);
   }
 
   /**
@@ -295,9 +297,9 @@ export class PebCalculatorComponent implements OnInit {
     const devCostControl = this.pebForm.get('devCostControl')?.value;
     const devCountControl = this.pebForm.get('devCountControl')?.value;
     const durationControl =
-      this.pebForm.get('durationControl')?.value === 'month'
+      this.pebForm.get('durationControl')?.value === 'per month'
         ? 1 / 12
-        : this.pebForm.get('durationControl')?.value === 'quarter'
+        : this.pebForm.get('durationControl')?.value === 'per quarter'
         ? 1 / 4
         : 1;
 
@@ -312,17 +314,14 @@ export class PebCalculatorComponent implements OnInit {
       .getAiUsagaStatsDetails(selectedLevel)
       .subscribe({
         next: (res: any) => {
-          if (res && res.summary) {
-            const userCount = res?.summary
-              ? res?.summary
-              : res?.filter((res: any) => res?.summary?.userCount)[0]?.summary;
-            if (userCount?.userCount) {
-              this.pebForm.patchValue({
-                devCountControl: userCount?.userCount,
-              });
-            } else {
-              console.error('Failed to fetch user count >>');
-            }
+          const summary = res?.data?.summary?.usageSummary;
+
+          const userCount = summary?.userCount;
+
+          if (userCount != null) {
+            this.pebForm.patchValue({
+              devCountControl: userCount,
+            });
           }
         },
         error: (err: any) => {

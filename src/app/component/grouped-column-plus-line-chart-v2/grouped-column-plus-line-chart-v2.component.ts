@@ -549,8 +549,23 @@ export class GroupedColumnPlusLineChartV2Component
             sortName: d.sortName,
             value: d.value[seriesIndex].value,
             rate: d.value[seriesIndex].rate,
-            hoverValue: d.value[seriesIndex].hoverValue,
+            hoverValue: d.value[seriesIndex].isForecast
+              ? null
+              : d.value[seriesIndex].hoverValue,
+            isForecast: d.value[seriesIndex].isForecast,
           }));
+
+          const forecastStartIndex = lineData.findIndex(
+            (point) => point.isForecast,
+          );
+          const actualLineData =
+            forecastStartIndex > -1
+              ? lineData.slice(0, forecastStartIndex)
+              : lineData;
+          const forecastLineData =
+            forecastStartIndex > -1
+              ? lineData.slice(Math.max(forecastStartIndex - 1, 0))
+              : [];
 
           const barLine = d3
             .line()
@@ -562,15 +577,31 @@ export class GroupedColumnPlusLineChartV2Component
             .y((d) => y(d.value));
 
           // Draw the line
-          svgX
-            .append('path')
-            .datum(lineData)
-            .attr('class', 'bar-line bar-line-' + seriesIndex)
-            .attr('d', barLine)
-            .style('fill', 'none')
-            .style('stroke', '#ed8888')
-            .style('stroke-width', '2')
-            .style('opacity', 1);
+          if (actualLineData.length > 0) {
+            svgX
+              .append('path')
+              .datum(actualLineData)
+              .attr('class', 'bar-line bar-line-' + seriesIndex)
+              .attr('d', barLine)
+              .style('fill', 'none')
+              .style('stroke', '#ed8888')
+              .style('stroke-width', '2')
+              .style('opacity', 1);
+          }
+
+          // Draw dotted line
+          if (forecastLineData.length > 1) {
+            svgX
+              .append('path')
+              .datum(forecastLineData)
+              .attr('class', 'bar-line bar-line-forecast-' + seriesIndex)
+              .attr('d', barLine)
+              .style('fill', 'none')
+              .style('stroke', '#ed8888')
+              .style('stroke-width', 2)
+              .style('stroke-dasharray', '4,3')
+              .style('opacity', 1);
+          }
 
           // Draw circles for this series
           svgX
@@ -589,8 +620,9 @@ export class GroupedColumnPlusLineChartV2Component
             .style('fill', '#ed8888')
             .style('stroke', 'white')
             .style('stroke-width', 1)
+            .style('pointer-events', (d) => (d.isForecast ? 'none' : null))
             .on('mouseover', function (event, d) {
-              if (d?.hoverValue) {
+              if (d?.hoverValue && !d.isForecast) {
                 d3.select(this).transition().duration(200).attr('r', 4);
 
                 const circle = event.target;
@@ -987,11 +1019,14 @@ export class GroupedColumnPlusLineChartV2Component
           .style('fill', (d, i) => d3.hsl([colorArr[i]]))
           .style('stroke', (d, i) => d3.hsl([colorArr[i]]).brighter())
           .selectAll('circle')
-          .data((d, index) => d.value)
+          .data((d, index) => d.value.filter((point) => !point.isForecast))
           .enter()
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', (event, d) => {
+            if (d.isForecast) {
+              return;
+            }
             const topValue = 80;
             if (d.hoverValue) {
               div
@@ -1044,6 +1079,7 @@ export class GroupedColumnPlusLineChartV2Component
           .attr('r', circleRadius)
           .style('stroke-width', 1)
           .style('opacity', circleOpacity)
+          .style('pointer-events', (d) => (d.isForecast ? 'none' : null))
           .on('mouseover', function (d) {
             d3.select(this)
               .transition()
@@ -1059,9 +1095,12 @@ export class GroupedColumnPlusLineChartV2Component
 
         /** Adding tooltip text  */
         if (selectedProjectCount === 1) {
+          const tooltipValues = (newRawData[0]['value'] || []).filter(
+            (d) => d.lineValue != null && !d.isForecast,
+          );
           tooltipContainer
             .selectAll('div')
-            .data(newRawData[0]['value'])
+            .data(tooltipValues)
             .join('div')
             .attr('class', (d) => {
               let cssClass = 'tooltip2';
