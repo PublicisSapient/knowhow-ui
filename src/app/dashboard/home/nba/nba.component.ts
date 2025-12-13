@@ -68,6 +68,8 @@ export class NbaComponent implements OnChanges {
         return '#f68605';
       case 'medium':
         return '#fbcf5f';
+      case 'critical':
+        return '#ed8888';
       case 'low':
       default:
         return '#49535e';

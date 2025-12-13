@@ -46,6 +46,16 @@ export class HomeRecommCardComponent {
         };
         break;
 
+      case 'critical':
+        this.priorityStyle = {
+          borderLeft: '6px solid #ed8888',
+        };
+        this.priorityLabelStyle = {
+          backgroundColor: '#ed8888',
+          color: '#fff',
+        };
+        break;
+
       case 'low':
       default:
         this.priorityStyle = {
