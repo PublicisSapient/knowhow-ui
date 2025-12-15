@@ -1,0 +1,178 @@
+name: UI_CI_CD_Prod_Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Git Tag for UI Production Release"
+        required: true
+        type: string
+        default: "14.0.0"
+
+env:
+  IMAGE_NAME: knowhow-ui
+  ACR_NAME: ${{ secrets.SPEEDTOOLS_ACR_NAME }}
+  ACR_LOGIN_SERVER: ${{ secrets.SPEEDTOOLS_ACR_LOGIN_SERVER }}
+  BITBUCKET_HELM_REPO: ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+  HELM_CHART_PATH: ${{ secrets.KNH_UI_HELM_CHART_PATH }}
+  GITHUB_HEAD_NAME: $GITHUB_REF_NAME
+  sonartoken: ${{ secrets.SONARQUBE_TOKEN }}
+  sonarurl: ${{ secrets.SONARURL }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      argocd_app_name: ${{ steps.set_env.outputs.argocd_app_name }}
+
+    steps:
+      - name: Set IMAGE_TAG & Prod Values File
+        id: set_env
+        run: |
+          TAG="${{ github.event.inputs.release_tag }}"
+          echo "IMAGE_TAG=prod-${TAG}" >> $GITHUB_ENV
+          echo "VALUES_FILE=values-prod.yaml" >> $GITHUB_ENV
+          echo "ARGOCD_APP_NAME=knowhow-ui-prod" >> $GITHUB_ENV
+          echo "argocd_app_name=knowhow-ui-prod" >> $GITHUB_OUTPUT
+
+      - name: Checkout UI Repository using release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.release_tag }}
+          fetch-depth: 0
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Always run tests in PROD
+      - name: Code Format Check (Prettier)
+        run: |
+          npm install
+          npx prettier "**/*.{ts,css}" --check
+
+      - name: Install Dependencies & Build UI (Prod)
+        run: |
+          npm cache clean --force
+          npm install
+          npm install -g @angular/cli@17.3.12
+
+          rm -rf dist/ build/
+          npm run build:prod
+
+          mkdir -p build
+          cp -r dist/dashboard/* build/
+
+          chmod -R 775 build
+          cd build
+          tar -czvf ui2.tar *
+          mv ui2.tar ../nginx/files
+
+      - name: Run UI Unit Tests (Always ON)
+        run: |
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          ng test --code-coverage --watch=false
+
+      - name: SonarQube Analysis
+        run: |
+          chown -R $(whoami) "$GITHUB_WORKSPACE"
+          echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
+          echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
+          echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
+          npm install -D sonarqube-scanner
+          npm run sonar
+
+      - name: Check SonarQube Quality Gate
+        run: |
+          chmod +x SonarQG.sh
+          ./SonarQG.sh ./.scannerwork/report-task.txt
+
+      - name: Build & Push Docker Image to ACR
+        run: |
+          docker login $ACR_LOGIN_SERVER \
+            --username ${{ secrets.SPEEDTOOLS_ACR_USERNAME }} \
+            --password ${{ secrets.SPEEDTOOLS_ACR_PASSWORD }}
+
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Checkout Helm Charts (Bitbucket)
+        run: |
+          git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}
+          cd build-configurations/KnowHOW-Deploy/knowhow-ui
+
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
+
+  deploy:
+    runs-on: github-actions-self-hosted-runner
+    timeout-minutes: 30
+    needs: build
+    env:
+      ARGOCD_APP_NAME: ${{ needs.build.outputs.argocd_app_name }}
+
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          export ARGO_PATH="$HOME/bin"
+          mkdir -p $ARGO_PATH
+          curl -sSL -o "$ARGO_PATH/argocd" \
+            https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x "$ARGO_PATH/argocd"
+          echo "$ARGO_PATH" >> $GITHUB_PATH
+
+      - name: ArgoCD Login
+        run: |
+          argocd login argocd-server \
+            --username ${{ secrets.SPEEDTOOLS_ARGOCD_USERNAME }} \
+            --password ${{ secrets.SPEEDTOOLS_ARGOCD_PASSWORD }} \
+            --plaintext
+
+      - name: Sync App
+        id: sync-app
+        run: argocd app sync ${{ env.ARGOCD_APP_NAME }}
+        continue-on-error: true
+
+      - name: Get App URL (on sync failure)
+        id: get-url
+        if: ${{ steps.sync-app.outcome != 'success' }}
+        run: |
+          app_url=$(argocd app get ${{ env.ARGOCD_APP_NAME }} | grep 'URL:' | awk '{print $2}')
+          echo "APP_URL=${app_url}" >> $GITHUB_ENV
+
+      - name: Handle Sync Failure
+        if: ${{ steps.sync-app.outcome != 'success' && env.APP_URL }}
+        run: |
+          echo "❌ Sync failed for '${{ env.ARGOCD_APP_NAME }}'"
+          echo "Check app: ${{ env.APP_URL }}"
+          exit 1
+
+      - name: Wait For Health
+        id: wait-app
+        run: argocd app wait ${{ env.ARGOCD_APP_NAME }} --health --timeout 600
+        continue-on-error: true
+
+      - name: Handle Health Timeout
+        if: ${{ steps.wait-app.outcome != 'success' }}
+        run: |
+          app_url=$(argocd app get ${{ env.ARGOCD_APP_NAME }} | grep 'URL:' | awk '{print $2}')
+          echo "⚠️ App is not healthy. Check: $app_url"
+          exit 1
+
+      - name: Deployment Successful
+        if: ${{ steps.sync-app.outcome == 'success' && steps.wait-app.outcome == 'success' }}
+        run: echo "✅ UI Prod Deployment Successful!"
