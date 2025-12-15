@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import * as d3 from 'd3';
@@ -22,7 +23,7 @@ describe('ScatterPlotChartComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      imports: [ScatterPlotChartComponent],
+      imports: [HttpClientTestingModule, ScatterPlotChartComponent],
       providers: [
         { provide: HelperService, useValue: helperServiceSpy },
         { provide: SharedService, useValue: sharedServiceSpy },

@@ -15,6 +15,7 @@ import { HttpService } from './services/http.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { HelperService } from './services/helper.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -134,6 +135,7 @@ describe('AppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
+      imports: [HttpClientTestingModule],
       providers: [
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },

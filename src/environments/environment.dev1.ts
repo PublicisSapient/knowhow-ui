@@ -19,7 +19,7 @@
 import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
-  production: true,
+  production: false,
   baseUrl: '',
   SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: '',
@@ -35,9 +35,9 @@ export const environment: Environment = {
     enableGrafanaAnalytics: false,
 
     selfHosted: {
-      enabled: false,
+      enabled: true,
       metricsEndpoint: '/api/metrics-proxy/send',
-      appName: 'PSKnowHOW-Production',
+      appName: 'PSKnowHOW-Dev1',
       appVersion: '14.0.0',
     },
   },
