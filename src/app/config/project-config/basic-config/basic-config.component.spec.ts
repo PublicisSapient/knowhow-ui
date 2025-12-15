@@ -22,6 +22,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {
   AbstractControl,
   UntypedFormBuilder,
@@ -255,7 +256,7 @@ describe('BasicConfigComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
-      imports: [FormsModule],
+      imports: [HttpClientTestingModule, FormsModule],
       providers: [
         UntypedFormBuilder,
         { provide: HttpService, useValue: httpServiceSpy },

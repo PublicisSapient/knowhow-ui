@@ -45,10 +45,10 @@ export class DashboardconfigComponent implements OnInit {
   backupUserProjects: Array<any> = [];
   noProjectsForSelectedCategory = false;
   constructor(
-    private httpService: HttpService,
-    private service: SharedService,
-    private messageService: MessageService,
-    private getAuthorizationService: GetAuthorizationService,
+    private readonly httpService: HttpService,
+    private readonly service: SharedService,
+    private readonly messageService: MessageService,
+    private readonly getAuthorizationService: GetAuthorizationService,
   ) {}
   ngOnInit() {
     this.userName = this.service.getCurrentUserDetails('user_name');
