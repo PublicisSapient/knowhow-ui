@@ -129,6 +129,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         if (
           reqUrl.indexOf('kpiRecommendation') !== -1 ||
           reqUrl.indexOf('stats?levelName=') !== -1 ||
+          reqUrl.indexOf('/fetch/scm') !== -1 ||
           reqUrl.indexOf('notifications') !== -1 ||
           reqUrl.indexOf('kpisearch') !== -1 ||
           reqUrl.indexOf('kpi-maturity') !== -1 ||

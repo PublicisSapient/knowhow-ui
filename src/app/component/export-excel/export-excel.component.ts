@@ -46,6 +46,7 @@ export class ExportExcelComponent implements OnInit {
   blankValues = ['', null, undefined, '-', 'NA', 'N/A', 'Undefined'];
   iskanban = false; // to check if kpi is kanban or not
   xCaption = '';
+  enableApplyBtn: boolean = false;
 
   constructor(
     private excelService: ExcelService,
@@ -439,6 +440,7 @@ export class ExportExcelComponent implements OnInit {
         severity: 'success',
         summary: 'Kpi Column Configurations applied successfully!',
       });
+      this.enableApplyBtn = false;
     }
   }
 
