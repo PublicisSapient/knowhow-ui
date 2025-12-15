@@ -25,8 +25,8 @@ export class HomeRecommCardComponent {
   }
 
   private setPriorityStyles(): void {
-    switch (this.priority) {
-      case 'High':
+    switch (this.priority.toLowerCase()) {
+      case 'high':
         this.priorityStyle = {
           borderLeft: '6px solid #f68605',
         };
@@ -36,7 +36,7 @@ export class HomeRecommCardComponent {
         };
         break;
 
-      case 'Medium':
+      case 'medium':
         this.priorityStyle = {
           borderLeft: '6px solid #fbcf5f',
         };
@@ -46,7 +46,17 @@ export class HomeRecommCardComponent {
         };
         break;
 
-      case 'Low':
+      case 'critical':
+        this.priorityStyle = {
+          borderLeft: '6px solid #ed8888',
+        };
+        this.priorityLabelStyle = {
+          backgroundColor: '#ed8888',
+          color: '#fff',
+        };
+        break;
+
+      case 'low':
       default:
         this.priorityStyle = {
           borderLeft: '6px solid #49535e',

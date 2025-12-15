@@ -73,8 +73,8 @@
   flex-direction: column;
   gap: 16px;
   padding: 0 16px 16px;
-  max-height: 53vh;
-  min-height: 53vh;
+  max-height: 34vh;
+  min-height: 34vh;
   overflow-y: auto;
 }
 
@@ -102,7 +102,21 @@
 }
 
 .kpi-card-body {
-  min-height: 58vh;
-  max-height: 58vh;
+  min-height: 39vh;
+  max-height: 39vh;
   overflow-y: auto;
+}
+
+:host ::ng-deep .tag {
+  display: inline-block;
+  padding: 5px 10px;
+  margin-left: 15px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  line-height: initial;
+}
+
+:host ::ng-deep .tag.beta {
+  background-color: #ffecdf;
+  color: #f68605;
 }

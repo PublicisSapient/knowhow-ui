@@ -590,10 +590,10 @@ describe('HomeComponent', () => {
 
   it('should handle getNBAData success', () => {
     mockHttpService.getHomeNBAData.and.returnValue(
-      of({ success: true, data: [{ id: 1, name: 'NBA Data' }] }),
+      of({ success: true, data: { details: [{ id: 1, name: 'NBA Data' }] } }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([{ id: 1, name: 'NBA Data' }]);
   });
@@ -603,7 +603,7 @@ describe('HomeComponent', () => {
       throwError({ error: 'Network error' }),
     );
 
-    component.getNBAData();
+    component.getNBAData('project');
 
     expect(component.nbaRawData).toEqual([]);
     expect(mockMessageService.add).toHaveBeenCalled();
@@ -954,7 +954,7 @@ describe('HomeComponent', () => {
     );
 
     expect(mockSharedService.getPEBDataCache).toHaveBeenCalledWith(
-      'project level',
+      'team level',
     );
     expect(component.productivityData['Cached Entity']).toBe(88.0);
     expect(targettedDetails.children.data[0].productivity).toBe('88.00%');
@@ -1000,7 +1000,7 @@ describe('HomeComponent', () => {
     tick();
 
     expect(mockSharedService.setPEBDataCache).toHaveBeenCalledWith(
-      'project level',
+      'team level',
       apiResponse.data,
     );
     expect(component.productivityData['API Entity']).toBe(92.0);
