@@ -93,7 +93,7 @@
         [model]="notificationList"
         class="custom-menu"></p-menu>
         <button class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button" role="button" 
-        tabindex="0" aria-label="Open Settings" [routerLink]="'/dashboard/Config/ProjectList'"
+        tabindex="0" aria-label="Open Settings" (click)="handleSettingsClick()"
         *ngIf="
             !router.url.split('/').includes('Config')
           ">
