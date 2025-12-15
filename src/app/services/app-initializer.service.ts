@@ -229,7 +229,7 @@ export class AppInitializerService {
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
             environment['SPEED_SUITE'] =
               env['SPEED_SUITE'] === 'true' ? true : false;
-            environment['MCP_URL'] = environment['MCP_URL'] || '';
+            environment['MCP_URL'] = env['MCP_URL'] || '';
             if (
               loc &&
               loc.indexOf('authentication') === -1 &&
