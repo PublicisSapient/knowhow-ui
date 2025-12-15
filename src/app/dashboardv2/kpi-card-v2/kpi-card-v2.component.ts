@@ -668,6 +668,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       currentTrendList = [this.selectedTrendObject];
     } else {
       currentTrendList = selectedTrend;
+      this.selectedTrendObject = selectedTrend[0];
     }
 
     if (currentTrendList.length == 1 || selectedTab === 'release') {
