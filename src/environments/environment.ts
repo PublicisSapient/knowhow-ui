@@ -31,6 +31,7 @@ export const environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
+  MCP_URL: '',
 };
 
 /*
