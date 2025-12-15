@@ -96,16 +96,17 @@ export class HeaderComponent implements OnInit {
               window.open(this.configDetails['apiDocumentation'], '_blank');
             },
           },
-          {
-            label: 'Video Tutorials',
-            subheading: 'Step-by-step guides',
-            // externalLink: true,
-            icon: 'fas fa-video',
-            iconColorClass: 'text-red',
-            command: () => {
-              window.open(this.configDetails['videoTutorials'], '_blank');
-            },
-          },
+          // // Video Tutorials tempararily hidden per request
+          // {
+          //   label: 'Video Tutorials',
+          //   subheading: 'Step-by-step guides',
+          //   // externalLink: true,
+          //   icon: 'fas fa-video',
+          //   iconColorClass: 'text-red',
+          //   command: () => {
+          //     window.open(this.configDetails['videoTutorials'], '_blank');
+          //   },
+          // },
           {
             label: 'Raise a Ticket',
             subheading: 'Get Personalized help',

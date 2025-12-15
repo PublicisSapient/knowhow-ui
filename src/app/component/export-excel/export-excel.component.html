@@ -27,13 +27,13 @@
         <ng-template pTemplate="caption">
           <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
             selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
-            optionDisabled="isDefault" placeholder="Choose Columns">
+            optionDisabled="isDefault" placeholder="Choose Columns" (onChange)="enableApplyBtn = true">
             <ng-template pTemplate="selectedItems">
               <p-button styleClass="p-button-text column-btn" aria-label="Selected columns filter" tabindex="-1">Column &nbsp;</p-button>
             </ng-template>
             <ng-template pTemplate="footer">
               <hr>
-              <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn primary-selector-btn" (click)="applyColumnFilter()" aria-label="Apply the selected columns"></p-button>
+              <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn primary-selector-btn" (click)="applyColumnFilter()" [disabled]="!enableApplyBtn" aria-label="Apply the selected columns"></p-button>
             </ng-template>
 
           </p-multiSelect>

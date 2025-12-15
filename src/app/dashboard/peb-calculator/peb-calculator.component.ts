@@ -126,6 +126,14 @@ export class PebCalculatorComponent implements OnInit {
           if (sharedobject) {
             const stateFilters =
               this.sharedService.getBackupOfFilterSelectionState();
+            this.appConfig = this.sharedService.getConfigurationDetails();
+            this.pebForm = this.fb.group({
+              devCountControl: this.appConfig?.totalTeamSize || [30],
+              devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
+              durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
+                'per year',
+              ],
+            });
             this.selectedLevel = stateFilters?.parent_level;
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
@@ -225,6 +233,7 @@ export class PebCalculatorComponent implements OnInit {
             this.formatCategoryScoresForCumulativeChart(
               response['data']['categoryScores'],
               true,
+              response['data']?.forecasts,
             );
           this.categoryVariations = JSON.parse(
             JSON.stringify(response['data']?.categoryVariations),
@@ -248,6 +257,7 @@ export class PebCalculatorComponent implements OnInit {
   formatCategoryScoresForCumulativeChart(
     categoryScores: any[],
     showOverall?: boolean,
+    forecasts?: any[],
   ): any[] {
     if (!categoryScores || categoryScores.length === 0) {
       return [];
@@ -286,9 +296,26 @@ export class PebCalculatorComponent implements OnInit {
       };
     });
 
+    const normalizedForecasts = Array.isArray(forecasts) ? forecasts : [];
+
+    const formattedForecasts = normalizedForecasts
+      .map((forecast: any) => {
+        const value = Number(forecast?.value);
+
+        if (!Number.isFinite(value)) return null;
+
+        return {
+          kpiGroup: forecast?.category ?? metrics[0],
+          value,
+          isForecast: true,
+        };
+      })
+      .filter(Boolean);
+
     return [
       {
         dataGroup,
+        ...(formattedForecasts.length ? { forecasts: formattedForecasts } : {}),
       },
     ];
   }
