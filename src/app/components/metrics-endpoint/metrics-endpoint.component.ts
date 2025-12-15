@@ -19,7 +19,7 @@ import { MetricsService } from '../../services/metrics.service';
 export class MetricsEndpointComponent implements OnInit {
   metricsData = '';
 
-  constructor(private metricsService: MetricsService) {}
+  constructor(private readonly metricsService: MetricsService) {}
 
   ngOnInit(): void {
     // Update metrics every 5 seconds

@@ -82,10 +82,9 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.loadingRouteConfig = false;
         const data = {
-          url:
-            event.urlAfterRedirects +
-            '/' +
-            (this.service.getSelectedType() || 'Scrum'),
+          url: `${event.urlAfterRedirects}/${
+            this.service.getSelectedType() || 'Scrum'
+          }`,
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
           uiType: 'New',

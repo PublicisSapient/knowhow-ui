@@ -34,9 +34,9 @@ export class ConfigComponent implements OnInit {
   activeTab: any;
 
   constructor(
-    private getAuthorizationService: GetAuthorizationService,
-    private router: Router,
-    private sharedService: SharedService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly router: Router,
+    private readonly sharedService: SharedService,
   ) {}
 
   ngOnInit() {

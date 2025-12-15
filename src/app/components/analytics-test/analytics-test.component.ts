@@ -149,7 +149,7 @@ import { MessageModule } from 'primeng/message';
 export class AnalyticsTestComponent {
   providerInfo: any;
 
-  constructor(private analytics: AnalyticsService) {
+  constructor(private readonly analytics: AnalyticsService) {
     this.providerInfo = this.analytics.getProviderInfo();
   }
 
