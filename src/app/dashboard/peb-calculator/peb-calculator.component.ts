@@ -126,6 +126,14 @@ export class PebCalculatorComponent implements OnInit {
           if (sharedobject) {
             const stateFilters =
               this.sharedService.getBackupOfFilterSelectionState();
+            this.appConfig = this.sharedService.getConfigurationDetails();
+            this.pebForm = this.fb.group({
+              devCountControl: this.appConfig?.totalTeamSize || [30],
+              devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
+              durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
+                'per year',
+              ],
+            });
             this.selectedLevel = stateFilters?.parent_level;
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
