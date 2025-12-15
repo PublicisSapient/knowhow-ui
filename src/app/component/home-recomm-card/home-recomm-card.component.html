@@ -11,5 +11,5 @@
 
   <h4 class="title">{{ title }}</h4>
   <p class="description">{{ description }}</p>
-  <p class="savings">{{ savings }} potential savings</p>
+  <p class="savings" *ngIf="savings">{{ savings }} potential savings</p>
 </div>
