@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DashboardComponent } from './dashboard.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../services/shared.service';
@@ -37,7 +38,12 @@ describe('DashboardComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DashboardComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [

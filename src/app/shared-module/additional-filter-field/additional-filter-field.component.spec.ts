@@ -16,6 +16,7 @@
  *
  ******************************************************************************/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {
   FormControl,
   FormsModule,
@@ -120,7 +121,7 @@ describe('AdditionalFilterFieldComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AdditionalFilterFieldComponent],
-      imports: [ReactiveFormsModule, FormsModule],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, FormsModule],
       providers: [
         MessageService,
         SharedService,
