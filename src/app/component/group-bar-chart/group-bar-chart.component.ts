@@ -45,8 +45,8 @@ export class GroupBarChartComponent implements OnChanges {
   releaseEndDateIndex;
   lineColor = '';
   totalAvgVelocity = '';
-  isReleasePlanKpi = false;
-  plannedSeriesName = 'Release Planned';
+  isReleasePlanKpi: boolean = false;
+  plannedSeriesName: string = 'Release Planned';
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -102,69 +102,37 @@ export class GroupBarChartComponent implements OnChanges {
     this.subGroups = [];
     this.lineGroups = [];
 
-    const kpiKey = (
-      this.kpiId ||
-      this.data?.[0]?.kpiId ||
-      this.data?.[0]?.kpiid ||
-      this.data?.[0]?.kpiName ||
-      ''
-    )
-      .toString()
-      .toLowerCase();
-    const isReleasePlanKpi =
-      kpiKey === 'kpi179' ||
-      kpiKey === 'release plan' ||
-      kpiKey === 'release plan kpi';
-    this.isReleasePlanKpi = isReleasePlanKpi;
-
-    const plannedSeriesName =
+    this.plannedSeriesName =
       (data?.[0]?.value || [])
         .map((v) => v?.kpiGroup)
         .find(
-          (name) =>
+          (name: any) =>
             (name || '').trim().toLowerCase() ===
             (this.plannedSeriesName || 'Release Planned').toLowerCase(),
         ) || this.plannedSeriesName;
-    this.plannedSeriesName = plannedSeriesName;
-    const plannedTemplate =
-      data?.[0]?.value?.find(
-        (v) =>
-          (v?.kpiGroup || '').trim().toLowerCase() ===
-          plannedSeriesName.toLowerCase(),
-      ) || {};
-
-    const forecasts = this.data[0]?.forecasts;
-
     if (
-      isReleasePlanKpi &&
-      Array.isArray(forecasts) &&
-      forecasts.length > 0 &&
-      forecasts[0] &&
-      (forecasts[0].value != null || forecasts[0].data != null)
+      Array.isArray(this.data[0]?.forecasts) &&
+      this.data[0]?.forecasts.length > 0
     ) {
-      const forecastPoint = forecasts[0];
+      this.isReleasePlanKpi = !!this.data[0]?.forecasts.length;
+      const forecastPoint = this.data[0]?.forecasts[0];
       const forecastValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
       );
-
-      if (!Number.isFinite(forecastValue)) {
-        this.data[0].forecasts = undefined;
-      } else {
-        data.push({
-          filter: forecastPoint?.filter || forecastPoint?.date || 'Forecast',
-          value: [
-            {
-              kpiGroup: plannedSeriesName,
-              graphType: 'line',
-              lineCategory: 'line',
-              value: forecastValue,
-              hoverValue: forecastPoint?.hoverValue,
-              sprojectName: forecastPoint?.sprojectName,
-              isForecast: true,
-            },
-          ],
-        });
-      }
+      data.push({
+        filter: forecastPoint?.filter || forecastPoint?.date || 'Forecast',
+        value: [
+          {
+            kpiGroup: this.plannedSeriesName,
+            graphType: 'line',
+            lineCategory: 'line',
+            value: forecastValue,
+            hoverValue: forecastPoint?.hoverValue,
+            sprojectName: forecastPoint?.sprojectName,
+            isForecast: true,
+          },
+        ],
+      });
     }
 
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
@@ -174,7 +142,8 @@ export class GroupBarChartComponent implements OnChanges {
 
     data = this.formatData(data);
     this.subGroups = this.subGroups.filter(
-      (g) => (g || '').trim().toLowerCase() !== plannedSeriesName.toLowerCase(),
+      (g) =>
+        (g || '').trim().toLowerCase() !== this.plannedSeriesName.toLowerCase(),
     );
 
     const subgroups = this.subGroups;
@@ -793,7 +762,7 @@ export class GroupBarChartComponent implements OnChanges {
       let graphData = {};
       d.value.forEach((groupD) => {
         if (
-          (groupD.kpiGroup || '').trim().toLowerCase() ===
+          (groupD?.kpiGroup || '').trim().toLowerCase() ===
           this.plannedSeriesName.toLowerCase()
         ) {
           groupD.graphType = 'line';
@@ -847,9 +816,11 @@ export class GroupBarChartComponent implements OnChanges {
   formatDateOnXAxis(data) {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
     return data.map((d, i) => {
-      const parsedDate = new Date(d['group']);
+      const rawGroup = d['group'];
+      const parsedDate = new Date(rawGroup);
       if (
         this.isReleasePlanKpi &&
+        !rawGroup.toLowerCase().includes('to') &&
         (isNaN(parsedDate.getTime()) ||
           parsedDate.toString() === 'Invalid Date')
       ) {
