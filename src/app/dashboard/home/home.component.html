@@ -73,7 +73,7 @@
                 <ng-container [ngSwitch]="col.field">
                   @if(col.field.toLowerCase().includes('name')){
                     <div class="p-d-flex p-align-center">
-                      <p-button type="button" *ngIf="!col.field.toLowerCase().includes('project')" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" styleClass="expand-cta-btn"
+                      <p-button type="button" *ngIf="!col.header.toLowerCase().includes('project')" pRipple [pRowToggler]="row" [text]="true" [rounded]="true" styleClass="expand-cta-btn"
                         [plain]="true" [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
                       {{ row[col.field] }}
                     </div>
