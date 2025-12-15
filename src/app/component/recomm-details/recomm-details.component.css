@@ -21,13 +21,13 @@
     padding: 12px;
 
     .label {
-      font-size: 0.85rem;
+      font-size: 1rem;
       color: #666;
       margin-bottom: 6px;
     }
 
     .value {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
 
       &.green {
@@ -53,11 +53,11 @@
     display: flex;
     align-items: center;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     margin-bottom: 10px;
 
     .icon {
-      font-size: 1.2rem;
+      font-size: 1rem;
       margin-right: 8px;
       color: #6b4cff;
     }
@@ -73,7 +73,7 @@
       color: #5b32ff;
       border-radius: 20px;
       padding: 6px 14px;
-      font-size: 0.8rem;
+      font-size: 1rem;
       font-weight: 500;
     }
   }
@@ -89,7 +89,7 @@
     display: flex;
     align-items: center;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     margin-bottom: 12px;
 
     .icon {
@@ -115,7 +115,7 @@
         background: #ff8c00;
         color: white;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -125,11 +125,13 @@
       .step-content {
         .step-title {
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 1rem;
+          margin: 0px 0px 5px 0px;
         }
         .step-desc {
           color: #555;
-          font-size: 0.8rem;
+          font-size: 1rem;
+          line-height: 1.3rem;
         }
       }
     }
