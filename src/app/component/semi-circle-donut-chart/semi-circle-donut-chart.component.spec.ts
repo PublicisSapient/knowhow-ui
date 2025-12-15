@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SimpleChange } from '@angular/core';
 import { SemiCircleDonutChartComponent } from './semi-circle-donut-chart.component';
 import { SharedService } from 'src/app/services/shared.service';
@@ -17,6 +18,7 @@ describe('SemiCircleDonutChartComponent', () => {
     });
 
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [SemiCircleDonutChartComponent],
       providers: [{ provide: SharedService, useValue: mockSharedService }],
     }).compileComponents();

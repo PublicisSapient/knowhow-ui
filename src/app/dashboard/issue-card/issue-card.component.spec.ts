@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IssueCardComponent } from './issue-card.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { BehaviorSubject } from 'rxjs';
@@ -14,6 +15,7 @@ describe('IssueCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [IssueCardComponent],
       providers: [
         SharedService,

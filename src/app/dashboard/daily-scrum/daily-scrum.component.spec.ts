@@ -22,6 +22,7 @@ File contains test cases for daily scrum component.
 *******************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedService } from 'src/app/services/shared.service';
 import { DailyScrumComponent } from './daily-scrum.component';
 import { TableModule } from 'primeng/table';
@@ -711,7 +712,7 @@ describe('DailyScrumComponent', () => {
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
         { provide: Router, useValue: routerMock },
       ],
-      imports: [TableModule],
+      imports: [HttpClientTestingModule, TableModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DailyScrumComponent);
