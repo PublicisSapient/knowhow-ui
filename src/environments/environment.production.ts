@@ -29,11 +29,10 @@ export const environment: Environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration for production
   analytics: {
     grafanaRolloutPercentage: 0,
     enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: false, // Set to true to enable Grafana/Prometheus metrics
+    enableGrafanaAnalytics: false,
 
     selfHosted: {
       enabled: false,

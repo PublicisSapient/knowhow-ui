@@ -20,20 +20,19 @@ import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
   production: false,
-  baseUrl: '', // Your dev1 backend URL
+  baseUrl: '',
   SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: '', // Your dev1 SSO URL if applicable
-  CENTRAL_API_URL: '', // Your dev1 API URL
+  CENTRAL_LOGIN_URL: '',
+  CENTRAL_API_URL: '',
   RESOURCE: 'PSKnowHOW',
   AUTHENTICATION_SERVICE: false,
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
-  // Analytics configuration for dev1
   analytics: {
-    grafanaRolloutPercentage: 100,
+    grafanaRolloutPercentage: 0,
     enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: true, // Enable Grafana for testing
+    enableGrafanaAnalytics: false,
 
     selfHosted: {
       enabled: true,

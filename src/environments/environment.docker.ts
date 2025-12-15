@@ -30,9 +30,9 @@ export const environment: Environment = {
   MAP_URL: '',
   RETROS_URL: '',
   analytics: {
-    grafanaRolloutPercentage: 100,
-    enableGoogleAnalytics: false,
-    enableGrafanaAnalytics: true,
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false,
     selfHosted: {
       enabled: true,
       metricsEndpoint: '/api/metrics-proxy/send',

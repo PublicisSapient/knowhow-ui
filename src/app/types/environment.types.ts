@@ -17,12 +17,9 @@
  ******************************************************************************/
 
 export interface AnalyticsConfig {
-  // A/B Testing configuration
   grafanaRolloutPercentage: number;
   enableGoogleAnalytics: boolean;
   enableGrafanaAnalytics: boolean;
-
-  // Self-hosted analytics configuration
   selfHosted: {
     enabled: boolean;
     metricsEndpoint: string;
