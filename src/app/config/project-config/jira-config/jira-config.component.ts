@@ -3036,6 +3036,7 @@ export class JiraConfigComponent implements OnInit {
                 }
               });
             });
+            this.configuredTools = [...this.originalConfigTools];
 
             if (
               this.urlParam == 'Jira' ||
