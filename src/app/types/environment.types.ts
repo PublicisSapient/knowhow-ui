@@ -39,5 +39,6 @@ export interface Environment {
   SPEED_SUITE: boolean;
   MAP_URL: string;
   RETROS_URL: string;
+  MCP_URL: string;
   analytics?: AnalyticsConfig;
 }
