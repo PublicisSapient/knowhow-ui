@@ -118,11 +118,11 @@ export class CapacityPlanningComponent implements OnInit {
   successMessage = 'Assignee Details saved successfully!';
   capacityErrMessage = 'Please enter Capacity';
   constructor(
-    private http_service: HttpService,
-    private messageService: MessageService,
-    private cdr: ChangeDetectorRef,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly cdr: ChangeDetectorRef,
     public getAuthorizationService: GetAuthorizationService,
-    private helperService: HelperService,
+    private readonly helperService: HelperService,
   ) {}
 
   ngOnInit(): void {
@@ -254,7 +254,7 @@ export class CapacityPlanningComponent implements OnInit {
 
     this.selectedFilterData.kanban = this.kanban;
     this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE', 'FUTURE'];
-    this.filter_kpiRequest = this.http_service
+    this.filter_kpiRequest = this.httpService
       .getFilterData(this.selectedFilterData)
       .subscribe((filterData) => {
         if (filterData[0] !== 'error' && filterData?.['data']?.length > 0) {
@@ -367,7 +367,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   getCapacityData(projectId) {
-    this.http_service.getCapacityData(projectId).subscribe((response) => {
+    this.httpService.getCapacityData(projectId).subscribe((response) => {
       if (response && response?.success && response?.data) {
         if (this.kanban) {
           this.capacityKanbanData = response?.data;
@@ -405,7 +405,7 @@ export class CapacityPlanningComponent implements OnInit {
 
   getAssigneeRoles() {
     if (this.projectAssigneeRoles.length <= 0) {
-      this.http_service.getAssigneeRoles().subscribe((response) => {
+      this.httpService.getAssigneeRoles().subscribe((response) => {
         if (response && response?.success && response?.data) {
           this.projectAssigneeRolesObj = response.data;
           for (const key in response.data) {
@@ -430,13 +430,13 @@ export class CapacityPlanningComponent implements OnInit {
       this.projectJiraAssignees['basicProjectConfigId'] !== projectId
     ) {
       this.jiraAssigneeLoader = true;
-      this.http_service
+      this.httpService
         .getJiraProjectAssignee(projectId)
         .subscribe((response) => {
           this.jiraAssigneeLoader = false;
           if (response && response?.success && response?.data) {
             this.projectJiraAssignees = response['data'];
-            this.http_service
+            this.httpService
               .getAssigneeEmails(projectId)
               .subscribe((response) => {
                 if (response && response?.success && response?.data) {
@@ -518,7 +518,7 @@ export class CapacityPlanningComponent implements OnInit {
     delete postData['sprintState'];
     postData['assigneeCapacity'] = assigneeCapacity;
 
-    this.http_service.saveOrUpdateAssignee(postData).subscribe((response) => {
+    this.httpService.saveOrUpdateAssignee(postData).subscribe((response) => {
       if (response && response?.success && response?.data) {
         if (!this.kanban) {
           this.sendSprintHappinessIndexForAddOrRemove(postData);
@@ -555,7 +555,7 @@ export class CapacityPlanningComponent implements OnInit {
       })),
     };
 
-    this.http_service
+    this.httpService
       .saveOrUpdateSprintHappinessIndex(postData)
       .subscribe((response) => {
         if (response && response?.success && response?.data) {
@@ -682,7 +682,7 @@ export class CapacityPlanningComponent implements OnInit {
     delete postData['id'];
     delete postData['projectName'];
     delete postData['sprintState'];
-    this.http_service.saveOrUpdateAssignee(postData).subscribe((response) => {
+    this.httpService.saveOrUpdateAssignee(postData).subscribe((response) => {
       if (response && response?.success && response?.data) {
         if (!this.kanban) {
           this.sendSprintHappinessIndex(selectedSprint);
@@ -723,7 +723,7 @@ export class CapacityPlanningComponent implements OnInit {
       })),
     };
 
-    this.http_service
+    this.httpService
       .saveOrUpdateSprintHappinessIndex(postData)
       .subscribe((response) => {
         if (response && response?.success && response?.data) {
@@ -886,7 +886,7 @@ export class CapacityPlanningComponent implements OnInit {
     } else {
       this.reqObj['capacity'] = this.popupForm?.get('capacity').value;
     }
-    this.http_service.saveCapacity(this.reqObj).subscribe((response) => {
+    this.httpService.saveCapacity(this.reqObj).subscribe((response) => {
       if (response.success) {
         this.selectedFilterData = {};
         this.startDate = '';
