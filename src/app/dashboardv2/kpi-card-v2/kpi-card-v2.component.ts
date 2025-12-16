@@ -15,7 +15,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { MenuItem, MessageService } from 'primeng/api';
 import { DatePipe, NgClass, NgSwitch } from '@angular/common';
 import { Menu, MenuModule } from 'primeng/menu';
@@ -181,7 +181,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     public service: SharedService,
     private http: HttpService,
     private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
     private renderer: Renderer2,
     public dialogService: DialogService,
     private kpiHelperService: KpiHelperService,
@@ -613,10 +613,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
     const gaObj = {
+      kpiId: this.kpiData?.kpiId,
       kpiName: this.kpiData?.kpiName,
       filter1: this.filterOptions?.['filter1'] || [value],
       filter2: this.filterOptions?.['filter2'] || null,
       kpiSource: this.kpiData?.kpiDetail?.kpiSource,
+      userRole: localStorage.getItem('user_role') || 'unknown',
     };
     this.triggerGaEvent(gaObj);
   }
@@ -832,7 +834,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   triggerGaEvent(gaObj) {
-    this.ga.setKpiData(gaObj);
+    this.analytics.setKpiData(gaObj);
   }
 
   /**

@@ -55,11 +55,11 @@ export class AdvancedSettingsComponent implements OnInit {
     Subsequent changes will be tracked as scope changes.Applies to active sprints only - use with caution.`;
   dateTimeFormat: string = 'dd-MMM-yyyy (EEE) - hh:mmaaa';
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private getAuthorizationService: GetAuthorizationService,
-    private confirmationService: ConfirmationService,
-    private route: ActivatedRoute,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly route: ActivatedRoute,
     public router: Router,
   ) {}
 

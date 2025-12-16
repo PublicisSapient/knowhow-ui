@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ParentFilterComponent } from './parent-filter.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -41,6 +42,7 @@ describe('ParentFilterComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule,
         HttpClientModule,
         BrowserAnimationsModule,

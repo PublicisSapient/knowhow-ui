@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ConfigRoutingModule } from './config.route';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
@@ -61,6 +62,7 @@ describe('ConfigComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         CommonModule,
         FormsModule,
         ConfigRoutingModule,
