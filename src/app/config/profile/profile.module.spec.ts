@@ -27,6 +27,7 @@ import {
 } from '@angular/core/testing';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ProfileModule', () => {
   let fixture: ComponentFixture<ProfileComponent>;
@@ -38,7 +39,7 @@ describe('ProfileModule', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ProfileComponent],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [GetAuthorizationService, SharedService],
     }).compileComponents();
     profileModule = new ProfileModule();

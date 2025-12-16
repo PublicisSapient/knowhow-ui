@@ -38,9 +38,11 @@
 .description {
   margin: 0px;
   color: #444;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  line-height: 1.3rem;
 }
 
 .title {
-  margin: 15px 0px 5px 0px;
+  margin: 15px 0px 9px 0px;
+  font-size: 1rem;
 }

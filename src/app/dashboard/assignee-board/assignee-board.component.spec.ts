@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AssigneeBoardComponent } from './assignee-board.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
@@ -524,6 +525,7 @@ describe('AssigneeBoardComponent', () => {
       'Dev-Completion-Date': '-',
     });
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [AssigneeBoardComponent],
       providers: [{ provide: SharedService, useValue: sharedServiceSpy }],
     }).compileComponents();
