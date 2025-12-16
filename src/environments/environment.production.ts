@@ -16,7 +16,9 @@
  *
  ******************************************************************************/
 
-export const environment = {
+import { Environment } from '../app/types/environment.types';
+
+export const environment: Environment = {
   production: true,
   baseUrl: '',
   SSO_LOGIN: false,
@@ -28,4 +30,16 @@ export const environment = {
   MAP_URL: '',
   RETROS_URL: '',
   MCP_URL: '',
+  analytics: {
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false,
+
+    selfHosted: {
+      enabled: false,
+      metricsEndpoint: '/api/metrics-proxy/send',
+      appName: 'PSKnowHOW-Production',
+      appVersion: '14.0.0',
+    },
+  },
 };

@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ProjectFilterComponent } from './project-filter.component';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -62,6 +63,7 @@ describe('ProjectFilterComponent', () => {
     );
 
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [ProjectFilterComponent],
       providers: [
         { provide: HttpService, useValue: httpServiceMock },
