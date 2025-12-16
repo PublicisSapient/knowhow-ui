@@ -66,13 +66,7 @@ export class MetricsService {
 
     // Convert metrics to Prometheus format
     for (const [key, value] of this.metrics.entries()) {
-      if (key.includes('{')) {
-        // Metric with labels
-        output += `${key} ${value}\n`;
-      } else {
-        // Simple metric
-        output += `${key} ${value}\n`;
-      }
+      output += `${key} ${value}\n`;
     }
 
     console.log(
