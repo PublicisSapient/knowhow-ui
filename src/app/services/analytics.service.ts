@@ -79,8 +79,8 @@ export class AnalyticsService {
 
     // Use consistent rollout decision per session
     if (!sessionStorage.getItem('grafana_analytics_rollout')) {
-      // NOSONAR – Math.random is safe here for feature rollout
-      const random = Math.random() * 100;
+      // eslint-disable-next-line no-restricted-syntax
+      const random = Math.random() * 100; // NOSONAR: S2245 - Math.random is acceptable for A/B testing rollout
       const rolloutPercentage =
         environment.analytics?.grafanaRolloutPercentage || 0;
       const inRollout = random < rolloutPercentage;
