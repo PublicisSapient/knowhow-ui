@@ -79,6 +79,7 @@ export class AnalyticsService {
 
     // Use consistent rollout decision per session
     if (!sessionStorage.getItem('grafana_analytics_rollout')) {
+      // NOSONAR – Math.random is safe here for feature rollout
       const random = Math.random() * 100;
       const rolloutPercentage =
         environment.analytics?.grafanaRolloutPercentage || 0;
