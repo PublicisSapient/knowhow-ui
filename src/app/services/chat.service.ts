@@ -44,7 +44,7 @@ export interface SupportResponse {
   providedIn: 'root',
 })
 export class ChatService {
-  private apiUrl = `${environment.MCP_URL}/api/chat`;
+  private apiUrl = `${environment.MCP_URL}/mcp/api/chat`;
 
   constructor(private http: HttpClient) {}
 
