@@ -138,10 +138,6 @@ export class PebCalculatorComponent implements OnInit {
             });
             this.selectedLevel = stateFilters?.parent_level;
             this.startLoading();
-            console.log(
-              '[PEB] Starting to load data, isLoadingPebData:',
-              this.isLoadingPebData,
-            );
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
             this.getAiUasgestatsDetails(this.selectedLevel);
@@ -171,7 +167,7 @@ export class PebCalculatorComponent implements OnInit {
    * @throws Will display an error message if productivity gain data fetch fails
    */
   private startLoading(): void {
-    this.pendingApiCalls = 3; // We have 3 API calls
+    this.pendingApiCalls = 3;
     this.isLoadingPebData = true;
   }
 
@@ -179,10 +175,6 @@ export class PebCalculatorComponent implements OnInit {
     this.pendingApiCalls--;
     if (this.pendingApiCalls <= 0) {
       this.isLoadingPebData = false;
-      console.log(
-        '[PEB] All API calls completed, isLoadingPebData:',
-        this.isLoadingPebData,
-      );
     }
   }
 
