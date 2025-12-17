@@ -1,7 +1,14 @@
-<div class="dashboard-container">
+<div class="dashboard-container" style="position: relative; min-height: 100vh;">
+  <!-- Loading overlay for entire PEB component -->
+  @if(isLoadingPebData) {
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
+      <div style="text-align: center;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 4rem; color: #0b4bc8;"></i>
+      </div>
+    </div>
+  }
   <div class="p-d-flex p-p-2 p-jc-between">
-    @if(!showLoader){
-      <div class="p-col-3 p-mb-2">
+    <div class="p-col-3 p-mb-2">
         <app-top-tiles [item]="{
           cssClassName: 'speed',
           category: 'Speed',
@@ -45,13 +52,6 @@
           iconType : 'fa'
         }"></app-top-tiles>
       </div>
-    } @else{
-      @for (c of [1,2,3,4]; track c) {
-        <div class="p-d-flex p-flex-column data-item p-col-2">
-          <p-skeleton width="100%" height="7rem" />
-        </div>
-        }
-    }
   </div>
   <div class="p-d-flex p-flex-wrap">
     <div class="p-col-4">
@@ -107,11 +107,6 @@
             <button pButton type="submit" label="Calculate PEB" class="calc-btn"></button>
           </div>
         </form>
-        @if (showLoader) {
-        <div class="loader">
-          <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-        </div>
-        }
         @if (isError) {
         <p-messages severity="error">
           <ng-template pTemplate>
@@ -167,11 +162,6 @@
             </ng-template>
           </p-table>
         </div>
-        @if (showLoader) {
-        <div class="loader">
-          <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-        </div>
-        }
       </p-card>
     </div>
   </div>

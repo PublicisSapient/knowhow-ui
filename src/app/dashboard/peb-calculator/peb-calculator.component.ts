@@ -44,7 +44,9 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryVariations: CategoryVariations;
+  categoryVariations: CategoryVariations | null = null;
+  isLoadingPebData: boolean = false;
+  private pendingApiCalls: number = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
   userCurrency = '';
@@ -135,6 +137,11 @@ export class PebCalculatorComponent implements OnInit {
               ],
             });
             this.selectedLevel = stateFilters?.parent_level;
+            this.startLoading();
+            console.log(
+              '[PEB] Starting to load data, isLoadingPebData:',
+              this.isLoadingPebData,
+            );
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
             this.getAiUasgestatsDetails(this.selectedLevel);
@@ -163,6 +170,22 @@ export class PebCalculatorComponent implements OnInit {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
+  private startLoading(): void {
+    this.pendingApiCalls = 3; // We have 3 API calls
+    this.isLoadingPebData = true;
+  }
+
+  private completeApiCall(): void {
+    this.pendingApiCalls--;
+    if (this.pendingApiCalls <= 0) {
+      this.isLoadingPebData = false;
+      console.log(
+        '[PEB] All API calls completed, isLoadingPebData:',
+        this.isLoadingPebData,
+      );
+    }
+  }
+
   getPEBData() {
     this.showLoader = true;
 
@@ -176,8 +199,10 @@ export class PebCalculatorComponent implements OnInit {
             this.productivityGain = response['data'];
             this.calculatePEB();
             this.errorMessage = '';
+            this.completeApiCall();
           } else {
             this.showLoader = false;
+            this.completeApiCall();
             this.isError = true;
             console.error(
               'Server returned unsuccessful response:',
@@ -190,6 +215,7 @@ export class PebCalculatorComponent implements OnInit {
         error: (err) => {
           console.error('Failed to fetch productivity gain data', err.message);
           this.showLoader = false;
+          this.completeApiCall();
           this.isError = true;
           this.errorMessage = err['message'];
         },
@@ -235,19 +261,31 @@ export class PebCalculatorComponent implements OnInit {
               true,
               response['data']?.forecasts,
             );
-          this.categoryVariations = JSON.parse(
-            JSON.stringify(response['data']?.categoryVariations),
-          ) as CategoryVariations;
-          this.xAxisLabel = response['data']?.temporalGrouping;
+
+          // Handle case where API returns success but no categoryVariations data
+          if (response['data']?.categoryVariations) {
+            this.categoryVariations = JSON.parse(
+              JSON.stringify(response['data'].categoryVariations),
+            ) as CategoryVariations;
+          } else {
+            this.categoryVariations = null;
+            console.warn('No categoryVariations data received from API');
+          }
+          this.xAxisLabel = response['data']?.temporalGrouping || 'week';
+          this.completeApiCall();
         } else {
           console.error(
             'Server returned unsuccessful response:',
             response['message'],
           );
+          this.categoryVariations = null;
+          this.completeApiCall();
         }
       },
       error: (err) => {
         console.error('Failed to fetch project performance data', err.message);
+        this.categoryVariations = null;
+        this.completeApiCall();
       },
     });
   }
@@ -350,9 +388,11 @@ export class PebCalculatorComponent implements OnInit {
               devCountControl: userCount,
             });
           }
+          this.completeApiCall();
         },
         error: (err: any) => {
           console.error('Failed to fetch user count', err.message);
+          this.completeApiCall();
         },
       });
   }
