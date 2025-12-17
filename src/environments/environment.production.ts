@@ -29,6 +29,7 @@ export const environment: Environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
+  MCP_URL: '',
   analytics: {
     grafanaRolloutPercentage: 0,
     enableGoogleAnalytics: true,
