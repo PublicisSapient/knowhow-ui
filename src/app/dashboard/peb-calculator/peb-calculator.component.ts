@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { DatePipe, Location } from '@angular/common';
@@ -64,15 +64,16 @@ export class PebCalculatorComponent implements OnInit {
     private dynamicCurrencyPipe: DynamicCurrencyPipe,
     private route: ActivatedRoute,
     private location: Location,
+    private cdr: ChangeDetectorRef,
   ) {
     this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
     this.appConfig = this.sharedService.getConfigurationDetails();
 
     this.pebForm = this.fb.group({
-      devCountControl: this.appConfig?.totalTeamSize || [30],
-      devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
-      durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
-        'per year',
+      devCountControl: [this.appConfig?.totalTeamSize || 30],
+      devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
+      durationControl: [
+        this.appConfig?.timeDuration?.toLowerCase() || 'per year',
       ],
     });
   }
@@ -83,15 +84,12 @@ export class PebCalculatorComponent implements OnInit {
    * @memberof PebCalculatorComponent
    * @lifecycle Angular
    */
+  onSliderChange(controlName: string, event: any) {
+    this.pebForm.get(controlName)?.setValue(event.value);
+    this.cdr.detectChanges();
+  }
+
   ngOnInit() {
-    this.pebForm.get('devCountControl')!.valueChanges.subscribe((v) => {
-      this.pebForm.get('devCountControl')!.setValue(v, { emitEvent: false });
-    });
-
-    this.pebForm.get('devCostControl')!.valueChanges.subscribe((v) => {
-      this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
-    });
-
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
@@ -130,10 +128,10 @@ export class PebCalculatorComponent implements OnInit {
               this.sharedService.getBackupOfFilterSelectionState();
             this.appConfig = this.sharedService.getConfigurationDetails();
             this.pebForm = this.fb.group({
-              devCountControl: this.appConfig?.totalTeamSize || [30],
-              devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
-              durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
-                'per year',
+              devCountControl: [this.appConfig?.totalTeamSize || 30],
+              devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
+              durationControl: [
+                this.appConfig?.timeDuration?.toLowerCase() || 'per year',
               ],
             });
             this.selectedLevel = stateFilters?.parent_level;
