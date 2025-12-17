@@ -95,7 +95,7 @@
         <button class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button" role="button" 
         tabindex="0" aria-label="Open Settings" (click)="handleSettingsClick()"
         *ngIf="
-            !router.url.split('/').includes('Config')
+            !router.url.split('/').includes('Config') && !isGuest
           ">
           <i class="fas fa-cog font-large"></i>
         </button>
