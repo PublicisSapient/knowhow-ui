@@ -70,7 +70,7 @@
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCountControl" inputId="devCount"
-                  ngDefaultControl></p-inputNumber>
+                  (onInput)="onInputChange('devCountControl', $event)" ngDefaultControl></p-inputNumber>
               </div>
               <div class="p-col-12">
                 <p-slider formControlName="devCountControl" class="w-full" [step]="10" [min]="10" [max]="300"
@@ -85,7 +85,8 @@
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
-                  mode="currency" [currency]="userCurrency" [locale]="userLocale" ngDefaultControl></p-inputNumber>
+                  mode="currency" [currency]="userCurrency" [locale]="userLocale"
+                  (onInput)="onInputChange('devCostControl', $event)" ngDefaultControl></p-inputNumber>
               </div>
             </div>
             <div class="p-col-12">
