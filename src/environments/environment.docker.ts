@@ -31,11 +31,11 @@ export const environment: Environment = {
   RETROS_URL: '',
   MCP_URL: '',
   analytics: {
-    grafanaRolloutPercentage: 40,
+    grafanaRolloutPercentage: 0,
     enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: true,
+    enableGrafanaAnalytics: false,
     selfHosted: {
-      enabled: true,
+      enabled: false,
       metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Docker',
       appVersion: '14.0.0',
