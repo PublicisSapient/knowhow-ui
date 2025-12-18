@@ -79,6 +79,7 @@
         "@angular/cli": "^17.3.17",
         "@angular/compiler-cli": "17.3.12",
         "@angular/language-service": "17.3.12",
+        "@rrweb/types": "^2.0.0-alpha.17",
         "@types/jasmine": "~3.6.0",
         "@types/jasminewd2": "2.0.3",
         "@types/node": "^12.0.2",
@@ -104,6 +105,7 @@
         "lint-staged": "^12.2.2",
         "onchange": "^7.1.0",
         "prettier": "^2.5.1",
+        "rrweb-snapshot": "^2.0.0-alpha.17",
         "sonar-scanner": "^3.1.0",
         "ts-node": "~10.4.0",
         "typescript": "^5.4.5"
