@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { DatePipe, Location } from '@angular/common';
@@ -44,7 +44,9 @@ export class PebCalculatorComponent implements OnInit {
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
-  categoryVariations: CategoryVariations;
+  categoryVariations: CategoryVariations | null = null;
+  isLoadingPebData: boolean = false;
+  private pendingApiCalls: number = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
   userCurrency = '';
@@ -62,15 +64,16 @@ export class PebCalculatorComponent implements OnInit {
     private dynamicCurrencyPipe: DynamicCurrencyPipe,
     private route: ActivatedRoute,
     private location: Location,
+    private cdr: ChangeDetectorRef,
   ) {
     this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
     this.appConfig = this.sharedService.getConfigurationDetails();
 
     this.pebForm = this.fb.group({
-      devCountControl: this.appConfig?.totalTeamSize || [30],
-      devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
-      durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
-        'per year',
+      devCountControl: [this.appConfig?.totalTeamSize || 30],
+      devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
+      durationControl: [
+        this.appConfig?.timeDuration?.toLowerCase() || 'per year',
       ],
     });
   }
@@ -81,15 +84,21 @@ export class PebCalculatorComponent implements OnInit {
    * @memberof PebCalculatorComponent
    * @lifecycle Angular
    */
+  onSliderChange(controlName: string, event: any) {
+    this.pebForm.get(controlName)?.setValue(event.value);
+    this.cdr.detectChanges();
+  }
+
+  onInputChange(controlName: string, event: any) {
+    if (event.value !== null && event.value !== undefined) {
+      this.pebForm
+        .get(controlName)
+        ?.setValue(event.value, { emitEvent: false });
+    }
+    this.cdr.detectChanges();
+  }
+
   ngOnInit() {
-    this.pebForm.get('devCountControl')!.valueChanges.subscribe((v) => {
-      this.pebForm.get('devCountControl')!.setValue(v, { emitEvent: false });
-    });
-
-    this.pebForm.get('devCostControl')!.valueChanges.subscribe((v) => {
-      this.pebForm.get('devCostControl')!.setValue(v, { emitEvent: false });
-    });
-
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
@@ -128,13 +137,14 @@ export class PebCalculatorComponent implements OnInit {
               this.sharedService.getBackupOfFilterSelectionState();
             this.appConfig = this.sharedService.getConfigurationDetails();
             this.pebForm = this.fb.group({
-              devCountControl: this.appConfig?.totalTeamSize || [30],
-              devCostControl: this.appConfig?.avgCostPerTeamMember || [10000],
-              durationControl: this.appConfig?.timeDuration?.toLowerCase() || [
-                'per year',
+              devCountControl: [this.appConfig?.totalTeamSize || 30],
+              devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
+              durationControl: [
+                this.appConfig?.timeDuration?.toLowerCase() || 'per year',
               ],
             });
             this.selectedLevel = stateFilters?.parent_level;
+            this.startLoading();
             this.getPEBData();
             this.getPebProjectPerformanceData(this.selectedLevel);
             this.getAiUasgestatsDetails(this.selectedLevel);
@@ -163,6 +173,18 @@ export class PebCalculatorComponent implements OnInit {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
+  private startLoading(): void {
+    this.pendingApiCalls = 3;
+    this.isLoadingPebData = true;
+  }
+
+  private completeApiCall(): void {
+    this.pendingApiCalls--;
+    if (this.pendingApiCalls <= 0) {
+      this.isLoadingPebData = false;
+    }
+  }
+
   getPEBData() {
     this.showLoader = true;
 
@@ -176,8 +198,10 @@ export class PebCalculatorComponent implements OnInit {
             this.productivityGain = response['data'];
             this.calculatePEB();
             this.errorMessage = '';
+            this.completeApiCall();
           } else {
             this.showLoader = false;
+            this.completeApiCall();
             this.isError = true;
             console.error(
               'Server returned unsuccessful response:',
@@ -190,6 +214,7 @@ export class PebCalculatorComponent implements OnInit {
         error: (err) => {
           console.error('Failed to fetch productivity gain data', err.message);
           this.showLoader = false;
+          this.completeApiCall();
           this.isError = true;
           this.errorMessage = err['message'];
         },
@@ -235,19 +260,31 @@ export class PebCalculatorComponent implements OnInit {
               true,
               response['data']?.forecasts,
             );
-          this.categoryVariations = JSON.parse(
-            JSON.stringify(response['data']?.categoryVariations),
-          ) as CategoryVariations;
-          this.xAxisLabel = response['data']?.temporalGrouping;
+
+          // Handle case where API returns success but no categoryVariations data
+          if (response['data']?.categoryVariations) {
+            this.categoryVariations = JSON.parse(
+              JSON.stringify(response['data'].categoryVariations),
+            ) as CategoryVariations;
+          } else {
+            this.categoryVariations = null;
+            console.warn('No categoryVariations data received from API');
+          }
+          this.xAxisLabel = response['data']?.temporalGrouping || 'week';
+          this.completeApiCall();
         } else {
           console.error(
             'Server returned unsuccessful response:',
             response['message'],
           );
+          this.categoryVariations = null;
+          this.completeApiCall();
         }
       },
       error: (err) => {
         console.error('Failed to fetch project performance data', err.message);
+        this.categoryVariations = null;
+        this.completeApiCall();
       },
     });
   }
@@ -350,9 +387,11 @@ export class PebCalculatorComponent implements OnInit {
               devCountControl: userCount,
             });
           }
+          this.completeApiCall();
         },
         error: (err: any) => {
           console.error('Failed to fetch user count', err.message);
+          this.completeApiCall();
         },
       });
   }

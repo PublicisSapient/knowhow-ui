@@ -35,7 +35,7 @@ export const environment: Environment = {
     enableGoogleAnalytics: true,
     enableGrafanaAnalytics: false,
     selfHosted: {
-      enabled: true,
+      enabled: false,
       metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Docker',
       appVersion: '14.0.0',
