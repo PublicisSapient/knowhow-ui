@@ -137,7 +137,6 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -145,6 +144,15 @@ import { SharelinkService } from './services/share-link.service';
 import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { StackedGroupBarChartComponent } from './component/stacked-group-bar-chart/stacked-group-bar-chart.component';
 import { HomeComponent } from './dashboard/home/home.component';
+import { HomeRecommCardComponent } from './component/home-recomm-card/home-recomm-card.component';
+import { NbaComponent } from './dashboard/home/nba/nba.component';
+import { RecommDetailsComponent } from './component/recomm-details/recomm-details.component';
+import { KpiAiRecommendationTargetComponent } from './dashboardv2/kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
+import { DynamicCurrencyPipe } from './shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
+import { IndicatorsComponent } from './dashboard/indicators/indicators.component';
+import { ListBlockComponent } from './dashboard/list-block/list-block.component';
+import { TopTilesComponent } from './dashboard/top-tiles/top-tiles.component';
+import { ChatbotComponent } from './dashboard/chatbot/chatbot.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -191,21 +199,16 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     MultilineStyleComponent,
     FeedbackComponent,
     PageNotFoundComponent,
-    FilterNewComponent,
-    ParentFilterComponent,
-    PrimaryFilterComponent,
-    AdditionalFilterComponent,
     NavNewComponent,
     ExecutiveV2Component,
     DashboardV2Component,
-    KpiCardV2Component,
     PageNotFoundComponent,
     RecommendationsComponent,
     StickyHeaderV2Component,
-    AddToReportPopUpComponent,
     PebCalculatorComponent,
     StackedGroupBarChartComponent,
     HomeComponent,
+    DynamicCurrencyPipe,
   ],
   imports: [
     SharedModuleModule,
@@ -252,6 +255,19 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     SidebarModule,
     InputNumberModule,
     MessagesModule,
+    PrimaryFilterComponent,
+    ParentFilterComponent,
+    FilterNewComponent,
+    AdditionalFilterComponent,
+    KpiCardV2Component,
+    HomeRecommCardComponent,
+    NbaComponent,
+    RecommDetailsComponent,
+    KpiAiRecommendationTargetComponent,
+    IndicatorsComponent,
+    ListBlockComponent,
+    TopTilesComponent,
+    ChatbotComponent,
   ],
   providers: [
     ExcelService,
@@ -277,5 +293,13 @@ export function initializeApp(appInitializerService: AppInitializerService) {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
+  exports: [
+    FilterNewComponent,
+    ParentFilterComponent,
+    PrimaryFilterComponent,
+    AdditionalFilterComponent,
+    IndicatorsComponent,
+    ListBlockComponent,
+  ],
 })
 export class AppModule {}

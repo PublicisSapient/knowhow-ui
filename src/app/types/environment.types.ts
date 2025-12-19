@@ -16,15 +16,29 @@
  *
  ******************************************************************************/
 
-export const environment = {
-  production: false,
-  baseUrl: '',
-  SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: '',
-  CENTRAL_API_URL: '',
-  RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: false,
-  SPEED_SUITE: false,
-  MAP_URL: '',
-  RETROS_URL: '',
-};
+export interface AnalyticsConfig {
+  grafanaRolloutPercentage: number;
+  enableGoogleAnalytics: boolean;
+  enableGrafanaAnalytics: boolean;
+  selfHosted: {
+    enabled: boolean;
+    metricsEndpoint: string;
+    appName: string;
+    appVersion: string;
+  };
+}
+
+export interface Environment {
+  production: boolean;
+  baseUrl: string;
+  SSO_LOGIN: boolean;
+  CENTRAL_LOGIN_URL: string;
+  CENTRAL_API_URL: string;
+  RESOURCE: string;
+  AUTHENTICATION_SERVICE: boolean;
+  SPEED_SUITE: boolean;
+  MAP_URL: string;
+  RETROS_URL: string;
+  MCP_URL: string;
+  analytics?: AnalyticsConfig;
+}

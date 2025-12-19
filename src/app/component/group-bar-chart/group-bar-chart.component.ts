@@ -45,6 +45,8 @@ export class GroupBarChartComponent implements OnChanges {
   releaseEndDateIndex;
   lineColor = '';
   totalAvgVelocity = '';
+  isReleasePlanKpi: boolean = false;
+  plannedSeriesName: string = 'Release Planned';
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -90,13 +92,59 @@ export class GroupBarChartComponent implements OnChanges {
       .select('.current-week-tooltip')
       .selectAll('.tooltip')
       .remove();
-    let data = this.data[0]?.dataGroup;
+    const rawData = this.data[0]?.dataGroup || [];
+    let data = rawData.map((group: any) => ({
+      ...group,
+      value: Array.isArray(group?.value)
+        ? group.value.map((v: any) => ({ ...v }))
+        : [],
+    }));
+    this.subGroups = [];
+    this.lineGroups = [];
+
+    this.plannedSeriesName =
+      (data?.[0]?.value || [])
+        .map((v) => v?.kpiGroup)
+        .find(
+          (name: any) =>
+            (name || '').trim().toLowerCase() ===
+            (this.plannedSeriesName || 'Release Planned').toLowerCase(),
+        ) || this.plannedSeriesName;
+    if (
+      Array.isArray(this.data[0]?.forecasts) &&
+      this.data[0]?.forecasts.length > 0
+    ) {
+      this.isReleasePlanKpi = !!this.data[0]?.forecasts.length;
+      const forecastPoint = this.data[0]?.forecasts[0];
+      const forecastValue = Number(
+        forecastPoint?.value ?? forecastPoint?.data ?? 0,
+      );
+      data.push({
+        filter: forecastPoint?.filter || forecastPoint?.date || 'Forecast',
+        value: [
+          {
+            kpiGroup: this.plannedSeriesName,
+            graphType: 'line',
+            lineCategory: 'line',
+            value: forecastValue,
+            hoverValue: forecastPoint?.hoverValue,
+            sprojectName: forecastPoint?.sprojectName,
+            isForecast: true,
+          },
+        ],
+      });
+    }
+
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
     this.totalAvgVelocity = this.data[0]?.additionalInfo?.totalAvgVelocity;
 
     data = this.formatData(data);
+    this.subGroups = this.subGroups.filter(
+      (g) =>
+        (g || '').trim().toLowerCase() !== this.plannedSeriesName.toLowerCase(),
+    );
 
     const subgroups = this.subGroups;
     const groups = d3.map(data, (d) => d.group);
@@ -539,35 +587,76 @@ export class GroupBarChartComponent implements OnChanges {
           filter: d['group'],
           value: d[kpiGroup.lineName].value,
           lineType: d[kpiGroup.lineName].lineType,
-        }));
+          isForecast: d[kpiGroup.lineName]?.isForecast,
+        }))
+        .sort((a, b) => groups.indexOf(a.filter) - groups.indexOf(b.filter));
 
-      const line = svgX
-        .append('g')
-        .attr('transform', `translate(17,0)`)
-        .append('path')
-        .datum(lineData)
-        .attr(
-          'd',
-          d3
-            .line()
-            .x((d) => x(d.filter))
-            .y((d) => y(d.value)),
-        )
-        .attr('stroke', (d) => color(kpiGroup.lineName))
-        .style('stroke-width', 2)
-        .style('fill', 'none')
-        .style('cursor', 'pointer')
-        .attr('stroke-dasharray', (d) =>
-          kpiGroup.lineType === 'dotted' ? '8,3 ' : 'none',
-        )
-        .on('mouseover', function (event, linedata) {
-          d3.select(this).style('stroke-width', 4);
-          showTooltip(linedata);
-        })
-        .on('mouseout', function (event, d) {
-          d3.select(this).style('stroke-width', 2);
-          hideTooltip();
-        });
+      const forecastIndex = lineData.findIndex((p) => p?.isForecast);
+      const solidPoints =
+        forecastIndex > -1 ? lineData.slice(0, forecastIndex) : lineData;
+
+      if (solidPoints.length) {
+        svgX
+          .append('g')
+          .attr('transform', `translate(17,0)`)
+          .append('path')
+          .datum(solidPoints)
+          .attr(
+            'd',
+            d3
+              .line()
+              .x((d) => x(d.filter))
+              .y((d) => y(d.value)),
+          )
+          .attr('stroke', (d) => color(kpiGroup.lineName))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('cursor', 'pointer')
+          .attr('stroke-dasharray', (d) =>
+            kpiGroup.lineType === 'dotted' ? '8,3 ' : 'none',
+          )
+          .on('mouseover', function (event, linedata) {
+            d3.select(this).style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function (event, d) {
+            d3.select(this).style('stroke-width', 2);
+            hideTooltip();
+          });
+      }
+
+      const forecastPoint = lineData.find((p) => p?.isForecast);
+      const lastActualPoint = lineData
+        .filter((p) => !p?.isForecast)
+        .slice(-1)[0];
+      if (forecastPoint && lastActualPoint) {
+        const seg = [lastActualPoint, forecastPoint];
+        svgX
+          .append('g')
+          .attr('transform', `translate(17,0)`)
+          .append('path')
+          .datum(seg)
+          .attr(
+            'd',
+            d3
+              .line()
+              .x((d) => x(d.filter))
+              .y((d) => y(d.value)),
+          )
+          .attr('stroke', (d) => color(kpiGroup.lineName))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('stroke-dasharray', '8,3')
+          .style('cursor', 'pointer')
+          .on('mouseover', function (event, linedata) {
+            d3.select(this).style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function (event, d) {
+            d3.select(this).style('stroke-width', 2);
+            hideTooltip();
+          });
+      }
 
       const circlegroup = svgX
         .append('g')
@@ -673,6 +762,13 @@ export class GroupBarChartComponent implements OnChanges {
       let graphData = {};
       d.value.forEach((groupD) => {
         if (
+          (groupD?.kpiGroup || '').trim().toLowerCase() ===
+          this.plannedSeriesName.toLowerCase()
+        ) {
+          groupD.graphType = 'line';
+          groupD.lineCategory = 'line';
+        }
+        if (
           !this.subGroups.includes(groupD.kpiGroup) &&
           groupD.graphType === 'bar'
         ) {
@@ -695,6 +791,7 @@ export class GroupBarChartComponent implements OnChanges {
           [groupD.kpiGroup]: {
             value: groupD.value,
             lineType: groupD.lineCategory,
+            isForecast: groupD.isForecast,
           },
           group: date,
           date,
@@ -719,6 +816,17 @@ export class GroupBarChartComponent implements OnChanges {
   formatDateOnXAxis(data) {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
     return data.map((d, i) => {
+      const rawGroup = d['group'];
+      const parsedDate = new Date(rawGroup);
+      if (
+        this.isReleasePlanKpi &&
+        !rawGroup.toLowerCase().includes('to') &&
+        (isNaN(parsedDate.getTime()) ||
+          parsedDate.toString() === 'Invalid Date')
+      ) {
+        d['group'] = 'Forecast';
+        return d;
+      }
       if (this.xCaption.toLowerCase() === 'weeks') {
         d['group'] = d['group'].replace(' ', '');
         const dateArray = d['group'].split('to');

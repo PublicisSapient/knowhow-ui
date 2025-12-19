@@ -123,12 +123,6 @@
   border-right: 1px solid #c0c0c0;
 }
 
-:host::ng-deep .p-dialog {
-  width: auto !important;
-  max-width: 90vw !important;
-  min-width: 544px;
-}
-
 :host ::ng-deep.p-dialog-header-icons {
   /* top: -8px;
   right: -8px;
@@ -157,4 +151,43 @@
   border-radius: 10px;
   transition: border 2s ease;
   box-shadow: 0 0 10px rgba(11, 75, 200, 0.35);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 100%;
+}
+
+.loader-background {
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  background-color: #fff;
+  padding: 20px;
+}
+
+::ng-deep .team-summary-panel .p-panel .p-panel-header {
+  background: #fff;
+}
+
+::ng-deep .team-summary-panel .p-panel .p-panel-header .p-panel-title {
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .metrics-grid.column-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .metrics-grid.column-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

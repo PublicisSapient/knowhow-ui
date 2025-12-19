@@ -1,5 +1,3 @@
-/* Maturity tabluar Styles start */
-
 :host .data-item {
   width: 24%;
   background-color: #fff;
@@ -8,93 +6,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-:host .data-item.users {
-  background: rgb(220, 231, 252);
-  border: 1px solid #8980ed;
-}
-
-:host .data-item.gauge {
-  background: rgb(222, 232, 252);
-  border: 1px solid rgb(47, 118, 255);
-}
-
-:host .data-item.exclamation {
-  background: rgb(255, 236, 223);
-  border: 1px solid #f68605;
-}
-
-:host .data-item.heart-fill {
-  background: rgb(212, 251, 223);
-  border: 1px solid rgb(21, 186, 64);
-}
-
 .maturity-tablur-view {
   padding: 1rem;
 }
-
-.icon-container {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
-.icon {
-  height: 80px;
-  width: 80px;
-  border-radius: 50%;
-  background-color: #f5f9ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-:host .icon.users {
-  background: rgb(220, 231, 252);
-}
-
-:host .icon.users .pi {
-  color: #8980ed;
-}
-
-:host .icon.gauge {
-  background: rgb(222, 232, 252);
-}
-
-:host .icon.gauge .pi {
-  color: rgb(47, 118, 255);
-}
-
-:host .icon.exclamation {
-  background: rgb(255, 236, 223);
-}
-
-:host .icon.exclamation .pi {
-  color: #f68605;
-}
-
-:host .icon.heart-fill {
-  background: rgb(212, 251, 223);
-}
-
-:host .icon.heart-fill .pi {
-  color: rgb(21, 186, 64);
-}
-
-.data {
-  text-align: left;
-  align-content: center;
-}
-
-.tabularKPI-column-header {
-  margin-top: 15px;
-}
-
-.tabularKPI-column-value {
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-/* Maturity tablur Styles End  */
 
 :host .kpi-card-container {
   background: #fff;
@@ -208,22 +122,22 @@
 }
 
 .healthy {
-  background: #00bd24;
+  background: var(--color-green);
   color: white;
 }
 
 .critical {
-  background: #ff1f44;
+  background: var(--color-red);
   color: white;
 }
 
 .unhealthy {
-  background: #c2a778;
+  background: var(--color-red);
   color: white;
 }
 
 .moderate {
-  background: #93856d;
+  background: var(--color-orange);
   color: white;
 }
 
@@ -349,6 +263,91 @@
   width: 60vw;
 }
 
+:host label {
+  background-color: inherit;
+}
+
+.form-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.trend-card {
+  width: 33%;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+.trend-card-header {
+  margin-bottom: 1rem;
+}
+
+.trend-card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.trend-items-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.trend-item {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  margin: 0 0.5rem;
+}
+
+.trend-item:last-child {
+  border-bottom: none;
+}
+
+.trend-icon-positive {
+  color: #10b981;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.trend-icon-negative {
+  color: #ef4444;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.trend-icon-default {
+  color: #6b7280;
+  font-size: 1.25rem;
+}
+
+.trend-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trend-label {
+  color: #374151;
+}
+
+.trend-value-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  gap: 0.5rem;
+}
+
+.trend-value-container i {
+  font-size: 1.2rem;
+}
+
 :host .loader {
   position: absolute;
   width: 100%;
@@ -362,4 +361,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.trend-icon {
+  width: 20px; /* fixed width to align icons */
+  display: flex;
+  justify-content: center; /* center arrow horizontally */
+}
+
+/* Scroll wrapper (important for height) - only for main table */
+:host
+  ::ng-deep
+  .p-datatable:not(.expanded-table-wrapper)
+  > .p-datatable-wrapper {
+  max-height: 33vh;
+  min-height: 33vh;
+  overflow-y: auto;
 }

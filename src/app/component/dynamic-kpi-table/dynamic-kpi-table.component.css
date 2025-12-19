@@ -1,0 +1,50 @@
+.metric-separator td {
+  border-top: 2px solid #c7c7c7;
+}
+
+:host
+  ::ng-deep
+  .kpi-analytics-table
+  .p-datatable-tbody
+  > tr.metric-separator
+  > td:first-child {
+  border-bottom-color: transparent !important;
+}
+
+.total-row-bg td {
+  font-weight: 600;
+}
+
+:host ::ng-deep .kpi-analytics-table .p-datatable-tbody > tr > td,
+:host ::ng-deep .kpi-analytics-table .p-datatable-thead > tr > th {
+  border-right: none !important;
+}
+
+:host ::ng-deep .kpi-analytics-table .p-datatable-wrapper table {
+  border-collapse: separate;
+}
+
+:host
+  ::ng-deep
+  .kpi-analytics-table
+  .p-datatable-tbody
+  > tr.metric-spacer-row
+  > td:first-child {
+  border-bottom-color: transparent !important;
+}
+
+.tool-tip {
+  position: fixed;
+  text-align: left;
+  min-width: 200px;
+  max-width: 280px;
+  line-height: 1.5;
+  color: var(--color-white);
+  z-index: 8;
+  white-space: pre-line;
+  box-shadow: none;
+  font-size: 0.875rem;
+  background: rgba(97, 97, 97, 0.9);
+  padding: 0.5rem;
+  border-radius: 4px;
+}

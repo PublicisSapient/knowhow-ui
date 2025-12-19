@@ -382,8 +382,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   outline: 3px solid #0b4bc8;
 }
 
-/* .kpi-search-container {
-} */
+.kpi-search-container {
+  position: relative;
+}
 
 :host ::ng-deep .p-fluid .p-autocomplete-dd .p-autocomplete-input {
   border: 1px solid #d7dade !important;
@@ -405,12 +406,12 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 :host ::ng-deep .kpi-search {
-  width: 500px;
+  width: 300px;
   position: relative;
 }
 
 :host ::ng-deep .p-autocomplete-input {
-  width: 500px;
+  width: 300px;
   height: 40px;
   line-height: 40px;
   font-size: 14px;

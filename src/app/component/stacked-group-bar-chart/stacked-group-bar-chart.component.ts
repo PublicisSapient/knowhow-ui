@@ -40,6 +40,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @Input() data;
   @Input() kpiId;
+  @Input() thresholdValue: number;
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
   hasFilter: boolean = true;
@@ -52,7 +53,7 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   private readonly svg: any;
   private readonly width: number = 0;
   private readonly allSeverityKeys = ['s1', 's2', 's3', 's4'];
-  private readonly testExecutionKeys = ['AUTOMATED', 'MANUAL', 'TOTAL'];
+  private readonly testExecutionKeys = ['AUTOMATED', 'MANUAL'];
 
   filter = [
     { option: 'S1', value: 's1', selected: true },
@@ -111,6 +112,11 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
               return acc;
             }, {}),
           };
+          const severityTotal = severityKeys.reduce(
+            (total, key) => total + (severityData[key] || 0),
+            0,
+          );
+          chartYRange = Math.max(chartYRange, severityTotal);
 
           sprintGroups[sprintKey].push(severityData);
         });
@@ -177,9 +183,23 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .domain(projects)
       .range([0, x0.bandwidth()])
       .padding(0.1);
+    const threshold = Number(this.thresholdValue);
+
+    const isThresholdValid =
+      this.kpiId === 'kpi195' && Number.isFinite(threshold);
+
+    const range = this.kpiId === 'kpi196' ? 5 : 50;
+    const maxLimit = this.kpiId === 'kpi196' ? 100 : 500;
+
+    let domainMax = chartYRange ? chartYRange + range : maxLimit;
+
+    if (isThresholdValid && threshold > domainMax) {
+      domainMax = threshold + range;
+    }
+
     const y = d3
       .scaleLinear()
-      .domain([0, chartYRange ? chartYRange + 50 : 500])
+      .domain([0, domainMax])
       .range([height, 0])
       .clamp(true);
 
@@ -341,6 +361,32 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         .style('font-size', '10px');
     });
 
+    if (isThresholdValid) {
+      const thresholdY = y(threshold);
+
+      svg
+        .append('svg:line')
+        .attr('x1', 0)
+        .attr('x2', width - 30)
+        .attr('y1', thresholdY)
+        .attr('y2', thresholdY)
+        .style('stroke', '#333333')
+        .style('stroke-dasharray', '3,3')
+        .attr('class', 'thresholdline');
+
+      svg
+        .append('text')
+        .attr('x', width - 20)
+        .attr('y', thresholdY)
+        .attr('dy', '.5em')
+        .attr('text-anchor', 'end')
+        .text(threshold)
+        .style('font-size', '16px')
+        .style('font-weight', '600')
+        .style('fill', '#333333')
+        .attr('class', 'thresholdlinetext');
+    }
+
     // --- X Axis ---
     svg
       .append('g')
@@ -411,6 +457,10 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
         const projectName = project.data.trim();
         project.value.forEach((entry, index) => {
           const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
+          const sprintLabel =
+            entry.sSprintName?.trim() ||
+            entry.sprintNames?.[0]?.trim() ||
+            dateRange;
           const sprintKey = index; // assuming index-based alignment
 
           if (!sprintMap.has(sprintKey)) {
@@ -425,8 +475,8 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
           const sprintData = sprintEntry.projects;
 
           // Add date range to x-axis labels if not already present
-          if (dateRange && !sprintEntry.sprints.includes(dateRange)) {
-            sprintEntry.sprints.push(entry.sSprintName);
+          if (sprintLabel && !sprintEntry.sprints.includes(sprintLabel)) {
+            sprintEntry.sprints.push(sprintLabel);
           }
 
           // Assign hoverValue data (use empty object if missing)

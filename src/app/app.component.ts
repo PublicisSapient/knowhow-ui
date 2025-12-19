@@ -20,17 +20,15 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
-import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { AnalyticsService } from './services/analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import {
   Router,
   RouteConfigLoadStart,
   RouteConfigLoadEnd,
   NavigationEnd,
-  ActivatedRoute,
 } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { Location } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 @Component({
@@ -40,7 +38,7 @@ import { throwError } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   loadingRouteConfig: boolean;
-  authorized: boolean = true;
+  authorized = true;
   refreshCounter = 0;
   self: any = this;
   selectedTab = '';
@@ -58,14 +56,12 @@ export class AppComponent implements OnInit {
 
   constructor(
     public router: Router,
-    private service: SharedService,
-    private getAuth: GetAuthService,
-    private httpService: HttpService,
-    private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService,
-    private authorisation: GetAuthorizationService,
-    private route: ActivatedRoute,
-    private location: Location,
+    private readonly service: SharedService,
+    private readonly getAuth: GetAuthService,
+    private readonly httpService: HttpService,
+    private readonly primengConfig: PrimeNGConfig,
+    public analytics: AnalyticsService,
+    private readonly authorisation: GetAuthorizationService,
   ) {
     this.authorized = this.getAuth.checkAuth();
   }
@@ -86,16 +82,15 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.loadingRouteConfig = false;
         const data = {
-          url:
-            event.urlAfterRedirects +
-            '/' +
-            (this.service.getSelectedType() || 'Scrum'),
+          url: `${event.urlAfterRedirects}/${
+            this.service.getSelectedType() || 'Scrum'
+          }`,
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
           uiType: 'New',
         };
-        this.ga.setPageLoad(data);
-        let loc = window.location.hash
+        this.analytics.setPageLoad(data);
+        const loc = window.location.hash
           ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
           : '';
         if (

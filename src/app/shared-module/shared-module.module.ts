@@ -18,77 +18,83 @@
 
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { ProjectFilterComponent } from './project-filter/project-filter.component';
-import { NamePipePipe } from './name-pipe.pipe';
-import { PageLoaderComponent } from './page-loader/page-loader.component';
-import { FooterComponent } from './footer/footer.component';
-import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
-import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-form.component';
-import { DialogModule } from 'primeng/dialog';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { FieldMappingFieldComponent } from './field-mapping-field/field-mapping-field.component';
-import { AccordionModule } from 'primeng/accordion';
-import { TooltipModule } from 'primeng/tooltip';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { ChipsModule } from 'primeng/chips';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
-import { InputSwitchModule } from 'primeng/inputswitch';
-import { CarouselModule } from 'primeng/carousel';
-import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
-import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 
-import { StackedBarChartComponent } from 'src/app/component/stacked-bar-chart/stacked-bar-chart.component';
-import { PsKpiCardHeaderComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
-import { PsKpiCardFilterComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
-import { PsKpiCardChartRendererComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
-import { StackedBarComponent } from 'src/app/component/stacked-bar/stacked-bar.component';
-import { SemiCircleDonutChartComponent } from 'src/app/component/semi-circle-donut-chart/semi-circle-donut-chart.component';
-import { TabularKpiV2Component } from 'src/app/component/tabular-kpi-v2/tabular-kpi-v2.component';
-import { GroupedBarChartComponent } from 'src/app/component/grouped-bar-chart/grouped-bar-chart.component';
-import { TabularKpiWithDonutChartComponent } from 'src/app/component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
-import { BarchartComponent } from 'src/app/component/barchart/barchart.component';
-import { KpiHelperService } from '../services/kpi-helper.service';
-import { TabMenuModule } from 'primeng/tabmenu';
+import { NgSelectModule } from '@ng-select/ng-select';
+
+import { AccordionModule } from 'primeng/accordion';
+import { ConfirmationService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CarouselModule } from 'primeng/carousel';
+import { ChipsModule } from 'primeng/chips';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TabMenuModule } from 'primeng/tabmenu';
 import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+
+import { KpiHelperService } from '../services/kpi-helper.service';
+
+import { BarchartComponent } from '../component/barchart/barchart.component';
+import { BarWithYAxisGroupComponent } from '../component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { ChartWithFiltersComponent } from '../component/chart-with-filters/chart-with-filters.component';
-import { KpiAdditionalFilterComponent } from '../component/kpi-additional-filter/kpi-additional-filter.component';
-import { MultilineComponent } from '../component/multiline/multiline.component';
+import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
+import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
+import { GroupBarChartComponent } from '../component/group-bar-chart/group-bar-chart.component';
+import { GroupedBarChartComponent } from '../component/grouped-bar-chart/grouped-bar-chart.component';
 import { GroupedColumnPlusLineChartV2Component } from '../component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { GroupstackchartComponentv2 } from '../component/groupedstackchart-v2/groupstackchart-v2.component';
 import { HorizontalPercentBarChartv2Component } from '../component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
+import { KpiAdditionalFilterComponent } from '../component/kpi-additional-filter/kpi-additional-filter.component';
+import { PsKpiCardChartRendererComponent } from '../component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { PsKpiCardFilterComponent } from '../component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardHeaderComponent } from '../component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { MultilineComponent } from '../component/multiline/multiline.component';
 import { MultilineStyleV2Component } from '../component/multiline-style-v2/multiline-style-v2.component';
 import { MultilineV2Component } from '../component/multiline-v2/multiline-v2.component';
-import { GroupstackchartComponentv2 } from '../component/groupedstackchart-v2/groupstackchart-v2.component';
 import { PiechartComponent } from '../component/piechart/piechart.component';
-import { StackedAreaChartComponent } from '../component/stacked-area-chart/stacked-area-chart.component';
-import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
-import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
-import { BarWithYAxisGroupComponent } from '../component/bar-with-y-axis-group/bar-with-y-axis-group.component';
-import { GroupBarChartComponent } from '../component/group-bar-chart/group-bar-chart.component';
-import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
-
+import { ProgressChartComponent } from '../component/progress-chart/progress-chart.component';
 import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
-import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
-import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
-import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
+import { ScatterPlotChartComponent } from '../component/scatter-plot-chart/scatter-plot-chart.component';
+import { SemiCircleDonutChartComponent } from '../component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { StackedAreaChartComponent } from '../component/stacked-area-chart/stacked-area-chart.component';
+import { StackedBarComponent } from '../component/stacked-bar/stacked-bar.component';
+import { StackedBarChartComponent } from '../component/stacked-bar-chart/stacked-bar-chart.component';
 import { TableComponent } from '../component/table/table.component';
-import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
-import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe';
-import { ConditionalInputV2Component } from './conditional-input-v2/conditional-input-v2.component';
+import { TabularKpiV2Component } from '../component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { TabularKpiWithDonutChartComponent } from '../component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
 
+import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
+import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
+import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { AddToReportPopUpComponent } from '../component/add-to-report-pop-up/add-to-report-pop-up.component';
+
+import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
+import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
+import { ConditionalInputV2Component } from './conditional-input-v2/conditional-input-v2.component';
+import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
+import { FieldMappingFieldComponent } from './field-mapping-field/field-mapping-field.component';
+import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-form.component';
+import { FooterComponent } from './footer/footer.component';
+import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
+import { NamePipePipe } from './name-pipe.pipe';
+import { PageLoaderComponent } from './page-loader/page-loader.component';
+import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe';
+import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
+import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
+import { ProjectFilterComponent } from './project-filter/project-filter.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -117,6 +123,8 @@ import { ConditionalInputV2Component } from './conditional-input-v2/conditional-
     TableModule,
     ToastModule,
     NgOptimizedImage,
+    ProgressChartComponent,
+    ScatterPlotChartComponent,
   ],
   exports: [
     NgSelectModule,
@@ -158,10 +166,13 @@ import { ConditionalInputV2Component } from './conditional-input-v2/conditional-
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
+    AddToReportPopUpComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
     TableComponent,
     UtcToLocalUserPipe,
+    ProgressChartComponent,
+    ScatterPlotChartComponent,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -202,6 +213,7 @@ import { ConditionalInputV2Component } from './conditional-input-v2/conditional-
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
+    AddToReportPopUpComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
     TableComponent,

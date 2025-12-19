@@ -107,7 +107,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
             board?.boardName.toLowerCase() !== 'dora' &&
             board?.boardName.toLowerCase() !== 'release' &&
             board?.boardName.toLowerCase() !== 'backlog' &&
-            board?.boardName.toLowerCase() !== 'home',
+            board?.boardName.toLowerCase() !== 'home' &&
+            !board?.boardName?.toLowerCase()?.includes('potential economic'),
         );
         this.checkShownTabs();
         this.selectedTabKpis = this.tabs[0].kpis.filter(
@@ -156,8 +157,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       if (!this.refreshCounter) {
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
-        let tabParam = params['selectedTab'];
+        const kpiFiltersParam = params['kpiFilters'];
+        const tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
             let selectedTab = decodeURIComponent(this.location.path());
@@ -305,8 +306,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.jiraGroups = 0;
     this.showNoDataMsg = false;
     if (
-      this.service.getSelectedTab() === 'kpi-maturity' ||
-      this.service.getSelectedTab() === 'home'
+      this.service.getSelectedTab() === 'kpi-maturity'
+      // || this.service.getSelectedTab() === 'home'
     ) {
       this.masterData = $event?.masterData;
 
@@ -748,7 +749,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
         board?.boardName.toLowerCase() !== 'dora' &&
         board?.boardName.toLowerCase() !== 'release' &&
         board?.boardName.toLowerCase() !== 'backlog' &&
-        board?.boardName.toLowerCase() !== 'home',
+        board?.boardName.toLowerCase() !== 'home' &&
+        !board?.boardName?.toLowerCase()?.includes('potential economic'),
     );
     this.selectedTabKpis = this.tabs[index].kpis
       .filter(

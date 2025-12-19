@@ -92,6 +92,8 @@ export class HttpService {
   private getTestExecutionUrl = this.baseUrl + '/api/testexecution';
   private updateKanbanScenariosUrl = this.baseUrl + '/api/kanbanscenario';
   private getProcessorDataUrl = this.baseUrl + '/api/processor';
+  private fetchScmInfoUrl = this.baseUrl + '/api/processor/fetch/scm';
+  private scmConfigConnectionUrl = this.baseUrl + '/api/scm/config/connection';
   private getServerRoleUrl =
     this.baseUrl + '/api/globalconfigurations/dojo/centralConfig';
   private runProcessorUrl = this.baseUrl + '/api/processor/trigger';
@@ -199,9 +201,19 @@ export class HttpService {
   private shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
-  private executivePageURL = this.baseUrl + '/api/executive';
+  private executivePageURL = this.baseUrl + '/api/v1/kpi-maturity';
 
   private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
+  private analyticsMetricsTableDataURL =
+    this.baseUrl + '/api/analysis/analytics/sprint/query';
+  private AIAnalyticsDataURL =
+    this.baseUrl + '/api/analysis/analytics/ai-usage/query';
+  private homeNBAURL = this.baseUrl + '/api/v1/recommendations';
+  private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
+  private kpiAITargetRecommData = this.baseUrl;
+  private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
+  private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
+  private appConfigurationUrl = `${this.baseUrl}/api/config`;
 
   constructor(
     private router: Router,
@@ -1306,14 +1318,66 @@ export class HttpService {
     return this.http.post<any>(this.shareViaEmailUrl, payload);
   }
 
-  getExecutiveBoardData(payload, selectedType) {
-    return this.http.post<any>(
-      `${this.executivePageURL}?iskanban=${selectedType}`,
-      payload,
+  getExecutiveBoardData(payLoad, deliveryMethodology) {
+    let params = `levelName=${payLoad.label.toLowerCase()}&deliveryMethodology=${deliveryMethodology}`;
+
+    if (payLoad.parentId && payLoad.parentId !== '') {
+      params += `&parentNodeId=${payLoad.parentId}`;
+    }
+    return this.http.get<any>(`${this.executivePageURL}?${params}`);
+  }
+
+  getAnalyticsMetricsTableData(payLoad) {
+    return this.http.post<any>(this.analyticsMetricsTableDataURL, payLoad);
+  }
+
+  getAIAnalyticsData(payLoad) {
+    return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
+  }
+
+  getPebProductivityData(level) {
+    return this.http.get<any>(
+      `${this.pebProductivityUrl}?levelName=${level.toLowerCase()}`,
     );
   }
 
-  getProductivityGain(payload) {
-    return this.http.post<any>(this.pebCalculateUrl, payload);
+  getPebProductivityDetailsData(level) {
+    return this.http.get<any>(
+      `${this.pebProductivityUrl}/trends?levelName=${level.toLowerCase()}`,
+    );
+  }
+  fetchScmConnectionInfoByProject(
+    basicProjectConfigId: string,
+  ): Observable<any> {
+    return this.http.get(
+      `${this.scmConfigConnectionUrl}/${basicProjectConfigId}`,
+    );
+  }
+
+  triggerScmDiscovery(connectionId: string): Observable<any> {
+    return this.http.post(`${this.fetchScmInfoUrl}/${connectionId}`, {});
+  }
+
+  getDiscoveredReposAndBranches(connectionId: string): Observable<any> {
+    return this.http.get(`${this.scmConfigConnectionUrl}/${connectionId}`);
+  }
+  getHomeNBAData(label) {
+    return this.http.get<any>(
+      `${this.homeNBAURL}?levelName=${label.toLowerCase()}`,
+    );
+  }
+
+  getAiUsagaStatsDetails(levelName: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.getAiUsagaStats}${levelName.toLocaleLowerCase()}`,
+    );
+  }
+
+  getPerformanceSummary(payload) {
+    return this.http.post<any>(this.performanceSummaryURL, payload);
+  }
+
+  getAppConfigurationDetails() {
+    return this.http.get<any>(this.appConfigurationUrl);
   }
 }

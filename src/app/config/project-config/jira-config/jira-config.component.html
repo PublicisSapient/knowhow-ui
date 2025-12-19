@@ -31,7 +31,7 @@
     </div>
       <div class="p-ml-3">
           <div class="p-d-flex p-align-center position-relative p-pb-3">
-              <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
+              <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]" [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
               <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
           </div>
           <div class="p-mb-4">
@@ -59,6 +59,15 @@
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
                                       formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr' &&formTitle?.toLowerCase() !== 'rally'">Delete</th>
                         </tr>
+                        <tr class="w-100" *ngIf="showConfiguredToolFilters && columns.length > 0">
+                            <th *ngFor="let col of columns" scope="col">
+                                <input pInputText [id]="col.field" type="text" class="p-column-filter" placeholder="Search"
+                                    [style]="{width:'100%'}" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                                <label [for]="col.field" class="p-sr-only">{{ col.header }} Filter</label>
+                            </th>
+                            <th id="empty-header"></th>
+                            </tr>
+
                     </ng-template>
 
                     <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -154,6 +163,11 @@
                       </ng-template>
                   </p-table>
                 </ng-container>
+
+                <div class="p-d-flex p-justify-end">
+                    <button pButton pRipple type="button" class="p-button-mg p-button-success"
+                        (click)="activeIndex=1">Next</button>
+                </div>
               </p-accordionTab>
 
               <p-accordionTab>
@@ -174,6 +188,7 @@
                         </ng-template>
                     </p-messages>
                       <div class="p-grid p-p-0">
+                       <ng-container>
                           <ng-container *ngFor="let form_elem of formTemplate.elements">
                               <div [ngClass]="form_elem.containerClass" *ngIf="form_elem.show">
                                   <div [ngSwitch]="form_elem.type">
@@ -315,9 +330,99 @@
                                               </ng-container>
                                           </ng-container>
                                       </div>
+                                    <!-- New Changes for scmtools -->
+                                    <div *ngSwitchCase="'inputMultiselect'">
+                                        <div class="p-fluid branch-container">
+                                            <div>
+                                                <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                                <div class="p-d-flex">
+
+                                                    <p-multiSelect id="{{form_elem.id}}" [options]="branchListItems" class="flex-drop"
+                                                        formControlName="{{form_elem?.id}}" #repoMultiSelect optionLabel="branchName"
+                                                        optionValue="branchName" display="chip"
+                                                        placeholder="{{toolForm.get('Repository')?.value ? 'Select or enter branch' : 'Select a repository first'}}"
+                                                        [showClear]="true" filter="true" (onFilter)="form_elem.onFilter($event)"
+                                                        (onChange)="form_elem.branchSelectionChange($event)">
+                                                    </p-multiSelect>
+
+
+                                                    <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn"
+                                                        icon="pi pi-refresh" (click)="form_elem.triggerScmScan()" aria-label="Scan or Refresh Repositories"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div *ngSwitchCase="'inputDropdown'"> <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                        <div class="p-d-flex p-ai-center">
+                                            <p-dropdown [options]="branchAndRepoDropdown" optionLabel="repositoryName"
+                                                placeholder="Select or enter a repository" class="flex-drop" id="repositoryName"
+                                                formControlName="{{form_elem.id}}" editable="true" (onChange)="form_elem.repositryChange($event)"
+                                                [attr.aria-label]="form_elem.label" (onInput)="form_elem.repositryChange($event)">
+                                                <ng-template let-option pTemplate="item">
+                                                    <div class="dropdown-item">
+                                                        <div class="name">{{ option.repositoryName }}</div>
+                                                        <div class="timestamp">{{ getTimeAgo(option.lastUpdatedTimestamp) }}</div>
+                                                    </div>
+                                                </ng-template>
+
+                                                <ng-template pTemplate="selectedItem" let-selected>
+                                                    <div *ngIf="selected" class="dropdown-item">
+                                                        <div class="name">{{ selected.repositoryName }}</div>
+                                                        <div class="timestamp">{{ getTimeAgo(selected.lastUpdatedTimestamp) }}</div>
+                                                    </div>
+                                                </ng-template>
+                                            </p-dropdown>
+                                            <button type="button" pButton pRipple class="p-ml-2 p-button-sm p-button-secondary refresh-btn"
+                                                icon="pi pi-refresh" (click)="form_elem.triggerScmScan()" aria-label="Scan or Refresh Repositories"></button>
+                                        </div>
+                                    </div>
+
+
                                   </div>
                               </div>
                           </ng-container>
+                            <div class="p-w-100"
+                                *ngIf="urlParam === 'Bitbucket' || urlParam === 'GitLab' || urlParam === 'GitHub' || urlParam === 'AzureRepository'">
+                                <div class="p-d-flex p-justify-between p-align-center p-w-100 p-mt-3 repository-length">
+                                    <div>{{repositryValuesArray?.length ? repositryValuesArray?.length : ''}} {{repositryValuesArray?.length ?
+                                        repositryValuesArray?.length > 1 ? 'repositories added' :'repository added' : ''}}</div>
+                                    <div>
+                                        <button pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
+                                            iconPos="left" label="Add Repository"
+                                            [disabled]="!canAddRepository()"
+                                            (click)="addRepositry()" aria-label="Add New Tool"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <!-- new Chnage cards array  -->
+                        <ng-container>
+                            <div class="container" *ngIf="repositryValuesArray?.length>0">
+                                <div class="header">
+                                    <span class="p-d-flex repository-list">Repositories to Configure</span>
+                                    <a class="clear-all" (click)="clearRepositories()">Clear All</a>
+                                </div>
+                            <div class="repo-card-list">
+                                <div class="repo-card" *ngFor="let repo of repositryValuesArray;let i=index">
+                                    <div class="repo-header">
+                                        <div class="repo-name">{{repo.repositoryName}}</div>
+                                    </div>
+                                    <div class="repo-url">{{repo?.repositoryUrl}}</div>
+                                    <div class="branches">
+                                        <div class="branch" *ngFor="let branch of repo.branchList;let subindex=index">{{branch?.branchName}}
+                                            <div (click)="clearSubRepositories(subindex,repo)"><i class="pi pi-times subBranch-close"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="close-btn" (click)="clearRepositories(i)"><i class="pi pi-times close-list"></i></div>
+                                </div>
+                            </div>
+                        
+
+                            </div>
+                        </ng-container>
                       </div>
                       <div class="p-grid p-p-0 break-word"
                           *ngIf='selectedToolConfig && selectedToolConfig[0] && selectedToolConfig[0].subprojects && selectedToolConfig[0].subprojects.length'>
@@ -375,7 +480,7 @@
                   </form>
                   <div class="save-container p-mt-5">
                       <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-                          iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || toolForm.invalid || !selectedConnection" tabindex="0" aria-label="Save Configuration"></button>
+                          iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || (toolForm.invalid && urlParam !== 'Bitbucket' && urlParam !== 'GitLab' && urlParam !== 'GitHub' && urlParam !== 'AzureRepository') || !selectedConnection || ((urlParam === 'Bitbucket' || urlParam === 'GitLab' || urlParam === 'GitHub' || urlParam === 'AzureRepository') && repositryValuesArray.length===0)" tabindex="0" aria-label="Save Configuration"></button>
                       <button pButton pRipple type="button" class="p-d-none p-button-lg p-button-success p-button-raised"
                           icon="pi pi-plus-circle" iconPos="left" label="Reset" (click)="addNewTool()"
                           title="Click to add new tool config"

@@ -15,24 +15,57 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { MenuItem, MessageService } from 'primeng/api';
-import { DatePipe } from '@angular/common';
-import { Menu } from 'primeng/menu';
+import { DatePipe, NgClass, NgSwitch } from '@angular/common';
+import { Menu, MenuModule } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { catchError, distinctUntilChanged, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Dialog } from 'primeng/dialog';
-
+import { Dialog, DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { TabViewModule } from 'primeng/tabview';
+import { SharedModuleModule } from '../../shared-module/shared-module.module';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import * as LZString from 'lz-string';
+import { AI_USAGE_TOOLTIP_INFO } from '../analysis-module/analysis-constant';
+import { KpiAiRecommendationTargetComponent } from '../kpi-ai-recommendation-target/kpi-ai-recommendation-target.component';
+
+interface SelectedTrend {
+  nodeId: string;
+  nodeName: string;
+  basicProjectConfigId: string;
+}
 
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',
   styleUrls: ['./kpi-card-v2.component.css'],
+  standalone: true,
+  imports: [
+    DialogModule,
+    Button,
+    NgSwitch,
+    TableModule,
+    TabViewModule,
+    NgClass,
+    SharedModuleModule,
+    MenuModule,
+    DropdownModule,
+    FormsModule,
+    MultiSelectModule,
+    RadioButtonModule,
+    SelectButtonModule,
+    KpiAiRecommendationTargetComponent,
+  ],
 })
 export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
@@ -55,6 +88,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpiSize;
   @Input() kpiDataStatusCode = '';
   @Input() filterApplyData: any;
+  @Input() tableData: any[];
+  @Input() tableColumns: any[];
   // showComments: boolean = false;
   loading = false;
   noData = false;
@@ -104,6 +139,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   disableSettings = false;
   @Input() immediateLoader = true;
   @Input() partialData = false;
+  @Input() customTooltip: typeof AI_USAGE_TOOLTIP_INFO;
   warning = '';
   kpiHeaderData: {};
   kpiFilterData: {};
@@ -136,14 +172,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @ViewChild('fieldMappingDialog') fieldMappingDialog: Dialog;
   @ViewChild('kpiMenuContainer') kpiMenuContainer: ElementRef<HTMLDivElement>;
   @Input() xCaption: string;
-
-  @Input() kpiTitle: string = '';
+  @Input() kpiTitle;
+  public selectedTrendObject: SelectedTrend | null = null;
+  chartType;
+  @Input() selectedBoard: string = 'dashboard';
 
   constructor(
     public service: SharedService,
     private http: HttpService,
     private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
     private renderer: Renderer2,
     public dialogService: DialogService,
     private kpiHelperService: KpiHelperService,
@@ -154,6 +192,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.chartType = this.kpiData.kpiDetail?.chartType;
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
@@ -185,7 +224,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
                       ? { filter1: null }
                       : [...currentFilterArray];
                 } else {
-                  this.filterOptions = { ...this.filterOptions };
+                  this.dropdownArr?.forEach((filter, idx) => {
+                    if (filter?.options?.length) {
+                      this.filterOptions['filter' + (idx + 1)] =
+                        filter.options[0];
+                    }
+                  });
                 }
               }
             } else {
@@ -450,38 +494,28 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           : '',
       );
     }
+
     //#endregion
 
-    console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
-      this.selectedTab === 'my-knowhow' ||
-      // this.selectedTab === 'speed' ||
-      // this.selectedTab === 'quality' ||
-      this.selectedTab === 'value'
+      (this.selectedTab === 'my-knowhow' ||
+        this.selectedTab === 'speed' ||
+        this.selectedTab === 'quality' ||
+        this.selectedTab === 'value') &&
+      this.chartType === 'line'
     ) {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
-      // console.log(this.kpiTitle, 'kpi title in card');
-      if (
-        this.kpiTitle === 'Release Frequency' ||
-        this.kpiTitle === 'Value Delivery (Cost of Delay)'
-      ) {
-        this.menuItems.push({
-          label: 'Embed KPI',
-          icon: 'pi pi-external-link',
-          command: ($event) => {
-            this.exportDataToConfluence($event);
-          },
-          disabled: false,
-        });
-      }
-      // this.service.flag$.subscribe((flag) => {
-      //   console.log('recieving flag > ', flag);
-      //   if (flag) {
-      //   }
-      // });
+      this.menuItems.push({
+        label: 'Embed KPI',
+        icon: 'pi pi-external-link',
+        command: ($event) => {
+          this.exportDataToConfluence($event);
+        },
+        disabled: false,
+      });
     }
   }
 
@@ -495,9 +529,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       styleClass: 'custom-dialog-class',
     });
 
-    this.commentDialogRef.onClose.subscribe(() => {
-      console.log('on close called');
-    });
+    this.commentDialogRef.onClose.subscribe(() => {});
   };
 
   showTooltip(val) {
@@ -581,10 +613,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
     const gaObj = {
+      kpiId: this.kpiData?.kpiId,
       kpiName: this.kpiData?.kpiName,
       filter1: this.filterOptions?.['filter1'] || [value],
       filter2: this.filterOptions?.['filter2'] || null,
       kpiSource: this.kpiData?.kpiDetail?.kpiSource,
+      userRole: localStorage.getItem('user_role') || 'unknown',
     };
     this.triggerGaEvent(gaObj);
   }
@@ -629,7 +663,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedTrend.length == 1 || selectedTab === 'release') {
+
+    let currentTrendList: SelectedTrend[] = [];
+
+    if (this.selectedTrendObject) {
+      currentTrendList = [this.selectedTrendObject];
+    } else {
+      currentTrendList = selectedTrend;
+      this.selectedTrendObject = selectedTrend[0];
+    }
+
+    if (currentTrendList.length == 1 || selectedTab === 'release') {
+      console.log(JSON.stringify(currentTrendList));
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
@@ -640,7 +685,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       );
       this.http
         .getKPIFieldMappingConfig(
-          `${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
+          `${currentTrendList[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
         )
         .subscribe((data) => {
           if (data?.success) {
@@ -652,15 +697,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             ];
             if (this.fieldMappingConfig.length > 0) {
               this.selectedConfig = {
-                ...selectedTrend[0],
-                id: selectedTrend[0]?.basicProjectConfigId,
+                ...currentTrendList[0],
+                id: currentTrendList[0]?.basicProjectConfigId,
               };
               this.getFieldMapping();
               const metaDataList = this.service.getFieldMappingMetaData();
               if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
                 const metaData = metaDataList.find(
                   (data) =>
-                    data.projectID === selectedTrend[0]?.basicProjectConfigId &&
+                    data.projectID ===
+                      currentTrendList[0]?.basicProjectConfigId &&
                     data.kpiSource === kpiSource,
                 );
                 if (metaData?.metaData) {
@@ -707,7 +753,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -717,16 +762,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   getFieldMappingMetaData(kpiSource) {
     this.http
       .getKPIConfigMetadata(
-        this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-        this.kpiData?.kpiId,
+        this.selectedTrendObject.basicProjectConfigId,
+        this.kpiData?.kpiDetail.kpiId,
       )
       .pipe(
         tap((Response) => {
           if (Response.success) {
             this.fieldMappingMetaData = Response.data;
             this.service.setFieldMappingMetaData({
-              projectID:
-                this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+              projectID: this.selectedTrendObject.basicProjectConfigId,
               kpiSource,
               metaData: Response.data,
             });
@@ -735,7 +779,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         }),
         catchError((error) => {
-          console.log(error);
           return of();
         }),
       )
@@ -791,7 +834,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   triggerGaEvent(gaObj) {
-    this.ga.setKpiData(gaObj);
+    this.analytics.setKpiData(gaObj);
   }
 
   /**
@@ -1485,7 +1528,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   onDialogClose() {
     if (this.kpiMenuContainer && this.kpiMenuContainer.nativeElement) {
       const menuEl = this.kpiMenuContainer.nativeElement as HTMLElement;
-      console.log('menuEl', menuEl);
       menuEl.focus();
     }
   }
@@ -1557,38 +1599,22 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportDataToConfluence(event) {
-    console.log('kpiData > ', this.kpiData);
-    const payloadDataFromKPIGroup = this.service.getKPIPostData();
+    let payloadDataFromKPIGroup;
+    if (this.kpiData.kpiDetail.kpiSource === 'Jira') {
+      payloadDataFromKPIGroup = this.service.getKPIPostData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Jenkins') {
+      payloadDataFromKPIGroup = this.service.getKPIPostJenkinsData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Sonar') {
+      payloadDataFromKPIGroup = this.service.getKPIPostSonarData();
+    } else if (this.kpiData.kpiDetail.kpiSource === 'Zypher') {
+      payloadDataFromKPIGroup = this.service.getKPIPostZypherData();
+    }
     console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
       kpiFilters = JSON.stringify(queryParams.get('kpiFilters'));
 
-    // APPROACH 1
-    const payload = {
-      longStateFiltersString: stateFilters || '',
-      longKPIFiltersString: kpiFilters || '',
-    };
-    /* this.http.handleUrlShortener(payload).subscribe((response: any) => {
-      const shortStateFilterString = response.data.shortStateFiltersString;
-      const shortKPIFilterString = response.data.shortKPIFilterString;
-      const shortUrl = `stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}&kpiName=${this.kpiData.kpiId}`;
-      navigator.clipboard
-        .writeText(shortUrl)
-        .then(() => {
-          this.messageService.add({
-            severity: 'success',
-            summary:
-              'Embed link copied. Paste the link in the confluence page.',
-          });
-        })
-        .catch((err) => {
-          console.error('Failed to copy URL: ', err);
-        });
-    }); */
-
-    // APPROACH 2
     const infoLink = {
       kpiData: this.kpiData,
       kpiGroupPayload: payloadDataFromKPIGroup,

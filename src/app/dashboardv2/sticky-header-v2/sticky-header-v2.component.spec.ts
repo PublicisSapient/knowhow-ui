@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { StickyHeaderV2Component } from './sticky-header-v2.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -22,6 +23,8 @@ describe('StickyHeaderV2Component', () => {
     mockSharedService = jasmine.createSpyObj('SharedService', [
       'onTabSwitch',
       'mapColorToProjectObs',
+      'getSelectedTab',
+      'getSelectedType',
     ]);
     mockHelperService = jasmine.createSpyObj('HelperService', [
       'getObjectKeys',
@@ -36,6 +39,7 @@ describe('StickyHeaderV2Component', () => {
     });
 
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [StickyHeaderV2Component],
       providers: [
         { provide: SharedService, useValue: mockSharedService },
@@ -108,5 +112,33 @@ describe('StickyHeaderV2Component', () => {
     const mockData = {};
     mapColorToProjectObsSubject.next(mockData);
     expect(component.colorObj).toEqual({});
+  });
+
+  it('should return organization name from localStorage', () => {
+    const mockHierarchyData = {
+      project: [
+        {
+          hierarchyLevelId: 'org1',
+          hierarchyLevelName: 'Test Organization',
+        },
+      ],
+    };
+    spyOn(localStorage, 'getItem').and.returnValue(
+      JSON.stringify(mockHierarchyData),
+    );
+    mockSharedService.getSelectedType.and.returnValue('project');
+
+    const result = component.getOrganasationName('org1');
+
+    expect(result).toBe('Test Organization');
+  });
+
+  it('should return empty string when organization not found', () => {
+    spyOn(localStorage, 'getItem').and.returnValue('{}');
+    mockSharedService.getSelectedType.and.returnValue('project');
+
+    const result = component.getOrganasationName('nonexistent');
+
+    expect(result).toBe('');
   });
 });

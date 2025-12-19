@@ -2469,4 +2469,74 @@ describe('JiraConfigComponent', () => {
       { tool: 'jira', kanban: true, name: 'Template2' },
     ]);
   }));
+
+  it('should add repository branch if it does not exist and clear filters', () => {
+    component.toolForm = new UntypedFormGroup({
+      branch: new UntypedFormControl([]),
+    });
+    component.branchListItems = [];
+    component.currentFormElement = { branchList: [] };
+    const filterMocks = [{ filterValue: 'keep' }];
+    component.repoMultiSelectList = {
+      forEach: (cb) => filterMocks.forEach(cb),
+    } as any;
+
+    component.addRepositoryIfNotExists('main');
+
+    expect(component.branchListItems.length).toBe(1);
+    expect(component.toolForm.get('branch')?.value).toContain('main');
+    expect(component.currentFormElement.branchList[0].branchName).toBe('main');
+    expect(filterMocks[0].filterValue).toBe('');
+  });
+
+  it('should format relative time correctly', () => {
+    const nowSpy = spyOn(Date, 'now').and.returnValue(1_000_000);
+
+    expect(component.getTimeAgo(1_000_000 - 24 * 60 * 60 * 1000)).toBe(
+      '1 day ago',
+    );
+    expect(component.getTimeAgo(1_000_000 - 2 * 60 * 60 * 1000)).toBe(
+      '2 hrs ago',
+    );
+    expect(component.getTimeAgo(1_000_000 - 60 * 1000)).toBe('1 min ago');
+    expect(component.getTimeAgo(1_000_000 - 10)).toBe('Just now');
+
+    nowSpy.and.callThrough();
+  });
+
+  it('should normalize scm repositories on load', () => {
+    component.formTemplate = { elements: [] };
+    component.toolForm = new UntypedFormGroup({
+      Repository: new UntypedFormControl(''),
+      branch: new UntypedFormControl(''),
+    });
+    const repoResponse = [
+      {
+        repoUrl: 'http://example.com/repo.git',
+        repoName: 'Repo1',
+        branches: [{ name: 'main', latestCommitTimestamp: 1 }, 'dev'],
+      },
+    ];
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    const hideSpy = spyOn(
+      component,
+      'hideLoadingOnFormElement',
+    ).and.callThrough();
+    spyOn(httpService, 'getDiscoveredReposAndBranches').and.returnValue(
+      of(repoResponse),
+    );
+
+    (component as any).loadScmRepos('123');
+
+    expect(httpService.getDiscoveredReposAndBranches).toHaveBeenCalledWith(
+      '123',
+    );
+    expect(component.branchAndRepoDropdown.length).toBe(1);
+    expect(component.branchAndRepoDropdown[0].repositoryName).toBe('Repo1');
+    expect(component.branchAndRepoDropdown[0].branchList).toEqual([
+      { name: 'main', latestCommitTimestamp: 1 },
+      { name: 'dev', latestCommitTimestamp: null },
+    ]);
+    expect(hideSpy).toHaveBeenCalledWith('Repository');
+  });
 });

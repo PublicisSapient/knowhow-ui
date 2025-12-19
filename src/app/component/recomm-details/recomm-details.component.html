@@ -1,0 +1,53 @@
+<div class="recommendation-container">
+  <!-- Dynamic info boxes -->
+  <div class="info-boxes">
+    <div class="info-box" *ngFor="let box of infoBoxes">
+      <div class="label">{{ box.label }}</div>
+      <div class="value" [ngStyle]="{'color': box.color}" [ngClass]="box.color">{{ box.value }}</div>
+    </div>
+  </div>
+
+  <!-- KPI Section -->
+  <div class="kpi-section" *ngIf="kpis && kpis.length">
+    <div class="kpi-title">
+      <span class="icon">{{ kpiSectionIcon }}</span>
+      <span>{{ kpiSectionTitle }}</span>
+    </div>
+
+    <div class="kpi-tags">
+      <span *ngFor="let kpi of kpis" class="kpi-chip">{{ kpi }}</span>
+    </div>
+  </div>
+
+  <!-- AI Rationale Section -->
+  <div class="ai-rationale-section" *ngIf="showAiRationale">
+    <h3 class="section-title">{{ aiRationaleTitle }}</h3>
+    <p class="section-description" [innerHTML]="aiRationaleDescription"></p>
+  </div>
+
+  <!-- Supporting Data Trends Section -->
+  <div class="supporting-data-section" *ngIf="showSupportingData">
+    <h3 class="section-title">{{ supportingDataTitle }}</h3>
+    <ul class="data-list">
+      <li *ngFor="let dataItem of supportingDataList">{{ dataItem }}</li>
+    </ul>
+  </div>
+
+  <!-- Recommended Action Plan -->
+  <div class="action-plan">
+    <div class="plan-title">
+      <span class="icon">{{ actionPlanIcon }}</span>
+      <span>{{ actionPlanTitle }}</span>
+    </div>
+
+    <div class="plan-steps">
+      <div *ngFor="let step of actionPlan" class="plan-step">
+        <div class="step-circle">{{ step.step }}</div>
+        <div class="step-content">
+          <div class="step-title">{{ step.title }}</div>
+          <div class="step-desc">{{ step.description }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

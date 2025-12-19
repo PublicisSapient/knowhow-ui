@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { HttpService } from '../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -27,7 +26,7 @@ import {
 } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
@@ -42,22 +41,19 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   error = '';
   sessionMsg = '';
-  adLogin = true;
-  loginConfig = {};
 
   refreshCounter = 0;
   self: any = this;
   selectedTab = '';
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private httpService: HttpService,
-    private sharedService: SharedService,
-    private ga: GoogleAnalyticsService,
-    private helperService: HelperService,
-    private location: Location,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly httpService: HttpService,
+    private readonly sharedService: SharedService,
+    private readonly analytics: AnalyticsService,
+    private readonly helperService: HelperService,
   ) {}
 
   ngOnInit() {
@@ -151,7 +147,7 @@ export class LoginComponent implements OnInit {
       });
 
       /*After successfully login redirect form to dashboard router(Executive page)*/
-      this.ga.setLoginMethod(data.body, 'standard');
+      this.analytics.setLoginMethod(data.body, 'standard');
       if (this.redirectToProfile()) {
         this.router.navigate(['./dashboard/Config/Profile']);
       } else {

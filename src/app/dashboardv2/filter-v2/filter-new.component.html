@@ -3,7 +3,7 @@
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
-        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }"
+        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !scrumProjectsAvailable }"
         role="tab"
         tabindex="0"
         [attr.aria-selected]="selectedType === 'scrum'"
@@ -12,7 +12,7 @@
         Scrum
       </div>
       <div class="tab" (click)="selectedType !== 'kanban' ? setSelectedType('Kanban') : ''"
-        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }"
+        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !kanbanProjectsAvailable || this.selectedTab?.toLowerCase() === 'potential-economic-benefits' }"
         role="tab"
         tabindex="0"
         [attr.aria-selected]="selectedType === 'kanban'"
@@ -29,7 +29,7 @@
       [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
       (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
       [selectedTab]="selectedTab" [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
-      <div [hidden]="selectedTab?.toLowerCase() === 'home'">
+      <div [hidden]="selectedTab?.toLowerCase() === 'home' || selectedTab?.toLowerCase() === 'potential-economic-benefits'">
         <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel"
         [selectedType]="selectedType" [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
         (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
@@ -41,32 +41,33 @@
     </ng-container>
   </div>
 </div>
-@if (selectedTab?.toLowerCase() !== 'home') {
-  <div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
-    <div class="p-d-flex p-ai-center kpi-search">
-      <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
-      <span class="search-icon"><i class="pi pi-search kpi-search-icon"></i></span>
-      <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem; margin-right: 25px;" (click)="removeSearchQuery()" (keydown.enter)="removeSearchQuery()"></i></span>
-      <p-autoComplete
-        #autoComplete
-        [suggestions]="filteredKpis"
-        [(ngModel)]="selectedKPI"
-        [group]="true"
-        [field]="'label'"
-        [optionGroupLabel]="'label'"
-        [optionGroupChildren]="'items'"
-        (completeMethod)="debouncedFilterKpis($event)"
-        [completeOnFocus]="true"
-        [placeholder]="'Search KPI'"
-        (onSelect)="onKpiSearch($event)"
-        (input)="handleInputChange($event)">
-      </p-autoComplete>
-    </div>
-    <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
+<div class="p-d-flex p-jc-center p-my-3 kpi-search-container">
+    @if (selectedTab?.toLowerCase() !== 'home' && selectedTab?.toLowerCase() !== 'potential-economic-benefits') {
+      <div class="p-d-flex p-ai-center kpi-search">
+        <span *ngIf="isSearchingKPI" class="loader-icon"><i class="pi pi-spin pi-spinner p-mr-2" style="font-size: 1.5rem;"></i> Searching</span>
+        <span class="search-icon"><i class="pi pi-search kpi-search-icon"></i></span>
+        <span *ngIf="selectedKPI !== ''" class="reset-icon"><i class="pi pi-times" style="font-size: 1.5rem; margin-right: 25px;" (click)="removeSearchQuery()" (keydown.enter)="removeSearchQuery()"></i></span>
+        <p-autoComplete
+          #autoComplete
+          [suggestions]="filteredKpis"
+          [(ngModel)]="selectedKPI"
+          [group]="true"
+          [field]="'label'"
+          [optionGroupLabel]="'label'"
+          [optionGroupChildren]="'items'"
+          (completeMethod)="debouncedFilterKpis($event)"
+          [completeOnFocus]="true"
+          [placeholder]="'Search KPI'"
+          (onSelect)="onKpiSearch($event)"
+          (input)="handleInputChange($event)">
+        </p-autoComplete>
+      </div>
+      <!-- <button pButton pRipple type="button" icon="pi pi-search" label="KPI Search" class="p-button-rounded"></button> -->
+    }
+    <ng-template [cdkPortalOutlet]="recommendationsPortal"></ng-template>
   </div>
-}
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
-  @if (selectedTab?.toLowerCase() !== 'home') {
+  @if (selectedTab?.toLowerCase() !== 'home' && selectedTab?.toLowerCase() !== 'potential-economic-benefits') {
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
@@ -150,7 +151,7 @@
       </div>
 
       <div class="view-tabs p-pl-2 p-pr-2"
-        *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity' && this.selectedTab?.toLowerCase()  !== 'home' ">
+        *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity' && this.selectedTab?.toLowerCase()  !== 'home' && this.selectedTab?.toLowerCase()  !== 'potential-economic-benefits'">
         <div role="radiogroup" aria-label="View Type Selection" class="p-d-flex">
           <div pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
             tooltipStyleClass="tooltiptext">
@@ -171,7 +172,7 @@
       </div>
       </div>
       <div pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default' && this.selectedTab?.toLowerCase()  !== 'home' ">
+        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default' && this.selectedTab?.toLowerCase()  !== 'home' && this.selectedTab?.toLowerCase()  !== 'potential-economic-benefits'">
         <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)" (keydown.enter)="copyUrlToClipboard($event)" [ngClass]="buttonStyleClass" aria-label="Copy URL" tabindex="0">
           <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-default" />
@@ -183,7 +184,7 @@
       <!-- NOTE: Multiselect Dropdown limitation same as Multiselect Filter dropdowns which is currently ON HOLD due NGPrime default behavior -->
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="bottom" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext" role="region" aria-label="KPI Visibility Control"
-        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData && this.selectedTab?.toLowerCase()  !== 'home'">
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData && this.selectedTab?.toLowerCase()  !== 'home' && this.selectedTab?.toLowerCase()  !== 'potential-economic-benefits'">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)" role="button" tabindex="0" aria-label="Toggle Show/Hide KPI Menu"
         (keydown.enter)="toggleShowHideMenu($event)" (keydown.space)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem" aria-hidden="true"></i>
@@ -212,7 +213,7 @@
       <!-- END: Show/Hide Dropdown -->
 
       <div class="date-filter-container cursor-pointer"
-        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora') && this.selectedTab?.toLowerCase()  !== 'home'"
+        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora') && this.selectedTab?.toLowerCase()  !== 'home' && this.selectedTab?.toLowerCase()  !== 'potential-economic-benefits'"
         role="region" aria-label="Date Filter Options">
         <!-- Date filter start -->
         <div class="position-relative">

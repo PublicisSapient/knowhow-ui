@@ -22,7 +22,8 @@ import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.c
 import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
 import { HomeComponent } from '../dashboard/home/home.component';
-
+import { AnalysisContainerComponent } from '../dashboardv2/analysis-module/analysis-container/analysis-container.component';
+import { PebCalculatorComponent } from '../dashboard/peb-calculator/peb-calculator.component';
 @Injectable({
   providedIn: 'root',
 })
@@ -64,6 +65,15 @@ export class AppInitializerService {
         feature: 'Home',
       },
     },
+    {
+      path: 'potential-economic-benefits',
+      component: PebCalculatorComponent,
+      pathMatch: 'full',
+      canActivate: [AccessGuard],
+      data: {
+        feature: 'PEB',
+      },
+    },
   ];
   routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -101,6 +111,10 @@ export class AppInitializerService {
           data: {
             feature: 'Report',
           },
+        },
+        {
+          path: 'Analysis',
+          component: AnalysisContainerComponent,
         },
         {
           path: ':boardName',
@@ -152,6 +166,13 @@ export class AppInitializerService {
             ).then((m) => m.ReportsModuleModule),
           data: {
             feature: 'Report',
+          },
+        },
+        {
+          path: 'Analysis',
+          component: AnalysisContainerComponent,
+          data: {
+            feature: 'Analysis',
           },
         },
         {
@@ -208,6 +229,7 @@ export class AppInitializerService {
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
             environment['SPEED_SUITE'] =
               env['SPEED_SUITE'] === 'true' ? true : false;
+            environment['MCP_URL'] = env['MCP_URL'] || '';
             if (
               loc &&
               loc.indexOf('authentication') === -1 &&
@@ -266,7 +288,6 @@ export class AppInitializerService {
                 response?.['data']?.authType,
               );
             }
-
             if (location) {
               const redirect_uri = JSON.parse(
                 localStorage.getItem('redirect_uri'),

@@ -4,6 +4,7 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AdditionalFilterComponent } from './additional-filter.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -27,8 +28,13 @@ describe('AdditionalFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AdditionalFilterComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        AdditionalFilterComponent,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [

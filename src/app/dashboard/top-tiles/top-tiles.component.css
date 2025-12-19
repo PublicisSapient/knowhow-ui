@@ -1,0 +1,108 @@
+/* Maturity tabluar Styles start */
+
+:host .data-item {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #d5dbe1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+:host .data-item.users {
+  background: rgb(220, 231, 252);
+  border: 1px solid #8980ed;
+}
+
+:host .data-item.gauge {
+  background: rgb(222, 232, 252);
+  border: 1px solid rgb(47, 118, 255);
+}
+
+:host .data-item.exclamation {
+  background: rgb(255, 236, 223);
+  border: 1px solid #f68605;
+}
+
+:host .data-item.heart-fill {
+  background: rgb(212, 251, 223);
+  border: 1px solid rgb(21, 186, 64);
+}
+
+.maturity-tablur-view {
+  padding: 1rem;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.icon {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  background-color: #f5f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host .icon.users {
+  background: rgb(220, 231, 252);
+}
+
+:host .icon.users .pi {
+  color: #8980ed;
+}
+
+:host .icon.gauge {
+  background: rgb(222, 232, 252);
+}
+
+:host .icon.gauge .pi {
+  color: rgb(47, 118, 255);
+}
+
+:host .icon.exclamation {
+  background: rgb(255, 236, 223);
+}
+
+:host .icon.speed {
+  background-color: #e2efe5;
+}
+
+:host .icon.productivity {
+  background-color: rgb(240, 229, 229);
+}
+
+:host .icon.exclamation .pi {
+  color: #f68605;
+}
+
+:host .icon.heart-fill {
+  background: rgb(212, 251, 223);
+}
+
+:host .icon.heart-fill .pi {
+  color: rgb(21, 186, 64);
+}
+
+.data {
+  text-align: left;
+  align-content: center;
+}
+
+.tabularKPI-column-header {
+  margin-top: 15px;
+  color: rgb(55, 65, 81);
+}
+
+.tabularKPI-column-value {
+  margin-bottom: 15px;
+  color: rgb(17, 24, 39);
+  font-weight: 600;
+  font-size: 25px;
+}
+
+/* Maturity tablur Styles End  */

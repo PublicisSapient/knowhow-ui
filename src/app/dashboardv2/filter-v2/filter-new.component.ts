@@ -13,15 +13,59 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Subject, interval, of } from 'rxjs';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
-import { MultiSelect } from 'primeng/multiselect';
+import { AnalyticsService } from 'src/app/services/analytics.service';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { AutoComplete } from 'primeng/autocomplete';
+import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { FormsModule } from '@angular/forms';
+import { Button, ButtonDirective } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import {
+  JsonPipe,
+  NgClass,
+  NgForOf,
+  NgIf,
+  NgStyle,
+  UpperCasePipe,
+} from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { BlockUIModule } from 'primeng/blockui';
+import { CdkPortalOutlet, Portal, PortalModule } from '@angular/cdk/portal';
+import { ParentFilterComponent } from './parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './additional-filter/additional-filter.component';
+import { ChatbotComponent } from 'src/app/dashboard/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-filter-new',
   templateUrl: './filter-new.component.html',
   styleUrls: ['./filter-new.component.css'],
+  standalone: true,
+  imports: [
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgClass,
+    AutoCompleteModule,
+    UpperCasePipe,
+    NgStyle,
+    NgIf,
+    TooltipModule,
+    CheckboxModule,
+    DialogModule,
+    BlockUIModule,
+    ParentFilterComponent,
+    PrimaryFilterComponent,
+    AdditionalFilterComponent,
+    JsonPipe,
+    ButtonDirective,
+    NgForOf,
+    ChatbotComponent,
+    PortalModule,
+  ],
 })
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
@@ -57,7 +101,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   additionalFilterLevelArr = [];
   filterType = '';
   selectedSprint: any;
-  lastSyncData = {};
+  lastSyncData: any = {};
   additionalData = false;
   daysRemaining: any;
   combinedDate: string;
@@ -72,7 +116,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   disableShowHideApply = true;
   showHideSelectAll = false;
   showChart = 'chart';
-  iterationConfigData = {};
+  iterationConfigData: any = {};
   isRecommendationsEnabled = false;
   selectedBoard: any;
   hierarchies: any;
@@ -100,6 +144,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSearchingKPI: boolean = false;
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
+  recommendationsPortal: Portal<any>;
+
   // Add this property to your component class
 
   constructor(
@@ -108,7 +154,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
@@ -122,7 +168,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
     this.dateRangeFilter = {
-      types: ['Days', 'Weeks'],
+      // types: ['Days', 'Weeks'],
+      types: ['Weeks'],
       counts: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     };
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
@@ -230,6 +277,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.refreshCounter++;
     }
+
+    this.service.recommendationsPortal$.subscribe((portal) => {
+      this.recommendationsPortal = portal;
+    });
   }
 
   setDateFilter() {
@@ -349,9 +400,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedBoard) {
-      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch;
+      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch ?? {
+        enabled: true,
+      };
+      const kanbanDisabledForBoard =
+        this.kanbanRequired?.enabled === false &&
+        this.selectedTab?.toLowerCase() !== 'developer';
 
-      if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
+      if (kanbanDisabledForBoard && this.selectedType === 'kanban') {
         this.kanban = false;
         this.selectedType = 'scrum';
         this.setSelectedType(this.selectedType);
@@ -978,16 +1034,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       const previousEventParentNode = ['sprint', 'release'].includes(
         this.previousFilterEvent[0]?.labelName?.toLowerCase(),
       )
-        ? this.filterDataArr[this.selectedType]['Project'].filter(
+        ? this.filterDataArr[this.selectedType]?.['Project']?.filter(
             (proj) => proj.nodeId === this.previousFilterEvent[0].parentId,
-          )
+          ) || []
         : [];
       const currentEventParentNode = ['sprint', 'release'].includes(
         event[0]?.labelName?.toLowerCase(),
       )
-        ? this.filterDataArr[this.selectedType]['Project'].filter(
+        ? this.filterDataArr[this.selectedType]?.['Project']?.filter(
             (proj) => proj.nodeId === event[0].parentId,
-          )
+          ) || []
         : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
         //event different than before
@@ -1169,7 +1225,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.filterType = '';
     }
-    if (Object.keys(this.filterDataArr[this.selectedType]).length) {
+    if (
+      this.filterDataArr[this.selectedType] &&
+      Object.keys(this.filterDataArr[this.selectedType]).length
+    ) {
       if (typeof this.selectedLevel === 'string') {
         Object.keys(this.filterDataArr[this.selectedType]).forEach(
           (filterLevel) => {
@@ -1630,6 +1689,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   applyDateFilter() {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+    this.service.setSelectedDateRange(this.selectedDateFilter);
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.toggleDateDropdown = false;
     if (this.filterApplyData && this.filterApplyData['selectedMap']) {
@@ -1718,6 +1778,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else if (typeof event[0] === 'string') {
         selectedProjectIds = [...new Set(event)];
       }
+
       this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
 
@@ -2035,7 +2096,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       };
       return obj;
     });
-    this.ga.setProjectData(gaArray);
+    this.analytics.setProjectData(gaArray);
   }
 
   /**

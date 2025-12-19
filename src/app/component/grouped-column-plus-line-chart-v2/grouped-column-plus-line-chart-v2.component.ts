@@ -116,6 +116,7 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       } else {
         newObj['value'].push({
@@ -124,43 +125,45 @@ export class GroupedColumnPlusLineChartV2Component
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
           date: data[0].value[i].date,
+          isForecast: data[0].value[i]?.isForecast,
         });
       }
     }
 
     newObj['value'].forEach((element, index) => {
       const newNewObj = {};
-      newNewObj['categorie'] = index + 1;
+      newNewObj['categorie'] = element?.isForecast ? 'Forecast' : index + 1;
       newNewObj['value'] = [element];
       result.push(newNewObj);
     });
 
     for (let i = 1; i < data.length; i++) {
       for (let j = 0; j < data[i].value.length; j++) {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const newObj = {};
-        newObj['value'] = [];
         if (
           result[j] &&
           result[j]['categorie'] &&
-          j + 1 === result[j]['categorie']
+          ((data[i].value[j]?.isForecast &&
+            result[j]['categorie'] === 'Forecast') ||
+            (!data[i].value[j]?.isForecast && j + 1 === result[j]['categorie']))
         ) {
-          if (data[i].value[j].hoverValue) {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              hoverValue: data[i].value[j].hoverValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-            });
-          } else {
-            result[j].value.push({
-              value: data[i].value[j].value,
-              lineValue: data[i].value[j].lineValue,
-              sSprintName: data[i].value[j].sSprintName,
-              rate: data[i].data,
-            });
-          }
+          result[j].value.push(
+            data[i].value[j].hoverValue
+              ? {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  hoverValue: data[i].value[j].hoverValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                }
+              : {
+                  value: data[i].value[j].value,
+                  lineValue: data[i].value[j].lineValue,
+                  sSprintName: data[i].value[j].sSprintName,
+                  rate: data[i].data,
+                  isForecast: data[i].value[j]?.isForecast,
+                },
+          );
         }
       }
     }
@@ -226,7 +229,6 @@ export class GroupedColumnPlusLineChartV2Component
     const paddingFactor = 0;
 
     const x0 = d3.scaleBand().range([0, width]); // .padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);
-
     const x1 = d3.scaleBand();
 
     let xScale;
@@ -248,15 +250,17 @@ export class GroupedColumnPlusLineChartV2Component
         }
       }
 
+      const xAxisValues = newRawData[maxObjectNo].value.map((d, i) => {
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          return d.date || d.sortSprint || d.sSprintName;
+        }
+        return d.isForecast ? 'Forecast' : i + 1;
+      });
+
       if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         xScale = d3.scaleBand().rangeRound([0, width]).domain(sprintList);
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
       } else {
-        xScale = d3
-          .scaleBand()
-          .rangeRound([0, width])
-          .domain(newRawData[maxObjectNo].value.map((d, i) => i + 1));
-        // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
+        xScale = d3.scaleBand().rangeRound([0, width]).domain(xAxisValues);
       }
 
       const y = d3.scaleLinear().range([height - margin.top, 0]);
@@ -460,6 +464,16 @@ export class GroupedColumnPlusLineChartV2Component
         .style('opacity', '1')
         .style('font-size', '10px');
 
+      const getXCoordinate = (point, index) => {
+        let key;
+        if (this.isXaxisGroup === true && selectedProjectCount === 1) {
+          key = point.sortSprint || point.date || point.sSprintName;
+        } else {
+          key = point.isForecast ? 'Forecast' : index + 1;
+        }
+        const base = x0(key) ?? 0;
+        return base + x0.bandwidth() / 2;
+      };
       const slice = svgX
         .selectAll('.slice')
         .data(data)
@@ -472,82 +486,299 @@ export class GroupedColumnPlusLineChartV2Component
             : 'translate(' + x0(d.categorie) + ',0)',
         );
 
+      const defs = svgX.append('defs');
+      const forecastPatternIds: Record<string, string> = {};
+      const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+      rateNames.forEach((rate) => {
+        const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+          rate,
+        )}`;
+        forecastPatternIds[rate] = id;
+
+        const forecastPattern = defs
+          .append('pattern')
+          .attr('id', id)
+          .attr('patternUnits', 'userSpaceOnUse')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('patternTransform', 'rotate(45)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 8)
+          .attr('height', 8)
+          .attr('fill', 'rgb(255, 255, 255)');
+        forecastPattern
+          .append('rect')
+          .attr('width', 4)
+          .attr('height', 8)
+          .attr('fill', color(rate));
+      });
+
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
       if (this.lineChart === false) {
-        d3.selectAll('.rounded-bar')
-          .on('mouseover', function (event, d) {
-            if (d?.value[0]?.hoverValue) {
-              const circle = event.target;
-              const { top: yPosition, left: xPosition } =
-                circle.getBoundingClientRect();
+        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
+          if (d?.value[0]?.hoverValue) {
+            const circle = event.target;
+            const { top: yPosition, left: xPosition } =
+              circle.getBoundingClientRect();
+          }
+        });
+      }
+      // Define the div for the tooltip
+      const div = d3
+        .select(this.elem)
+        .select('#chart')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('display', 'none')
+        .style('opacity', 0);
+
+      // ============================================
+      // MODIFIED SECTION FOR KPI157
+      // ============================================
+      if (this.kpiId === 'kpi157') {
+        // Convert bars to lines for kpi157
+        // Create line generator for each series
+        data[0].value.forEach((seriesData, seriesIndex) => {
+          const rateName = seriesData.rate;
+
+          // Extract values for this series across all categories
+          const lineData = data.map((d) => ({
+            categorie: d.categorie,
+            sortName: d.sortName,
+            value: d.value[seriesIndex].value,
+            rate: d.value[seriesIndex].rate,
+            hoverValue: d.value[seriesIndex].isForecast
+              ? null
+              : d.value[seriesIndex].hoverValue,
+            isForecast: d.value[seriesIndex].isForecast,
+          }));
+
+          const forecastStartIndex = lineData.findIndex(
+            (point) => point.isForecast,
+          );
+          const actualLineData =
+            forecastStartIndex > -1
+              ? lineData.slice(0, forecastStartIndex)
+              : lineData;
+          const forecastLineData =
+            forecastStartIndex > -1
+              ? lineData.slice(Math.max(forecastStartIndex - 1, 0))
+              : [];
+
+          const barLine = d3
+            .line()
+            .x((d, i) => {
+              const xPos =
+                this.isXaxisGroup === true ? x0(d.sortName) : x0(d.categorie);
+              return xPos + x1(d.rate) + x1.bandwidth() / 2;
+            })
+            .y((d) => y(d.value));
+
+          // Draw the line
+          if (actualLineData.length > 0) {
+            svgX
+              .append('path')
+              .datum(actualLineData)
+              .attr('class', 'bar-line bar-line-' + seriesIndex)
+              .attr('d', barLine)
+              .style('fill', 'none')
+              .style('stroke', '#ed8888')
+              .style('stroke-width', '2')
+              .style('opacity', 1);
+          }
+
+          // Draw dotted line
+          if (forecastLineData.length > 1) {
+            svgX
+              .append('path')
+              .datum(forecastLineData)
+              .attr('class', 'bar-line bar-line-forecast-' + seriesIndex)
+              .attr('d', barLine)
+              .style('fill', 'none')
+              .style('stroke', '#ed8888')
+              .style('stroke-width', 2)
+              .style('stroke-dasharray', '4,3')
+              .style('opacity', 1);
+          }
+
+          // Draw circles for this series
+          svgX
+            .selectAll('.bar-circle-' + seriesIndex)
+            .data(lineData)
+            .enter()
+            .append('circle')
+            .attr('class', 'bar-circle bar-circle-' + seriesIndex)
+            .attr('cx', (d, i) => {
+              const xPos =
+                this.isXaxisGroup === true ? x0(d.sortName) : x0(d.categorie);
+              return xPos + x1(d.rate) + x1.bandwidth() / 2;
+            })
+            .attr('cy', (d) => y(d.value))
+            .attr('r', 3)
+            .style('fill', '#ed8888')
+            .style('stroke', 'white')
+            .style('stroke-width', 1)
+            .style('pointer-events', (d) => (d.isForecast ? 'none' : null))
+            .on('mouseover', function (event, d) {
+              if (d?.hoverValue && !d.isForecast) {
+                d3.select(this).transition().duration(200).attr('r', 4);
+
+                const circle = event.target;
+                const { top: yPosition, left: xPosition } =
+                  circle.getBoundingClientRect();
+
+                div
+                  .transition()
+                  .duration(200)
+                  .style('display', 'block')
+                  .style('opacity', 0.9);
+
+                let dataString = '';
+                let htmlString = '';
+
+                for (const key in d.hoverValue) {
+                  dataString += `<div class='toolTipValue p-d-flex p-align-center'><div class="stack-key p-mr-1">${key}</div><div>${d.hoverValue[key]}</div></div>`;
+                }
+
+                htmlString =
+                  "<div class='toolTip'> " + `${dataString}` + '</div>';
+                div
+                  .html(htmlString)
+                  .style('left', xPosition + 20 + 'px')
+                  .style('top', yPosition + 'px')
+                  .style('position', 'fixed')
+                  .style('align', 'left');
+              }
+            })
+            .on('mouseout', function (e, d) {
+              d3.select(this).transition().duration(200).attr('r', 3);
 
               div
                 .transition()
-                .duration(200)
-                .style('display', 'block')
-                .style('opacity', 0.9);
+                .duration(500)
+                .style('display', 'none')
+                .style('opacity', 0);
+            });
+        });
+      } else {
+        // Original bar rendering code for other KPIs
+        // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+        if (this.lineChart === false) {
+          d3.selectAll('.rounded-bar')
+            .on('mouseover', function (event, d) {
+              if (d?.value[0]?.hoverValue) {
+                const circle = event.target;
+                const { top: yPosition, left: xPosition } =
+                  circle.getBoundingClientRect();
 
-              let dataString = '';
-              let htmlString = '';
+                div
+                  .transition()
+                  .duration(200)
+                  .style('display', 'block')
+                  .style('opacity', 0.9);
 
-              for (const key in d.value[0].hoverValue) {
-                dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+                let dataString = '';
+                let htmlString = '';
+
+                for (const key in d.value[0].hoverValue) {
+                  dataString += `<div class='toolTipValue p-d-flex p-align-center'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+                }
+
+                htmlString =
+                  "<div class='toolTip'> " + `${dataString}` + '</div>';
+                div
+                  .html(htmlString)
+                  .style('left', xPosition + 20 + 'px')
+                  .style('top', yPosition + 'px')
+                  .style('position', 'fixed')
+                  .style('align', 'left');
               }
-
-              htmlString =
-                "<div class='toolTip'> " + `${dataString}` + '</div>';
+            })
+            .on('mouseout', function (e, d) {
               div
-                .html(htmlString)
-                .style('left', xPosition + 20 + 'px')
-                .style('top', yPosition + 'px')
-                .style('position', 'fixed')
-                .style('align', 'left');
-            }
-          })
-          .on('mouseout', function (e, d) {
-            div
-              .transition()
-              .duration(500)
-              .style('display', 'none')
-              .style('opacity', 0);
-          });
-      }
+                .transition()
+                .duration(500)
+                .style('display', 'none')
+                .style('opacity', 0);
+            });
+        }
 
-      const rx = x1.bandwidth() / 2;
-      const ry = x1.bandwidth() / 2;
-      slice
-        .selectAll('arc')
-        .data((d) => d.value)
-        .enter()
-        .append('path')
-        .style('fill', (d) => color(d.rate))
-        .attr('d', (d) => {
-          if (height - margin.top - y(d.value) >= rx) {
-            return `
+        const defs = svgX.append('defs');
+        const forecastPatternIds: Record<string, string> = {};
+        const sanitize = (val: string) => val.replace(/[^a-zA-Z0-9]/g, '-');
+
+        rateNames.forEach((rate) => {
+          const id = `forecastPattern-${this.kpiId || 'default'}-${sanitize(
+            rate,
+          )}`;
+          forecastPatternIds[rate] = id;
+
+          const forecastPattern = defs
+            .append('pattern')
+            .attr('id', id)
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('patternTransform', 'rotate(45)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('fill', 'rgb(255, 255, 255)');
+          forecastPattern
+            .append('rect')
+            .attr('width', 4)
+            .attr('height', 8)
+            .attr('fill', color(rate));
+        });
+
+        const rx = x1.bandwidth() / 2;
+        const ry = x1.bandwidth() / 2;
+        slice
+          .selectAll('arc')
+          .data((d) => d.value)
+          .enter()
+          .append('path')
+          .style('fill', (d) =>
+            d?.isForecast
+              ? `url(#${forecastPatternIds[d.rate]})`
+              : color(d.rate),
+          )
+          .style('stroke', (d) => (d?.isForecast ? color(d.rate) : 'none'))
+          .style('stroke-width', (d) => (d?.isForecast ? 1.5 : 0))
+          .attr('d', (d) => {
+            if (height - margin.top - y(d.value) >= rx) {
+              return `
               M${x1(d.rate)},${y(d.value) + ry}
               a${rx},${ry} 0 0 1 ${rx},${-ry}
               h${x1.bandwidth() - 2 * rx}
               a${rx},${ry} 0 0 1 ${rx},${ry}
               v${height - margin.top - y(d.value) - ry}
               h${-x1.bandwidth()}Z`;
-          } else {
-            return `
+            } else {
+              return `
               M${x1(d.rate)},${
-              (Math.min(height - margin.top - y(d.value) - ry), y(0))
-            }
+                (Math.min(height - margin.top - y(d.value) - ry), y(0))
+              }
               a${rx},${
-              ry - (height - margin.top - y(d.value) + rx)
-            } 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
+                ry - (height - margin.top - y(d.value) + rx)
+              } 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
 
               v${height - margin.top - y(d.value) - rx}
               h${x1.bandwidth() - 2 * rx}
               v${-(height - margin.top - y(d.value)) + rx}
               a${rx},${
-              ry - (height - margin.top - y(d.value) + rx)
-            } 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
+                ry - (height - margin.top - y(d.value) + rx)
+              } 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
               h${-x1.bandwidth()}Z`;
-          }
-        });
+            }
+          });
+      }
+      // ============================================
+      // END OF MODIFIED SECTION
+      // ============================================
 
       // threshold line
       if (self.thresholdValue) {
@@ -574,15 +805,6 @@ export class GroupedColumnPlusLineChartV2Component
           .attr('class', 'thresholdlinetext');
       }
 
-      // Define the div for the tooltip
-      const div = d3
-        .select(this.elem)
-        .select('#chart')
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('display', 'none')
-        .style('opacity', 0);
-
       // bar legend
       const prevLength = -40;
       let legend = svgLegend
@@ -596,12 +818,97 @@ export class GroupedColumnPlusLineChartV2Component
           return 'translate(' + len + ', 0)';
         });
 
-      // Legend indicator  .attr("x", width/2)
-      legend
-        .append('rect')
-        .attr('width', 12)
-        .attr('height', 12)
-        .style('fill', (d, i) => color(i));
+      // ============================================
+      // MODIFIED LEGEND FOR KPI157
+      // ============================================
+      if (this.kpiId === 'kpi157') {
+        /* // Show line legend for bars (since they're now lines)
+        legend
+          .append('svg:line')
+          .attr('x1', 0)
+          .attr('x2', 15)
+          .attr('y1', 6)
+          .attr('y2', 6)
+          .style('stroke', (d, i) => color(i))
+          .attr('stroke-width', '2');
+
+        legend
+          .append('circle')
+          .style('fill', (d, i) => color(i))
+          .style('stroke', 'white')
+          .style('stroke-width', 1)
+          .attr('r', 3)
+          .attr('cx', 7)
+          .attr('cy', 6); */
+        svgLegend.selectAll('*').remove();
+
+        const legendGroup = svgLegend
+          .append('g')
+          .attr('transform', 'translate(20, 20)') // Top-left corner with padding
+          .attr('class', 'kpi157-line-legend');
+
+        const legendItems = legendGroup
+          .selectAll('.legend-item')
+          .data(data[0].value)
+          .enter()
+          .append('g')
+          .attr('class', 'legend-item')
+          .attr('transform', (d, i) => `translate(0, ${i * 22})`)
+          .style('cursor', 'pointer');
+
+        // Line segment
+        legendItems
+          .append('line')
+          .attr('x1', 0)
+          .attr('x2', 18)
+          .attr('y1', 10)
+          .attr('y2', 10)
+          .style('stroke', (d, i) => color(i))
+          .style('stroke-width', 2);
+
+        // Circle (data point)
+        legendItems
+          .append('circle')
+          .attr('cx', 9)
+          .attr('cy', 10)
+          .attr('r', 3.5)
+          .style('fill', (d, i) => color(i))
+          .style('stroke', 'white')
+          .style('stroke-width', 1);
+
+        // Text label
+        legendItems
+          .append('text')
+          .attr('x', 28)
+          .attr('y', 10)
+          .attr('dy', '0.35em')
+          .style('font-size', '11px')
+          .style('fill', '#333')
+          .text((d) => {
+            const label = d.rate;
+            return label.length > 20 ? label.substring(0, 17) + '...' : label;
+          });
+
+        // Optional: Add title
+        svgLegend
+          .append('text')
+          .attr('x', 20)
+          .attr('y', 10)
+          .style('font-size', '12px')
+          .style('font-weight', '600')
+          .style('fill', '#333')
+          .text(this.barLegend || 'Series');
+      } else {
+        // Original rectangle legend
+        legend
+          .append('rect')
+          .attr('width', 12)
+          .attr('height', 12)
+          .style('fill', (d, i) => color(i));
+      }
+      // ============================================
+      // END OF MODIFIED LEGEND
+      // ============================================
 
       //Legend text /.attr("x", width/2 + 20)
       legend
@@ -624,6 +931,8 @@ export class GroupedColumnPlusLineChartV2Component
         .style('text-anchor', 'start')
         .style('font-size', 10)
         .text(self.barLegend);
+
+      // Rest of the existing line chart code continues here...
       // self.lineChart = false;
       if (self.lineChart !== false) {
         const lineOpacity = '1';
@@ -638,26 +947,17 @@ export class GroupedColumnPlusLineChartV2Component
         const duration = 250;
 
         const colorArr = this.color;
-        /* Add line into SVG acoording to data */
-
-        const yScale = d3
+        /* Add line into SVG according to data */ const yScale = d3
           .scaleLinear()
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
         const elem = this.elem;
-
         const lines = svgX.append('g').attr('class', 'lines');
 
         const line = d3
           .line()
-          .x((d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .x((d, i) => getXCoordinate(d, i))
           .y((d) => yScale(d.lineValue));
 
         lines
@@ -719,11 +1019,14 @@ export class GroupedColumnPlusLineChartV2Component
           .style('fill', (d, i) => d3.hsl([colorArr[i]]))
           .style('stroke', (d, i) => d3.hsl([colorArr[i]]).brighter())
           .selectAll('circle')
-          .data((d, index) => d.value)
+          .data((d, index) => d.value.filter((point) => !point.isForecast))
           .enter()
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', (event, d) => {
+            if (d.isForecast) {
+              return;
+            }
             const topValue = 80;
             if (d.hoverValue) {
               div
@@ -771,17 +1074,12 @@ export class GroupedColumnPlusLineChartV2Component
               .style('opacity', 0);
           })
           .append('circle')
-          .attr('cx', (d, i) => {
-            const xValue =
-              this.isXaxisGroup === true && selectedProjectCount === 1
-                ? d.date || d.sortSprint
-                : i + 1;
-            return x0(xValue);
-          })
+          .attr('cx', (d, i) => getXCoordinate(d, i))
           .attr('cy', (d) => yScale(d.lineValue))
           .attr('r', circleRadius)
           .style('stroke-width', 1)
           .style('opacity', circleOpacity)
+          .style('pointer-events', (d) => (d.isForecast ? 'none' : null))
           .on('mouseover', function (d) {
             d3.select(this)
               .transition()
@@ -797,9 +1095,12 @@ export class GroupedColumnPlusLineChartV2Component
 
         /** Adding tooltip text  */
         if (selectedProjectCount === 1) {
+          const tooltipValues = (newRawData[0]['value'] || []).filter(
+            (d) => d.lineValue != null && !d.isForecast,
+          );
           tooltipContainer
             .selectAll('div')
-            .data(newRawData[0]['value'])
+            .data(tooltipValues)
             .join('div')
             .attr('class', (d) => {
               let cssClass = 'tooltip2';
@@ -820,12 +1121,7 @@ export class GroupedColumnPlusLineChartV2Component
               return cssClass;
             })
             .style('left', (d, i) => {
-              const left = d.date || d.sortSprint;
-              if (this.isXaxisGroup === true) {
-                return x0(left) + x0.bandwidth() / 2 + 'px';
-              } else {
-                return x0(i + 1) + x0.bandwidth() / 2 + 'px';
-              }
+              return getXCoordinate(d, i) + 'px';
             })
             .style('top', (d) => yScale(d.lineValue) - 25 + 'px')
             .text(
@@ -979,6 +1275,9 @@ export class GroupedColumnPlusLineChartV2Component
               .style('max-width', '220px')
               .style('width', 'auto');
           });
+      }
+      if (this.kpiId === 'kpi157') {
+        this.renderKpi157Legend();
       }
     } catch (ex) {
       console.log(ex);
@@ -1223,5 +1522,79 @@ export class GroupedColumnPlusLineChartV2Component
   getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
+  }
+
+  renderKpi157Legend() {
+    // Remove any existing kpi157 legend
+    d3.select(this.elem).select('.kpi157-legend-container').remove();
+
+    const body = d3.select(this.elem);
+
+    // Create legend container positioned at top
+    const legendContainer = body
+      .insert('div', '.sprint-legend-container') // Insert at the very beginning
+      .attr('class', 'kpi157-legend-container')
+      .style('margin', '15px 0')
+      .style('display', 'inline-block')
+      .style('font-family', 'Arial, sans-serif');
+
+    // Legend title
+    legendContainer
+      .append('div')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .style('color', '#333')
+      .style('margin-bottom', '10px');
+
+    // Create SVG for legend items
+    const legendSvg = legendContainer
+      .append('svg')
+      .attr('width', 400)
+      .attr('height', 30);
+
+    // Legend data with colors matching the lines
+    const legendData = [
+      { label: 'No. of Check-ins', color: '#ed8888' },
+      { label: 'No. of Merge Requests', color: '#6079c5' },
+    ];
+
+    // Create legend items
+    const legendItems = legendSvg
+      .selectAll('.legend-item')
+      .data(legendData)
+      .enter()
+      .append('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (d, i) => `translate(${i * 150}, 0)`);
+
+    // Draw line segment
+    legendItems
+      .append('line')
+      .attr('x1', 0)
+      .attr('x2', 20)
+      .attr('y1', 10)
+      .attr('y2', 10)
+      .style('stroke', (d) => d.color)
+      .style('stroke-width', 2);
+
+    // Draw circle (data point)
+    legendItems
+      .append('circle')
+      .attr('cx', 10)
+      .attr('cy', 10)
+      .attr('r', 4)
+      .style('fill', (d) => d.color)
+      .style('stroke', 'white')
+      .style('stroke-width', 1.5);
+
+    // Add text label
+    legendItems
+      .append('text')
+      .attr('x', 30)
+      .attr('y', 10)
+      .attr('dy', '0.35em')
+      .style('font-size', '12px')
+      .style('fill', '#333')
+      .text((d) => d.label);
   }
 }

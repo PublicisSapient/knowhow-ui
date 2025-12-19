@@ -8,11 +8,25 @@ import {
 } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-parent-filter',
   templateUrl: './parent-filter.component.html',
   styleUrls: ['./parent-filter.component.css'],
+  standalone: true,
+  imports: [
+    MultiSelectModule,
+    FormsModule,
+    Button,
+    DropdownModule,
+    NgClass,
+    NgIf,
+  ],
 })
 export class ParentFilterComponent implements OnChanges {
   @Input() filterData = null;
@@ -59,13 +73,7 @@ export class ParentFilterComponent implements OnChanges {
       if (projectLevel !== null) {
         // --> Filter for everyone except for project level-1 and project level-2
         result = hierarchy
-          .filter(
-            (item) =>
-              !(
-                item.level === projectLevel - 1 ||
-                item.level === projectLevel - 2
-              ),
-          )
+          .filter((item) => !(item.level <= projectLevel))
           .map((item) => item.hierarchyLevelName.toLowerCase());
       }
 
@@ -78,11 +86,15 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item,
           };
         });
-        if (this.selectedTab.toLowerCase() === 'home') {
-          this.filterLevels = this.filterLevels.filter((e) => {
-            return !result.includes(e.nodeName.toLowerCase());
-          });
-        }
+        // TODO : Currently PEB/Home hierarchy option would behave as per other tabs. Need this code in future to retain this functinality
+        // if (
+        //   this.selectedTab.toLowerCase() === 'home' ||
+        //   this.selectedTab.toLowerCase() === 'potential-economic-benefits'
+        // ) {
+        //   this.filterLevels = this.filterLevels.filter((e) => {
+        //     return !result.includes(e.nodeName.toLowerCase());
+        //   });
+        // }
         this.filterLevels = this.filterLevels.filter(
           (level) => !this.additionalFilterLevels.includes(level.nodeName),
         );
@@ -242,33 +254,36 @@ export class ParentFilterComponent implements OnChanges {
     } else if (this.stateFilters && typeof this.stateFilters !== 'string') {
       tempStateFilters = this.stateFilters['nodeId'];
     }
-    if (
-      this.selectedTab.toLowerCase() === 'home' &&
-      tempStateFilters.toLowerCase() === 'project'
-    ) {
-      const hierarchy = JSON.parse(
-        localStorage.getItem('completeHierarchyData') || '{}',
-      )[this.selectedType];
-      const projectHierarchyDetails = hierarchy.find(
-        (hi) => hi.hierarchyLevelId === 'project',
-      );
-      if (projectHierarchyDetails) {
-        const leafNodePlusOneDetails = hierarchy.find(
-          (item) => item.level === projectHierarchyDetails.level - 1,
-        );
+    // TODO : Currently PEB/Home hierarchy option would behave as per other tabs. Need this code in future to retain this functinality.
+    // if (
+    //   (this.selectedTab.toLowerCase() === 'home' &&
+    //     tempStateFilters.toLowerCase() === 'project') ||
+    //   (this.selectedTab.toLowerCase() === 'potential-economic-benefits' &&
+    //     tempStateFilters.toLowerCase() === 'project')
+    // ) {
+    //   const hierarchy = JSON.parse(
+    //     localStorage.getItem('completeHierarchyData') || '{}',
+    //   )[this.selectedType];
+    //   const projectHierarchyDetails = hierarchy.find(
+    //     (hi) => hi.hierarchyLevelId === 'project',
+    //   );
+    //   if (projectHierarchyDetails) {
+    //     const leafNodePlusOneDetails = hierarchy.find(
+    //       (item) => item.level === projectHierarchyDetails.level - 1,
+    //     );
 
-        this.selectedLevel = this.filterLevels.filter((level) => {
-          return (
-            level.nodeId.toLowerCase() ===
-            leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
-          );
-        })[0];
-      }
-    } else {
-      this.selectedLevel = this.filterLevels.filter((level) => {
-        return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
-      })[0];
-    }
+    //     this.selectedLevel = this.filterLevels.filter((level) => {
+    //       return (
+    //         level.nodeId.toLowerCase() ===
+    //         leafNodePlusOneDetails.hierarchyLevelName.toLowerCase()
+    //       );
+    //     })[0];
+    //   }
+    // } else {
+    this.selectedLevel = this.filterLevels.filter((level) => {
+      return level.nodeId.toLowerCase() === valueToSet?.toLowerCase();
+    })[0];
+    // }
   }
 
   /**

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { KpiTableComponent } from './kpi-table.component';
 import { SharedService } from 'src/app/services/shared.service';
@@ -15,6 +16,7 @@ describe('KpiTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [KpiTableComponent],
       providers: [
         SharedService,

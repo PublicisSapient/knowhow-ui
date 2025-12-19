@@ -20,6 +20,8 @@ import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharelinkService } from './share-link.service';
+import { AnalyticsService } from './analytics.service';
+import { Portal } from '@angular/cdk/portal';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -153,17 +155,31 @@ export class SharedService {
   private searchQueryBSubject = new BehaviorSubject<any>(null);
   public searchQuery$ = this.searchQueryBSubject.asObservable();
 
+  private pebDataSubject = new BehaviorSubject<any>(null);
+  public pebData$ = this.pebDataSubject.asObservable();
   private PEBData = {};
+  private pebDataCache: { [key: string]: any } = {};
   kpiPostData: object = {};
+  kpiPostJenkinsData: object = {};
 
   private flagMultilineChartSubject = new BehaviorSubject<boolean>(false);
   // Observable for components to subscribe to
   flag$ = this.flagMultilineChartSubject.asObservable();
+  appendKpiList: Array<any> = [];
+  appendKpiListJenkins: Array<any> = [];
+  kpiPostSonarData: object = {};
+  selectedDateRangeFilter: any;
+  kpiPostZypherData: any;
+  configData: any;
+
+  private recommendationsPortalSubject = new BehaviorSubject<Portal<any>>(null);
+  recommendationsPortal$ = this.recommendationsPortalSubject.asObservable();
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private injector: Injector,
+    private analytics: AnalyticsService,
   ) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -217,6 +233,9 @@ export class SharedService {
     this.selectedTab = selectedBoard;
     if (selectedBoard) {
       this.onTabSwitch.next({ selectedBoard });
+
+      // Track tab navigation for analytics
+      this.analytics.trackTabNavigation(selectedBoard);
     }
   }
 
@@ -917,26 +936,116 @@ export class SharedService {
     return stateFilters.length <= 8;
   }
 
-  setPEBData(value) {
-    this.PEBData = value;
+  // Add method to update PEBa data
+  setPEBData(data: any): void {
+    this.pebDataSubject.next(data);
   }
 
-  getPEBData() {
-    return this.PEBData;
+  // Add method to get current PEBa data
+  getPEBData(): any {
+    return this.pebDataSubject.getValue();
+  }
+
+  // Cache methods for PEB data
+  setPEBDataCache(label: string, data: any): void {
+    this.pebDataCache[label] = data;
+  }
+
+  getPEBDataCache(label: string): any {
+    return this.pebDataCache[label];
+  }
+
+  clearPEBDataCache(): void {
+    this.pebDataCache = {};
   }
   //#endregion
 
   setKPIPostData(data) {
-    this.kpiPostData = data;
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiList.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiList.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostData = argumentData;
   }
 
   getKPIPostData() {
     return this.kpiPostData;
   }
 
+  setKPIPostJenkinsData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostJenkinsData = argumentData;
+  }
+
+  getKPIPostJenkinsData() {
+    return this.kpiPostJenkinsData;
+  }
+
+  setKPIPostSonarData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostSonarData = argumentData;
+  }
+
+  getKPIPostSonarData() {
+    return this.kpiPostSonarData;
+  }
+
   // Method to set the flag
   setMultilineChartFlag(value: boolean) {
-    console.log('Setting multiline chart flag to:', value);
     this.flagMultilineChartSubject.next(value);
+  }
+
+  setSelectedDateRange(selectedDateFilter) {
+    this.selectedDateRangeFilter = selectedDateFilter;
+  }
+
+  getSelectedDateRange(): string {
+    return this.selectedDateRangeFilter;
+  }
+
+  setKPIPostZypherData(data) {
+    const argumentData = JSON.parse(JSON.stringify(data)); // deep copy created to avoid reference issue
+    this.appendKpiListJenkins.push(argumentData.kpiList);
+    const uniqueKpiList = [
+      ...new Map(
+        this.appendKpiListJenkins.flat().map((kpi) => [kpi.kpiId, kpi]),
+      ).values(),
+    ];
+    argumentData.kpiList = uniqueKpiList;
+    this.kpiPostZypherData = argumentData;
+  }
+
+  getKPIPostZypherData() {
+    return this.kpiPostZypherData;
+  }
+
+  setRecommendationsPortal(portal: Portal<any>) {
+    this.recommendationsPortalSubject.next(portal);
+  }
+
+  setConfigurationDetails(configData: any) {
+    this.configData = configData;
+  }
+
+  getConfigurationDetails() {
+    return this.configData;
   }
 }

@@ -19,7 +19,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   @Input() xCaption;
   @Input() yCaption;
   currentDayIndex;
-  VisibleXAxisLbl = [];
+  visibleXAxisLbl = [];
   graphData;
   elem;
   @Input() onPopup = false;
@@ -30,12 +30,30 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
-    this.graphData = this.data[0]['dataGroup'].map((d) => ({ ...d }));
+    const baseGroups = this.data[0]['dataGroup']?.map((d) => ({ ...d })) || [];
+    let forecasts = this.data[0]?.forecasts;
+    const mergedGroups = [...baseGroups];
+    if (Array.isArray(forecasts) && forecasts.length) {
+      mergedGroups.push({
+        filter: 'Forecast',
+        value: forecasts.map((fc) => ({
+          ...fc,
+          kpiGroup:
+            fc.kpiGroup === 'Predicted Completion'
+              ? 'Planned Completion'
+              : fc.kpiGroup || fc.kpi_group || 'Planned Completion',
+          value: Number(fc.value ?? fc.data ?? 0),
+          isForecast: true,
+        })),
+      });
+    }
+    this.graphData = mergedGroups;
     this.draw();
   }
 
   draw() {
     const elem = this.elem;
+    this.visibleXAxisLbl = [];
     d3.select(elem).select('#chart').select('svg').remove();
     d3.select(elem).select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
@@ -58,6 +76,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
     const categories = [];
     const maxYValue = [];
+    const minYValue = [];
     this.formatDateOnXAxis(this.graphData);
 
     this.graphData.forEach((d) => {
@@ -74,15 +93,21 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       });
       d['lineDataCategorywise'] = lineDataCategorywise;
       maxYValue.push(Math.max(...maxY));
+      minYValue.push(Math.min(...maxY));
     });
 
     const xCoordinates = this.graphData.map((d) => d.filter);
 
-    const x = d3
-      .scaleBand()
-      .domain(xCoordinates)
-      .range([0, width])
-      .paddingOuter(0);
+    var x;
+    if (xCoordinates.length === 1) {
+      x = d3
+        .scaleBand()
+        .domain(xCoordinates)
+        .range([width / 2 - 10, width / 2 + 10])
+        .paddingOuter(0); // center the single point
+    } else {
+      x = d3.scaleBand().domain(xCoordinates).range([0, width]).paddingOuter(0);
+    }
 
     /**X-Axis Gaps */
     const xLength = xCoordinates.length;
@@ -104,15 +129,13 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
 
     for (let i = 0; i < xCoordinates.length; i += gap) {
-      this.VisibleXAxisLbl.push(xCoordinates[i]);
+      this.visibleXAxisLbl.push(xCoordinates[i]);
     }
-    if (!this.VisibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
-      this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] =
+    if (!this.visibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
+      this.visibleXAxisLbl[this.visibleXAxisLbl.length - 1] =
         xCoordinates[xCoordinates.length - 1];
     }
     /**X-Axis Gaps */
-
-    const initialCoordinate = x(xCoordinates[1]);
 
     const svgX = svg
       .append('g')
@@ -121,13 +144,12 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .call(
         d3
           .axisBottom(x)
-          .tickFormat((d, i) => (this.VisibleXAxisLbl.includes(d) ? d : '')),
+          .tickFormat((d, i) => (this.visibleXAxisLbl.includes(d) ? d : '')),
       );
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
-      .range([height, 0]);
+    const yMin = Math.floor(Math.min(...minYValue) / 5) * 5;
+    const yMax = Math.ceil(Math.max(...maxYValue) / 5) * 5;
+    const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
     const svgY = d3
       .select(elem)
@@ -139,6 +161,19 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .attr('transform', `translate(50,${margin.top})`)
       .attr('class', 'yAxis')
       .call(d3.axisLeft(y).ticks(6).tickSize(0));
+
+    // Add zero baseline if data contains negative values
+    if (yMin < 0) {
+      svg
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', y(0))
+        .attr('y2', y(0))
+        .attr('stroke', '#999')
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4,2');
+    }
 
     // highlight todays Date
     if (this.currentDayIndex >= 0) {
@@ -171,8 +206,8 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .data(xCoordinates)
       .enter()
       .append('svg:line')
-      .attr('x1', (d) => x(d) + initialCoordinate / 2)
-      .attr('x2', (d) => x(d) + initialCoordinate / 2)
+      .attr('x1', (d) => x(d) + x.bandwidth() / 2)
+      .attr('x2', (d) => x(d) + x.bandwidth() / 2)
       .attr('y1', 0)
       .attr('y2', -height)
       .style('stroke', '#dedede')
@@ -193,7 +228,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(linedata)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', (d) => x(d.filter) + initialCoordinate / 2 + 'px')
+        .style('left', (d) => x(d.filter) + x.bandwidth() / 2 + 'px')
         .style('top', (d) => y(d.value) + 8 + 'px')
         .text((d) => d.value)
         .transition()
@@ -224,31 +259,102 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       const lineData = this.graphData
         .filter((d) => d['lineDataCategorywise'].hasOwnProperty(kpiGroup))
         .map((d) => d['lineDataCategorywise'][kpiGroup]);
+      if (lineData.length === 1) {
+        const isForecastPoint = lineData[0]?.isForecast;
+        // Just draw a single point instead of a line
+        svg
+          .append('circle')
+          .attr('cx', x(lineData[0]?.filter) + x.bandwidth() / 2)
+          .attr('cy', y(lineData[0]?.value))
+          .attr('r', 4)
+          .attr('fill', color(kpiGroup))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('pointer-events', 'all')
+          .style('cursor', 'pointer')
+          .on('mouseover', function (event, linedata) {
+            d3.select(this).style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function (event, d) {
+            if (isForecastPoint) {
+              return;
+            }
+            d3.select(this).style('stroke-width', 2);
+            hideTooltip();
+          });
+      } else {
+        const forecastIndex = lineData.findIndex((p: any) => p?.isForecast);
+        const actualPoints =
+          forecastIndex > -1 ? lineData.slice(0, forecastIndex + 1) : lineData;
+        const solidPoints =
+          forecastIndex > -1 ? actualPoints.slice(0, -1) : actualPoints;
+        if (solidPoints.length) {
+          svg
+            .append('g')
+            .attr('transform', `translate(0,0)`)
+            .append('path')
+            .datum(solidPoints)
+            .attr(
+              'd',
+              d3
+                .line()
+                .x((d) => x(d.filter) + x.bandwidth() / 2)
+                .y((d) => y(d.value)),
+            )
+            .attr('stroke', (d) => color(kpiGroup))
+            .style('stroke-width', 2)
+            .style('fill', 'none')
+            .style('cursor', 'pointer')
+            .on('mouseover', function (event, linedata) {
+              d3.select(this).style('stroke-width', 4);
+              showTooltip(actualPoints);
+            })
+            .on('mouseout', function (event, d) {
+              d3.select(this).style('stroke-width', 2);
+              hideTooltip();
+            });
+        }
 
-      const line = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('path')
-        .datum(lineData)
-        .attr(
-          'd',
-          d3
-            .line()
-            .x((d) => x(d.filter) + initialCoordinate / 2)
-            .y((d) => y(d.value)),
-        )
-        .attr('stroke', (d) => color(kpiGroup))
-        .style('stroke-width', 2)
-        .style('fill', 'none')
-        .style('cursor', 'pointer')
-        .on('mouseover', function (event, linedata) {
-          d3.select(this).style('stroke-width', 4);
-          showTooltip(linedata);
-        })
-        .on('mouseout', function (event, d) {
-          d3.select(this).style('stroke-width', 2);
-          hideTooltip();
-        });
+        if (forecastIndex > -1) {
+          const forecastPoint = lineData[forecastIndex];
+          const lastActualPoint = [...lineData]
+            .filter((p) => !p?.isForecast)
+            .slice(-1)[0];
+          const seg =
+            lastActualPoint && forecastPoint
+              ? [lastActualPoint, forecastPoint]
+              : null;
+
+          if (seg) {
+            svg
+              .append('g')
+              .attr('transform', `translate(0,0)`)
+              .append('path')
+              .datum(seg)
+              .attr(
+                'd',
+                d3
+                  .line()
+                  .x((d: any) => x(d?.filter) + x.bandwidth() / 2)
+                  .y((d: any) => y(d?.value)),
+              )
+              .attr('stroke', (d: any) => color(kpiGroup))
+              .style('stroke-width', 2)
+              .style('fill', 'none')
+              .style('stroke-dasharray', '4 4')
+              .style('cursor', 'pointer')
+              .on('mouseover', function (event) {
+                d3.select(this).style('stroke-width', 4);
+                showTooltip(actualPoints);
+              })
+              .on('mouseout', function (event) {
+                d3.select(this).style('stroke-width', 2);
+                hideTooltip();
+              });
+          }
+        }
+      }
 
       const circlegroup = svg
         .append('g')
@@ -258,12 +364,13 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(lineData)
         .enter()
         .append('circle')
-        .attr('cx', (d) => x(d.filter) + initialCoordinate / 2)
+        .attr('cx', (d) => x(d.filter) + x.bandwidth() / 2)
         .attr('cy', (d) => y(d.value))
         .attr('r', 3)
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
+        .style('pointer-events', 'all')
         .on('mouseover', function (event, d) {
           // This hover will triger for the circle only i.e. if data have hovervalue then it will appear for same otherwise on circle hover it will show the all joint line data.
           if (d && d?.hoverValue) {
@@ -331,6 +438,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .select('.yaxis-container')
       .append('div')
       .attr('class', 'y-caption')
+      .style('margin-left', '-5px')
       .append('span')
       .text(this.yCaption);
 
@@ -368,7 +476,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           'd',
           d3
             .line()
-            .x((d) => x(d.filter) + initialCoordinate / 2)
+            .x((d) => x(d.filter) + x.bandwidth() / 2)
             .y((d) => y(d.value)),
         )
         .attr('stroke', '#D8725F')
@@ -393,6 +501,11 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   formatDateOnXAxis(data) {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
     return data.map((d, i) => {
+      if (Array.isArray(d?.value) && d.value.some((p) => p?.isForecast)) {
+        d['filter'] = 'Forecast';
+        return d;
+      }
+
       const date = new Date(d['filter']);
       const currentDate = new Date();
 

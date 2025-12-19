@@ -4,6 +4,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
@@ -30,6 +31,7 @@ describe('RecommendationsComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [RecommendationsComponent],
       providers: [
         { provide: HttpService, useValue: httpSpy },

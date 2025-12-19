@@ -25,6 +25,8 @@ import {
   ChangeDetectorRef,
   Renderer2,
   ElementRef,
+  TemplateRef,
+  ViewContainerRef,
 } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -37,10 +39,14 @@ import {
   mergeMap,
   takeUntil,
 } from 'rxjs/operators';
+import { TemplatePortal } from '@angular/cdk/portal';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
 import { Subject, throwError, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
+import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
+import { mockConfigGlobalData } from './executive-mock-data';
+import { error } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
@@ -154,6 +160,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
 
+  monthlyMetrics: MetricItem[] = [
+    { label: 'Total PRs', value: 35, trend: 'neutral' },
+    { label: 'Avg Review Time', value: '1.8 days', trend: 'neutral' },
+    { label: 'Lines of Code', value: '12,450', trend: 'neutral' },
+  ];
+  qualityIndicators: MetricItem[] = [
+    { label: 'Test Coverage', value: '94%', trend: 'positive' },
+    { label: 'Code Duplication', value: '3%', trend: 'positive' },
+    { label: 'Technical Debt', value: 'Medium', trend: 'negative' },
+  ];
+  goalsTargets: MetricItem[] = [
+    { label: 'Sprint Velocity', value: 'On Track', trend: 'positive' },
+    { label: 'Feature Completion', value: '89%', trend: 'positive' },
+    { label: 'Bug Resolution', value: '85%', trend: 'negative' },
+  ];
+
+  mockUpdatedConfigGlobalData: any[];
+  performanceSummaryCall: Subscription;
+  currentBranch: any;
+  allPerformanceSummaryData: any;
+  filteredBranchData: any;
+  selectedDateFilterValue: string;
+  perfSummaryLoader: boolean = true;
+  @ViewChild('recommendationsPortal') recommendationsPortal: TemplateRef<any>;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -164,7 +195,38 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private renderer2: Renderer2,
+    private viewContainerRef: ViewContainerRef,
   ) {}
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+
+    // Watch for changes and update portal
+    this.service.passDataToDashboard.subscribe(() => {
+      setTimeout(() => this.updateRecommendationsPortal(), 0);
+    });
+  }
+
+  private updateRecommendationsPortal() {
+    if (this.recommendationsPortal && this.shouldShowRecommendations()) {
+      const portal = new TemplatePortal(
+        this.recommendationsPortal,
+        this.viewContainerRef,
+      );
+      this.service.setRecommendationsPortal(portal);
+    } else {
+      this.service.setRecommendationsPortal(null);
+    }
+  }
+
+  shouldShowRecommendations() {
+    return (
+      this.floatingRecommendation &&
+      this.isRecommendationsEnabled &&
+      this.selectedtype?.toLowerCase() == 'scrum' &&
+      this.projectCount <= 2
+    );
+  }
 
   arrayDeepCompare(a1, a2) {
     for (let idx = 0; idx < a1.length; idx++) {
@@ -429,10 +491,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
-        if (this.refreshCounter) return;
+        if (this.refreshCounter) {
+          return;
+        }
         let stateFiltersParam = params['stateFilters'];
-        let kpiFiltersParam = params['kpiFilters'];
-        let tabParam = params['selectedTab'];
+        const kpiFiltersParam = params['kpiFilters'];
+        const tabParam = params['selectedTab'];
         if (!tabParam) {
           if (!this.service.getSelectedTab()) {
             let selectedTab = decodeURIComponent(this.location.path());
@@ -706,6 +770,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (item) => item.shown,
       );
 
+      this.mockUpdatedConfigGlobalData = mockConfigGlobalData;
+
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
       this.noOfDataPoints =
@@ -950,7 +1016,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (kpi: { kpiId: any }) => kpi.kpiId,
           );
           kpiArr.forEach((element) => this.kpiLoader.add(element));
-          console.log('kpiJira', this.kpiJira);
           this.postJiraKpi(this.kpiJira, 'jira', true);
         }
       }
@@ -1072,6 +1137,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       );
       kpiArr.forEach((element) => this.kpiLoader.add(element));
       this.postBitBucketKanbanKpi(this.kpiBitBucket, 'bitbucket');
+      this.perfSummaryLoader = true;
+      this.performanceSummary(this.kpiBitBucket);
     }
   }
 
@@ -1093,6 +1160,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       );
       kpiArr.forEach((element) => this.kpiLoader.add(element));
       this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
+      this.perfSummaryLoader = true;
+      this.performanceSummary(this.kpiBitBucket);
     }
   }
 
@@ -1193,6 +1262,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of sonar of scrum and storing in sonarKpiData id wise
   postSonarKpi(postData, source): void {
+    this.service.setKPIPostSonarData(postData);
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
     }
@@ -1228,6 +1298,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
+    this.service.setKPIPostJenkinsData(postData);
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
@@ -1297,6 +1368,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Zypher(scrum)
   postZypherKpi(postData, source): void {
+    if (postData?.kpiList?.length) {
+      this.service.setKPIPostZypherData(postData);
+    }
     this.zypherKpiRequest = this.httpService
       .postKpi(postData, source)
       .subscribe(
@@ -1318,6 +1392,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiLoader.delete(element.kpiId);
       });
     }
+    if (postData?.kpiList?.length) {
+      this.service.setKPIPostZypherData(postData);
+    }
     this.zypherKpiRequest = this.httpService
       .postKpiKanban(postData, source)
       .subscribe(
@@ -1334,16 +1411,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source, bool): void {
-    console.log('postData', postData);
-    if (bool) this.service.setKPIPostData(postData);
+    if (bool) {
+      this.service.setKPIPostData(postData);
+    }
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
       this.selectedTab !== 'iteration'
     ) {
       const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
-      if (kpi171) kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
-      console.log('postData', postData);
+      if (kpi171) {
+        kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+      }
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -1616,6 +1695,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.handleKPIError(postData);
         },
       );
+
+    this.setupSearchQuerySubscription();
   }
 
   // post request of Jira(Kanban)
@@ -1707,7 +1788,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    const developerBopardKpis = this.globalConfig[
+    const developerBoardKpis = this.globalConfig[
       this.selectedtype?.toLowerCase()
     ]
       ?.filter(
@@ -1719,7 +1800,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.selectedTab &&
       this.selectedTab.toLowerCase() === 'developer' &&
-      developerBopardKpis?.includes(kpiId)
+      developerBoardKpis?.includes(kpiId)
     ) {
       this.service.setBackupOfFilterSelectionState({ additional_level: null });
       if (!trendValueList?.length) {
@@ -1757,7 +1838,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   : 'developer',
             }));
           });
-
           this.service.setAdditionalFilters(this.additionalFiltersArr);
         }
       }
@@ -1893,9 +1973,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   );
               }
             } else {
-              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
-                ? preAggregatedValues[0]?.value
-                : [];
+              if (
+                kpiId === 'kpi158' ||
+                kpiId === 'kpi160' ||
+                kpiId === 'kpi185' ||
+                kpiId === 'kpi186'
+              ) {
+                this.kpiChartData[kpiId] = preAggregatedValues[0]?.data
+                  ? preAggregatedValues[0]?.data
+                  : [];
+              } else {
+                this.kpiChartData[kpiId] = preAggregatedValues[0]?.value
+                  ? preAggregatedValues[0]?.value
+                  : [];
+              }
             }
           } else if (
             filterPropArr.includes('filter1') ||
@@ -1929,7 +2020,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       }
-
       // when there are no KPI Level Filters
       else if (trendValueList?.length > 0 && !filterPropArr?.length) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
@@ -1941,10 +2031,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
-      this.kpiChartData[kpiId] = this.generateColorObj(
-        kpiId,
-        this.kpiChartData[kpiId],
-      );
+      if (
+        this.getChartType(kpiId) !== 'progressbar' &&
+        this.getChartType(kpiId) !== 'card'
+      ) {
+        this.kpiChartData[kpiId] = this.generateColorObj(
+          kpiId,
+          this.kpiChartData[kpiId],
+        );
+      }
     }
 
     // For kpi3 and kpi53 generating table column headers and table data
@@ -2004,9 +2099,65 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
     }
+    if (
+      Array.isArray(this.kpiChartData[kpiId]) &&
+      this.kpiChartData[kpiId].some((d: any) => d?.forecasts)
+    ) {
+      this.applyForecastData(this.kpiChartData[kpiId]);
+    }
 
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
+  }
+
+  applyForecastData(chartSeries): void {
+    chartSeries?.forEach((series) => {
+      const forecastEntries = series?.forecasts;
+      const forecastPoint = forecastEntries[0];
+      const numericValue = Number(
+        forecastPoint?.value ?? forecastPoint?.data ?? 0,
+      );
+      const lastActualPoint =
+        series.value?.length > 0 ? series.value[series?.value?.length - 1] : {};
+      const forecastLabel =
+        forecastPoint?.date ||
+        forecastPoint?.sortSprint ||
+        forecastPoint?.sSprintName ||
+        'Forecast';
+      const mergeRequestKeys = [
+        'No. of Merge Requests',
+        'No. of Merge Request',
+      ];
+      const rawValue =
+        forecastPoint?.lineValue ??
+        mergeRequestKeys
+          .map((k) => forecastPoint?.hoverValue?.[k])
+          .find((v) => v !== undefined);
+
+      const normalizedLineValue = Number.isFinite(Number(rawValue))
+        ? Number(rawValue)
+        : null;
+      const newPoint = {
+        ...lastActualPoint,
+        ...forecastPoint,
+        data: forecastPoint.data ?? numericValue.toString(),
+        value: numericValue,
+        lineValue: normalizedLineValue,
+        sprojectName:
+          forecastPoint?.sprojectName ||
+          lastActualPoint?.sprojectName ||
+          series?.data,
+        isForecast: true,
+      };
+      newPoint['date'] = forecastPoint?.date || forecastLabel;
+      newPoint['sortSprint'] = forecastPoint?.sortSprint || forecastLabel;
+      newPoint['xAxisTick'] = forecastLabel;
+      newPoint['xName'] = forecastLabel;
+      newPoint['sSprintName'] = forecastLabel;
+      newPoint['sprintNames'] = [forecastLabel];
+      newPoint['xOrder'] = forecastLabel;
+      series.value = [...series?.value, newPoint];
+    });
   }
 
   getBackupKPIFilters(kpiId, filterPropArr) {
@@ -2326,6 +2477,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = kpiId === 'kpi3' ? true : false;
       }
     });
+    const chartType = this.getChartType(kpiId);
+    const isLineChart = chartType === 'line';
+    const chartSeries = this.kpiChartData[kpiId];
+
+    if (isLineChart && Array.isArray(chartSeries)) {
+      if (chartSeries.some((d: any) => d?.forecasts)) {
+        this.applyForecastData(chartSeries);
+      }
+    }
   }
 
   getChartType(kpiId) {
@@ -2753,7 +2913,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createCombinations(arr1, arr2, kpiId) {
-    let arr = [];
+    const arr = [];
     if (arr1?.length > 0) {
       for (let i = 0; i < arr1?.length; i++) {
         for (let j = 0; j < arr2?.length; j++) {
@@ -2915,7 +3075,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   }
                 });
                 if (!anyProject?.length) {
-                  // console.log(dataItem);
                 } else {
                   if (
                     Array.isArray(anyProject[0][0]) &&
@@ -3044,8 +3203,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         });
       });
-    } else {
-      console.log(data);
     }
     return data;
   }
@@ -3187,12 +3344,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
       }
-      let trendValueList;
       /**Todo: if else condition to be removed after api integration */
       this.allKpiArray.push(data[key]);
-      trendValueList =
-        this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-      const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+
       /** if: for graphs, else: for other than graphs */
       if (
         this.updatedConfigGlobalData.filter((kpi) => kpi?.kpiId == key)[0]
@@ -3344,7 +3498,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
-    let filters = this.kpiSelectedFilterObj[kpiId];
+    const filters = this.kpiSelectedFilterObj[kpiId];
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -4091,6 +4245,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
+          if (event.value.includes('->')) {
+            this.currentBranch = event.value;
+            this.filterPerformanceSummaryData();
+          }
           const trendValueList =
             this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList;
           if (
@@ -4624,7 +4782,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    */
   calcBusinessDays(dDate1, dDate2) {
     // input given as Date objects
-    let iWeeks;
     let iDateDiff;
     let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -4641,7 +4798,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     iWeekday2 = iWeekday2 > 5 ? 5 : iWeekday2;
 
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
-    iWeeks = Math.floor(
+    const iWeeks = Math.floor(
       (new Date(dDate2).getTime() - new Date(dDate1).getTime()) / 604800000,
     );
 
@@ -4725,7 +4882,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkKPIPresence(kpi) {
     if (this.tabsArr.size > 1) {
       return (
-        this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']
+        this.selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&
+        kpi['isEnabled']
       );
     } else {
       return kpi['isEnabled'];
@@ -4959,5 +5117,38 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ? +durationFilter.split(' ')[1]
         : 1,
     };
+  }
+
+  performanceSummary(postData) {
+    const data = postData;
+    data.kpiList = [];
+    this.httpService.getPerformanceSummary(data).subscribe({
+      next: (response) => {
+        this.perfSummaryLoader = false;
+        if (response && response.success) {
+          this.allPerformanceSummaryData = response.data;
+          this.filterPerformanceSummaryData();
+        } else {
+          this.allPerformanceSummaryData = [];
+          this.filteredBranchData = [];
+          console.error('Missing Configuration');
+        }
+      },
+      error: (error) => {
+        this.perfSummaryLoader = false;
+        this.allPerformanceSummaryData = [];
+        this.filteredBranchData = [];
+        console.error('Error fetching performance summary', error);
+      },
+    });
+  }
+
+  private filterPerformanceSummaryData() {
+    this.selectedDateFilterValue = this.service.getSelectedDateRange();
+    if (this.currentBranch && this.allPerformanceSummaryData?.length) {
+      this.filteredBranchData = this.allPerformanceSummaryData.find(
+        (item) => item.label === this.currentBranch,
+      );
+    }
   }
 }

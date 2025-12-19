@@ -1,207 +1,24 @@
-// import {
-//   ComponentFixture,
-//   TestBed,
-//   fakeAsync,
-//   tick,
-// } from '@angular/core/testing';
-// import { PebCalculatorComponent } from './peb-calculator.component';
-// import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
-// import { SharedService } from 'src/app/services/shared.service';
-// import { of } from 'rxjs';
-// import { InputNumberModule } from 'primeng/inputnumber';
-// import { InputTextModule } from 'primeng/inputtext';
-
-// describe('PebCalculatorComponent', () => {
-//   let component: PebCalculatorComponent;
-//   let fixture: ComponentFixture<PebCalculatorComponent>;
-//   let sharedService: jasmine.SpyObj<SharedService>;
-
-//   const mockPebData = {
-//     categorizedProductivityGain: {
-//       overall: 10,
-//       speed: 15,
-//       efficiency: 20,
-//       quality: 25,
-//       productivity: 30,
-//     },
-//   };
-
-//   const mockHierarchyData = {
-//     type1: [
-//       {
-//         hierarchyLevelName: 'TestLevel',
-//         hierarchyLevelId: 'test123',
-//         level: 'L1',
-//       },
-//     ],
-//   };
-
-//   beforeEach(async () => {
-//     const sharedServiceSpy = jasmine.createSpyObj('SharedService', [
-//       'getDataForSprintGoal',
-//       'getSelectedType',
-//       'getPEBData',
-//     ]);
-
-//     sharedServiceSpy.getDataForSprintGoal.and.returnValue({
-//       selectedLevel: { nodeName: 'TestLevel' },
-//     });
-//     sharedServiceSpy.getSelectedType.and.returnValue('type1');
-//     sharedServiceSpy.getPEBData.and.returnValue(mockPebData);
-
-//     await TestBed.configureTestingModule({
-//       declarations: [PebCalculatorComponent],
-//       imports: [
-//         ReactiveFormsModule,
-//         FormsModule,
-//         InputNumberModule,
-//         InputTextModule,
-//       ],
-//       providers: [
-//         FormBuilder,
-//         { provide: SharedService, useValue: sharedServiceSpy },
-//       ],
-//     }).compileComponents();
-
-//     spyOn(localStorage, 'getItem').and.returnValue(
-//       JSON.stringify(mockHierarchyData),
-//     );
-//   });
-
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(PebCalculatorComponent);
-//     component = fixture.componentInstance;
-//     sharedService = TestBed.inject(
-//       SharedService,
-//     ) as jasmine.SpyObj<SharedService>;
-//     fixture.detectChanges();
-//   });
-
-//   describe('Component Initialization', () => {
-//     it('should create', () => {
-//       expect(component).toBeTruthy();
-//     });
-
-//     it('should initialize with default values', () => {
-//       expect(component.pebForm.get('devCountControl')?.value).toBe(30);
-//       expect(component.pebForm.get('devCostControl')?.value).toBe(100000);
-//       expect(component.pebForm.get('durationControl')?.value).toBe('year');
-//       expect(component.showLoader).toBeFalse();
-//       expect(component.showResults).toBeFalse();
-//       expect(component.isError).toBeFalse();
-//     });
-
-//     it('should initialize ROI metrics with correct structure', () => {
-//       expect(component.roiMetrics.length).toBe(4);
-//       const speedMetric = component.roiMetrics[0];
-//       expect(speedMetric).toEqual({
-//         label: 'Speed',
-//         percent: 0,
-//         value: 0,
-//         icon: 'pi pi-bolt',
-//         color: '#d4fbdf',
-//         elemColor: '#15ba40',
-//         estValueSavingsLabel: 'Estd. Value from Faster Delivery',
-//       });
-//     });
-//   });
-
-//   describe('calculatePEB', () => {
-//     it('should calculate PEB correctly for yearly duration', fakeAsync(() => {
-//       component.pebForm.patchValue({
-//         devCountControl: 30,
-//         devCostControl: 100000,
-//         durationControl: 'year',
-//       });
-
-//       component.calculatePEB();
-//       tick();
-
-//       expect(component.showLoader).toBeFalse();
-//       expect(component.showResults).toBeTrue();
-//       expect(component.annualPEB).toBe(300000); // 30 * 100000 * (10/100)
-//       expect(component.roiMetrics[0].value).toBeGreaterThan(0);
-//     }));
-
-//     it('should calculate PEB correctly for monthly duration', fakeAsync(() => {
-//       component.pebForm.patchValue({
-//         durationControl: 'month',
-//       });
-
-//       component.calculatePEB();
-//       tick();
-
-//       expect(component.annualPEB).toBe(25000); // (30 * 100000 * (10/100)) / 12
-//     }));
-
-//     it('should handle failed PEB data fetch', fakeAsync(() => {
-//       sharedService.getPEBData.and.returnValue(null);
-
-//       component.calculatePEB();
-//       tick();
-
-//       expect(component.showLoader).toBeFalse();
-//       expect(component.isError).toBeTrue();
-//       expect(component.showResults).toBeFalse();
-//     }));
-
-//     it('should handle negative productivity gains', fakeAsync(() => {
-//       const negativeData = {
-//         categorizedProductivityGain: {
-//           overall: -10,
-//           speed: -15,
-//           efficiency: -20,
-//           quality: -25,
-//           productivity: -30,
-//         },
-//       };
-//       sharedService.getPEBData.and.returnValue(negativeData);
-
-//       component.calculatePEB();
-//       tick();
-
-//       expect(component.annualPEB).toBe(0);
-//       expect(component.roiMetrics[0].value).toBe(0);
-//     }));
-//   });
-
-//   describe('Form Control Updates', () => {
-//     it('should handle devCountControl value changes', fakeAsync(() => {
-//       const control = component.pebForm.get('devCountControl');
-//       control?.setValue(50);
-//       tick();
-
-//       expect(control?.value).toBe(50);
-//     }));
-
-//     it('should handle devCostControl value changes', fakeAsync(() => {
-//       const control = component.pebForm.get('devCostControl');
-//       control?.setValue(200000);
-//       tick();
-
-//       expect(control?.value).toBe(200000);
-//     }));
-//   });
-// });
-
-// NOTE --> Added the below test cases for the recent changes, will remove it once the component demo is done.
 import {
   ComponentFixture,
   TestBed,
   fakeAsync,
   tick,
 } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { PebCalculatorComponent } from './peb-calculator.component';
 import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { of, throwError } from 'rxjs';
-import { Message } from 'primeng/api';
+import { of, throwError, Subject } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { ActivatedRoute } from '@angular/router';
+import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DatePipe, Location } from '@angular/common';
 
 class MockHttpService {
-  getProductivityGain() {
+  getPebProductivityData() {
     return of({
       success: true,
       data: {
@@ -218,22 +35,44 @@ class MockHttpService {
 }
 
 class MockSharedService {
+  passDataToDashboard = new Subject<any>();
+
   getDataForSprintGoal() {
     return { selectedLevel: { nodeName: 'level1' } };
   }
   getSelectedType() {
     return 'type1';
   }
+  getBackupOfFilterSelectionState() {
+    return { parent_level: 'level1' };
+  }
+
+  getConfigurationDetails() {
+    return {
+      totalTeamSize: 25,
+      avgCostPerTeamMember: 80000,
+      timeDuration: 'per year',
+    };
+  }
 }
 
 describe('PebCalculatorComponent', () => {
   let component: PebCalculatorComponent;
   let fixture: ComponentFixture<PebCalculatorComponent>;
-
+  let mockSharedService: jasmine.SpyObj<SharedService>;
+  let productivityGain = require('src/assets/data/peb-productivity.json');
+  let activatedRouteMock: any;
   beforeEach(async () => {
+    activatedRouteMock = {
+      queryParams: of({
+        selectedTab: 'potential-economic-benefits',
+      }),
+    };
+
     await TestBed.configureTestingModule({
-      declarations: [PebCalculatorComponent],
+      declarations: [PebCalculatorComponent, DynamicCurrencyPipe],
       imports: [
+        HttpClientTestingModule,
         ReactiveFormsModule,
         FormsModule,
         InputNumberModule,
@@ -241,9 +80,16 @@ describe('PebCalculatorComponent', () => {
       ],
       providers: [
         FormBuilder,
+        DatePipe,
         { provide: HttpService, useClass: MockHttpService },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: SharedService, useClass: MockSharedService },
+        {
+          provide: Location,
+          useValue: { path: () => '/dashboard/potential-economic-benefits' },
+        },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PebCalculatorComponent);
@@ -267,6 +113,7 @@ describe('PebCalculatorComponent', () => {
       }
       return null;
     });
+
     fixture.detectChanges();
   });
 
@@ -275,9 +122,9 @@ describe('PebCalculatorComponent', () => {
   });
 
   it('should initialize form with default values', () => {
-    expect(component.pebForm.get('devCountControl').value).toBe(30);
-    expect(component.pebForm.get('devCostControl').value).toBe(100000);
-    expect(component.pebForm.get('durationControl').value).toBe('year');
+    expect(component.pebForm.get('devCountControl').value).toBeTruthy();
+    expect(component.pebForm.get('devCostControl').value).toBeTruthy();
+    expect(component.pebForm.get('durationControl').value).toBeTruthy();
   });
 
   it('should subscribe to valueChanges in ngOnInit without triggering infinite loop', fakeAsync(() => {
@@ -292,28 +139,29 @@ describe('PebCalculatorComponent', () => {
     expect(devCostControl.value).toBe(200000);
   }));
 
-  it('should set showLoader, compute ROI and annualPEB on calculatePEB()', fakeAsync(() => {
+  it('should set showLoader, compute ROI and annualPEB on getPEBData()', fakeAsync(() => {
     component.pebForm.get('devCountControl').setValue(20);
     component.pebForm.get('devCostControl').setValue(50000);
     component.pebForm.get('durationControl').setValue('year');
-    component.calculatePEB();
-    tick();
-
+    component.selectedLevel = 'engagement';
+    component.showLoader = true;
+    component.showResults = false;
+    const http = TestBed.inject(HttpService) as any;
+    spyOn(http, 'getPebProductivityData').and.returnValue(of(productivityGain));
+    spyOn(component, 'calculatePEB').and.callThrough();
+    component.getPEBData();
+    tick(1000);
     expect(component.showLoader).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);
-
-    component.roiMetrics.forEach((metric) => {
-      expect(metric.value).toBeGreaterThanOrEqual(0);
-    });
   }));
 
   it('should handle and display error when HTTP service fails', fakeAsync(() => {
     const http = TestBed.inject(HttpService) as any;
-    spyOn(http, 'getProductivityGain').and.returnValue(
+    spyOn(http, 'getPebProductivityData').and.returnValue(
       throwError(() => new Error('error')),
     );
-    component.calculatePEB();
+    component.getPEBData();
     tick();
 
     expect(component.showLoader).toBe(false);

@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ParentFilterComponent } from './parent-filter.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -40,8 +41,13 @@ describe('ParentFilterComponent', () => {
   let mockEventEmitter: EventEmitter<any>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ParentFilterComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        ParentFilterComponent,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [
