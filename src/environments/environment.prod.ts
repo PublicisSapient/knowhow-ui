@@ -20,26 +20,22 @@ import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
   production: true,
-  baseUrl: '//your-production-domain.com',
+  baseUrl: '',
   SSO_LOGIN: true,
-  CENTRAL_LOGIN_URL: 'https://your-central-login.com',
-  CENTRAL_API_URL: 'https://your-central-api.com',
+  CENTRAL_LOGIN_URL: '',
+  CENTRAL_API_URL: '',
   RESOURCE: 'PSKnowHOW',
   AUTHENTICATION_SERVICE: true,
   SPEED_SUITE: true,
-  MAP_URL: 'https://your-map-url.com',
-  RETROS_URL: 'https://your-retros-url.com',
+  MAP_URL: '',
+  RETROS_URL: '',
 
-  // Analytics configuration - A/B Testing: GA + Self-hosted Grafana
   analytics: {
-    // A/B Testing configuration - 10% rollout for production
-    grafanaRolloutPercentage: 10, // 10% of users get Grafana analytics
-    enableGoogleAnalytics: true, // Keep GA for 90% of users
-    enableGrafanaAnalytics: true, // Enable self-hosted for 10%
-
-    // Self-hosted analytics configuration
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false,
     selfHosted: {
-      enabled: true,
+      enabled: false,
       metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Production',
       appVersion: '14.0.0',
