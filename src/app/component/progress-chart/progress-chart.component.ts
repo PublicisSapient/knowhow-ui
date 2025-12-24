@@ -165,7 +165,7 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
         .attr('width', 0)
         .attr('height', barHeight)
         .attr('rx', 10)
-        .attr('fill', '#000')
+        .attr('fill', '#627AD0')
         .transition()
         .duration(1000)
         .attr('width', fillWidth);

@@ -106,11 +106,11 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
       const data = [
         {
           value: this.value,
-          color: this.color?.length ? this.color : '#627AD0',
+          color: this.color?.length ? this.color : '#15ba40',
         },
         {
           value: this.totalIssues - this.value,
-          color: '#E5EAF2',
+          color: '#fe414d',
         },
       ];
 
@@ -129,7 +129,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
         .attr('text-anchor', 'middle')
         .attr('dy', '-0.5em')
         .style('font-weight', 'bold')
-        .style('fill', '#627AD0')
+        .style('fill', '#15ba40')
         .text(this.value.toFixed(1));
 
       svg
@@ -137,7 +137,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
         .attr('text-anchor', 'middle')
         .attr('dy', '1em')
         .style('font-size', '14px')
-        .style('fill', '#627AD0')
+        .style('fill', '#15ba40')
         .text('%');
     } else {
       const chartWidth = this.width === undefined ? 100 : this.width; // Width of the chart
@@ -179,12 +179,12 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
       const data = [
         {
           value: this.calculatePercentage(+this.value, +this.totalIssues),
-          color: this.color?.length ? this.color : '#627AD0',
+          color: this.color?.length ? this.color : '#15ba40',
         }, // Blue color for completed
         {
           value:
             this.max - this.calculatePercentage(+this.value, +this.totalIssues),
-          color: '#E5EAF2',
+          color: '#fe414d',
         }, // Gray color for remaining
       ];
 
@@ -205,7 +205,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
           .attr('dy', '-0.5em') // Adjust text position
           //.style('font-size', '18px')
           .style('font-weight', 'bold')
-          .style('fill', '#627AD0')
+          .style('fill', '#15ba40')
           .text(this.value);
 
         svg
@@ -213,7 +213,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
           .attr('text-anchor', 'middle')
           .attr('dy', '1em') // Adjust text position
           .style('font-size', '14px')
-          .style('fill', '#627AD0')
+          .style('fill', '#15ba40')
           .text('%');
       } else {
         svg
@@ -222,7 +222,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
           .attr('dy', '0.5em') // Adjust text position
           //.style('font-size', '18px')
           .style('font-weight', 'bold')
-          .style('fill', '#627AD0')
+          .style('fill', '#15ba40')
           .text(this.value + '/' + this.totalIssues);
       }
     }

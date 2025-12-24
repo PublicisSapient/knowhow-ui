@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -39,13 +40,40 @@ interface PlotPoint {
 @Component({
   selector: 'app-scatter-plot-chart',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './scatter-plot-chart.component.html',
   styleUrl: './scatter-plot-chart.component.css',
 })
 export class ScatterPlotChartComponent {
   // @ViewChild('chartSvg', { static: true }) svgRef!: ElementRef;
   // @ViewChild('tooltip', { static: true }) tooltipRef!: ElementRef;
+
+  private readonly sizeBands: Array<{
+    label: string;
+    color: string;
+    matches: (size: number) => boolean;
+  }> = [
+    {
+      label: 'Under 100',
+      color: '#15ba40',
+      matches: (size) => size < 100,
+    },
+    {
+      label: '100-300',
+      color: '#3b82f6',
+      matches: (size) => size >= 100 && size < 300,
+    },
+    {
+      label: '300-500',
+      color: '#f59e0b',
+      matches: (size) => size >= 300 && size < 500,
+    },
+    {
+      label: '500+',
+      color: '#ef4444',
+      matches: (size) => size >= 500,
+    },
+  ];
 
   @Input() data: MaturityData[];
   @Input() selectedtype: string;
@@ -63,6 +91,10 @@ export class ScatterPlotChartComponent {
   counter = 0;
 
   constructor(public helper: HelperService, public service: SharedService) {}
+
+  get prSizeLegend(): { label: string; color: string }[] {
+    return this.sizeBands.map(({ label, color }) => ({ label, color }));
+  }
 
   ngAfterViewInit(): void {
     if (this.svgRef?.nativeElement) {
@@ -329,13 +361,14 @@ export class ScatterPlotChartComponent {
       .attr('cx', (d) => xScale(d.weekNumber + d.jitterX))
       .attr('cy', chartHeight)
       .attr('r', 0)
-      .attr('fill', '#6079c5')
+      .attr('fill', (d) => this.getBubbleColor(d.size))
       .attr('opacity', 0.7)
       .style('cursor', 'pointer')
-      .on('mouseover', function (event, d) {
-        d3.select(this)
+      .on('mouseover', (event, d) => {
+        const color = this.getBubbleColor(d.size);
+        d3.select(event.currentTarget)
           .attr('opacity', 1)
-          .attr('stroke', '#3d5a9e')
+          .attr('stroke', color)
           .attr('stroke-width', 2);
 
         const circle = event.target;
@@ -350,8 +383,10 @@ export class ScatterPlotChartComponent {
           .style('top', yPosition + 20 + 'px')
           .html(`<strong>PR #${d.prId}</strong><br/>Size: ${d.size} lines`);
       })
-      .on('mouseout', function () {
-        d3.select(this).attr('opacity', 0.7).attr('stroke', 'none');
+      .on('mouseout', (event) => {
+        d3.select(event.currentTarget)
+          .attr('opacity', 0.7)
+          .attr('stroke', 'none');
 
         tooltip.style('display', 'none').style('opacity', '0');
       })
@@ -549,5 +584,10 @@ export class ScatterPlotChartComponent {
   getFormatedDateBasedOnType(date: string, xCaptionType: string) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
+  }
+
+  private getBubbleColor(size: number): string {
+    const band = this.sizeBands.find((range) => range.matches(size));
+    return band?.color || '#6079c5';
   }
 }
