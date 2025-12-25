@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as d3 from 'd3';
+import { Colors } from 'src/app/dashboardv2/dashboard-common-file';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -55,22 +56,22 @@ export class ScatterPlotChartComponent {
   }> = [
     {
       label: 'Under 100',
-      color: '#15ba40',
+      color: Colors.under100,
       matches: (size) => size < 100,
     },
     {
       label: '100-300',
-      color: '#3b82f6',
+      color: Colors.band100To300,
       matches: (size) => size >= 100 && size < 300,
     },
     {
       label: '300-500',
-      color: '#f59e0b',
+      color: Colors.band300To500,
       matches: (size) => size >= 300 && size < 500,
     },
     {
       label: '500+',
-      color: '#ef4444',
+      color: Colors.band500Plus,
       matches: (size) => size >= 500,
     },
   ];
@@ -588,6 +589,6 @@ export class ScatterPlotChartComponent {
 
   private getBubbleColor(size: number): string {
     const band = this.sizeBands.find((range) => range.matches(size));
-    return band?.color || '#6079c5';
+    return band?.color || Colors.defaultBubble;
   }
 }
