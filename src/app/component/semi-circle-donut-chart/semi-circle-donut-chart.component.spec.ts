@@ -278,7 +278,7 @@ describe('SemiCircleDonutChartComponent', () => {
 
       const paths = d3.select(fixture.nativeElement).selectAll('path');
       const firstPath = d3.select(paths.nodes()[0]);
-      expect(firstPath.attr('fill')).toBe('#15ba40');
+      expect(firstPath.attr('fill')).toBe('#627AD0');
     });
 
     it('should display value and percentage text for kpi182', () => {
