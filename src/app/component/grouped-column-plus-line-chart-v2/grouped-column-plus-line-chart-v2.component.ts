@@ -209,6 +209,10 @@ export class GroupedColumnPlusLineChartV2Component
     const isAllBelowFromThreshold = data.every(
       (details) => details.value[0].lineValue < this.thresholdValue,
     );
+    const benchmarkPercentiles = this.resolveBenchmarkPercentiles(
+      this.data?.[0],
+    );
+    let benchmarkValue: number | null = null;
 
     const self = this;
 
@@ -290,6 +294,10 @@ export class GroupedColumnPlusLineChartV2Component
       let divisor = 10;
       let power = 1;
       let maxVal = maxBarValue >= maxLineValue ? maxBarValue : maxLineValue;
+      benchmarkValue = this.getBenchmarkValue(newRawData, benchmarkPercentiles);
+      if (benchmarkValue !== null && benchmarkValue > maxVal) {
+        maxVal = benchmarkValue;
+      }
       if (self.thresholdValue) {
         maxVal = maxVal >= self.thresholdValue ? maxVal : self.thresholdValue;
       }
@@ -421,6 +429,32 @@ export class GroupedColumnPlusLineChartV2Component
         .style('stroke', '#dedede')
         .style('fill', 'none')
         .attr('class', 'gridline');
+
+      if (benchmarkValue !== null) {
+        svgX
+          .append('svg:line')
+          .attr('x1', 0)
+          .attr('x2', width)
+          .attr('y1', y(benchmarkValue))
+          .attr('y2', y(benchmarkValue))
+          .style('stroke', '#15BA40')
+          .style('stroke-width', 2)
+          .style('stroke-dasharray', '2,2')
+          .style('opacity', 0.6)
+          .attr('class', 'benchmark-line');
+
+        svgX
+          .append('text')
+          .attr('x', width - 10)
+          .attr('y', y(benchmarkValue))
+          .attr('dy', '.5em')
+          .attr('text-anchor', 'end')
+          .style('fill', '#15BA40')
+          .style('font-weight', 'bold')
+          .style('font-size', '12px')
+          .text(Math.round(benchmarkValue * 100) / 100)
+          .attr('class', 'benchmark-label');
+      }
 
       const xAxisGrid = d3
         .axisBottom(x0)
@@ -1524,6 +1558,48 @@ export class GroupedColumnPlusLineChartV2Component
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 
+  getBenchmarkValue(
+    rawData: any[],
+    percentiles?: Record<string, number> | null,
+  ): number | null {
+    if (!percentiles || !rawData.length) {
+      return null;
+    }
+
+    const barPoints =
+      rawData[0]?.value?.map((point: any) => ({
+        value: Number(point?.value),
+        isForecast: !!point?.isForecast,
+      })) || [];
+
+    const highestActualValue = Math.max(
+      ...barPoints
+        .filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data)),
+    );
+
+    const percentileValues = [
+      percentiles?.seventyPercentile,
+      percentiles?.eightyPercentile,
+      percentiles?.nintyPercentile,
+    ].map((val) => Number(val));
+
+    const sorted = percentileValues.sort((a, b) => a - b);
+    const higherValues = sorted.filter((val) => val > highestActualValue);
+
+    if (higherValues.length > 0) {
+      return higherValues[0];
+    }
+    return sorted.length ? sorted[sorted.length - 1] : null;
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.benchmarkPercentiles
+      ? dataEntry?.benchmarkPercentiles
+      : null;
+  }
   renderKpi157Legend() {
     // Remove any existing kpi157 legend
     d3.select(this.elem).select('.kpi157-legend-container').remove();

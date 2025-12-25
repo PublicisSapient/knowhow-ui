@@ -350,6 +350,8 @@ export class MultilineV2Component implements OnChanges {
       const data = this.data;
       const thresholdValue = this.thresholdValue;
       const elem = this.elem;
+      const percentiles = this.resolveBenchmarkPercentiles(this.data?.[0]);
+      let benchmarkValue: number | null = null;
       let width = 450;
       const height =
         viewType === 'large' && selectedProjectCount === 1 ? 280 : 230;
@@ -419,6 +421,10 @@ export class MultilineV2Component implements OnChanges {
             maxYValue = data[i].value[j].value;
           }
         }
+      }
+      benchmarkValue = this.getBenchmarkValue(data?.[0]?.value, percentiles);
+      if (benchmarkValue !== null && benchmarkValue > maxYValue) {
+        maxYValue = benchmarkValue;
       }
 
       if (maxYValue === 0) {
@@ -693,6 +699,30 @@ export class MultilineV2Component implements OnChanges {
           .text(this.thresholdValue)
           .style('font-weight', 'normal')
           .attr('class', 'thresholdlinetext');
+      }
+      if (benchmarkValue !== null) {
+        svgX
+          .append('svg:line')
+          .attr('x1', 0)
+          .attr('x2', width - 30)
+          .attr('y1', yScale(benchmarkValue))
+          .attr('y2', yScale(benchmarkValue))
+          .style('stroke', '#15BA40')
+          .style('stroke-width', 2)
+          .style('stroke-dasharray', '2,2')
+          .style('opacity', 0.6)
+          .attr('class', 'benchmark-line');
+        svgX
+          .append('text')
+          .attr('x', width - 20)
+          .attr('y', yScale(benchmarkValue))
+          .attr('dy', '.5em')
+          .attr('text-anchor', 'end')
+          .style('fill', '#15BA40')
+          .style('font-weight', 'bold')
+          .style('font-size', '12px')
+          .text(Math.round(benchmarkValue * 100) / 100)
+          .attr('class', 'benchmark-label');
       }
 
       // gridlines
@@ -1098,6 +1128,47 @@ export class MultilineV2Component implements OnChanges {
   getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
+  }
+
+  getBenchmarkValue(
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+    percentiles?: Record<string, number>,
+  ): number | null {
+    if (!points?.length || !percentiles) {
+      return null;
+    }
+    const highestActualValue = Math.max(
+      ...points
+        .filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite),
+    );
+
+    const sortedPercentiles = [
+      percentiles.seventyPercentile,
+      percentiles.eightyPercentile,
+      percentiles.nintyPercentile,
+    ]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+
+    return (
+      sortedPercentiles.find((val) => val > highestActualValue) ??
+      sortedPercentiles[sortedPercentiles.length - 1]
+    );
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.benchmarkPercentiles
+      ? dataEntry?.benchmarkPercentiles
+      : null;
   }
 
   ngOnDestroy() {
