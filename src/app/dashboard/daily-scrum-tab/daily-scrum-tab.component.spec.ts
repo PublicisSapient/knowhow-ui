@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DailyScrumTabComponent } from './daily-scrum-tab.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { DailyScrumComponent } from '../daily-scrum/daily-scrum.component';
@@ -14,6 +15,7 @@ describe('DailyScrumTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [DailyScrumTabComponent, DailyScrumComponent],
       providers: [
         SharedService,

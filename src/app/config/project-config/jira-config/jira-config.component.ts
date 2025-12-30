@@ -3490,18 +3490,19 @@ export class JiraConfigComponent implements OnInit {
         return false;
       }
 
-      const existingBranches =
-        repo.branchList?.map((b) => b.branchName.toLowerCase()) || [];
-      const currentBranches =
-        this.currentFormElement.branchList?.map((b) =>
-          b.branchName.toLowerCase(),
-        ) || [];
-
-      if (existingBranches.length !== currentBranches.length) {
+      if (
+        repo?.connectionId &&
+        this.selectedConnection?.id &&
+        repo.connectionId !== this.selectedConnection.id
+      ) {
         return false;
       }
-      return existingBranches.every((branch) =>
-        currentBranches.includes(branch),
+
+      const existingBranches =
+        repo.branchList?.map((b) => b.branchName.toLowerCase()) || [];
+
+      return selectedBranches.some((branch) =>
+        existingBranches.includes(branch),
       );
     });
 
@@ -3524,8 +3525,9 @@ export class JiraConfigComponent implements OnInit {
     };
 
     const alreadyConfigured = (this.configuredTools || []).some((repo) => {
-      if (repo?.repositoryName?.toLowerCase() !== selectedRepoName)
+      if (repo?.repositoryName?.toLowerCase() !== selectedRepoName) {
         return false;
+      }
 
       if (
         repo?.connectionId &&
@@ -3537,7 +3539,7 @@ export class JiraConfigComponent implements OnInit {
 
       const configuredBranches = getConfiguredBranches(repo);
 
-      return selectedBranches.every((branch) =>
+      return selectedBranches.some((branch) =>
         configuredBranches.includes(branch),
       );
     });

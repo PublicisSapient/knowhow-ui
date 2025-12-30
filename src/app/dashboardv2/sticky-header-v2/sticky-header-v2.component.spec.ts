@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { StickyHeaderV2Component } from './sticky-header-v2.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -38,6 +39,7 @@ describe('StickyHeaderV2Component', () => {
     });
 
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [StickyHeaderV2Component],
       providers: [
         { provide: SharedService, useValue: mockSharedService },

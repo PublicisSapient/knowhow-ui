@@ -149,24 +149,6 @@ export class HeaderComponent implements OnInit {
     }
 
     if (!this.isGuest) {
-      // this.userMenuItems.unshift({
-      //   label: 'Settings',
-      //   icon: 'fas fa-cog',
-      //   command: () => {
-      //     const hashWithoutQuery = window.location.hash.split('?')[0];
-      //     const urlWithoutHash = window.location.hash.substring(1);
-      //     if (!hashWithoutQuery.includes('Config')) {
-      //       this.lastVisitedFromUrl = window.location.hash.substring(1);
-      //       if (hashWithoutQuery.includes('Report')) {
-      //         this.saveReportsUrl = urlWithoutHash;
-      //       } else {
-      //         this.saveDashboardUrl = urlWithoutHash;
-      //       }
-      //     }
-      //     this.router.navigate(['/dashboard/Config/ProjectList']);
-      //   },
-      // });
-
       this.httpService.getAllConnections().subscribe((response) => {
         if (response['data'].length < 1) {
           this.noToolsConfigured = true;
@@ -356,5 +338,19 @@ export class HeaderComponent implements OnInit {
         });
       },
     );
+  }
+
+  handleSettingsClick() {
+    const hashWithoutQuery = window.location.hash.split('?')[0];
+    const urlWithoutHash = window.location.hash.substring(1);
+    if (!hashWithoutQuery.includes('Config')) {
+      this.lastVisitedFromUrl = window.location.hash.substring(1);
+      if (hashWithoutQuery.includes('Report')) {
+        this.saveReportsUrl = urlWithoutHash;
+      } else {
+        this.saveDashboardUrl = urlWithoutHash;
+      }
+    }
+    this.router.navigate(['/dashboard/Config/ProjectList']);
   }
 }

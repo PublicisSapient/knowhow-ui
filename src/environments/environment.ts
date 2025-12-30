@@ -20,7 +20,9 @@
 // `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import { Environment } from '../app/types/environment.types';
+
+export const environment: Environment = {
   production: false,
   baseUrl: '//customapi:8080',
   SSO_LOGIN: false,
@@ -31,6 +33,18 @@ export const environment = {
   SPEED_SUITE: false,
   MAP_URL: '',
   RETROS_URL: '',
+  MCP_URL: '',
+  analytics: {
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false,
+    selfHosted: {
+      enabled: true,
+      metricsEndpoint: '/api/metrics-proxy/send',
+      appName: 'PSKnowHOW-Dev',
+      appVersion: '14.0.0',
+    },
+  },
 };
 
 /*

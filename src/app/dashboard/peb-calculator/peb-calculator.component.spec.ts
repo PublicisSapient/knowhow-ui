@@ -4,6 +4,7 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { PebCalculatorComponent } from './peb-calculator.component';
 import { ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
@@ -71,6 +72,7 @@ describe('PebCalculatorComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [PebCalculatorComponent, DynamicCurrencyPipe],
       imports: [
+        HttpClientTestingModule,
         ReactiveFormsModule,
         FormsModule,
         InputNumberModule,

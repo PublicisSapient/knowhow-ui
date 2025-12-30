@@ -20,16 +20,16 @@ import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
   production: true,
-  baseUrl: '',
-  SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: '',
-  CENTRAL_API_URL: '',
+  baseUrl: '//your-production-domain.com',
+  SSO_LOGIN: true,
+  CENTRAL_LOGIN_URL: 'https://your-central-login.com',
+  CENTRAL_API_URL: 'https://your-central-api.com',
   RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: false,
-  SPEED_SUITE: false,
-  MAP_URL: '',
-  RETROS_URL: '',
-  MCP_URL: '',
+  AUTHENTICATION_SERVICE: true,
+  SPEED_SUITE: true,
+  MAP_URL: 'https://your-map-url.com',
+  RETROS_URL: 'https://your-retros-url.com',
+
   analytics: {
     grafanaRolloutPercentage: 0,
     enableGoogleAnalytics: true,

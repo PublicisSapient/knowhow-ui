@@ -16,6 +16,7 @@
  *
  ******************************************************************************/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DashboardV2Component } from './dashboard-v2.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
@@ -40,7 +41,12 @@ describe('DashboardV2Component', () => {
 
     await TestBed.configureTestingModule({
       declarations: [DashboardV2Component],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         SharedService,

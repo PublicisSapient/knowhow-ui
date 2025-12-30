@@ -27,7 +27,7 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
+import { AnalyticsService } from '../../../services/analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
 declare const require: any;
 
@@ -80,7 +80,7 @@ export class BasicConfigComponent implements OnInit {
     private http: HttpService,
     private messenger: MessageService,
     private getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
+    private analytics: AnalyticsService,
     public router: Router,
     private route: ActivatedRoute,
   ) {
@@ -414,8 +414,8 @@ export class BasicConfigComponent implements OnInit {
           this.isProjectSetupPopup = false;
           this.isProjectCOmpletionPopup = true;
 
-          // Google Analytics
-          this.ga.createProjectData(gaObj);
+          // Analytics tracking
+          this.analytics.createProjectData(gaObj);
         } else {
           this.messenger.add({
             severity: 'error',
