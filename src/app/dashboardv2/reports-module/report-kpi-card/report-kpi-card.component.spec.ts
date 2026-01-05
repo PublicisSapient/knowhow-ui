@@ -47,7 +47,10 @@ describe('ReportKpiCardComponent', () => {
       it('should call sortColors and setKpiFilters on changes', () => {
         const sortColorsSpy = spyOn(component as any, 'sortColors');
         const setKpiFiltersSpy = spyOn(component as any, 'setKpiFilters');
-        const calculateDefectsBreachedSLAsSpy = spyOn(component as any, 'calculateDefectsBreachedSLAs');
+        const calculateDefectsBreachedSLAsSpy = spyOn(
+          component as any,
+          'calculateDefectsBreachedSLAs',
+        );
 
         component.ngOnChanges({} as any);
 

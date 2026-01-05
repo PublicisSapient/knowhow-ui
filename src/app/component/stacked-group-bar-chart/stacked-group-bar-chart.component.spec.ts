@@ -1,7 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StackedGroupBarChartComponent } from './stacked-group-bar-chart.component';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, forwardRef, Input } from '@angular/core';
-import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  forwardRef,
+  Input,
+} from '@angular/core';
+import {
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+} from '@angular/forms';
 import { SimpleChange } from '@angular/core';
 import * as d3 from 'd3';
 
@@ -12,9 +21,9 @@ import * as d3 from 'd3';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => MockMultiSelectComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 class MockMultiSelectComponent implements ControlValueAccessor {
   @Input() options: any;
@@ -28,10 +37,10 @@ class MockMultiSelectComponent implements ControlValueAccessor {
   @Input() defaultLabel: any;
   @Input() showClear: any;
 
-  writeValue(obj: any): void { }
-  registerOnChange(fn: any): void { }
-  registerOnTouched(fn: any): void { }
-  setDisabledState?(isDisabled: boolean): void { }
+  writeValue(obj: any): void {}
+  registerOnChange(fn: any): void {}
+  registerOnTouched(fn: any): void {}
+  setDisabledState?(isDisabled: boolean): void {}
 }
 
 describe('StackedGroupBarChartComponent', () => {
@@ -55,14 +64,14 @@ describe('StackedGroupBarChartComponent', () => {
         return null;
       },
       setItem: jasmine.createSpy('setItem'),
-      clear: jasmine.createSpy('clear')
+      clear: jasmine.createSpy('clear'),
     };
     spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
 
     await TestBed.configureTestingModule({
       declarations: [StackedGroupBarChartComponent, MockMultiSelectComponent],
       imports: [FormsModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StackedGroupBarChartComponent);
@@ -83,7 +92,7 @@ describe('StackedGroupBarChartComponent', () => {
   it('should call createChart on ngOnChanges', () => {
     spyOn(component as any, 'createChart');
     component.ngOnChanges({
-      kpiId: new SimpleChange(null, 'kpi195', true)
+      kpiId: new SimpleChange(null, 'kpi195', true),
     });
     expect((component as any).createChart).toHaveBeenCalled();
   });
@@ -93,13 +102,17 @@ describe('StackedGroupBarChartComponent', () => {
     const observeSpy = (component as any).elemObserver.observe;
     component.ngAfterViewInit();
     expect((component as any).createChart).toHaveBeenCalled();
-    expect(observeSpy).toHaveBeenCalledWith(component.chartContainer.nativeElement);
+    expect(observeSpy).toHaveBeenCalledWith(
+      component.chartContainer.nativeElement,
+    );
   });
 
   it('should unobserve and cleanup D3 on ngOnDestroy', () => {
     const unobserveSpy = (component as any).elemObserver.unobserve;
     component.ngOnDestroy();
-    expect(unobserveSpy).toHaveBeenCalledWith(component.chartContainer.nativeElement);
+    expect(unobserveSpy).toHaveBeenCalledWith(
+      component.chartContainer.nativeElement,
+    );
   });
 
   it('should create chart for kpi195 with data', () => {
@@ -112,19 +125,27 @@ describe('StackedGroupBarChartComponent', () => {
             sprintName: 'Sprint 1',
             drillDown: [
               { severity: 's1', breachedPercentage: 10 },
-              { severity: 's2', breachedPercentage: 20 }
-            ]
-          }
-        ]
-      }
+              { severity: 's2', breachedPercentage: 20 },
+            ],
+          },
+        ],
+      },
     ];
     component.defectsBreachedSLAsAllValues = [
       {
         filter: 'S1',
-        value: [{ data: 'Project A', value: [{ hoverValue: { totalResolvedIssues: 5, breachedPercentage: 10 } }] }]
-      }
+        value: [
+          {
+            data: 'Project A',
+            value: [
+              {
+                hoverValue: { totalResolvedIssues: 5, breachedPercentage: 10 },
+              },
+            ],
+          },
+        ],
+      },
     ];
-
 
     (component as any).createChart();
     const svg = component.chartContainer.nativeElement.querySelector('svg');
@@ -140,13 +161,12 @@ describe('StackedGroupBarChartComponent', () => {
           {
             hoverValue: {
               AUTOMATED: { avgExecutionTimeSec: 50, count: 10 },
-              MANUAL: { avgExecutionTimeSec: 30, count: 5 }
-            }
-          }
-        ]
-      }
+              MANUAL: { avgExecutionTimeSec: 30, count: 5 },
+            },
+          },
+        ],
+      },
     ];
-
 
     (component as any).createChart();
     const svg = component.chartContainer.nativeElement.querySelector('svg');
@@ -158,13 +178,17 @@ describe('StackedGroupBarChartComponent', () => {
     component.defectsBreachedSLAs = [];
     const consoleSpy = spyOn(console, 'warn');
     (component as any).createChart();
-    expect(consoleSpy).toHaveBeenCalledWith('KPI 195: No defectsBreachedSLAs data available, skipping chart creation');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'KPI 195: No defectsBreachedSLAs data available, skipping chart creation',
+    );
   });
 
   it('should handle unknown kpiId in createChart', () => {
     component.kpiId = 'unknown';
     const consoleSpy = spyOn(console, 'warn');
     (component as any).createChart();
-    expect(consoleSpy).toHaveBeenCalledWith('Unknown kpiId: unknown, skipping chart creation');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Unknown kpiId: unknown, skipping chart creation',
+    );
   });
 });
