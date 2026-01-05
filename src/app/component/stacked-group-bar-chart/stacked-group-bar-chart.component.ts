@@ -24,6 +24,7 @@ import {
   SimpleChanges,
   ViewChild,
   AfterViewInit,
+  OnDestroy,
   HostListener,
   ViewContainerRef,
 } from '@angular/core';
@@ -34,16 +35,23 @@ import * as d3 from 'd3';
   templateUrl: './stacked-group-bar-chart.component.html',
   styleUrls: ['./stacked-group-bar-chart.component.css'],
 })
-export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
+export class StackedGroupBarChartComponent
+  implements OnChanges, AfterViewInit, OnDestroy
+{
   @Input() defectsBreachedSLAs: any;
   @Input() defectsBreachedSLAsAllValues: any;
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @Input() data;
   @Input() kpiId;
   @Input() thresholdValue: number;
+  @Input() source = '';
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
   hasFilter: boolean = true;
+
+  elemObserver = new ResizeObserver(() => {
+    this.createChart();
+  });
 
   private filteredData: any;
   private activeSeverityKeys = [];
@@ -75,6 +83,19 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   ngAfterViewInit(): void {
     this.isInitialized = true;
     this.createChart();
+    // Observe the chart container for resize events (important for modal rendering)
+    if (this.chartContainer?.nativeElement) {
+      this.elemObserver.observe(this.chartContainer.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Clean up the observer to prevent memory leaks
+    if (this.chartContainer?.nativeElement) {
+      this.elemObserver.unobserve(this.chartContainer.nativeElement);
+    }
+    // Clean up D3 elements
+    d3.select(this.chartContainer?.nativeElement).selectAll('*').remove();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -85,6 +106,26 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
   }
 
   private createChart(): void {
+    // Early return if no data is available
+    if (this.kpiId === 'kpi195') {
+      if (!this.defectsBreachedSLAs || this.defectsBreachedSLAs.length === 0) {
+        console.warn(
+          'KPI 195: No defectsBreachedSLAs data available, skipping chart creation',
+        );
+        return;
+      }
+    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+      if (!this.data || this.data.length === 0) {
+        console.warn(
+          `KPI ${this.kpiId}: No data available, skipping chart creation`,
+        );
+        return;
+      }
+    } else {
+      console.warn(`Unknown kpiId: ${this.kpiId}, skipping chart creation`);
+      return;
+    }
+
     d3.select(this.chartContainer.nativeElement).selectAll('*').remove();
     const sprintGroups: { [key: string]: any[] } = {};
     let chartYRange = 0;
@@ -546,9 +587,15 @@ export class StackedGroupBarChartComponent implements OnChanges, AfterViewInit {
       .attr('role', 'region')
       .attr('aria-labelledby', 'legend-title');
 
-    legend.style('display', 'none'); // Show the legend by default
-    legend.attr('aria-hidden', 'true');
-    toggleButton.text('Show X-Axis Legend');
+    if (this.source === 'fromReport') {
+      legend.style('display', 'block'); // Show the legend by default for modal
+      toggleButton.text('Hide X-Axis Legend');
+      legend.attr('aria-hidden', 'false');
+    } else {
+      legend.style('display', 'none'); // Hide the legend by default for dashboard
+      legend.attr('aria-hidden', 'true');
+      toggleButton.text('Show X-Axis Legend');
+    }
 
     // Wrap the table in a scrollable container
     const scrollContainer = legend
