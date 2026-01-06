@@ -38,6 +38,14 @@ export class RecommendationsComponent implements OnInit {
     { label: 'Executive Sponsor', value: 'executive_sponsor' },
     { label: 'Agile Program Manager', value: 'agile_program_manager' },
     { label: 'Engineering Lead', value: 'engineering_lead' },
+    { label: 'QA Manager', value: 'qa_manager' },
+    { label: 'DevOps Manager', value: 'devops_manager' },
+    { label: 'SecOps Manager', value: 'secops_manager' },
+    { label: 'DevSecOps Manager', value: 'devsecops_manager' },
+    { label: 'Product Manager', value: 'product_manager' },
+    { label: 'Product Owner', value: 'product_owner' },
+    { label: 'Scrum Master', value: 'scrum_master' },
+    { label: 'Developer', value: 'developer' },
   ];
 
   sprintOptions = [];
