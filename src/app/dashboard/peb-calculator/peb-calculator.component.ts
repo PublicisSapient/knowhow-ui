@@ -89,6 +89,15 @@ export class PebCalculatorComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  onInputChange(controlName: string, event: any) {
+    if (event.value !== null && event.value !== undefined) {
+      this.pebForm
+        .get(controlName)
+        ?.setValue(event.value, { emitEvent: false });
+    }
+    this.cdr.detectChanges();
+  }
+
   ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())

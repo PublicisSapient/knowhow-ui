@@ -30,16 +30,13 @@ export const environment: Environment = {
   MAP_URL: 'https://your-map-url.com',
   RETROS_URL: 'https://your-retros-url.com',
 
-  // Analytics configuration - A/B Testing: GA + Self-hosted Grafana
   analytics: {
-    // A/B Testing configuration - 10% rollout for production
-    grafanaRolloutPercentage: 10, // 10% of users get Grafana analytics
-    enableGoogleAnalytics: true, // Keep GA for 90% of users
-    enableGrafanaAnalytics: true, // Enable self-hosted for 10%
+    grafanaRolloutPercentage: 0,
+    enableGoogleAnalytics: true,
+    enableGrafanaAnalytics: false,
 
-    // Self-hosted analytics configuration
     selfHosted: {
-      enabled: true,
+      enabled: false,
       metricsEndpoint: '/api/metrics-proxy/send',
       appName: 'PSKnowHOW-Production',
       appVersion: '14.0.0',
