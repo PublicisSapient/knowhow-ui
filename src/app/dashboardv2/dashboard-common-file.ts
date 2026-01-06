@@ -1,7 +1,7 @@
 export const Colors = {
-  under100: '#15ba40',
-  band100To300: '#6079c5',
-  band300To500: '#f68605',
-  band500Plus: '#fe414d',
+  under100: '#ed8888',
+  band100To300: '#ffb688',
+  band300To500: '#fbcf5f',
+  band500Plus: '#a4f6a5',
   defaultBubble: '#6079c5',
 };

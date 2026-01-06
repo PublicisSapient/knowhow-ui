@@ -106,11 +106,11 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
       const data = [
         {
           value: this.value,
-          color: this.color?.length ? this.color : '#15ba40',
+          color: this.color?.length ? this.color : '#a4f6a5',
         },
         {
           value: this.totalIssues - this.value,
-          color: '#fe414d',
+          color: '#ed8888',
         },
       ];
 
@@ -129,7 +129,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
         .attr('text-anchor', 'middle')
         .attr('dy', '-0.5em')
         .style('font-weight', 'bold')
-        .style('fill', '#15ba40')
+        .style('fill', '#a4f6a5')
         .text(this.value.toFixed(1));
 
       svg
@@ -137,7 +137,7 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
         .attr('text-anchor', 'middle')
         .attr('dy', '1em')
         .style('font-size', '14px')
-        .style('fill', '#15ba40')
+        .style('fill', '#a4f6a5')
         .text('%');
     } else {
       const chartWidth = this.width === undefined ? 100 : this.width; // Width of the chart

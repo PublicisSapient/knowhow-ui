@@ -101,27 +101,27 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
     this.transformedData.forEach((d, i) => {
       const yPos = i * barSpacing;
 
+      const iconClass = d.label.toLowerCase().includes('rework')
+        ? 'pi pi-code'
+        : 'pi pi-times-circle';
+
       // Label and value
       const labelGroup = g
         .append('g')
         .attr('transform', `translate(0,${yPos})`);
 
-      // Icon circle
+      // Icon
       labelGroup
-        .append('circle')
-        .attr('cx', 10)
-        .attr('cy', 0)
-        .attr('r', 8)
-        .attr('fill', 'none')
-        .attr('stroke', '#666')
-        .attr('stroke-width', 1.5);
-
-      labelGroup
-        .append('circle')
-        .attr('cx', 10)
-        .attr('cy', 0)
-        .attr('r', 3)
-        .attr('fill', '#666');
+        .append('foreignObject')
+        .attr('x', 2)
+        .attr('y', -10)
+        .attr('width', 26)
+        .attr('height', 26)
+        .append('xhtml:i')
+        .attr('class', `${iconClass}`)
+        .style('color', '#666')
+        .style('font-size', '20px')
+        .style('line-height', '1');
 
       // Label text
       labelGroup
