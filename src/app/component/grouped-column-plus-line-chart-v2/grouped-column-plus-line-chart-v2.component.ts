@@ -430,6 +430,19 @@ export class GroupedColumnPlusLineChartV2Component
         .style('fill', 'none')
         .attr('class', 'gridline');
 
+      const tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'benchmark-tooltip')
+        .style('position', 'absolute')
+        .style('background', '#202429')
+        .style('color', '#fff')
+        .style('padding', '6px 10px')
+        .style('border-radius', '4px')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('opacity', 0);
+
       if (benchmarkValue !== null) {
         svgX
           .append('svg:line')
@@ -441,7 +454,18 @@ export class GroupedColumnPlusLineChartV2Component
           .style('stroke-width', 2)
           .style('stroke-dasharray', '2,2')
           .style('opacity', 0.6)
-          .attr('class', 'benchmark-line');
+          .attr('class', 'benchmark-line')
+          .on('mouseover', () => {
+            tooltip.style('opacity', 1).html('Recommended Target');
+          })
+          .on('mousemove', (event) => {
+            tooltip
+              .style('left', event.pageX + 10 + 'px')
+              .style('top', event.pageY - 20 + 'px');
+          })
+          .on('mouseout', () => {
+            tooltip.style('opacity', 0);
+          });
 
         svgX
           .append('text')
