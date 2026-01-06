@@ -47,11 +47,16 @@ describe('ReportKpiCardComponent', () => {
       it('should call sortColors and setKpiFilters on changes', () => {
         const sortColorsSpy = spyOn(component as any, 'sortColors');
         const setKpiFiltersSpy = spyOn(component as any, 'setKpiFilters');
+        const calculateDefectsBreachedSLAsSpy = spyOn(
+          component as any,
+          'calculateDefectsBreachedSLAs',
+        );
 
         component.ngOnChanges({} as any);
 
         expect(sortColorsSpy).toHaveBeenCalled();
         expect(setKpiFiltersSpy).toHaveBeenCalled();
+        expect(calculateDefectsBreachedSLAsSpy).toHaveBeenCalled();
       });
     });
 
@@ -349,6 +354,43 @@ describe('ReportKpiCardComponent', () => {
           unit,
         );
       });
+    });
+  });
+
+  describe('ReportKpiCardComponent.calculateDefectsBreachedSLAs() calculateDefectsBreachedSLAs method', () => {
+    it('should correctly assign defectsBreachedSLAsAllValues and defectsBreachedSLAs when kpiId is kpi195', () => {
+      component.kpiData = { kpiId: 'kpi195' };
+      const mockTrends = [{ id: 1, name: 'Trend 1' }];
+      const mockChartData = { labels: ['A'], datasets: [] };
+      component.kpiTrendsObj = mockTrends;
+      component.currentChartData = mockChartData;
+
+      component.calculateDefectsBreachedSLAs();
+
+      expect(component.defectsBreachedSLAsAllValues).toEqual(mockTrends);
+      expect(component.defectsBreachedSLAs).toEqual(mockChartData);
+    });
+
+    it('should handle missing kpiTrendsObj gracefully', () => {
+      component.kpiData = { kpiId: 'kpi195' };
+      component.kpiTrendsObj = null;
+      component.currentChartData = { labels: ['A'] };
+
+      component.calculateDefectsBreachedSLAs();
+
+      expect(component.defectsBreachedSLAsAllValues).toEqual({});
+      expect(component.defectsBreachedSLAs).toEqual({ labels: ['A'] });
+    });
+
+    it('should not assign values if kpiId is not kpi195', () => {
+      component.kpiData = { kpiId: 'kpi123' };
+      component.defectsBreachedSLAsAllValues = undefined;
+      component.defectsBreachedSLAs = undefined;
+
+      component.calculateDefectsBreachedSLAs();
+
+      expect(component.defectsBreachedSLAsAllValues).toBeUndefined();
+      expect(component.defectsBreachedSLAs).toBeUndefined();
     });
   });
 });
