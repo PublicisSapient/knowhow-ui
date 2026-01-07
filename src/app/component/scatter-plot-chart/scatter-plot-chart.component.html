@@ -1,4 +1,19 @@
 <div class="chart-container">
   <svg #chartSvg></svg>
   <div #tooltip class="tooltip"></div>
+
+  <div class="bubble-legend" aria-label="Pull request size legend">
+    <div
+      class="bubble-legend__item"
+      *ngFor="let band of prSizeLegend"
+      aria-label="{{ band.label }}"
+    >
+      <span
+        class="bubble-legend__dot"
+        [style.backgroundColor]="band.color"
+        aria-hidden="true"
+      ></span>
+      <span class="bubble-legend__label">{{ band.label }}</span>
+    </div>
+  </div>
 </div>

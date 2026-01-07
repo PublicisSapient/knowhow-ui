@@ -19,3 +19,31 @@
 .tooltip.visible {
   opacity: 1;
 }
+.bubble-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin: 16px auto 0;
+  padding: 4px 0 8px;
+  color: #374151;
+  font-size: 12px;
+  width: 100%;
+}
+.bubble-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+.bubble-legend__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.bubble-legend__label {
+  white-space: nowrap;
+}
