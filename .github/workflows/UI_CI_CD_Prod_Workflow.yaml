@@ -71,7 +71,7 @@ jobs:
           npm install -g @angular/cli@17.3.12
 
           rm -rf dist/ build/
-          npm run build:prod
+          npm run build:production
 
           mkdir -p build
           cp -r dist/dashboard/* build/
