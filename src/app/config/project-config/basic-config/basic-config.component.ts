@@ -123,6 +123,8 @@ export class BasicConfigComponent implements OnInit {
   }
 
   getFields() {
+    const defaultTeamStrength =
+      this.sharedService.getConfigurationDetails()?.totalTeamSize || null;
     // api call to get formData
     this.blocked = true;
     const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
@@ -155,6 +157,15 @@ export class BasicConfigComponent implements OnInit {
         hierarchyLevelTooltip: 'Project Name',
         inputType: 'text',
         value: '',
+        required: true,
+      });
+      this.formData.push({
+        level: this.formData.length,
+        hierarchyLevelId: 'teamStrength',
+        hierarchyLevelName: 'Team Strength',
+        hierarchyLevelTooltip: 'Team Strength',
+        inputType: 'text',
+        value: defaultTeamStrength,
         required: true,
       });
 
@@ -339,6 +350,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
     submitData['developerKpiEnabled'] = formValue['developerKpiEnabled'];
+    submitData['teamStrength'] = formValue['teamStrength'];
     if (this.clone === 'true') {
       submitData['clonedFrom'] = this.selectedProject['id'];
     } else {
@@ -368,9 +380,10 @@ export class BasicConfigComponent implements OnInit {
     });
     this.blocked = true;
     submitData['hierarchy'].pop();
+    console.log('submitData', submitData);
     this.http.addBasicConfig(submitData).subscribe({
       next: (response: any) => {
-        console.log(response);
+        console.log('response addBasicConfig ', response);
         if (
           response &&
           response.serviceResponse &&
@@ -389,6 +402,8 @@ export class BasicConfigComponent implements OnInit {
             response.serviceResponse.data['developerKpiEnabled'];
           this.selectedProject['projectOnHold'] =
             response.serviceResponse.data['projectOnHold'];
+          this.selectedProject['teamStrength'] =
+            response.serviceResponse.data['teamStrength'];
           response.serviceResponse.data['hierarchy'].forEach((element) => {
             this.selectedProject[element.hierarchyLevel.hierarchyLevelName] =
               element.value;

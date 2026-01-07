@@ -58,6 +58,7 @@ export class ProjectSettingsComponent implements OnInit {
   isProjectAdmin = false;
   isSuperAdmin = false;
   isDeleteClicked = false;
+  teamSize: number = 0;
 
   constructor(
     public sharedService: SharedService,
@@ -71,6 +72,11 @@ export class ProjectSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.getData();
     this.generalControls = [
+      {
+        name: 'Team Strength',
+        description: 'Enter team strength for this project',
+        actionItem: 'input',
+      },
       {
         name: 'Pause data collection',
         description:
