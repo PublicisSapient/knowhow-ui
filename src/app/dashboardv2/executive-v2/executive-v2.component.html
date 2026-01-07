@@ -355,7 +355,7 @@
                                       role="article" [attr.aria-label]="x?.label + ' Details'">
                                       <h3 class="text-label">{{x?.label}}
                                         <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
-                                          src="../../../assets/img/arrow-down.svg" alt="arrow-down" class="btn-arrow-down"
+                                          src="assets/img/arrow-down.svg" alt="arrow-down" class="btn-arrow-down"
                                           (click)="handleArrowClick(kpi, x?.label, x?.modalValues)"
                                           (keydown.enter)="handleArrowClick(kpi, x?.label, x?.modalValues)" tabindex="0"
                                           role="button" aria-label="Expand details for {{x?.label}}" />
@@ -417,7 +417,7 @@
                   <ng-template #noDataForChartWithFilters>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data Available.</h4>
@@ -427,7 +427,7 @@
                   <ng-template #partialData let-data>
                     <div class="min-ht" *ngIf="checkIfPartialDataPresent(data); else noDataAccess;">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No data
@@ -439,7 +439,7 @@
                   <ng-template #noDataAccess>
                     <div class="min-ht">
                       <div class="p-w-100  p-d-flex p-justify-center">
-                        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                        <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
                         <h4 class="p-text-center">No Data Available.</h4>
