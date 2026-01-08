@@ -480,6 +480,7 @@ button:disabled {
 .info-row {
   display: flex;
   margin-bottom: 10px;
+  align-items: center;
 }
 
 .info-row:last-child {
