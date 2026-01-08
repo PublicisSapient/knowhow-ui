@@ -195,7 +195,6 @@ export class ExportExcelComponent implements OnInit {
       re['columns'] = rawColumConfig.map((con) => con.columnName);
       this.kpiExcelData = this.excelService.generateExcelModalData(re);
     }
-    console.log('>>', this.selectedColumns);
     this.formatDate();
     this.selectedColumns = rawColumConfig
       .filter((colDetails) => colDetails.isDefault || colDetails.isShown)
@@ -393,8 +392,6 @@ export class ExportExcelComponent implements OnInit {
 
   saveTableColumnOrder() {
     const currentColumns = this.tableComponent?.columns || [];
-    console.log(' currentColumns', currentColumns);
-    console.log(' lastSavedColumns', this.lastSavedColumns);
     if (currentColumns.length > 0) {
       if (!this.hasColumnConfigChanged(currentColumns)) {
         this.messageService.add({
@@ -434,9 +431,7 @@ export class ExportExcelComponent implements OnInit {
       (col) => col.columnName,
     );
     if (action === 'SAVE') {
-      console.log(' postData', postData);
       this.httpService.postkpiColumnsConfig(postData).subscribe((response) => {
-        console.log(' response', response);
         if (response && response['success'] && response['data']) {
           this.lastSavedColumns = [
             ...postData['kpiColumnDetails'].map((c) => c.columnName),
