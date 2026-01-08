@@ -39,6 +39,7 @@ export class ExportExcelComponent implements OnInit {
   selectedColumns = []; // store all columns which is default or shown in table
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn = false;
+  lastSavedColumns: string[] = [];
   markerInfo = [];
   forzenColumns = ['issue id'];
   exportExcelRawVariable;
@@ -194,10 +195,12 @@ export class ExportExcelComponent implements OnInit {
       re['columns'] = rawColumConfig.map((con) => con.columnName);
       this.kpiExcelData = this.excelService.generateExcelModalData(re);
     }
+    console.log('>>', this.selectedColumns);
     this.formatDate();
     this.selectedColumns = rawColumConfig
       .filter((colDetails) => colDetails.isDefault || colDetails.isShown)
       .map((config) => config.columnName);
+    this.lastSavedColumns = [...this.selectedColumns];
     this.generateColumnFilterData();
     this.modalDetails['header'] = kpiName;
     this.displayModal = true;
@@ -279,6 +282,7 @@ export class ExportExcelComponent implements OnInit {
       tableValues: [],
     };
     this.selectedColumns = [];
+    this.lastSavedColumns = [];
     this.tableColumns = [];
     this.isDisableSaveCOnfigurationBtn = false;
     this.markerInfo = [];
@@ -388,8 +392,18 @@ export class ExportExcelComponent implements OnInit {
   }
 
   saveTableColumnOrder() {
-    if (this.tableComponent.columns.length > 0) {
-      this.saveKpiColumnsConfig(this.tableComponent.columns, 'SAVE');
+    const currentColumns = this.tableComponent?.columns || [];
+    console.log(' currentColumns', currentColumns);
+    console.log(' lastSavedColumns', this.lastSavedColumns);
+    if (currentColumns.length > 0) {
+      if (!this.hasColumnConfigChanged(currentColumns)) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Kpi Column Configurations already exists.',
+        });
+        return;
+      }
+      this.saveKpiColumnsConfig(currentColumns, 'SAVE');
     }
   }
 
@@ -420,8 +434,13 @@ export class ExportExcelComponent implements OnInit {
       (col) => col.columnName,
     );
     if (action === 'SAVE') {
+      console.log(' postData', postData);
       this.httpService.postkpiColumnsConfig(postData).subscribe((response) => {
+        console.log(' response', response);
         if (response && response['success'] && response['data']) {
+          this.lastSavedColumns = [
+            ...postData['kpiColumnDetails'].map((c) => c.columnName),
+          ];
           this.messageService.add({
             severity: 'success',
             summary: 'Kpi Column Configurations saved successfully!',
@@ -536,6 +555,15 @@ export class ExportExcelComponent implements OnInit {
 
   handleMultiSelectEnter(event: KeyboardEvent): void {
     event.stopPropagation();
+  }
+
+  hasColumnConfigChanged(currentColumns: any[]): boolean {
+    if (this.lastSavedColumns.length !== currentColumns.length) {
+      return true;
+    }
+    return currentColumns.some(
+      (col, index) => (col?.field || col) !== this.lastSavedColumns[index],
+    );
   }
 
   openOnEnter(event): void {
