@@ -99,7 +99,12 @@
           </div>
           <div class="info-row">
             <span class="info-label">Project:</span>
-            <span class="info-value">{{ getCurrentSelectedProject || 'Not provided' }}</span>
+            <p-dropdown
+              [options]="getCurrentSelectedProject"
+              [(ngModel)]="selectedProject"
+              optionLabel="name"
+              placeholder="Select a Project"
+              appendTo="body" />
           </div>
           <div class="info-row">
             <span class="info-label">Email:</span>

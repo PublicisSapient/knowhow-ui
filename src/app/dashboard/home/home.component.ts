@@ -127,6 +127,18 @@ export class HomeComponent implements OnInit, OnDestroy {
                         productivity: this.getProductivityForRow(row.name),
                       }));
 
+                    const projectNameMap = new Map(
+                      this.service
+                        .getFilterData()
+                        .map((u: any) => [u.nodeId, u.nodeDisplayName]),
+                    );
+                    this.tableData.data = this.tableData.data.map(
+                      (res: any) => ({
+                        ...res,
+                        name: projectNameMap.get(res.id) || res.name,
+                      }),
+                    );
+
                     const filteredColumns =
                       executiveBoard.data.matrix.columns.filter(
                         (col) => col.field !== 'id',
@@ -479,6 +491,15 @@ export class HomeComponent implements OnInit, OnDestroy {
             res.data.matrix.rows = res.data.matrix.rows.map((row) => {
               return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
+            const projectNameMap = new Map(
+              this.service
+                .getFilterData()
+                .map((u: any) => [u.nodeId, u.nodeDisplayName]),
+            );
+            res.data.matrix.rows = res?.data?.matrix?.rows?.map((res: any) => ({
+              ...res,
+              name: projectNameMap.get(res.id) || res.name,
+            }));
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
             );

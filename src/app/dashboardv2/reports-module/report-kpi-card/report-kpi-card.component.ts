@@ -15,6 +15,8 @@ export class ReportKpiCardComponent {
   @Input() kpiTrendsObj: any;
   @Input() trendColors: any;
   colors: any;
+  defectsBreachedSLAs: any;
+  defectsBreachedSLAsAllValues: any;
   fromReport = 'fromReport';
 
   @Input() kpiFilters: any;
@@ -51,6 +53,7 @@ export class ReportKpiCardComponent {
     this.generateTableKPIColumnHeader();
     this.sortColors();
     this.setKpiFilters();
+    this.calculateDefectsBreachedSLAs();
     if (changes['chartType']) {
       if (!changes['chartType'].currentValue) {
         this.chartType = 'old-table';
@@ -189,6 +192,24 @@ export class ReportKpiCardComponent {
       ];
 
       this.currentChartData.columnHeaders = columnHeaders;
+    }
+  }
+
+  /**
+   * Calculates defectsBreachedSLAs and defectsBreachedSLAsAllValues for KPI 195.
+   * This logic mirrors the implementation in executive-v2.component.ts.
+   * defectsBreachedSLAsAllValues contains all trend data for the KPI.
+   * defectsBreachedSLAs contains the processed/filtered chart data.
+   */
+  calculateDefectsBreachedSLAs() {
+    if (this.kpiData?.kpiId === 'kpi195') {
+      // Get all trend values - this should come from the raw KPI data
+      this.defectsBreachedSLAsAllValues = this.kpiTrendsObj
+        ? JSON.parse(JSON.stringify(this.kpiTrendsObj))
+        : {};
+
+      // Get the processed chart data
+      this.defectsBreachedSLAs = this.currentChartData;
     }
   }
 }
