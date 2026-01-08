@@ -154,9 +154,7 @@ export class ExportExcelComponent implements OnInit {
           for (const y in colData[key]) {
             //added check if valid url
             if (typeof colData[key] === 'object') {
-              Object.entries(colData[key]).forEach(([objkey, value]) => {
-                obj[key].push(value);
-              });
+              obj[key] = Object.values(colData[key]);
             } else {
               if (colData[key][y].includes('http')) {
                 obj[key].push({ text: y, hyperlink: colData[key][y] });

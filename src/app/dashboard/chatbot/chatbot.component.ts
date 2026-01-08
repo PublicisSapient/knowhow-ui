@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { marked } from 'marked';
 import { ChatService } from 'src/app/services/chat.service';
 import { TableModule } from 'primeng/table';
+import { DropdownModule } from 'primeng/dropdown';
 
 interface Message {
   text: string;
@@ -23,8 +24,7 @@ interface Message {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, TableModule],
-  providers: [ChatService],
+  imports: [CommonModule, FormsModule, TableModule, DropdownModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
 })
@@ -53,6 +53,7 @@ export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   getCurrentSelectedProject;
+  selectedProject: any;
   private hasInitialized = false;
 
   constructor(private readonly chatService: ChatService) {}
@@ -176,7 +177,7 @@ export class ChatbotComponent implements AfterViewChecked {
       .submitSupport(
         this.userName,
         this.userEmail,
-        this.getCurrentSelectedProject,
+        this.selectedProject?.name || '',
         this.supportForm.issueDescription,
       )
       .subscribe({
@@ -198,9 +199,11 @@ export class ChatbotComponent implements AfterViewChecked {
       localStorage.getItem('selectedTrend') || '[]',
     );
 
-    this.getCurrentSelectedProject = selectedTrends
-      .map((el) => el.nodeDisplayName)
-      .join(', ');
+    this.getCurrentSelectedProject = selectedTrends.map((el) => ({
+      name: el.nodeDisplayName,
+      code: el.nodeName,
+    }));
+    this.selectedProject = this.getCurrentSelectedProject[0];
 
     const currentUserDetails = JSON.parse(
       localStorage.getItem('currentUserDetails') || '{}',
