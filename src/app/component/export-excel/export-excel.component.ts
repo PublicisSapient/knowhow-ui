@@ -391,17 +391,25 @@ export class ExportExcelComponent implements OnInit {
   }
 
   saveTableColumnOrder() {
-    const currentColumns = this.tableComponent?.columns || [];
-    if (currentColumns.length > 0) {
-      if (!this.hasColumnConfigChanged(currentColumns)) {
+    if (this.tableComponent.columns.length > 0) {
+      if (!this.hasColumnConfigChanged(this.tableComponent?.columns)) {
         this.messageService.add({
           severity: 'error',
           summary: 'Kpi Column Configurations already exists.',
         });
         return;
       }
-      this.saveKpiColumnsConfig(currentColumns, 'SAVE');
+      this.saveKpiColumnsConfig(this.tableComponent.columns, 'SAVE');
     }
+  }
+
+  hasColumnConfigChanged(currentColumns: any[]): boolean {
+    if (this.lastSavedColumns.length !== currentColumns.length) {
+      return true;
+    }
+    return currentColumns.some(
+      (col, index) => (col?.field || col) !== this.lastSavedColumns[index],
+    );
   }
 
   saveKpiColumnsConfig(selectedColumns: any[], action: string) {
@@ -550,15 +558,6 @@ export class ExportExcelComponent implements OnInit {
 
   handleMultiSelectEnter(event: KeyboardEvent): void {
     event.stopPropagation();
-  }
-
-  hasColumnConfigChanged(currentColumns: any[]): boolean {
-    if (this.lastSavedColumns.length !== currentColumns.length) {
-      return true;
-    }
-    return currentColumns.some(
-      (col, index) => (col?.field || col) !== this.lastSavedColumns[index],
-    );
   }
 
   openOnEnter(event): void {
