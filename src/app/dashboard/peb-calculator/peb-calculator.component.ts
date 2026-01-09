@@ -84,19 +84,6 @@ export class PebCalculatorComponent implements OnInit {
    * @memberof PebCalculatorComponent
    * @lifecycle Angular
    */
-  onSliderChange(controlName: string, event: any) {
-    this.pebForm.get(controlName)?.setValue(event.value);
-    this.cdr.detectChanges();
-  }
-
-  onInputChange(controlName: string, event: any) {
-    if (event.value !== null && event.value !== undefined) {
-      this.pebForm
-        .get(controlName)
-        ?.setValue(event.value, { emitEvent: false });
-    }
-    this.cdr.detectChanges();
-  }
 
   ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams
