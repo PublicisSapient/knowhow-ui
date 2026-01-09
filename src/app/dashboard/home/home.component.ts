@@ -362,7 +362,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculateEfficiency() {
     const rowData = this.tableData['data'];
     const sum = rowData.reduce((acc, num) => {
-      return acc + parseInt(num.completion, 10);
+      if (!Number.isNaN(parseInt(num.completion, 10))) {
+        return acc + parseInt(num.completion, 10);
+      }
+      return acc;
     }, 0);
 
     if (rowData.length === 0) {
