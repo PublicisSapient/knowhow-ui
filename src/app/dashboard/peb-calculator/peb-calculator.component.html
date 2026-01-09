@@ -7,6 +7,7 @@
       </div>
     </div>
   }
+  @if(!isLoadingPebData) {
   <div class="p-d-flex p-p-2 p-jc-between">
     <div class="p-col-3 p-mb-2">
         <app-top-tiles [item]="{
@@ -279,5 +280,6 @@
       </div>
     </p-card>
   </div>
+  }
 </div>
 <app-chatbot></app-chatbot>
