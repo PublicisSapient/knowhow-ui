@@ -144,14 +144,15 @@ describe('PebCalculatorComponent', () => {
     component.pebForm.get('devCostControl').setValue(50000);
     component.pebForm.get('durationControl').setValue('year');
     component.selectedLevel = 'engagement';
-    component.showLoader = true;
     component.showResults = false;
+    component['pendingApiCalls'] = 1;
+    component.isLoadingPebData = true;
     const http = TestBed.inject(HttpService) as any;
     spyOn(http, 'getPebProductivityData').and.returnValue(of(productivityGain));
     spyOn(component, 'calculatePEB').and.callThrough();
     component.getPEBData();
     tick(1000);
-    expect(component.showLoader).toBe(false);
+    expect(component.isLoadingPebData).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);
   }));
