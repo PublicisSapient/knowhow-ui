@@ -126,12 +126,16 @@
         .step-title {
           font-weight: 600;
           font-size: 1rem;
-          margin: 0px 0px 5px 0px;
+          margin: 0px 0px 10px 0px;
         }
         .step-desc {
           color: #555;
           font-size: 1rem;
           line-height: 1.3rem;
+        }
+        .step-desc .sentence-break {
+          display: block;
+          margin-bottom: 10px;
         }
       }
     }
