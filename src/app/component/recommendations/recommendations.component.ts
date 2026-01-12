@@ -752,6 +752,12 @@ export class RecommendationsComponent implements OnInit {
         return 'critical-icon';
     }
   }
+  getCorrelatedKpis(recommendation: any): string[] {
+    return (recommendation?.correlatedKpis ?? [])
+      .filter((kpi): kpi is string => typeof kpi === 'string')
+      .map((kpi) => kpi.trim().split(':')[0].trim())
+      .filter(Boolean);
+  }
   formatKpiLabel(kpi: string): string {
     if (!kpi) return '';
     return kpi
