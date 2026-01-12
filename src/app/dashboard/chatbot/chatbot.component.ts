@@ -12,6 +12,7 @@ import { marked } from 'marked';
 import { ChatService } from 'src/app/services/chat.service';
 import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
+import { SharedService } from 'src/app/services/shared.service';
 
 interface Message {
   text: string;
@@ -56,7 +57,10 @@ export class ChatbotComponent implements AfterViewChecked {
   selectedProject: any;
   private hasInitialized = false;
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly sharedService: SharedService,
+  ) {}
 
   toggleChat() {
     this.isOpen = !this.isOpen;
@@ -167,7 +171,9 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   isSupportFormValid(): boolean {
-    return this.supportForm.issueDescription.trim() !== '';
+    return (
+      this.supportForm.issueDescription.trim() !== '' && !!this.selectedProject
+    );
   }
 
   submitSupport() {
@@ -195,15 +201,13 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   openSupportPopupFromChat() {
-    const selectedTrends = JSON.parse(
-      localStorage.getItem('selectedTrend') || '[]',
-    );
+    const listOfProjects = this.sharedService.getListOfProjects();
 
-    this.getCurrentSelectedProject = selectedTrends.map((el) => ({
+    this.getCurrentSelectedProject = listOfProjects.map((el) => ({
       name: el.nodeDisplayName,
       code: el.nodeName,
     }));
-    this.selectedProject = this.getCurrentSelectedProject[0];
+    this.selectedProject = null;
 
     const currentUserDetails = JSON.parse(
       localStorage.getItem('currentUserDetails') || '{}',

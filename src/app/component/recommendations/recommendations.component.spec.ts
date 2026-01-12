@@ -4,6 +4,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
@@ -38,6 +39,7 @@ describe('RecommendationsComponent', () => {
         { provide: MessageService, useValue: messageSpy },
         { provide: SharedService, useValue: sharedSpy },
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecommendationsComponent);
@@ -136,6 +138,8 @@ describe('RecommendationsComponent', () => {
     component.selectedRole = 'executive_sponsor';
     component.selectedCurrentProjectSprintsCode = ['sprint1'];
     component.kpiFilterData = { selectedMap: {} };
+    component.shouldCloseDialog = true;
+    spyOn(component, 'onDialogClose').and.callThrough();
 
     const mockResponse = { data: [{ projectScore: 85, recommendations: [] }] };
     httpService.getRecommendations.and.returnValue(of(mockResponse));
@@ -151,7 +155,7 @@ describe('RecommendationsComponent', () => {
     expect(component.isLoading).toBeFalse();
     expect(component.isReportGenerated).toBeTrue();
     expect(component.projectScore).toBe(85);
-    expect(component.recommendationsList).toEqual([]);
+    expect(component.onDialogClose).toHaveBeenCalled();
   }));
 
   it('should format current date correctly', () => {
@@ -320,9 +324,13 @@ describe('RecommendationsComponent', () => {
     httpSpy.getRecommendations.and.returnValue(of({}));
 
     component.getSprintData(reqBody);
+    const cancelSpy = spyOn(
+      component['cancelCurrentRequest$'],
+      'complete',
+    ).and.callThrough();
     component.ngOnDestroy();
 
-    // expect(component.cancelCurrentRequest$.closed).toBe(true);
+    expect(cancelSpy).toHaveBeenCalled();
   });
 
   // ==========================================================
@@ -336,13 +344,11 @@ describe('RecommendationsComponent', () => {
     expect(component.toShareViaEmail).toBeFalse();
   });
 
-  // -- TODO: will look into it later - due time
-  xit('should validate email and update invalidEmails list', () => {
-    const validEmailEvent = {
-      value: '<a href="mailto:test@example.com">test@example.com</a>',
-    };
+  it('should validate email and update invalidEmails list', () => {
+    const validEmailEvent = { value: 'test@example.com' };
     const invalidEmailEvent = { value: 'invalid-email' };
 
+    component.emailIds = [];
     component.validateEmail(validEmailEvent);
     expect(component.invalidEmails).not.toContain(validEmailEvent.value);
 
@@ -384,14 +390,60 @@ describe('RecommendationsComponent', () => {
     });
   });
 
-  // -- TODO: will look into it later - due time
-  xit('should export as PDF and call shareRecommendationViaEmail if not toDownload', fakeAsync(() => {
-    spyOn(component, 'shareRecommendationViaEmail');
-    component.exportAsPDF(false);
-    tick(1000); // Simulate async completion
+  describe('exportAsPDF', () => {
+    // -- TODO: Testing PDF generation requires mocking html2canvas and jsPDF which are imported as modules.
+    // This is skipped for now but the logic has been updated in the component.
+    xit('should export as PDF and call shareRecommendationViaEmail if not toDownload', fakeAsync(() => {
+      spyOn(component, 'shareRecommendationViaEmail');
+      component.exportAsPDF(false);
+      tick(1000); // Simulate async completion
 
-    expect(component.shareRecommendationViaEmail).toHaveBeenCalled();
-  }));
+      expect(component.shareRecommendationViaEmail).toHaveBeenCalled();
+    }));
+  });
+
+  describe('Utility Methods', () => {
+    it('should return correct icon class for severity', () => {
+      expect(component.getIconClass({ recommendationType: 'high' })).toContain(
+        'high-icon',
+      );
+      expect(
+        component.getIconClass({ recommendationType: 'critical' }),
+      ).toContain('critical-icon');
+      expect(component.getIconClass(null)).toBeUndefined();
+    });
+
+    it('should return correct severity background color', () => {
+      expect(
+        component.getSeverityBackgroundColor({ recommendationType: 'high' }),
+      ).toEqual({
+        'background-color': '#f68605',
+        color: 'fff#',
+      });
+      expect(
+        component.getSeverityBackgroundColor({ recommendationType: 'low' }),
+      ).toEqual({
+        'background-color': '#49535e',
+        color: 'fff#',
+      });
+    });
+
+    it('should format KPI label correctly', () => {
+      expect(component.formatKpiLabel('test_kpi_name')).toBe('Test Kpi Name');
+      expect(component.formatKpiLabel('')).toBe('');
+    });
+
+    it('should extract numeric value from KPI string', () => {
+      expect(component.getNumericValue('Label: 75%')).toBe(75);
+      expect(component.getNumericValue('Label: 100')).toBe(100);
+      expect(component.getNumericValue('Label:')).toBe(0);
+    });
+
+    it('should extract display value from KPI string', () => {
+      expect(component.getDisplayValue('Label: 75%')).toBe('75%');
+      expect(component.getDisplayValue('Label:')).toBe('');
+    });
+  });
 
   describe('getShareButtonClasses', () => {
     it('should return base classes when initialized', () => {

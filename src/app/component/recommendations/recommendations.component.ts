@@ -639,6 +639,7 @@ export class RecommendationsComponent implements OnInit {
         } else {
           let heightLeft = pdfHeight;
           let position = startY;
+          const pageContentHeight = pageHeight - padding;
 
           while (heightLeft > 0) {
             pdfInstance.addImage(
@@ -651,11 +652,11 @@ export class RecommendationsComponent implements OnInit {
               undefined,
               'FAST',
             );
-            heightLeft -= pageHeight;
+            heightLeft -= pageContentHeight;
 
             if (heightLeft > 0) {
               pdfInstance.addPage();
-              position = -heightLeft;
+              position -= pageContentHeight;
             }
           }
         }
@@ -751,6 +752,12 @@ export class RecommendationsComponent implements OnInit {
       default:
         return 'critical-icon';
     }
+  }
+  getCorrelatedKpis(recommendation: any): string[] {
+    return (recommendation?.correlatedKpis ?? [])
+      .filter((kpi): kpi is string => typeof kpi === 'string')
+      .map((kpi) => kpi.trim().split(':')[0].trim())
+      .filter(Boolean);
   }
   formatKpiLabel(kpi: string): string {
     if (!kpi) return '';
