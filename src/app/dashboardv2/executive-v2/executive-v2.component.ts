@@ -394,6 +394,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.mapColorToProject
         .pipe(
           mergeMap((x) => {
+            this.checkConfigurationDetails();
             this.maturityTableKpiList = [];
             this.colorObj = x;
             this.trendBoxColorObj = { ...x };

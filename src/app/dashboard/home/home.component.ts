@@ -78,6 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           ),
         )
         .subscribe((sharedobject) => {
+          this.checkConfigurationDetails();
           this.tableData = {
             columns: [],
             data: [],
