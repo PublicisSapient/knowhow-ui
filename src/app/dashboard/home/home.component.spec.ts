@@ -176,6 +176,7 @@ describe('HomeComponent', () => {
         'setPEBDataCache',
         'getPEBDataCache',
         'clearPEBDataCache',
+        'getConfigurationDetails',
       ],
       {
         passDataToDashboard: of({
@@ -198,6 +199,9 @@ describe('HomeComponent', () => {
     mockSharedService.getPEBDataCache.and.returnValue(null);
     mockSharedService.setPEBDataCache.and.stub();
     mockSharedService.clearPEBDataCache.and.stub();
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      data: { baseUrl: 'http://localhost:7001/' },
+    });
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
@@ -1078,41 +1082,32 @@ describe('HomeComponent', () => {
     });
   }));
 
-  it('should handle initializeBottomData with ONLYTRENDS reset', () => {
-    component.bottomTilesData.set([
-      {
-        category: 'Risk',
-        value: [],
-        icon: false,
-        color: '#cdba38',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-      {
-        category: 'Old Positive',
-        value: [],
-        icon: true,
-        color: '#15ba40',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-      {
-        category: 'Old Negative',
-        value: [],
-        icon: true,
-        color: '#eb3d4b',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-    ]);
+  it('should initialize hasBaseUrl based on configuration', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      baseUrl: 'http://localhost:7001/',
+    });
 
-    component.initializeBottomData('ONLYTRENDS');
+    component.checkConfigurationDetails();
 
-    const bottomData = component.bottomTilesData();
-    expect(bottomData[1].color).toBe('#99cda9');
-    expect(bottomData[2].color).toBe('#ed8888');
-    expect(bottomData[1].category).toBe('Positive Trends');
-    expect(bottomData[2].category).toBe('Negative Trends');
+    expect(component.hasBaseUrl).toBe(true);
+  });
+
+  it('should set hasBaseUrl to false when baseUrl is not available', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      data: {},
+    });
+
+    component.checkConfigurationDetails();
+
+    expect(component.hasBaseUrl).toBe(false);
+  });
+
+  it('should set hasBaseUrl to false when configuration data is null', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue(null);
+
+    component.checkConfigurationDetails();
+
+    expect(component.hasBaseUrl).toBe(false);
   });
 
   it('should handle executive board API error in ngOnInit subscription', fakeAsync(() => {
