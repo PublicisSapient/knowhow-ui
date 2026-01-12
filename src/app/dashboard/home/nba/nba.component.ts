@@ -81,7 +81,7 @@ export class NbaComponent implements OnChanges {
 
     // Replace **text** with <strong>text</strong> and add line breaks
     return description
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>')
       .replace(/\. /g, '. <span class="sentence-break"></span>');
   }
 
