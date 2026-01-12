@@ -6,6 +6,7 @@ import {
 } from '@angular/core/testing';
 import { ChatbotComponent } from './chatbot.component';
 import { ChatService } from 'src/app/services/chat.service';
+import { SharedService } from 'src/app/services/shared.service';
 import { of, throwError } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -14,6 +15,7 @@ describe('ChatbotComponent', () => {
   let component: ChatbotComponent;
   let fixture: ComponentFixture<ChatbotComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
 
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService', [
@@ -21,15 +23,24 @@ describe('ChatbotComponent', () => {
       'submitFeedback',
       'submitSupport',
     ]);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', [
+      'getListOfProjects',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [ChatbotComponent, HttpClientTestingModule],
-      providers: [{ provide: ChatService, useValue: chatServiceSpy }],
+      providers: [
+        { provide: ChatService, useValue: chatServiceSpy },
+        { provide: SharedService, useValue: sharedServiceSpy },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChatbotComponent);
     component = fixture.componentInstance;
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
     fixture.detectChanges();
   });
 
@@ -322,12 +333,12 @@ describe('ChatbotComponent', () => {
   });
 
   describe('openSupportPopupFromChat', () => {
-    it('should load user details from localStorage', () => {
+    it('should load user details from localStorage and projects from SharedService', () => {
+      sharedService.getListOfProjects.and.returnValue([
+        { nodeDisplayName: 'Project 1', nodeName: 'P1' },
+      ]);
+
       spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-        if (key === 'selectedTrend')
-          return JSON.stringify([
-            { nodeDisplayName: 'Project 1', nodeName: 'P1' },
-          ]);
         if (key === 'currentUserDetails')
           return JSON.stringify({
             user_name: 'John Doe',
@@ -338,6 +349,7 @@ describe('ChatbotComponent', () => {
 
       component.openSupportPopupFromChat();
 
+      expect(sharedService.getListOfProjects).toHaveBeenCalled();
       expect(component.getCurrentSelectedProject).toEqual([
         { name: 'Project 1', code: 'P1' },
       ]);
