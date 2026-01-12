@@ -828,7 +828,7 @@ export class GroupBarChartComponent implements OnChanges {
         return d;
       }
       if (this.xCaption.toLowerCase() === 'weeks') {
-        d['group'] = d['group'].replace(' ', '');
+        d['group'] = d['group'].replaceAll(' ', '');
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
         const date2 = new Date(dateArray[1]);
