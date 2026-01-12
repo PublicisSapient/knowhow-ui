@@ -639,6 +639,7 @@ export class RecommendationsComponent implements OnInit {
         } else {
           let heightLeft = pdfHeight;
           let position = startY;
+          const pageContentHeight = pageHeight - padding;
 
           while (heightLeft > 0) {
             pdfInstance.addImage(
@@ -651,11 +652,11 @@ export class RecommendationsComponent implements OnInit {
               undefined,
               'FAST',
             );
-            heightLeft -= pageHeight;
+            heightLeft -= pageContentHeight;
 
             if (heightLeft > 0) {
               pdfInstance.addPage();
-              position = -heightLeft;
+              position -= pageContentHeight;
             }
           }
         }
