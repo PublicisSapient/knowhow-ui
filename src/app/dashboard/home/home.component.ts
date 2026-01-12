@@ -121,11 +121,21 @@ export class HomeComponent implements OnInit, OnDestroy {
                     });
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
-                      executiveBoard.data.matrix.rows.map((row) => ({
-                        ...row,
-                        ...row?.boardMaturity,
-                        productivity: this.getProductivityForRow(row.name),
-                      }));
+                      executiveBoard.data.matrix.rows.map((row) => {
+                        if (Object.keys(row.boardMaturity).length === 0) {
+                          row.boardMaturity = {
+                            dora: 'M0',
+                            value: 'M0',
+                            speed: 'M0',
+                            quality: 'M0',
+                          };
+                        }
+                        return {
+                          ...row,
+                          ...row?.boardMaturity,
+                          productivity: this.getProductivityForRow(row.name),
+                        };
+                      });
 
                     const projectNameMap = new Map(
                       this.service

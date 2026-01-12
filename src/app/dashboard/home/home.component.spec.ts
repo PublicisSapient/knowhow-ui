@@ -290,6 +290,16 @@ describe('HomeComponent', () => {
     expect(component.calculateEfficiency()).toBe('80%');
   });
 
+  it('should handle non-numeric completion values in calculateEfficiency', () => {
+    component.tableData.data = [
+      { completion: '80' },
+      { completion: 'N/A' },
+      { completion: '60' },
+    ];
+    // (80 + 60) / 3 = 46.66... rounded to 47
+    expect(component.calculateEfficiency()).toBe('47%');
+  });
+
   it('should return 0% efficiency if no data', () => {
     component.tableData.data = [];
     expect(component.calculateEfficiency()).toBe('0%');
@@ -1173,5 +1183,60 @@ describe('HomeComponent', () => {
     expect(component.tableData.data[0].name).toBe('Test Project');
     expect(component.tableData.data[0].productivity).toBe('85.50%');
     expect(component.loader).toBeFalse();
+  }));
+
+  it('should initialize empty boardMaturity with default M0 values in ngOnInit', fakeAsync(() => {
+    const responseWithEmptyMaturity = {
+      message: 'Success',
+      success: true,
+      data: {
+        matrix: {
+          rows: [
+            {
+              id: 'r1',
+              name: 'Project with Empty Maturity',
+              completion: '50%',
+              health: 'unhealthy',
+              boardMaturity: {}, // Empty maturity
+            },
+          ],
+          columns: [
+            { field: 'id', header: 'ID' },
+            { field: 'name', header: 'Name' },
+          ],
+        },
+      },
+    };
+
+    mockHttpService.getExecutiveBoardData.and.returnValue(
+      of(responseWithEmptyMaturity),
+    );
+    spyOn(component, 'getProductivityForRow').and.returnValue('N/A');
+    spyOn(component, 'generateColumnFilterData').and.returnValue({
+      tableColumnData: {},
+      tableColumnForm: {},
+    });
+    spyOn(component, 'calculateQuertlyRisk').and.returnValue([]);
+    spyOn(component, 'calculateEfficiency').and.returnValue('50%');
+    spyOn(component, 'calculateHealth').and.returnValue({
+      count: 1,
+      average: '50%',
+    });
+
+    component.ngOnInit();
+    tick();
+
+    const row = component.tableData.data[0];
+    expect(row.boardMaturity).toEqual({
+      dora: 'M0',
+      value: 'M0',
+      speed: 'M0',
+      quality: 'M0',
+    });
+    // Verify spread properties as well
+    expect(row.dora).toBe('M0');
+    expect(row.value).toBe('M0');
+    expect(row.speed).toBe('M0');
+    expect(row.quality).toBe('M0');
   }));
 });
