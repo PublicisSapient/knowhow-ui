@@ -53,6 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   productivityExpandRowDataLoader = false;
   nbaFlag = new BehaviorSubject(false);
   nbaLoader = true;
+  hasBaseUrl = false;
 
   constructor(
     private service: SharedService,
@@ -68,6 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.getNBAFeatureFlag();
+    this.checkConfigurationDetails();
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(
@@ -876,6 +878,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         iconType: 'pi',
       },
     ];
+  }
+
+  checkConfigurationDetails() {
+    const configData = this.service.getConfigurationDetails();
+    this.hasBaseUrl = !!configData?.baseUrl;
   }
 
   ngOnDestroy() {

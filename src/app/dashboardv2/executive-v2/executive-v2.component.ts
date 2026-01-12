@@ -159,6 +159,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
+  hasBaseUrl = false;
 
   monthlyMetrics: MetricItem[] = [
     { label: 'Total PRs', value: 35, trend: 'neutral' },
@@ -224,8 +225,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.floatingRecommendation &&
       this.isRecommendationsEnabled &&
       this.selectedtype?.toLowerCase() == 'scrum' &&
-      this.projectCount <= 2
+      this.projectCount <= 2 &&
+      this.hasBaseUrl
     );
+  }
+
+  checkConfigurationDetails() {
+    const configData = this.service.getConfigurationDetails();
+    this.hasBaseUrl = !!configData?.baseUrl;
   }
 
   arrayDeepCompare(a1, a2) {
@@ -339,6 +346,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.initializeUserDetails();
+    this.checkConfigurationDetails();
     this.setupScrumKanbanSwitchSubscription();
 
     this.subscriptions.push(
