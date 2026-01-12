@@ -243,10 +243,13 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
   redirectToLogin() {
     /** redirect to central login url*/
     const redirect_uri = window.location.href;
+    const encodedRedirectUri = encodeURIComponent(redirect_uri);
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
-    if (environment.CENTRAL_LOGIN_URL) {
+    if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
       window.location.href =
-        environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+        environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + encodedRedirectUri;
+    } else {
+      window.location.reload();
     }
   }
 }
