@@ -331,10 +331,12 @@
                       {{ recommendation.recommendationDetails }}
                     </div>
                     </div>
-                     <i class="recommendation-content-arrow pi pi-arrow-right"  [ngClass]="getSeverityClass(recommendation)" pTooltip="Dependency Co&#8209;efficient" tooltipPosition="top" [style.right]="0" [style.bottom]="0"
+                     <ng-container *ngIf="getCorrelatedKpis(recommendation) as correlatedKpis">
+                       <ng-container *ngIf="correlatedKpis.length > 0">
+                       <i class="recommendation-content-arrow pi pi-arrow-right"  [ngClass]="getSeverityClass(recommendation)" pTooltip="Dependency Co&#8209;efficient" tooltipPosition="top" [style.right]="0" [style.bottom]="0"
                       [style.margin]="'12px'"></i>
                       <div class="isc-right">
-                      <div class="isc-metric" *ngFor="let kpi of recommendation.correlatedKpis">
+                      <div class="isc-metric" *ngFor="let kpi of correlatedKpis">
                         <div class="isc-metric-left">
                           <div class="isc-dot"></div>
                             <span class="kpi-name">{{ formatKpiLabel(kpi.split(':')[0]) }}</span>
@@ -349,6 +351,8 @@
                         </ng-container>
                       </div>
                     </div>
+                    </ng-container>
+                    </ng-container>
                   </div>
                 </div>
               </div>
