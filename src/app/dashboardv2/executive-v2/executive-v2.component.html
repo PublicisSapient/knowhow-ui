@@ -501,7 +501,7 @@
 
 <ng-template #recommendationsPortal>
   <ng-container
-    *ngIf="floatingRecommendation && isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <= 2 && this.filterApplyData?.label === 'project' &&
+    *ngIf="floatingRecommendation && isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <= 2 && hasBaseUrl && this.filterApplyData?.label === 'project' &&
   !(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')">
     <app-recommendations #recommendationsComponent [filterData]="filterApplyData"
       [kpiList]="kpiList"></app-recommendations>

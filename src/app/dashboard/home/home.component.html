@@ -18,7 +18,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div [ngClass]="{'p-col-12':!(nbaFlag | async) || selectedType !== 'scrum', 'p-col-9' : (nbaFlag | async) && selectedType === 'scrum'}">
+  <div [ngClass]="{'p-col-12':!(nbaFlag | async) || selectedType !== 'scrum' || !hasBaseUrl, 'p-col-9' : (nbaFlag | async) && selectedType === 'scrum' && hasBaseUrl}">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -269,8 +269,7 @@
     </div>
   </div>
 </div>
-
-<div class="p-col-3" *ngIf="(nbaFlag | async) && selectedType === 'scrum'">
+<div class="p-col-3" *ngIf="(nbaFlag | async) && selectedType === 'scrum' && hasBaseUrl">
     <app-nba [rawData]="nbaRawData" [isLoading]="nbaLoader"></app-nba>
 </div>
 

@@ -45,7 +45,7 @@ export class PebCalculatorComponent implements OnInit {
   subscription = [];
   selectedLevel: string = '';
   categoryVariations: CategoryVariations | null = null;
-  isLoadingPebData: boolean = false;
+  isLoadingPebData: boolean = true;
   private pendingApiCalls: number = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
@@ -84,19 +84,6 @@ export class PebCalculatorComponent implements OnInit {
    * @memberof PebCalculatorComponent
    * @lifecycle Angular
    */
-  onSliderChange(controlName: string, event: any) {
-    this.pebForm.get(controlName)?.setValue(event.value);
-    this.cdr.detectChanges();
-  }
-
-  onInputChange(controlName: string, event: any) {
-    if (event.value !== null && event.value !== undefined) {
-      this.pebForm
-        .get(controlName)
-        ?.setValue(event.value, { emitEvent: false });
-    }
-    this.cdr.detectChanges();
-  }
 
   ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams
@@ -186,8 +173,6 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPEBData() {
-    this.showLoader = true;
-
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
       .getPebProductivityData(this.selectedLevel?.toLowerCase())
@@ -200,7 +185,6 @@ export class PebCalculatorComponent implements OnInit {
             this.errorMessage = '';
             this.completeApiCall();
           } else {
-            this.showLoader = false;
             this.completeApiCall();
             this.isError = true;
             console.error(
@@ -213,7 +197,6 @@ export class PebCalculatorComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to fetch productivity gain data', err.message);
-          this.showLoader = false;
           this.completeApiCall();
           this.isError = true;
           this.errorMessage = err['message'];
@@ -222,27 +205,22 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   calculatePEB() {
-    this.showLoader = true;
-    setTimeout(() => {
-      const overallGain = this.productivityGain['details']?.reduce((a, b) => {
-        return a + (b['categoryScores']['overall'] || 0);
-      }, 0);
+    const overallGain = this.productivityGain['details']?.reduce((a, b) => {
+      return a + (b['categoryScores']['overall'] || 0);
+    }, 0);
 
-      this.annualPEB = this.calculateMultipliedDetails(overallGain);
+    this.annualPEB = this.calculateMultipliedDetails(overallGain);
 
-      const details = this.productivityGain?.details;
-      this.items = details.map((item) => ({
-        ...item,
-        categoryScores: Object.fromEntries(
-          Object.entries(item.categoryScores).map(([key, value]) => [
-            key,
-            this.calculateMultipliedDetails(value as number),
-          ]),
-        ),
-      }));
-
-      this.showLoader = false;
-    }, 1000);
+    const details = this.productivityGain?.details;
+    this.items = details.map((item) => ({
+      ...item,
+      categoryScores: Object.fromEntries(
+        Object.entries(item.categoryScores).map(([key, value]) => [
+          key,
+          this.calculateMultipliedDetails(value as number),
+        ]),
+      ),
+    }));
   }
 
   getPebProjectPerformanceData(level) {
