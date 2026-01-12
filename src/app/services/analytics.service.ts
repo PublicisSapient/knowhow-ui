@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { GoogleAnalyticsService } from './google-analytics.service';
 import { MetricsService } from './metrics.service';
 import { HttpService } from './http.service';
@@ -40,13 +40,17 @@ export class AnalyticsService {
   private sessionStartTime: number | null = null;
   private pageViewCount = 0;
   private analyticsConfigLoaded = false;
+  private httpService: HttpService;
 
   constructor(
     private googleAnalytics: GoogleAnalyticsService,
     private metrics: MetricsService,
-    private httpService: HttpService,
+    private injector: Injector,
   ) {
-    this.loadAnalyticsConfig();
+    setTimeout(() => {
+      this.httpService = this.injector.get(HttpService);
+      this.loadAnalyticsConfig();
+    });
   }
 
   private loadAnalyticsConfig(): void {
