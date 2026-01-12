@@ -277,9 +277,13 @@ describe('ChatbotComponent', () => {
 
     it('should validate support form correctly', () => {
       component.supportForm.issueDescription = '';
+      component.selectedProject = null;
       expect(component.isSupportFormValid()).toBeFalse();
 
       component.supportForm.issueDescription = 'Valid description';
+      expect(component.isSupportFormValid()).toBeFalse(); // Still false because project is null
+
+      component.selectedProject = { name: 'Project 1', code: 'P1' };
       expect(component.isSupportFormValid()).toBeTrue();
     });
 
@@ -353,10 +357,7 @@ describe('ChatbotComponent', () => {
       expect(component.getCurrentSelectedProject).toEqual([
         { name: 'Project 1', code: 'P1' },
       ]);
-      expect(component.selectedProject).toEqual({
-        name: 'Project 1',
-        code: 'P1',
-      });
+      expect(component.selectedProject).toBeNull();
       expect(component.userName).toBe('John Doe');
       expect(component.userEmail).toBe('john@example.com');
     });

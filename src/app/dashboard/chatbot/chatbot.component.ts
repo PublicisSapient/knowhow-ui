@@ -171,7 +171,9 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   isSupportFormValid(): boolean {
-    return this.supportForm.issueDescription.trim() !== '';
+    return (
+      this.supportForm.issueDescription.trim() !== '' && !!this.selectedProject
+    );
   }
 
   submitSupport() {
@@ -205,7 +207,7 @@ export class ChatbotComponent implements AfterViewChecked {
       name: el.nodeDisplayName,
       code: el.nodeName,
     }));
-    this.selectedProject = this.getCurrentSelectedProject[0];
+    this.selectedProject = null;
 
     const currentUserDetails = JSON.parse(
       localStorage.getItem('currentUserDetails') || '{}',
