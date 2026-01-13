@@ -316,3 +316,13 @@
   background: #d9e7fec2;
   transition: box-shadow 0.2s;
 }
+
+:host
+  ::ng-deep
+  .p-datatable
+  .p-datatable-thead
+  > tr
+  > th.p-text-right
+  .table-head {
+  justify-content: flex-end;
+}
