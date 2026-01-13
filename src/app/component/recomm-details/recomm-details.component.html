@@ -41,12 +41,15 @@
     </div>
 
     <div class="plan-steps">
-      <div *ngFor="let step of actionPlan" class="plan-step">
-        <div class="step-circle">{{ step.step }}</div>
-        <div class="step-content">
-          <div class="step-title">{{ step.title }}</div>
-          <div class="step-desc">{{ step.description }}</div>
+      <div *ngFor="let step of actionPlan">
+        <div class="plan-step">
+          <div class="step-circle">{{ step.step }}</div>
+          <div class="step-content">
+            <div class="step-title">{{ step.title }}</div>
+            <div class="step-desc" [innerHTML]="step.description"></div>
+          </div>
         </div>
+        <hr>
       </div>
     </div>
   </div>
