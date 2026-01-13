@@ -83,7 +83,7 @@
                     @if(BottomTilesLoader){
                       <p-skeleton width="60px" height="2rem" />
                     } @else {
-                      <span class="styled-cell">{{ row[col.field] }}</span>
+                      <span>{{ row[col.field] }}</span>
                     }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
@@ -154,7 +154,7 @@
                     @if(productivityExpandRowDataLoader){
                       <p-skeleton width="60px" height="2rem" />
                     } @else {
-                      <span class="styled-cell">{{ childRow[childCol.field] }}</span>
+                      <span>{{ childRow[childCol.field] }}</span>
                     }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
