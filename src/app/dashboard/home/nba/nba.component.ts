@@ -79,10 +79,23 @@ export class NbaComponent implements OnChanges {
   formatActionPlanDescription(description: string): string {
     if (!description) return '';
 
-    // Replace **text** with <strong>text</strong> and add line breaks
-    return description
-      .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>')
-      .replace(/\. /g, '. <span class="sentence-break"></span>');
+    // Replace **text** with <strong>text</strong> using safer string manipulation
+    let result = description;
+
+    // Split by ** and process pairs
+    const parts = result.split('**');
+    if (parts.length > 1) {
+      result = '';
+      for (let i = 0; i < parts.length; i++) {
+        if (i % 2 === 0) {
+          result += parts[i];
+        } else {
+          result += `<span class="bold-text">${parts[i]}</span>`;
+        }
+      }
+    }
+
+    return result.replace(/\. /g, '. <span class="sentence-break"></span>');
   }
 
   private prepareRecommCards(): void {
