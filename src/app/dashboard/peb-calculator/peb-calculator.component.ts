@@ -39,6 +39,9 @@ export class PebCalculatorComponent implements OnInit {
   errorMessage: string = '';
   items: any[] = [];
   pebProductivityTrendData: any = {};
+  tableColumnData: any = {};
+  tableColumnForm: any = {};
+  filteredColumn: string = '';
 
   performanceChartData: Array<object> = [];
   costSavingsChartData: Array<object> = [];
@@ -221,6 +224,9 @@ export class PebCalculatorComponent implements OnInit {
         ]),
       ),
     }));
+
+    // Generate filter data for the table
+    this.generateColumnFilterData();
   }
 
   getPebProjectPerformanceData(level) {
@@ -387,6 +393,55 @@ export class PebCalculatorComponent implements OnInit {
     };
 
     return currencyMap[country] || 'USD';
+  }
+
+  generateColumnFilterData() {
+    if (this.items.length > 0) {
+      this.tableColumnData = {};
+      this.tableColumnForm = {};
+
+      // Generate filter data for organizationEntityName
+      const entityNames = new Map();
+      this.items.forEach((item) => {
+        const key = item.organizationEntityName;
+        if (!entityNames.has(key)) {
+          entityNames.set(key, {
+            name: key,
+            value: key,
+          });
+        }
+      });
+      this.tableColumnData['organizationEntityName'] = Array.from(
+        entityNames.values(),
+      );
+      this.tableColumnForm['organizationEntityName'] = [];
+
+      // Generate filter data for categoryScores.overall
+      const savingsValues = new Map();
+      this.items.forEach((item) => {
+        const key = item.categoryScores.overall;
+        const displayValue = this.dynamicCurrencyPipe.transform(key, 'value');
+        if (!savingsValues.has(key)) {
+          savingsValues.set(key, {
+            name: displayValue,
+            value: key,
+          });
+        }
+      });
+      this.tableColumnData['categoryScores.overall'] = Array.from(
+        savingsValues.values(),
+      );
+      this.tableColumnForm['categoryScores.overall'] = [];
+    }
+  }
+
+  onFilterClick(columnName: string) {
+    this.filteredColumn = columnName;
+  }
+
+  onFilterBlur(columnName: string) {
+    this.filteredColumn =
+      this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
   ngOnDestroy() {
