@@ -31,9 +31,9 @@ export const environment: Environment = {
   RETROS_URL: '',
   MCP_URL: '',
   analytics: {
-    grafanaRolloutPercentage: 0,
+    grafanaRolloutPercentage: 70,
     enableGoogleAnalytics: true,
-    enableGrafanaAnalytics: false,
+    enableGrafanaAnalytics: true,
 
     selfHosted: {
       enabled: false,
