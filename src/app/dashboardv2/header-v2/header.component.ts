@@ -326,8 +326,13 @@ export class HeaderComponent implements OnInit {
     this.httpService.getAppConfigurationDetails().subscribe(
       (response) => {
         if (response?.success) {
-          this.configDetails = response.data;
-          this.sharedService.setConfigurationDetails(response.data);
+          const data = response.data;
+          // Combine baseUrl with relative URLs
+          if (data.apiDocumentation && data.apiDocumentation.startsWith('/')) {
+            data.apiDocumentation = environment.baseUrl + data.apiDocumentation;
+          }
+          this.configDetails = data;
+          this.sharedService.setConfigurationDetails(data);
         }
       },
       (error) => {

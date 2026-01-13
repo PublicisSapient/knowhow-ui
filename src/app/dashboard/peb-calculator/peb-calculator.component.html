@@ -7,6 +7,7 @@
       </div>
     </div>
   }
+  @if(!isLoadingPebData) {
   <div class="p-d-flex p-p-2 p-jc-between">
     <div class="p-col-3 p-mb-2">
         <app-top-tiles [item]="{
@@ -65,33 +66,24 @@
             <div class="p-col-4 grid-flex-wrap-100">
               <div class="p-col-12 p-d-flex p-align-center">
                 <label for="devCount">Total Team Size</label>
-                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                <img class="info-icon" alt="info" src="assets/img/Info.svg" aria-hidden="true"
                     pTooltip="You can edit the no. of developers" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCountControl" inputId="devCount"
-                  (onInput)="onInputChange('devCountControl', $event)" ngDefaultControl></p-inputNumber>
-              </div>
-              <div class="p-col-12">
-                <p-slider formControlName="devCountControl" class="w-full" [step]="10" [min]="10" [max]="300"
-                  (onChange)="onSliderChange('devCountControl', $event)" ngDefaultControl></p-slider>
+                  [min]="1" [useGrouping]="false" ngDefaultControl></p-inputNumber>
               </div>
             </div>
             <div class="p-col-4 grid-flex-wrap-100">
               <div class="p-col-12 p-d-flex p-align-center">
                 <label for="devCost">Avg. Cost per Team Member </label>
-                <img class="info-icon" alt="info" src="../../../assets/img/Info.svg" aria-hidden="true"
+                <img class="info-icon" alt="info" src="assets/img/Info.svg" aria-hidden="true"
                     pTooltip="You can edit the avg cost per developer" tooltipPosition="top">
               </div>
               <div class="p-col-12">
                 <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
-                  mode="currency" [currency]="userCurrency" [locale]="userLocale"
-                  (onInput)="onInputChange('devCostControl', $event)" ngDefaultControl></p-inputNumber>
+                  mode="currency" [currency]="userCurrency" [locale]="userLocale" [min]="1" ngDefaultControl></p-inputNumber>
               </div>
-            </div>
-            <div class="p-col-12">
-              <p-slider formControlName="devCostControl" class="w-full" [step]="100" [min]="100000" [max]="500000"
-                (onChange)="onSliderChange('devCostControl', $event)" ngDefaultControl></p-slider>
             </div>
           </div>
           <div class="grid-flex-wrap-100">
@@ -269,7 +261,7 @@
         <ng-template #noDataAccess>
           <div class="min-ht">
             <div class="p-w-100  p-d-flex p-justify-center">
-              <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+              <img alt="no-data" src="assets/img/NoDataFound.svg" />
             </div>
             <div class="p-w-100">
               <h4 class="p-text-center">No Data Available.</h4>
@@ -279,5 +271,6 @@
       </div>
     </p-card>
   </div>
+  }
 </div>
 <app-chatbot></app-chatbot>

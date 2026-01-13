@@ -53,7 +53,7 @@ export class NbaComponent implements OnChanges {
         return {
           step: i + 1,
           title: list.title,
-          description: list.description,
+          description: this.formatActionPlanDescription(list.description),
         };
       }),
       title: item.title,
@@ -74,6 +74,15 @@ export class NbaComponent implements OnChanges {
       default:
         return '#49535e';
     }
+  }
+
+  formatActionPlanDescription(description: string): string {
+    if (!description) return '';
+
+    // Replace **text** with <strong>text</strong> and add line breaks
+    return description
+      .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>')
+      .replace(/\. /g, '. <span class="sentence-break"></span>');
   }
 
   private prepareRecommCards(): void {

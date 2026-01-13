@@ -53,6 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   productivityExpandRowDataLoader = false;
   nbaFlag = new BehaviorSubject(false);
   nbaLoader = true;
+  hasBaseUrl = false;
 
   constructor(
     private service: SharedService,
@@ -68,6 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.products = Array.from({ length: 4 }).map((_, i) => `Item #${i}`);
     this.getNBAFeatureFlag();
+    this.checkConfigurationDetails();
     this.subscription.push(
       this.service.passDataToDashboard
         .pipe(
@@ -76,6 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           ),
         )
         .subscribe((sharedobject) => {
+          this.checkConfigurationDetails();
           this.tableData = {
             columns: [],
             data: [],
@@ -121,11 +124,21 @@ export class HomeComponent implements OnInit, OnDestroy {
                     });
                   } else if (executiveBoard?.data) {
                     this.tableData['data'] =
-                      executiveBoard.data.matrix.rows.map((row) => ({
-                        ...row,
-                        ...row?.boardMaturity,
-                        productivity: this.getProductivityForRow(row.name),
-                      }));
+                      executiveBoard.data.matrix.rows.map((row) => {
+                        if (Object.keys(row.boardMaturity).length === 0) {
+                          row.boardMaturity = {
+                            dora: 'M0',
+                            value: 'M0',
+                            speed: 'M0',
+                            quality: 'M0',
+                          };
+                        }
+                        return {
+                          ...row,
+                          ...row?.boardMaturity,
+                          productivity: this.getProductivityForRow(row.name),
+                        };
+                      });
 
                     const projectNameMap = new Map(
                       this.service
@@ -362,7 +375,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculateEfficiency() {
     const rowData = this.tableData['data'];
     const sum = rowData.reduce((acc, num) => {
-      return acc + parseInt(num.completion, 10);
+      if (!Number.isNaN(parseInt(num.completion, 10))) {
+        return acc + parseInt(num.completion, 10);
+      }
+      return acc;
     }, 0);
 
     if (rowData.length === 0) {
@@ -873,6 +889,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         iconType: 'pi',
       },
     ];
+  }
+
+  checkConfigurationDetails() {
+    const configData = this.service.getConfigurationDetails();
+    this.hasBaseUrl = !!configData?.baseUrl;
   }
 
   ngOnDestroy() {

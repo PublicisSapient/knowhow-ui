@@ -38,6 +38,14 @@ export class RecommendationsComponent implements OnInit {
     { label: 'Executive Sponsor', value: 'executive_sponsor' },
     { label: 'Agile Program Manager', value: 'agile_program_manager' },
     { label: 'Engineering Lead', value: 'engineering_lead' },
+    { label: 'QA Manager', value: 'qa_manager' },
+    { label: 'DevOps Manager', value: 'devops_manager' },
+    { label: 'SecOps Manager', value: 'secops_manager' },
+    { label: 'DevSecOps Manager', value: 'devsecops_manager' },
+    { label: 'Product Manager', value: 'product_manager' },
+    { label: 'Product Owner', value: 'product_owner' },
+    { label: 'Scrum Master', value: 'scrum_master' },
+    { label: 'Developer', value: 'developer' },
   ];
 
   sprintOptions = [];
@@ -631,6 +639,7 @@ export class RecommendationsComponent implements OnInit {
         } else {
           let heightLeft = pdfHeight;
           let position = startY;
+          const pageContentHeight = pageHeight - padding;
 
           while (heightLeft > 0) {
             pdfInstance.addImage(
@@ -643,11 +652,11 @@ export class RecommendationsComponent implements OnInit {
               undefined,
               'FAST',
             );
-            heightLeft -= pageHeight;
+            heightLeft -= pageContentHeight;
 
             if (heightLeft > 0) {
               pdfInstance.addPage();
-              position = -heightLeft;
+              position -= pageContentHeight;
             }
           }
         }
@@ -743,6 +752,12 @@ export class RecommendationsComponent implements OnInit {
       default:
         return 'critical-icon';
     }
+  }
+  getCorrelatedKpis(recommendation: any): string[] {
+    return (recommendation?.correlatedKpis ?? [])
+      .filter((kpi): kpi is string => typeof kpi === 'string')
+      .map((kpi) => kpi.trim().split(':')[0].trim())
+      .filter(Boolean);
   }
   formatKpiLabel(kpi: string): string {
     if (!kpi) return '';

@@ -2985,6 +2985,11 @@ describe('ExecutiveV2Component', () => {
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
 
+    // Mock getConfigurationDetails method
+    spyOn(service, 'getConfigurationDetails').and.returnValue({
+      baseUrl: 'http://localhost:7001/',
+    });
+
     // const type = 'scrum';
     // service.selectedtype = type;
     // service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
