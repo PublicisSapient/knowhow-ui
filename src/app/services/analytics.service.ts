@@ -16,10 +16,10 @@
  *
  ******************************************************************************/
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { GoogleAnalyticsService } from './google-analytics.service';
 import { MetricsService } from './metrics.service';
-import { HttpService } from './http.service';
 import { environment } from '../../environments/environment';
 
 interface AnalyticsData {
@@ -39,51 +39,38 @@ export class AnalyticsService {
   private userId: string | null = null;
   private sessionStartTime: number | null = null;
   private pageViewCount = 0;
-  private analyticsConfigLoaded = false;
-  private httpService: HttpService;
 
   constructor(
     private googleAnalytics: GoogleAnalyticsService,
     private metrics: MetricsService,
-    private injector: Injector,
+    private http: HttpClient,
   ) {
-    setTimeout(() => {
-      this.httpService = this.injector.get(HttpService);
-      this.loadAnalyticsConfig();
-    });
+    this.initializeWithDefaults();
+    this.loadAnalyticsConfig();
   }
 
   private loadAnalyticsConfig(): void {
-    this.httpService.getConfigDetails().subscribe({
-      next: (config) => {
-        if (config?.analytics) {
+    const configUrl = environment.baseUrl + '/api/configDetails';
+    this.http.get<any>(configUrl).subscribe({
+      next: (response) => {
+        if (response?.success && response?.data?.analytics) {
+          const config = response.data.analytics;
           this.initializeAnalytics(
-            config.analytics.grafanaRolloutPercentage,
-            config.analytics.enableGoogleAnalytics,
-            config.analytics.enableGrafanaAnalytics,
-          );
-        } else {
-          console.warn(
-            '[Analytics] Backend config not available, using environment defaults',
-          );
-          this.initializeAnalytics(
-            environment.analytics?.grafanaRolloutPercentage || 0,
-            environment.analytics?.enableGoogleAnalytics || false,
-            environment.analytics?.enableGrafanaAnalytics || false,
+            config.grafanaRolloutPercentage || 0,
+            config.enableGoogleAnalytics || false,
+            config.enableGrafanaAnalytics || false,
           );
         }
-        this.analyticsConfigLoaded = true;
-      },
-      error: (err) => {
-        console.error('[Analytics] Failed to load config from backend:', err);
-        this.initializeAnalytics(
-          environment.analytics?.grafanaRolloutPercentage || 0,
-          environment.analytics?.enableGoogleAnalytics || false,
-          environment.analytics?.enableGrafanaAnalytics || false,
-        );
-        this.analyticsConfigLoaded = true;
       },
     });
+  }
+
+  private initializeWithDefaults(): void {
+    this.initializeAnalytics(
+      environment.analytics?.grafanaRolloutPercentage || 0,
+      environment.analytics?.enableGoogleAnalytics || false,
+      environment.analytics?.enableGrafanaAnalytics || false,
+    );
   }
 
   private initializeAnalytics(
