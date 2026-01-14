@@ -144,8 +144,8 @@
 .styled-cell {
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
-  font-weight: 500;
-  font-size: 0.8125rem;
+  font-weight: 400;
+  font-size: 14px;
   display: inline-block;
   text-align: center;
   min-width: 80px;
