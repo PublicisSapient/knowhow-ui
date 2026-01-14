@@ -459,6 +459,7 @@ describe('BasicConfigComponent', () => {
       detail: '',
     });
     expect(gaService.createProjectData).toHaveBeenCalled();
+    tick(5000);
   }));
 
   it('should handle form submission error', fakeAsync(() => {
