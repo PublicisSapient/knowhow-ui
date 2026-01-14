@@ -20,7 +20,6 @@ import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharelinkService } from './share-link.service';
-import { AnalyticsService } from './analytics.service';
 import { Portal } from '@angular/cdk/portal';
 /*************
 SharedService
@@ -180,7 +179,6 @@ export class SharedService {
     private router: Router,
     private route: ActivatedRoute,
     private injector: Injector,
-    private analytics: AnalyticsService,
   ) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -234,9 +232,6 @@ export class SharedService {
     this.selectedTab = selectedBoard;
     if (selectedBoard) {
       this.onTabSwitch.next({ selectedBoard });
-
-      // Track tab navigation for analytics
-      this.analytics.trackTabNavigation(selectedBoard);
     }
   }
 

@@ -67,9 +67,9 @@ export class AnalyticsService {
 
   private initializeWithDefaults(): void {
     this.initializeAnalytics(
-      environment.analytics?.grafanaRolloutPercentage || 0,
-      environment.analytics?.enableGoogleAnalytics || false,
-      environment.analytics?.enableGrafanaAnalytics || false,
+      environment.analytics?.grafanaRolloutPercentage || 40,
+      environment.analytics?.enableGoogleAnalytics || true,
+      environment.analytics?.enableGrafanaAnalytics || true,
     );
   }
 
