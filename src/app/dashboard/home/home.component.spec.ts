@@ -200,7 +200,7 @@ describe('HomeComponent', () => {
     mockSharedService.setPEBDataCache.and.stub();
     mockSharedService.clearPEBDataCache.and.stub();
     mockSharedService.getConfigurationDetails.and.returnValue({
-      data: { baseUrl: 'http://localhost:7001/' },
+      data: { aiGatewayBaseUrl: 'http://localhost:7001/' },
     });
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
@@ -1084,7 +1084,7 @@ describe('HomeComponent', () => {
 
   it('should initialize hasBaseUrl based on configuration', () => {
     mockSharedService.getConfigurationDetails.and.returnValue({
-      baseUrl: 'http://localhost:7001/',
+      aiGatewayBaseUrl: 'http://localhost:7001/',
     });
 
     component.checkConfigurationDetails();
