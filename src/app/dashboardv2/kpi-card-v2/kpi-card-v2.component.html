@@ -257,7 +257,7 @@
         [colorObj]="trendBoxColorObj">
       </app-trend-indicator-v2>
     </div>
-    <div class="ai-recommendation-section p-mx-3 p-my-3" *ngIf="false"
+    <div class="ai-recommendation-section p-mx-3 p-my-3"
       [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
       <app-kpi-ai-recommendation-target *ngIf="checkIfDataPresent(kpiDataStatusCode)"
         [targetValue]="'85%'"
