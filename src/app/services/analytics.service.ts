@@ -84,19 +84,13 @@ export class AnalyticsService {
       enableGrafana,
     );
 
-    console.log('[Analytics] Initialized:', {
-      googleAnalytics: this.useGoogleAnalytics,
-      grafanaAnalytics: this.useGrafanaAnalytics,
+    console.debug('[Analytics] Initialized:', {
+      grafanaAnalytics: this.useGrafanaAnalytics ? 'IN' : 'OUT',
       rolloutPercentage: rolloutPercentage,
     });
 
     if (this.useGrafanaAnalytics) {
-      console.log(
-        '[Analytics] Grafana analytics enabled - metrics will be sent automatically when changed',
-      );
       this.metrics.exposeMetricsEndpoint();
-    } else {
-      console.log('[Analytics] Grafana analytics disabled for this session');
     }
   }
 
@@ -105,7 +99,6 @@ export class AnalyticsService {
     enableGrafana: boolean,
   ): boolean {
     if (!enableGrafana) {
-      console.log('[Analytics] Grafana analytics disabled by configuration');
       return false;
     }
 
@@ -114,19 +107,11 @@ export class AnalyticsService {
       const random = Math.random() * 100; // NOSONAR: S2245 - Math.random is acceptable for A/B testing rollout
       const inRollout = random < rolloutPercentage;
       sessionStorage.setItem('grafana_analytics_rollout', inRollout.toString());
-      console.log(
-        `[Analytics] A/B Test: ${
-          inRollout ? 'IN' : 'OUT'
-        } of rollout (${random.toFixed(2)}% vs ${rolloutPercentage}%)`,
-      );
       return inRollout;
     }
 
     const inRollout =
       sessionStorage.getItem('grafana_analytics_rollout') === 'true';
-    console.log(
-      `[Analytics] Using cached rollout decision: ${inRollout ? 'IN' : 'OUT'}`,
-    );
     return inRollout;
   }
 

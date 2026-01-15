@@ -40,11 +40,6 @@ export class MetricsService implements OnDestroy {
     const key = this.buildMetricKey(metricName, labels);
     const current = this.metrics.get(key) || 0;
     this.metrics.set(key, current + 1);
-    console.log(
-      `[Metrics] Incremented ${metricName}:`,
-      labels,
-      `-> ${current + 1}`,
-    );
     this.markDirty();
   }
 
@@ -55,7 +50,6 @@ export class MetricsService implements OnDestroy {
   ): void {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
-    console.log(`[Metrics] Set ${metricName}:`, labels, `-> ${value}`);
     this.markDirty();
   }
 
@@ -68,9 +62,6 @@ export class MetricsService implements OnDestroy {
       output += `${key} ${value}\n`;
     }
 
-    console.log(
-      `[Metrics] Generated Prometheus metrics (${this.metrics.size} metrics)`,
-    );
     return output;
   }
 
@@ -333,10 +324,6 @@ export class MetricsService implements OnDestroy {
 
   // Expose metrics endpoint (for development)
   exposeMetricsEndpoint(): void {
-    console.log(
-      '[Metrics] Metrics endpoint exposed on window.getKnowHowMetrics()',
-    );
-
     // Log metrics to console for debugging
     setInterval(() => {}, 30000); // Every 30 seconds
 
@@ -348,16 +335,13 @@ export class MetricsService implements OnDestroy {
 
   sendMetricsToBackend(): void {
     if (!this.isDirty) {
-      console.log('[Metrics] No changes to send, skipping...');
       return;
     }
 
-    console.log('[Metrics] Preparing to send metrics to backend...');
     const metrics = this.getPrometheusMetrics();
 
     localStorage.setItem('knowhow_metrics', metrics);
     localStorage.setItem('knowhow_metrics_timestamp', Date.now().toString());
-    console.log('[Metrics] Metrics saved to localStorage');
 
     this.sendToPushgateway(metrics);
     this.isDirty = false;
@@ -365,9 +349,6 @@ export class MetricsService implements OnDestroy {
 
   private async sendToPushgateway(metrics: string): Promise<void> {
     try {
-      console.log(
-        '[Metrics] Sending metrics to Pushgateway at /api/metrics-proxy/send...',
-      );
       const response = await fetch('/api/metrics-proxy/send', {
         method: 'POST',
         headers: {
@@ -377,12 +358,7 @@ export class MetricsService implements OnDestroy {
       });
 
       if (!response.ok) {
-        console.error(
-          '[Metrics] Failed to send metrics to Pushgateway:',
-          response.statusText,
-        );
-      } else {
-        console.log('[Metrics] Successfully sent metrics to Pushgateway');
+        console.error('[Metrics] Failed to send metrics:', response.statusText);
       }
     } catch (error) {
       console.error('[Metrics] Error sending metrics to Pushgateway:', error);
