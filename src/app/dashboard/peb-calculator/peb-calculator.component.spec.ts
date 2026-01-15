@@ -256,4 +256,18 @@ describe('PebCalculatorComponent', () => {
       );
     });
   });
+
+  it('should reset form to default values when resetForm is called', () => {
+    component.pebForm.patchValue({
+      devCountControl: 100,
+      devCostControl: 500000,
+      durationControl: 'per month',
+    });
+    spyOn(component, 'calculatePEB');
+    component.resetForm();
+    expect(component.pebForm.get('devCountControl').value).toBe(25);
+    expect(component.pebForm.get('devCostControl').value).toBe(80000);
+    expect(component.pebForm.get('durationControl').value).toBe('per year');
+    expect(component.calculatePEB).toHaveBeenCalled();
+  });
 });

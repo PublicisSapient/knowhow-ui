@@ -72,6 +72,10 @@
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
                 <p-inputSwitch [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)" aria-label="Project on Hold" tabindex="0"></p-inputSwitch>
               </ng-container>
+              <ng-container *ngIf="generalControl.actionItem === 'input'">
+                <input type="text" [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" pInputText [(ngModel)]="teamSize" aria-label="Project Team Size Field" style="width: 75px; margin-right: 10px;" />
+                <button pButton pRipple label="Update" (click)="updateTeamSize()"></button>
+              </ng-container>
             </td>
           </tr>
         </ng-template>
