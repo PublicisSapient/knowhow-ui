@@ -2987,7 +2987,7 @@ describe('ExecutiveV2Component', () => {
 
     // Mock getConfigurationDetails method
     spyOn(service, 'getConfigurationDetails').and.returnValue({
-      baseUrl: 'http://localhost:7001/',
+      aiGatewayBaseUrl: 'http://localhost:7001/',
     });
 
     // const type = 'scrum';

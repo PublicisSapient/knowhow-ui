@@ -233,7 +233,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   checkConfigurationDetails() {
     const configData = this.service.getConfigurationDetails();
-    this.hasBaseUrl = !!configData?.baseUrl;
+    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
   }
 
   arrayDeepCompare(a1, a2) {

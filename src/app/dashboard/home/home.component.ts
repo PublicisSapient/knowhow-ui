@@ -893,7 +893,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   checkConfigurationDetails() {
     const configData = this.service.getConfigurationDetails();
-    this.hasBaseUrl = !!configData?.baseUrl;
+    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
   }
 
   ngOnDestroy() {
