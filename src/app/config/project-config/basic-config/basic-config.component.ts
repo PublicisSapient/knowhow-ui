@@ -226,6 +226,7 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['saveAssigneeDetails'];
       formValues['developerKpiEnabled'] =
         this.selectedProject['developerKpiEnabled'];
+      formValues['teamStrength'] = this.selectedProject['teamStrength'];
       this.form.patchValue(formValues);
     }
   }

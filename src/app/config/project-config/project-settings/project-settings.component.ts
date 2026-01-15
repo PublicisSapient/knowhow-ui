@@ -59,6 +59,7 @@ export class ProjectSettingsComponent implements OnInit {
   isSuperAdmin = false;
   isDeleteClicked = false;
   teamSize: number = 0;
+  currentProject: any;
 
   constructor(
     public sharedService: SharedService,
@@ -119,6 +120,7 @@ export class ProjectSettingsComponent implements OnInit {
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
+    this.currentProject = this.sharedService.getCurrentProject();
   }
 
   onProjectActiveStatusChange(event) {
@@ -170,6 +172,12 @@ export class ProjectSettingsComponent implements OnInit {
     this.httpService.getProjectListData().subscribe((responseList) => {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
+        const matchedProject = this.projectList.find(
+          (project) => project.id === this.currentProject?.id,
+        );
+        if (matchedProject) {
+          this.teamSize = matchedProject.teamStrength;
+        }
         this.fillColumns();
         this.loading = false;
         this.sharedService.setProjectList(this.allProjectList);
@@ -238,6 +246,7 @@ export class ProjectSettingsComponent implements OnInit {
         saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
         developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
         projectOnHold: this.projectList[i]?.projectOnHold,
+        teamStrength: this.projectList[i]?.teamStrength,
       };
       for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
         obj[
@@ -270,6 +279,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
+    this.teamSize = this.selectedProject?.teamStrength || 0;
 
     this.hierarchyLabelNameChange();
   }
@@ -285,6 +295,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
+    this.teamSize = this.selectedProject?.teamStrength || 0;
 
     this.hierarchyLabelNameChange();
   }
@@ -424,6 +435,7 @@ export class ProjectSettingsComponent implements OnInit {
     updatedDetails['createdAt'] = new Date().toISOString();
     updatedDetails['developerKpiEnabled'] = this.developerKpiEnabled;
     updatedDetails['projectOnHold'] = this.projectOnHold;
+    updatedDetails['teamStrength'] = this.teamSize;
 
     this.httpService
       .updateProjectDetails(updatedDetails, this.selectedProject.id)
@@ -506,4 +518,8 @@ export class ProjectSettingsComponent implements OnInit {
     a: KeyValue<number, string>,
     b: KeyValue<number, string>,
   ): number => 0;
+
+  updateTeamSize() {
+    this.updateProjectDetails('Team strength updated successfully.');
+  }
 }

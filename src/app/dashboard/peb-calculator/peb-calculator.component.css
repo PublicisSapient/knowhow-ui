@@ -26,6 +26,9 @@
 .calc-btn {
   margin-top: 1rem;
   width: 100%;
+}
+
+button[type='submit'].calc-btn {
   background: #0b4bc8;
 }
 

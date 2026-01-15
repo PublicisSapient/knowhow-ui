@@ -389,6 +389,16 @@ export class PebCalculatorComponent implements OnInit {
     return currencyMap[country] || 'USD';
   }
 
+  resetForm() {
+    this.pebForm.patchValue({
+      devCountControl: this.appConfig?.totalTeamSize || 30,
+      devCostControl: this.appConfig?.avgCostPerTeamMember || 10000,
+      durationControl:
+        this.appConfig?.timeDuration?.toLowerCase() || 'per year',
+    });
+    this.calculatePEB();
+  }
+
   ngOnDestroy() {
     this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
     this.sub$?.unsubscribe();
