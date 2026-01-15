@@ -279,6 +279,7 @@
  <div class="p-d-flex p-py-3 p-flex-wrap p-jc-between p-mx-2" *ngIf="selectedType === 'scrum'">
   @if(!BottomTilesLoader){
   @for (items of bottomTilesData(); track items ; let isFirst = $first; let index = $index) {
+    items - {{items | json}}
   <div class="trend-card p-col-4 p-p-3">
     <div class="trend-card-header p-mb-3">
       <h3 class="trend-card-title">{{ items.category }}</h3>
@@ -292,7 +293,7 @@
           <div class="trend-value-container">
             <div class="trend-icon">
               @if(index !== 0) {
-              <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
+              <i class="fas {{ item.desiredTrend === 'DESCENDING' ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
               } @else if(items.icon) {
               <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
               }
