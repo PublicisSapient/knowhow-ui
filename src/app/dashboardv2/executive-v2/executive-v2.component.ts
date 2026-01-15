@@ -185,6 +185,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedDateFilterValue: string;
   perfSummaryLoader: boolean = true;
   @ViewChild('recommendationsPortal') recommendationsPortal: TemplateRef<any>;
+  kpiRecommData = {};
 
   constructor(
     public service: SharedService,
@@ -797,6 +798,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
       this.sprintGoalData = [];
+      this.kpiRecommData = {};
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         this.kpiTableDataObj[key] = [];
@@ -2962,6 +2964,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createAllKpiArray(data) {
     for (const key in data) {
+      /** Creating recomm data */
+      this.kpiRecommData[key] = data[key]?.recommendationActionPlan || {};
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);

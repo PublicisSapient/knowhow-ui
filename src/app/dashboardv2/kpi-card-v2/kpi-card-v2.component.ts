@@ -176,6 +176,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   public selectedTrendObject: SelectedTrend | null = null;
   chartType;
   @Input() selectedBoard: string = 'dashboard';
+  @Input() kpiRecommData = {};
 
   constructor(
     public service: SharedService,
@@ -1636,5 +1637,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       .catch((err) => {
         console.error('Failed to copy URL: ', err);
       });
+  }
+
+  checkIfEmpty(obj) {
+    if (obj && Object.keys(obj).length > 0) {
+      return false;
+    }
+    return true;
   }
 }
