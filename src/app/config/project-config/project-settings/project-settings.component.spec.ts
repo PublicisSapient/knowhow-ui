@@ -36,6 +36,20 @@ import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+import { Action } from 'rxjs/internal/scheduler/Action';
+import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { TabViewModule } from 'primeng/tabview';
+import { TableModule } from 'primeng/table';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ProjectSettingsComponent', () => {
   let component: ProjectSettingsComponent;
@@ -65,7 +79,21 @@ describe('ProjectSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        RouterTestingModule,
+        HttpClientTestingModule,
+        FormsModule,
+        ToastModule,
+        DropdownModule,
+        TabViewModule,
+        TableModule,
+        InputSwitchModule,
+        ButtonModule,
+        ConfirmDialogModule,
+        DialogModule,
+        InputTextModule,
+        BrowserAnimationsModule,
+      ],
       declarations: [ProjectSettingsComponent],
       providers: [
         MessageService,
@@ -91,6 +119,31 @@ describe('ProjectSettingsComponent', () => {
   });
 
   beforeEach(() => {
+    // Mock localStorage
+    let store = {};
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      if (key === 'completeHierarchyData' && !store[key]) {
+        return JSON.stringify({
+          scrum: [
+            { hierarchyLevelId: 'bu', hierarchyLevelName: 'BU' },
+            { hierarchyLevelId: 'ver', hierarchyLevelName: 'Vertical' },
+            { hierarchyLevelId: 'acc', hierarchyLevelName: 'Account' },
+            { hierarchyLevelId: 'port', hierarchyLevelName: 'Engagement' },
+          ],
+          kanban: [],
+        });
+      }
+      return store[key] || null;
+    });
+    spyOn(localStorage, 'setItem').and.callFake(
+      (key: string, value: string) => {
+        store[key] = value;
+      },
+    );
+    spyOn(localStorage, 'clear').and.callFake(() => {
+      store = {};
+    });
+
     fixture = TestBed.createComponent(ProjectSettingsComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
@@ -168,11 +221,12 @@ describe('ProjectSettingsComponent', () => {
         saveAssigneeDetails: true,
         developerKpiEnabled: false,
         projectOnHold: false,
+        teamStrength: 10,
         isKanban: false,
       },
       {
-        id: '6464b111e96c182ec0e3ac5a',
-        projectNodeId: '42e34ab8-b054-4b2e-9284-3a0888119518',
+        id: '6464b111e96c182ec0e3ac5b',
+        projectNodeId: '42e34ab8-b054-4b2e-9284-3a0888119519',
         projectName: 'ROC1',
         projectDisplayName: 'ROC1',
         createdAt: '2023-05-17T10:48:49',
@@ -220,6 +274,7 @@ describe('ProjectSettingsComponent', () => {
         saveAssigneeDetails: true,
         developerKpiEnabled: false,
         projectOnHold: false,
+        teamStrength: 15,
         isKanban: false,
       },
     ];
@@ -305,6 +360,15 @@ describe('ProjectSettingsComponent', () => {
     // ✅ Ensure `projectOnHold` was updated
     expect(component.selectedProject.projectOnHold).toBeFalse();
   }));
+
+  it('should call updateProjectDetails with teamStrength when updateTeamSize is called', () => {
+    spyOn(component, 'updateProjectDetails');
+    component.teamSize = 25;
+    component.updateTeamSize();
+    expect(component.updateProjectDetails).toHaveBeenCalledWith(
+      'Team strength updated successfully.',
+    );
+  });
 
   it('should show error message and reset fields on API failure', fakeAsync(() => {
     const successMsg = 'Project update failed';
@@ -410,6 +474,11 @@ describe('ProjectSettingsComponent', () => {
   it('should initialize generalControls with correct values', () => {
     component.ngOnInit();
     expect(component.generalControls).toEqual([
+      {
+        name: 'Team Strength',
+        description: 'Enter team strength for this project',
+        actionItem: 'input',
+      },
       {
         name: 'Pause data collection',
         description:
@@ -603,7 +672,7 @@ describe('ProjectSettingsComponent', () => {
   });
 
   it('should get success response while getting project list', () => {
-    const fakeResponse = [
+    const fakeResponse: any = [
       {
         message: 'Fetched successfully',
         success: true,
@@ -645,9 +714,12 @@ describe('ProjectSettingsComponent', () => {
       },
     ];
     spyOn(httpService, 'getProjectListData').and.returnValue(of(fakeResponse));
+    component.currentProject = { id: '631f394dcfef11709d7ddc7b' };
+    fakeResponse[0].data[0].teamStrength = 50;
     component.getData();
     expect(component.loading).toBeFalse();
     expect(component.projectList.length).toBeGreaterThan(0);
+    expect(component.teamSize).toBe(50);
   });
 
   it('should set the loading property to false when the response is not successful', () => {
@@ -737,6 +809,7 @@ describe('ProjectSettingsComponent', () => {
     expect(component.isAssigneeSwitchChecked).toBe(true);
     expect(component.developerKpiEnabled).toBe(false);
     expect(component.projectOnHold).toBe(true);
+    expect(component.teamSize).toBe(0);
 
     // Check if hierarchyLabelNameChange() was called
     expect(component.hierarchyLabelNameChange).toHaveBeenCalled();

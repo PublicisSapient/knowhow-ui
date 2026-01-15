@@ -65,7 +65,7 @@
           <div class="p-d-flex p-flex-wrap">
             <div class="p-col-4 grid-flex-wrap-100">
               <div class="p-col-12 p-d-flex p-align-center">
-                <label for="devCount">Total Team Size</label>
+                <label for="devCount">Average Team Size</label>
                 <img class="info-icon" alt="info" src="assets/img/Info.svg" aria-hidden="true"
                     pTooltip="You can edit the no. of developers" tooltipPosition="top">
               </div>
@@ -96,8 +96,13 @@
             </div>
           </div>
 
-          <div class="p-col-12">
-            <button pButton type="submit" label="Calculate PEB" class="calc-btn"></button>
+          <div class="p-col-12 p-d-flex p-flex-wrap p-p-0">
+            <div class="p-col-6">
+              <button pButton type="submit" label="Calculate PEB" class="calc-btn"></button>
+            </div>
+            <div class="p-col-6">
+              <button pButton type="button" label="Reset" (click)="resetForm()" class="calc-btn p-button-secondary"></button>
+            </div>
           </div>
         </form>
         @if (isError) {
