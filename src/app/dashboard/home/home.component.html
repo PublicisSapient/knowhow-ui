@@ -77,7 +77,7 @@
                         [plain]="true" [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'" />
                       {{ row[col.field] }}
                     </div>
-                    }@else if(col.field.toLowerCase().includes('completion')){
+                    }@else if(col.field.toLowerCase() === 'completion'){
                     <span>{{ row[col.field] }}</span>
                     }@else if(col.field.toLowerCase().includes('productivity')){
                     @if(BottomTilesLoader){
@@ -85,6 +85,10 @@
                     } @else {
                       <span>{{ row[col.field] }}</span>
                     }
+                    }@else if(col.field.toLowerCase() === 'health'){
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
+                      {{ row[col.field] }}
+                    </div>
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
                       {{ row[col.field] === 'M0' ? 'N/A' : row[col.field] }}
@@ -148,7 +152,7 @@
             <tr>
               <td *ngFor="let childCol of row.children?.columns">
                 <ng-container [ngSwitch]="childCol.field">
-                  @if(childCol.field.toLowerCase().includes('name') || childCol.field.toLowerCase().includes('completion')){
+                  @if(childCol.field.toLowerCase().includes('name') || childCol.field.toLowerCase() === 'completion'){
                     <span>{{ childRow[childCol.field] }}</span>
                     }@else if(childCol.field.toLowerCase().includes('productivity')){
                     @if(productivityExpandRowDataLoader){
@@ -156,6 +160,10 @@
                     } @else {
                       <span>{{ childRow[childCol.field] }}</span>
                     }
+                    }@else if(childCol.field.toLowerCase() === 'health'){
+                    <div class="p-p-2 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
+                      {{ childRow[childCol.field] }}
+                    </div>
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
                       {{ childRow[childCol.field] === 'M0' ? 'N/A' : childRow[childCol.field] }}
