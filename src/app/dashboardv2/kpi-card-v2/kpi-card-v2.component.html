@@ -261,9 +261,10 @@
       [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
       <app-kpi-ai-recommendation-target *ngIf="checkIfDataPresent(kpiDataStatusCode)"
         [targetValue]="'85%'"
-        [improvement]="'+9.0%'"
-        [improvementLabel]="'improvement'"
+        [improvement]=""
+        [improvementLabel]=""
         [kpiData]="kpiData"
+        [kpiChartData]="kpiChartData"
         [kpiRecommData]="kpiRecommData">
       </app-kpi-ai-recommendation-target>
     </div>
