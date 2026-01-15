@@ -13,63 +13,97 @@ import { HttpService } from 'src/app/services/http.service';
 })
 export class KpiAiRecommendationTargetComponent {
   displayAiRecommModal: boolean = false;
-  aiRecommendationData = {
-    infoBoxes: [
-      {
-        label: 'Potential Benefit',
-        value: '+9.0% improvement',
-        color: 'green',
-      },
-      { label: 'Implementation Effort', value: 'Medium', color: 'orange' },
-      { label: 'Time to Value', value: '2-3 sprints', color: 'blue' },
-    ],
-    kpis: ['Commitment Reliability', 'Sprint Velocity', 'Team Performance'],
-    actionPlan: [
-      {
-        step: 1,
-        title: 'Analyze Current Performance',
-        description:
-          'Review historical data and identify bottlenecks in the current sprint planning process.',
-      },
-      {
-        step: 2,
-        title: 'Implement AI Recommendations',
-        description:
-          'Apply suggested capacity adjustments and story point estimations based on team velocity patterns.',
-      },
-      {
-        step: 3,
-        title: 'Monitor and Adjust',
-        description:
-          'Track progress over next 2-3 sprints and fine-tune recommendations based on actual outcomes.',
-      },
-    ],
-    kpiSectionTitle: 'Affected Key Performance Indicators',
-    actionPlanTitle: 'Recommended Action Plan',
-    aiRationaleDescription:
-      "Based on analysis of your team's historical performance data, the AI has identified patterns in sprint planning that suggest a 9% improvement is achievable by optimizing story point allocation and addressing capacity planning inefficiencies.",
-  };
-
+  aiRecommendationData: any;
+  selectedRecommendation: any;
   @Input() kpiData: any = {};
   @Input() targetValue: string = '85%';
   @Input() improvement: string = '+9.0%';
   @Input() improvementLabel: string = 'improvement';
+  @Input() kpiRecommData: any;
+
   @Output() viewPlanClick = new EventEmitter<void>();
 
   constructor(private httpService: HttpService) {}
 
-  onViewPlanClick(): void {
-    this.displayAiRecommModal = true;
+  ngOnInit(): void {
+    this.aiRecommendationData = {
+      priority: this.kpiRecommData.recommendations.severity,
+      title: this.kpiRecommData.recommendations.title,
+      description: this.kpiRecommData.recommendations.description,
+      category: this.kpiRecommData.projectName,
+      id: this.kpiRecommData.kpiId,
+      potentialSavings: this.kpiRecommData.recommendations?.saving || '',
+      rawData: this.kpiRecommData.recommendations,
+    };
+    this.preapareToRenderData(this.aiRecommendationData);
   }
 
-  fetchData() {
-    this.httpService.getHomeNBAData('').subscribe({
-      next: (responce) => {
-        if (responce.success) {
-          this.aiRecommendationData = responce.data;
+  preapareToRenderData(item: any) {
+    this.selectedRecommendation = {
+      infoBoxes: [
+        {
+          label: 'Implementation',
+          value: item.rawData.severity,
+          color: this.getPriorityColor(item.rawData.severity),
+        },
+        {
+          label: 'Time to Value',
+          value: item.rawData.timeToValue,
+          color: 'purple',
+        },
+      ],
+      kpis: item.rawData?.keyPerformanceIndicator || [],
+      kpiSectionTitle: 'Affected Key Performance Indicators',
+      actionPlanTitle: 'Recommended Action Plan',
+      actionPlan: item.rawData.actionPlans.map((list, i) => {
+        return {
+          step: i + 1,
+          title: list.title,
+          description: this.formatActionPlanDescription(list.description),
+        };
+      }),
+      title: item.title,
+      nodeName: item.category,
+    };
+  }
+
+  getPriorityColor(priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return '#f68605';
+      case 'medium':
+        return '#fbcf5f';
+      case 'critical':
+        return '#ed8888';
+      case 'low':
+      default:
+        return '#49535e';
+    }
+  }
+
+  formatActionPlanDescription(description: string): string {
+    if (!description) return '';
+
+    // Replace **text** with <strong>text</strong> using safer string manipulation
+    let result = description;
+
+    // Split by ** and process pairs
+    const parts = result.split('**');
+    if (parts.length > 1) {
+      result = '';
+      for (let i = 0; i < parts.length; i++) {
+        if (i % 2 === 0) {
+          result += parts[i];
+        } else {
+          result += `<span class="bold-text">${parts[i]}</span>`;
         }
-      },
-      error(err) {},
-    });
+      }
+    }
+
+    return result.replace(/\. /g, '. <span class="sentence-break"></span>');
+  }
+
+  onViewPlanClick(): void {
+    this.displayAiRecommModal = true;
   }
 }

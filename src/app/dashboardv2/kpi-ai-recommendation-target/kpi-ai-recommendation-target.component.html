@@ -32,21 +32,21 @@
         AI Intervention Plan
       </div>
       <div class="export-button">
-        <span class="kpi-chip">{{kpiData.kpiDetail.kpiName}}</span>
+        <span class="kpi-chip">{{kpiData?.kpiDetail?.kpiName}}</span>
       </div>
     </div>
   </p-header>
 
   <div class="dialog-body p-mb-4">
     <app-recomm-details 
-      [infoBoxes]="aiRecommendationData.infoBoxes"
-      [kpis]="aiRecommendationData.kpis" 
-      [actionPlan]="aiRecommendationData.actionPlan"
-      [kpiSectionTitle]="aiRecommendationData.kpiSectionTitle"
-      [actionPlanTitle]="aiRecommendationData.actionPlanTitle"
-      [showAiRationale]="true"
+      [infoBoxes]="selectedRecommendation.infoBoxes"
+      [kpis]="selectedRecommendation.kpis" 
+      [actionPlan]="selectedRecommendation.actionPlan"
+      [kpiSectionTitle]="selectedRecommendation.kpiSectionTitle"
+      [actionPlanTitle]="selectedRecommendation.actionPlanTitle"
+      [showAiRationale]="false"
       [aiRationaleTitle]="'AI Analysis'"
-      [aiRationaleDescription]="aiRecommendationData.aiRationaleDescription">
+      [aiRationaleDescription]="selectedRecommendation.aiRationaleDescription">
     </app-recomm-details>
   </div>
 </p-dialog>
