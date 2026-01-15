@@ -1640,6 +1640,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfEmpty(obj) {
-    return obj && Object.keys(obj).length === 0;
+    if (obj && Object.keys(obj).length > 0) {
+      return false;
+    }
+    return true;
   }
 }
