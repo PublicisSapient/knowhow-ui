@@ -260,7 +260,6 @@
     <div class="ai-recommendation-section p-mx-3 p-my-3" *ngIf="!checkIfEmpty(kpiRecommData)"
       [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
       <app-kpi-ai-recommendation-target *ngIf="checkIfDataPresent(kpiDataStatusCode)"
-        [targetValue]="'85%'"
         [improvement]=""
         [improvementLabel]=""
         [kpiData]="kpiData"
