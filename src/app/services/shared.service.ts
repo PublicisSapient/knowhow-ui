@@ -174,6 +174,8 @@ export class SharedService {
   private recommendationsPortalSubject = new BehaviorSubject<Portal<any>>(null);
   recommendationsPortal$ = this.recommendationsPortalSubject.asObservable();
   listOfProjectsSubject: any[];
+  projectDetails: any;
+  currentProject: any;
 
   constructor(
     private router: Router,
@@ -1051,5 +1053,13 @@ export class SharedService {
 
   getListOfProjects() {
     return this.listOfProjectsSubject;
+  }
+
+  setCurrentProject(currentProject) {
+    this.currentProject = currentProject;
+  }
+
+  getCurrentProject() {
+    return this.currentProject;
   }
 }
