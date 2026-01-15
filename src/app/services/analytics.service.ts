@@ -56,9 +56,9 @@ export class AnalyticsService {
         if (response?.success && response?.data?.analytics) {
           const config = response.data.analytics;
           this.initializeAnalytics(
-            config.grafanaRolloutPercentage || 0,
-            config.enableGoogleAnalytics || false,
-            config.enableGrafanaAnalytics || false,
+            config.analyticsGrafanaRolloutPercentage || 0,
+            config.isAnalyticsGoogleEnabled || false,
+            config.isAnalyticsGrafanaEnabled || false,
           );
         }
       },
