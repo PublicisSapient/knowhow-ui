@@ -135,11 +135,13 @@ export class KpiAiRecommendationTargetComponent {
     }
     const benchmark = this.resolveBenchmarkPercentiles(this.kpiChartData?.[0]);
 
-    this.targetValue = parseFloat(
-      this.getBenchmarkValue(this.kpiChartData?.[0]?.value, benchmark).toFixed(
-        2,
-      ),
-    );
+    this.targetValue =
+      parseFloat(
+        this.getBenchmarkValue(
+          this.kpiChartData?.[0]?.value,
+          benchmark,
+        )?.toFixed(2),
+      ) || 'NA';
   }
 
   getBenchmarkValue(
