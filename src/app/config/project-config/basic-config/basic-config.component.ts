@@ -343,7 +343,6 @@ export class BasicConfigComponent implements OnInit {
   onSubmit() {
     const newProjectParentId = '';
     const formValue = this.form.getRawValue();
-    console.log(formValue);
     const submitData = {};
     submitData['projectName'] = formValue['projectName'];
     submitData['projectDisplayName'] = formValue['projectName'];
@@ -381,10 +380,8 @@ export class BasicConfigComponent implements OnInit {
     });
     this.blocked = true;
     submitData['hierarchy'].pop();
-    console.log('submitData', submitData);
     this.http.addBasicConfig(submitData).subscribe({
       next: (response: any) => {
-        console.log('response addBasicConfig ', response);
         if (
           response &&
           response.serviceResponse &&
