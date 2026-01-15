@@ -145,13 +145,57 @@
                 </div>
               </div>
             </div>
-            <p-table [value]="items" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="400px"
+            <p-table [value]="items" [tableStyle]="{ 'min-width': '50rem','min-height' : '180px' }" [scrollable]="true" scrollHeight="400px" 
               *ngIf="items.length">
               <ng-template pTemplate="header">
                 <tr>
                   <th></th>
-                  <th style="width: 30%;" class="p-text-left">{{ items[0]?.levelName }}</th>
-                  <th style="width: 30%;" class="p-text-right">Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</th>
+                  <th style="width: 30%;" class="p-text-left" [pSortableColumn]="'organizationEntityName'">
+                    <div class="table-head">
+                      <span>{{ items[0]?.levelName }}</span>
+                      <div class="p-d-flex p-ml-2">
+                        <p-columnFilter field="organizationEntityName" matchMode="in" [showMenu]="false" [showMatchModes]="false"
+                          [showOperator]="false" [showAddButton]="false" [showClearButton]="false"
+                          [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
+                          <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                            <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                              (onPanelShow)="onFilterClick('organizationEntityName')" (onPanelHide)="onFilterBlur('organizationEntityName')"
+                              [options]="tableColumnData['organizationEntityName']" placeholder="Select Entity"
+                              (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
+                              [ngModel]="tableColumnForm['organizationEntityName']" styleClass="column-filter">
+                              <ng-template pTemplate="selectedItems">
+                                <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                              </ng-template>
+                            </p-multiSelect>
+                          </ng-template>
+                        </p-columnFilter>
+                        <p-sortIcon field="organizationEntityName" aria-label="Sort by entity name"></p-sortIcon>
+                      </div>
+                    </div>
+                  </th>
+                  <th style="width: 30%;" class="p-text-right" [pSortableColumn]="'categoryScores.overall'">
+                    <div class="table-head">
+                      <span>Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</span>
+                      <div class="p-d-flex p-ml-2">
+                        <p-columnFilter field="categoryScores.overall" matchMode="in" [showMenu]="false" [showMatchModes]="false"
+                          [showOperator]="false" [showAddButton]="false" [showClearButton]="false"
+                          [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
+                          <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                            <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                              (onPanelShow)="onFilterClick('categoryScores.overall')" (onPanelHide)="onFilterBlur('categoryScores.overall')"
+                              [options]="tableColumnData['categoryScores.overall']" placeholder="Select Savings"
+                              (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
+                              [ngModel]="tableColumnForm['categoryScores.overall']" styleClass="column-filter">
+                              <ng-template pTemplate="selectedItems">
+                                <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                              </ng-template>
+                            </p-multiSelect>
+                          </ng-template>
+                        </p-columnFilter>
+                        <p-sortIcon field="categoryScores.overall" aria-label="Sort by cost savings"></p-sortIcon>
+                      </div>
+                    </div>
+                  </th>
                   <th></th>
                 </tr>
               </ng-template>
@@ -161,6 +205,16 @@
                   <td style="width: 30%;" class="p-text-left">{{ item?.organizationEntityName }}</td>
                   <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
                   <td></td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4" class="p-text-center">
+                    <div class="p-d-flex p-flex-column p-align-center p-py-4">
+                      <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                      <h4>No Data Available.</h4>
+                    </div>
+                  </td>
                 </tr>
               </ng-template>
             </p-table>

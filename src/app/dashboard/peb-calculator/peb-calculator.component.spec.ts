@@ -169,6 +169,94 @@ describe('PebCalculatorComponent', () => {
     expect(component.isError).toBe(true);
   }));
 
+  // Test cases for new filter methods
+  describe('Filter Methods', () => {
+    beforeEach(() => {
+      component.items = [
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project B',
+          categoryScores: { overall: 2000 },
+        },
+      ];
+    });
+
+    it('should generate column filter data correctly', () => {
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData['organizationEntityName']).toBeDefined();
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        2,
+      );
+      expect(component.tableColumnData['organizationEntityName'][0]).toEqual({
+        name: 'Project A',
+        value: 'Project A',
+      });
+
+      expect(component.tableColumnData['categoryScores.overall']).toBeDefined();
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        2,
+      );
+
+      expect(component.tableColumnForm['organizationEntityName']).toEqual([]);
+      expect(component.tableColumnForm['categoryScores.overall']).toEqual([]);
+    });
+
+    it('should handle empty items array in generateColumnFilterData', () => {
+      component.items = [];
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData).toEqual({});
+      expect(component.tableColumnForm).toEqual({});
+    });
+
+    it('should set filteredColumn on onFilterClick', () => {
+      const columnName = 'organizationEntityName';
+      component.onFilterClick(columnName);
+
+      expect(component.filteredColumn).toBe(columnName);
+    });
+
+    it('should clear filteredColumn on onFilterBlur when same column', () => {
+      component.filteredColumn = 'organizationEntityName';
+      component.onFilterBlur('organizationEntityName');
+
+      expect(component.filteredColumn).toBe('');
+    });
+
+    it('should keep filteredColumn on onFilterBlur when different column', () => {
+      component.filteredColumn = 'organizationEntityName';
+      component.onFilterBlur('categoryScores.overall');
+
+      expect(component.filteredColumn).toBe('organizationEntityName');
+    });
+
+    it('should generate unique filter options for duplicate values', () => {
+      component.items = [
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+      ];
+
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        1,
+      );
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        1,
+      );
+    });
+  });
+
   it('should reset form to default values when resetForm is called', () => {
     component.pebForm.patchValue({
       devCountControl: 100,
