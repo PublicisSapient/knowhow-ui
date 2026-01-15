@@ -16,36 +16,33 @@
  *
  ******************************************************************************/
 
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MetricsService {
+export class MetricsService implements OnDestroy {
   private metrics: Map<string, number> = new Map();
   private isDirty = false;
   private sendTimeout: any = null;
 
-  constructor(private http: HttpClient) {
-    // Metrics are created automatically when first incremented with labels
-    // No need to initialize them - this was causing label-less base metrics
+  constructor(private http: HttpClient) {}
+
+  ngOnDestroy(): void {
+    if (this.sendTimeout) {
+      clearTimeout(this.sendTimeout);
+      this.sendTimeout = null;
+    }
   }
 
-  // Increment a metric
   increment(metricName: string, labels: Record<string, string> = {}): void {
     const key = this.buildMetricKey(metricName, labels);
     const current = this.metrics.get(key) || 0;
     this.metrics.set(key, current + 1);
-    console.log(
-      `[Metrics] Incremented ${metricName}:`,
-      labels,
-      `-> ${current + 1}`,
-    );
     this.markDirty();
   }
 
-  // Set a metric value
   set(
     metricName: string,
     value: number,
@@ -53,38 +50,28 @@ export class MetricsService {
   ): void {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
-    console.log(`[Metrics] Set ${metricName}:`, labels, `-> ${value}`);
     this.markDirty();
   }
 
-  // Get all metrics in Prometheus format
   getPrometheusMetrics(): string {
     let output = '';
 
-    // Add timestamp
     output += `# Generated at ${new Date().toISOString()}\n`;
 
-    // Convert metrics to Prometheus format
     for (const [key, value] of this.metrics.entries()) {
       output += `${key} ${value}\n`;
     }
 
-    console.log(
-      `[Metrics] Generated Prometheus metrics (${this.metrics.size} metrics)`,
-    );
     return output;
   }
 
-  // Mark metrics as dirty and schedule a debounced send
   private markDirty(): void {
     this.isDirty = true;
 
-    // Clear existing timeout
     if (this.sendTimeout) {
       clearTimeout(this.sendTimeout);
     }
 
-    // Schedule send after 5 seconds of inactivity (debounce)
     this.sendTimeout = setTimeout(() => {
       if (this.isDirty) {
         this.sendMetricsToBackend();
@@ -92,7 +79,6 @@ export class MetricsService {
     }, 5000);
   }
 
-  // Build metric key with labels
   private buildMetricKey(
     metricName: string,
     labels: Record<string, string>,
@@ -108,10 +94,8 @@ export class MetricsService {
     return `${metricName}{${labelPairs}}`;
   }
 
-  // Helper method to strip query parameters from URL
   private stripQueryParams(url: string): string {
     if (!url) return 'unknown';
-    // Remove query parameters and hash fragments
     return url.split('?')[0].split('#')[0];
   }
 
@@ -340,10 +324,6 @@ export class MetricsService {
 
   // Expose metrics endpoint (for development)
   exposeMetricsEndpoint(): void {
-    console.log(
-      '[Metrics] Metrics endpoint exposed on window.getKnowHowMetrics()',
-    );
-
     // Log metrics to console for debugging
     setInterval(() => {}, 30000); // Every 30 seconds
 
@@ -353,35 +333,22 @@ export class MetricsService {
     };
   }
 
-  // Send metrics to backend (simulate for demo)
   sendMetricsToBackend(): void {
-    // Only send if there are changes
     if (!this.isDirty) {
-      console.log('[Metrics] No changes to send, skipping...');
       return;
     }
 
-    console.log('[Metrics] Preparing to send metrics to backend...');
     const metrics = this.getPrometheusMetrics();
 
-    // Store locally for debugging
     localStorage.setItem('knowhow_metrics', metrics);
     localStorage.setItem('knowhow_metrics_timestamp', Date.now().toString());
-    console.log('[Metrics] Metrics saved to localStorage');
 
-    // Send to Pushgateway
     this.sendToPushgateway(metrics);
-
-    // Reset dirty flag after sending
     this.isDirty = false;
   }
 
-  // Send metrics to Pushgateway
   private async sendToPushgateway(metrics: string): Promise<void> {
     try {
-      console.log(
-        '[Metrics] Sending metrics to Pushgateway at /api/metrics-proxy/send...',
-      );
       const response = await fetch('/api/metrics-proxy/send', {
         method: 'POST',
         headers: {
@@ -391,18 +358,10 @@ export class MetricsService {
       });
 
       if (!response.ok) {
-        console.error(
-          '[Metrics] ❌ Failed to send metrics to Pushgateway:',
-          response.statusText,
-        );
-      } else {
-        console.log('[Metrics] ✅ Successfully sent metrics to Pushgateway');
+        console.error('[Metrics] Failed to send metrics:', response.statusText);
       }
     } catch (error) {
-      console.error(
-        '[Metrics] ❌ Error sending metrics to Pushgateway:',
-        error,
-      );
+      console.error('[Metrics] Error sending metrics to Pushgateway:', error);
     }
   }
 }
