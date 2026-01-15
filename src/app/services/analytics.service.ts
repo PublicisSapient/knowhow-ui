@@ -53,8 +53,8 @@ export class AnalyticsService {
     const configUrl = environment.baseUrl + '/api/configDetails';
     this.http.get<any>(configUrl).subscribe({
       next: (response) => {
-        if (response?.success && response?.data?.analytics) {
-          const config = response.data.analytics;
+        const config = response?.data?.analytics || response?.analytics;
+        if (config) {
           this.initializeAnalytics(
             config.analyticsGrafanaRolloutPercentage || 0,
             config.isAnalyticsGoogleEnabled || false,
