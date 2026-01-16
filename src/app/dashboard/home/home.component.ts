@@ -433,6 +433,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       return {
         property: node.kpiName,
         value: parseFloat(node.trendValue).toFixed(1),
+        desiredTrend: node.desiredTrend,
       };
     });
   }
