@@ -292,7 +292,7 @@
           <div class="trend-value-container">
             <div class="trend-icon">
               @if(index !== 0) {
-              <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
+              <i class="fas {{ item.desiredTrend === 'DESCENDING' ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
               } @else if(items.icon) {
               <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
               }

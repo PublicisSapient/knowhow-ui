@@ -463,16 +463,24 @@ describe('HomeComponent', () => {
 
   it('should calculate trend data for positive trends', () => {
     const testData = [
-      { kpiName: 'KPI 1', trendValue: 5.5 },
-      { kpiName: 'KPI 2', trendValue: 3.2 },
-      { kpiName: 'KPI 3', trendValue: 8.1 },
+      { kpiName: 'KPI 1', trendValue: 5.5, desiredTrend: 'ASCENDING' },
+      { kpiName: 'KPI 2', trendValue: 3.2, desiredTrend: 'DESCENDING' },
+      { kpiName: 'KPI 3', trendValue: 8.1, desiredTrend: 'DESCENDING' },
     ];
 
     const result = component.calculateTrendData(testData, 'positive');
 
     expect(result.length).toBe(3);
-    expect(result[0]).toEqual({ property: 'KPI 3', value: '8.1' });
-    expect(result[1]).toEqual({ property: 'KPI 1', value: '5.5' });
+    expect(result[0]).toEqual({
+      property: 'KPI 3',
+      value: '8.1',
+      desiredTrend: 'DESCENDING',
+    });
+    expect(result[1]).toEqual({
+      property: 'KPI 1',
+      value: '5.5',
+      desiredTrend: 'ASCENDING',
+    });
   });
 
   it('should return empty array when trend data is null', () => {
