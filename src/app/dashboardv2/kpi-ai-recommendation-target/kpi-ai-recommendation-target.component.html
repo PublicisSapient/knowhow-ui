@@ -2,17 +2,17 @@
   <div class="card-content">
     <div class="header-section">
       <div class="ai-icon"></div>
-      <span class="title">AI Recommended Target</span>
+      <span class="title">AI Recommendations</span>
     </div>
     
     <div class="target-section">
-      <span class="next-sprint">Next Sprint: </span>
+      <span class="next-sprint">Next Target: </span>
       <span class="target-value">{{ targetValue }}</span>
       <!-- <span class="improvement">({{ improvement }} {{ improvementLabel }})</span> -->
     </div>
     
     <div class="action-section">
-      <span class="action-link" (click)="onViewPlanClick()">Click to view AI intervention plan</span>
+      <span class="action-link" (click)="onViewPlanClick()">Click to view Recommended Next Actions</span>
     </div>
   </div>
 </div>
@@ -23,7 +23,7 @@
   <p-header>
     <div>
       <div>
-        AI Intervention Plan
+        AI Recommended Next Actions
       </div>
       <div class="export-button">`
         <span class="kpi-chip">{{kpiData?.kpiDetail?.kpiName}}</span>
