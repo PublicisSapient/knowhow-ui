@@ -2117,6 +2117,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.applyForecastData(this.kpiChartData[kpiId]);
     }
 
+    if (
+      Array.isArray(this.kpiChartData[kpiId]) &&
+      this.service.getSelectedTrends()?.length > 1
+    ) {
+      this.kpiChartData[kpiId] = this.helperService.alignSprintDataRightToLeft(
+        this.kpiChartData[kpiId],
+      );
+    }
+
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
   }
@@ -2497,6 +2506,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.applyForecastData(chartSeries);
       }
     }
+
+    // Right-align sprint data when multiple projects have different sprint counts
+    if (
+      Array.isArray(this.kpiChartData[kpiId]) &&
+      this.service.getSelectedTrends()?.length > 1
+    ) {
+      this.kpiChartData[kpiId] = this.helperService.alignSprintDataRightToLeft(
+        this.kpiChartData[kpiId],
+      );
+    }
   }
 
   getChartType(kpiId) {
@@ -2744,6 +2763,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiChartData[kpiId]?.push(obj);
         }
       }
+    }
+
+    // Right-align sprint data when multiple projects have different sprint counts
+    if (
+      Array.isArray(this.kpiChartData[kpiId]) &&
+      this.service.getSelectedTrends()?.length > 1
+    ) {
+      this.kpiChartData[kpiId] = this.helperService.alignSprintDataRightToLeft(
+        this.kpiChartData[kpiId],
+      );
     }
   }
   /**To create KPI table headings */
@@ -4410,8 +4439,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     let trend = '';
     let unit = '';
 
-    // Filter out forecast data
-    const validValues = item?.value?.filter((v) => !v.isForecast);
+    // Filter out forecast data and null entries (used for right-alignment of sprint data)
+    const validValues = item?.value?.filter((v) => v != null && !v.isForecast);
 
     if (validValues?.length > 0) {
       let tempVal;

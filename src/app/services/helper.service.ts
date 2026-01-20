@@ -1600,4 +1600,56 @@ export class HelperService {
       }),
     );
   }
+
+  alignSprintDataRightToLeft(chartData: any[]): any[] {
+    if (!chartData || chartData.length <= 1) {
+      return chartData;
+    }
+
+    const maxSprintCount = chartData.reduce((max, project) => {
+      const nonForecastCount =
+        project.value?.filter((v: any) => !v?.isForecast)?.length || 0;
+      return Math.max(max, nonForecastCount);
+    }, 0);
+
+    const allSameLength = chartData.every((project) => {
+      const nonForecastCount =
+        project.value?.filter((v: any) => !v?.isForecast)?.length || 0;
+      return nonForecastCount === maxSprintCount;
+    });
+
+    if (allSameLength) {
+      return chartData;
+    }
+
+    return chartData.map((project) => {
+      if (!project.value || project.value.length === 0) {
+        return project;
+      }
+
+      const forecastEntries = project.value.filter((v: any) => v?.isForecast);
+      const nonForecastEntries = project.value.filter(
+        (v: any) => !v?.isForecast,
+      );
+
+      const currentSprintCount = nonForecastEntries.length;
+      const paddingNeeded = maxSprintCount - currentSprintCount;
+
+      if (paddingNeeded <= 0) {
+        return project;
+      }
+
+      const nullPadding = Array(paddingNeeded).fill(null);
+      const alignedValue = [
+        ...nullPadding,
+        ...nonForecastEntries,
+        ...forecastEntries,
+      ];
+
+      return {
+        ...project,
+        value: alignedValue,
+      };
+    });
+  }
 }

@@ -138,6 +138,9 @@ export class StackedGroupBarChartComponent
 
       this.defectsBreachedSLAs?.forEach((project: any) => {
         project.value.forEach((sprint: any, index: number) => {
+          if (sprint == null) {
+            return;
+          }
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
 
@@ -166,6 +169,9 @@ export class StackedGroupBarChartComponent
       this.yAxisLabel = 'Avg. Execution Time';
       this.data?.forEach((elem: any) => {
         elem.value.forEach((val: any, index: number) => {
+          if (val == null) {
+            return;
+          }
           let temp = 0;
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];

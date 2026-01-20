@@ -95,6 +95,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     for (let i = 0; i < data.length; i++) {
       const { value, ...projectInfo } = data[i];
       const newData = value.map((dataPoint) => {
+        // Handle null entries (used for right-alignment of sprint data)
+        if (dataPoint == null) {
+          return null;
+        }
         const { dataValue, ...rest } = dataPoint;
         return dataValue.map((d) => ({ ...d, ...rest }));
       });
@@ -102,7 +106,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       const newLineData = lineTypes.map((lineType) => ({
         ...projectInfo,
         value: newData.map((d) =>
-          d.find((lineData) => lineData.lineType === lineType),
+          d == null
+            ? null
+            : d.find((lineData) => lineData.lineType === lineType),
         ),
       }));
       transformedData.push(...newLineData);
@@ -113,16 +119,15 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   draw() {
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
-    const sprintList = this.data[0]?.value.map(
-      (details) => details.sSprintName,
-    );
+    const sprintList = this.data[0]?.value
+      ?.filter((details) => details != null)
+      ?.map((details) => details.sSprintName);
     const dataCategory = this.data.map((d) => d.data);
-    const lineTypes = this.data[0]?.value[0].dataValue.map(
-      (lineData) => lineData.lineType,
-    );
-    const lineDetails = this.data[0]?.value[0].dataValue.map(
-      (lineData) => lineData.name,
-    );
+    const firstNonNullValue = this.data[0]?.value?.find((v) => v != null);
+    const lineTypes =
+      firstNonNullValue?.dataValue?.map((lineData) => lineData.lineType) || [];
+    const lineDetails =
+      firstNonNullValue?.dataValue?.map((lineData) => lineData.name) || [];
     const formattedData = this.transformData(this.data, lineTypes);
 
     // this is used for removing svg already made when value is updated
@@ -181,6 +186,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     // used to find maxvalue of y axis
     for (const i in data) {
       for (let j = 0; j < data[i].value.length; j++) {
+        if (data[i].value[j] == null) {
+          continue;
+        }
         data[i].value[j].xName = data[i]?.value[j]?.hasOwnProperty('xAxisTick')
           ? data[i]?.value[j]?.xAxisTick
           : j + 1;
@@ -203,6 +211,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     /* Format Data */
     data.forEach(function (d) {
       d.value.forEach(function (dataObj: { value: number }) {
+        if (dataObj == null) {
+          return;
+        }
         dataObj.value = +dataObj.value;
       });
     });
@@ -277,7 +288,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
 
       tooltipContainer
         .selectAll('div')
-        .data(data[0].value)
+        .data(data[0].value.filter((v) => v != null))
         .join('div')
         .attr('class', 'tooltip2')
         .style('left', (d, i) => {
@@ -463,6 +474,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
+      .defined((d: any) => d != null)
       .x((d, i) => {
         if (viewType === 'large' && selectedProjectCount === 1) {
           return xScale(d.date || d.sSprintName);
@@ -522,7 +534,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .call(transition)
       .style('stroke', (d, i) => colorCategory && colorCategory(d.data))
       .style('stroke-dasharray', (d) => {
-        if (d.value[0].lineType === 'dotted') {
+        // Find first non-null value for lineType check
+        const firstNonNull = d.value?.find((v) => v != null);
+        if (firstNonNull?.lineType === 'dotted') {
           return '4,4';
         }
       })
@@ -561,7 +575,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .style('fill', (d, i) => colorCategory && colorCategory(d.data))
       .style('stroke', (d, i) => colorCategory && colorCategory(d.data))
       .selectAll('circle')
-      .data((d) => d.value)
+      .data((d) => d.value.filter((v) => v != null))
       .enter()
       .append('g')
       .attr('class', 'circle')

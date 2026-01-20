@@ -108,6 +108,10 @@ export class GroupedColumnPlusLineChartV2Component
 
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < data[0].value.length; i++) {
+      if (data[0].value[i] == null) {
+        newObj['value'].push(null);
+        continue;
+      }
       if (data[0].value[i].hoverValue) {
         newObj['value'].push({
           value: data[0].value[i].value,
@@ -132,13 +136,22 @@ export class GroupedColumnPlusLineChartV2Component
 
     newObj['value'].forEach((element, index) => {
       const newNewObj = {};
-      newNewObj['categorie'] = element?.isForecast ? 'Forecast' : index + 1;
-      newNewObj['value'] = [element];
+      if (element == null) {
+        newNewObj['categorie'] = index + 1;
+        newNewObj['value'] = [];
+        newNewObj['isPlaceholder'] = true;
+      } else {
+        newNewObj['categorie'] = element?.isForecast ? 'Forecast' : index + 1;
+        newNewObj['value'] = [element];
+      }
       result.push(newNewObj);
     });
 
     for (let i = 1; i < data.length; i++) {
       for (let j = 0; j < data[i].value.length; j++) {
+        if (data[i].value[j] == null) {
+          continue;
+        }
         if (
           result[j] &&
           result[j]['categorie'] &&
@@ -239,6 +252,10 @@ export class GroupedColumnPlusLineChartV2Component
     try {
       const unFormatedData = JSON.parse(JSON.stringify(self.unmodifiedData));
       unFormatedData[0].value = unFormatedData[0].value.map((details) => {
+        // Handle null entries (used for right-alignment of sprint data)
+        if (details == null) {
+          return null;
+        }
         const XValue = details.sSprintName || details.date;
         const sortValue = XValue;
         return { ...details, sortSprint: sortValue };
@@ -255,6 +272,9 @@ export class GroupedColumnPlusLineChartV2Component
       }
 
       const xAxisValues = newRawData[maxObjectNo].value.map((d, i) => {
+        if (d == null) {
+          return i + 1;
+        }
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
           return d.date || d.sortSprint || d.sSprintName;
         }
@@ -523,6 +543,9 @@ export class GroupedColumnPlusLineChartV2Component
         .style('font-size', '10px');
 
       const getXCoordinate = (point, index) => {
+        if (point == null) {
+          return x0(index + 1) + x0.bandwidth() / 2;
+        }
         let key;
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
           key = point.sortSprint || point.date || point.sSprintName;
@@ -627,6 +650,7 @@ export class GroupedColumnPlusLineChartV2Component
 
           const barLine = d3
             .line()
+            .defined((d: any) => d != null)
             .x((d, i) => {
               const xPos =
                 this.isXaxisGroup === true ? x0(d.sortName) : x0(d.categorie);
@@ -1015,6 +1039,7 @@ export class GroupedColumnPlusLineChartV2Component
 
         const line = d3
           .line()
+          .defined((d: any) => d != null && !d?.isForecast)
           .x((d, i) => getXCoordinate(d, i))
           .y((d) => yScale(d.lineValue));
 
@@ -1077,7 +1102,9 @@ export class GroupedColumnPlusLineChartV2Component
           .style('fill', (d, i) => d3.hsl([colorArr[i]]))
           .style('stroke', (d, i) => d3.hsl([colorArr[i]]).brighter())
           .selectAll('circle')
-          .data((d, index) => d.value.filter((point) => !point.isForecast))
+          .data((d, index) =>
+            d.value.filter((point) => point != null && !point.isForecast),
+          )
           .enter()
           .append('g')
           .attr('class', 'circle')
@@ -1399,6 +1426,9 @@ export class GroupedColumnPlusLineChartV2Component
       const projectName = project.data.trim();
 
       project.value.forEach((sprint, index) => {
+        if (sprint == null) {
+          return;
+        }
         const sprintKey = index; // You could use sprint.sSprintID if needed for uniqueness
         const sprintName = sprint.sSprintName?.trim() || sprint.date?.trim();
 
