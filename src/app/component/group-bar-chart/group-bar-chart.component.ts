@@ -1086,10 +1086,10 @@ export class GroupBarChartComponent implements OnChanges {
       .sort((a, b) => a - b);
 
     // Logic: Find lowest percentile > max value. If max > all, use highest percentile.
-    return (
+    const result =
       sortedPercentiles.find((val) => val > highestActualValue) ??
-      sortedPercentiles[sortedPercentiles.length - 1]
-    );
+      sortedPercentiles[sortedPercentiles.length - 1];
+    return Number.isFinite(result) ? Math.round(result) : result;
   }
 
   resolveBenchmarkPercentiles(
