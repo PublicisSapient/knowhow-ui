@@ -102,6 +102,10 @@ export class GroupedColumnPlusLineChartV2Component
   }
 
   transform2(data) {
+    if (!data?.length) {
+      return [];
+    }
+
     const result = [];
     const newObj = {};
     newObj['value'] = [];
@@ -220,7 +224,7 @@ export class GroupedColumnPlusLineChartV2Component
       });
     }
     const isAllBelowFromThreshold = data.every(
-      (details) => details.value[0].lineValue < this.thresholdValue,
+      (details) => details.value?.[0]?.lineValue < this.thresholdValue,
     );
     const benchmarkPercentiles = this.resolveBenchmarkPercentiles(
       this.data?.[0],
@@ -230,7 +234,12 @@ export class GroupedColumnPlusLineChartV2Component
     const self = this;
 
     const categoriesNames = data.map((d) => d.categorie);
-    const rateNames = data[0].value.map((d) => d.rate);
+    const rateNames = (this.unmodifiedData || [])
+      .map((entry) => entry?.data)
+      .filter(
+        (value, index, list) => Boolean(value) && list.indexOf(value) === index,
+      );
+    const legendData = rateNames.map((rate) => ({ rate }));
     const paddingTop = 24;
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
@@ -250,7 +259,18 @@ export class GroupedColumnPlusLineChartV2Component
 
     let xScale;
     try {
-      const unFormatedData = JSON.parse(JSON.stringify(self.unmodifiedData));
+      let unFormatedData = JSON.parse(JSON.stringify(self.unmodifiedData));
+      const rawLengths = unFormatedData.map(
+        (entry) => entry?.value?.length || 0,
+      );
+      const maxLength = Math.max(...rawLengths);
+      unFormatedData = unFormatedData.map((entry, entryIndex) => {
+        const offset = maxLength - (rawLengths[entryIndex] || 0);
+        if (offset > 0) {
+          entry.value = Array(offset).fill(null).concat(entry.value);
+        }
+        return entry;
+      });
       unFormatedData[0].value = unFormatedData[0].value.map((details) => {
         // Handle null entries (used for right-alignment of sprint data)
         if (details == null) {
@@ -1102,18 +1122,20 @@ export class GroupedColumnPlusLineChartV2Component
           .style('fill', (d, i) => d3.hsl([colorArr[i]]))
           .style('stroke', (d, i) => d3.hsl([colorArr[i]]).brighter())
           .selectAll('circle')
-          .data((d, index) =>
-            d.value.filter((point) => point != null && !point.isForecast),
+          .data((d) =>
+            d.value
+              .map((point, idx) => ({ point, idx }))
+              .filter(
+                (datum) => datum.point != null && !datum.point?.isForecast,
+              ),
           )
           .enter()
           .append('g')
           .attr('class', 'circle')
-          .on('mouseover', (event, d) => {
-            if (d.isForecast) {
-              return;
-            }
+          .on('mouseover', (event, datum) => {
+            const point = datum.point;
             const topValue = 80;
-            if (d.hoverValue) {
+            if (point.hoverValue) {
               div
                 .transition()
                 .duration(200)
@@ -1128,24 +1150,24 @@ export class GroupedColumnPlusLineChartV2Component
               div
                 .html(
                   `${self.getFormatedDateBasedOnType(
-                    d.date || d.sSprintName,
+                    point.date || point.sSprintName,
                     self.xCaption,
                   )} ` +
                     ' : ' +
                     "<span class='toolTipValue'> " +
-                    `${d.lineValue + ' ' + showUnit} ` +
+                    `${point.lineValue + ' ' + showUnit} ` +
                     '</span>',
                 )
                 .style('left', xPosition - 50 + 'px')
                 .style('top', yPosition + 20 + 'px');
-              for (const hoverData in d.hoverValue) {
+              for (const hoverData in point.hoverValue) {
                 div
                   .append('p')
                   .html(
                     `${hoverData} ` +
                       ' : ' +
                       "<span class='toolTipValue'> " +
-                      `${d.hoverValue[hoverData]} ` +
+                      `${point.hoverValue[hoverData]} ` +
                       ' </span>',
                   );
               }
@@ -1159,12 +1181,14 @@ export class GroupedColumnPlusLineChartV2Component
               .style('opacity', 0);
           })
           .append('circle')
-          .attr('cx', (d, i) => getXCoordinate(d, i))
-          .attr('cy', (d) => yScale(d.lineValue))
+          .attr('cx', (datum) => getXCoordinate(datum.point, datum.idx))
+          .attr('cy', (datum) => yScale(datum.point.lineValue))
           .attr('r', circleRadius)
           .style('stroke-width', 1)
           .style('opacity', circleOpacity)
-          .style('pointer-events', (d) => (d.isForecast ? 'none' : null))
+          .style('pointer-events', (datum) =>
+            datum.point.isForecast ? 'none' : null,
+          )
           .on('mouseover', function (d) {
             d3.select(this)
               .transition()
@@ -1180,16 +1204,19 @@ export class GroupedColumnPlusLineChartV2Component
 
         /** Adding tooltip text  */
         if (selectedProjectCount === 1) {
-          const tooltipValues = (newRawData[0]['value'] || []).filter(
-            (d) => d.lineValue != null && !d.isForecast,
-          );
+          const tooltipValues = (newRawData[0]['value'] || [])
+            .map((point, idx) => ({ point, idx }))
+            .filter(
+              (datum) =>
+                datum.point?.lineValue != null && !datum.point?.isForecast,
+            );
           tooltipContainer
             .selectAll('div')
             .data(tooltipValues)
             .join('div')
             .attr('class', (d) => {
               let cssClass = 'tooltip2';
-              const value = d.lineValue;
+              const value = d.point.lineValue;
               if (
                 this.thresholdValue &&
                 this.thresholdValue !== 0 &&
@@ -1206,12 +1233,12 @@ export class GroupedColumnPlusLineChartV2Component
               return cssClass;
             })
             .style('left', (d, i) => {
-              return getXCoordinate(d, i) + 'px';
+              return getXCoordinate(d.point, d.idx) + 'px';
             })
-            .style('top', (d) => yScale(d.lineValue) - 25 + 'px')
+            .style('top', (d) => yScale(d.point.lineValue) - 25 + 'px')
             .text(
               (d) =>
-                d.lineValue +
+                d.point.lineValue +
                 ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''} `,
             )
             .transition()
