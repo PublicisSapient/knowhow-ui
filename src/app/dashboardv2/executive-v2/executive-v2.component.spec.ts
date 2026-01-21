@@ -2985,6 +2985,11 @@ describe('ExecutiveV2Component', () => {
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
 
+    // Mock getConfigurationDetails method
+    spyOn(service, 'getConfigurationDetails').and.returnValue({
+      aiGatewayBaseUrl: 'http://localhost:7001/',
+    });
+
     // const type = 'scrum';
     // service.selectedtype = type;
     // service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
@@ -5744,6 +5749,71 @@ describe('ExecutiveV2Component', () => {
     };
     const spyData = component.checkLatestAndTrendValue(kpiData, item);
     const result = ['66 %', 'NA', '%'];
+    expect(spyData).toEqual(result);
+  });
+
+  it('should exclude forecast data from checkLatestAndTrendValue', () => {
+    const kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Commitment Reliability',
+      isEnabled: true,
+      order: 18,
+      kpiDetail: {
+        id: '64b70909097ae57dfd51c080',
+        kpiId: 'kpi72',
+        kpiName: 'Commitment Reliability',
+        isDeleted: 'False',
+        defaultOrder: 18,
+        kpiUnit: '%',
+        chartType: 'line',
+        showTrend: true,
+        isPositiveTrend: true,
+        calculateMaturity: true,
+        hideOverallFilter: false,
+        kpiSource: 'Jira',
+        maxValue: '200',
+        thresholdValue: 85,
+        kanban: false,
+        groupId: 2,
+        kpiFilter: 'dropDown',
+        aggregationCriteria: 'average',
+        maturityRange: ['-40', '40-60', '60-75', '75-90', '90-'],
+        xaxisLabel: 'Sprints',
+        yaxisLabel: 'Percentage',
+        trendCalculative: false,
+        additionalFilterSupport: true,
+      },
+      shown: true,
+    };
+    const item = {
+      data: 'AddingIterationProject',
+      value: [
+        {
+          data: '50',
+          value: 50,
+          kpiGroup: 'Initial Commitment (Story Points)#overAll',
+          xName: 1,
+        },
+        {
+          data: '60',
+          value: 60,
+          kpiGroup: 'Initial Commitment (Story Points)#overAll',
+          xName: 2,
+        },
+        {
+          data: '70',
+          value: 70,
+          kpiGroup: 'Initial Commitment (Story Points)#overAll',
+          xName: 3,
+          isForecast: true,
+        },
+      ],
+      maturity: '2',
+      maturityValue: '45',
+    };
+    const spyData = component.checkLatestAndTrendValue(kpiData, item);
+    // Should use 60 as latest (ignoring 70), and trend comparison between 50 and 60 (+ve)
+    const result = ['60 %', '+ve', '%'];
     expect(spyData).toEqual(result);
   });
 

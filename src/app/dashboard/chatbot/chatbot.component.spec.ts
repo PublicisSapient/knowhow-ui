@@ -6,13 +6,16 @@ import {
 } from '@angular/core/testing';
 import { ChatbotComponent } from './chatbot.component';
 import { ChatService } from 'src/app/services/chat.service';
+import { SharedService } from 'src/app/services/shared.service';
 import { of, throwError } from 'rxjs';
 import { ElementRef } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ChatbotComponent', () => {
   let component: ChatbotComponent;
   let fixture: ComponentFixture<ChatbotComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
 
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService', [
@@ -20,15 +23,24 @@ describe('ChatbotComponent', () => {
       'submitFeedback',
       'submitSupport',
     ]);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', [
+      'getListOfProjects',
+    ]);
 
     await TestBed.configureTestingModule({
-      imports: [ChatbotComponent],
-      providers: [{ provide: ChatService, useValue: chatServiceSpy }],
+      imports: [ChatbotComponent, HttpClientTestingModule],
+      providers: [
+        { provide: ChatService, useValue: chatServiceSpy },
+        { provide: SharedService, useValue: sharedServiceSpy },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChatbotComponent);
     component = fixture.componentInstance;
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
     fixture.detectChanges();
   });
 
@@ -66,7 +78,7 @@ describe('ChatbotComponent', () => {
       expect(chatService.askQuestion).not.toHaveBeenCalled();
     });
 
-    it('should send message and update messages array on success', async () => {
+    it('should send message and update messages array on success', (done) => {
       const mockResponse = {
         answer: 'Test answer',
         suggestedQuestions: ['Question 1', 'Question 2'],
@@ -77,42 +89,37 @@ describe('ChatbotComponent', () => {
       component.userInput = 'Test question';
       component.sendMessage();
 
-      expect(component.messages.length).toBe(1);
-      expect(component.messages[0].text).toBe('Test question');
-      expect(component.messages[0].isUser).toBeTrue();
-      expect(component.isLoading).toBeTrue();
-      expect(component.userInput).toBe('');
-
-      await fixture.whenStable();
-      fixture.detectChanges();
-
-      expect(component.messages.length).toBe(1);
-      expect(component.messages[0].text).toBe('Test question');
-      expect(component.messages[0].isUser).toBeTrue();
-      // expect(component.messages[0].suggestedQuestions).toEqual([
-      //   'Question 1',
-      //   'Question 2',
-      // ]);
-      expect(component.isLoading).toBeTrue();
+      setTimeout(() => {
+        expect(component.messages.length).toBe(2);
+        expect(component.messages[1].text).toBe('Test answer');
+        expect(component.messages[1].isUser).toBeFalse();
+        expect(component.messages[1].suggestedQuestions).toEqual([
+          'Question 1',
+          'Question 2',
+        ]);
+        expect(component.isLoading).toBeFalse();
+        done();
+      }, 10);
     });
 
-    xit('should handle error when sending message', (done) => {
+    it('should handle error when sending message', (done) => {
       chatService.askQuestion.and.returnValue(
         throwError(() => new Error('API Error')),
       );
 
+      component.messages = [];
       component.userInput = 'Test question';
       component.sendMessage();
 
       setTimeout(() => {
-        expect(component.messages[2].text).toBe('Sorry, something went wrong.');
+        expect(component.messages.length).toBe(2);
+        expect(component.messages[1].text).toBe('Sorry, something went wrong.');
         expect(component.isLoading).toBeFalse();
         done();
-      }, 100);
+      }, 10);
     });
 
-    // TODO: will be handled later
-    xit('should include conversation history in request', () => {
+    it('should include conversation history in request', (done) => {
       chatService.askQuestion.and.returnValue(
         of({ answer: 'Test', suggestedQuestions: [] }),
       );
@@ -125,21 +132,20 @@ describe('ChatbotComponent', () => {
       component.userInput = 'Q2';
       component.sendMessage();
 
-      expect(chatService.askQuestion).toHaveBeenCalledWith(
-        'Q2',
-        false,
-        jasmine.arrayContaining([
-          { role: 'assistant', content: 'Initial' },
-          { role: 'user', content: 'Q1' },
-          { role: 'assistant', content: 'A1' },
-        ]),
-      );
+      expect(chatService.askQuestion).toHaveBeenCalledWith('Q2', false, [
+        { role: 'assistant', content: 'Initial' },
+        { role: 'user', content: 'Q1' },
+        { role: 'assistant', content: 'A1' },
+      ]);
+
+      setTimeout(() => {
+        done();
+      }, 10);
     });
   });
 
   describe('submitFeedback', () => {
-    // TODO: will be handled later
-    xit('should submit feedback and update message', () => {
+    it('should submit feedback and update message', (done) => {
       chatService.submitFeedback.and.returnValue(of({ message: 'Success' }));
 
       component.messages = [
@@ -153,12 +159,15 @@ describe('ChatbotComponent', () => {
 
       component.submitFeedback(0, true);
 
-      expect(component.messages[0].feedbackGiven).toBe('like');
-      expect(chatService.submitFeedback).toHaveBeenCalledWith(
-        'Question',
-        'Answer',
-        true,
-      );
+      setTimeout(() => {
+        expect(component.messages[0].feedbackGiven).toBe('like');
+        expect(chatService.submitFeedback).toHaveBeenCalledWith(
+          'Question',
+          'Answer',
+          true,
+        );
+        done();
+      }, 10);
     });
 
     it('should set feedbackGiven to dislike when isLiked is false', () => {
@@ -178,7 +187,7 @@ describe('ChatbotComponent', () => {
       expect(component.messages[0].feedbackGiven).toBe('dislike');
     });
 
-    xit('should reset feedbackGiven on error', (done) => {
+    it('should reset feedbackGiven on error', (done) => {
       chatService.submitFeedback.and.returnValue(
         throwError(() => new Error('Error')),
       );
@@ -197,7 +206,7 @@ describe('ChatbotComponent', () => {
       setTimeout(() => {
         expect(component.messages[0].feedbackGiven).toBeNull();
         done();
-      }, 100);
+      }, 10);
     });
 
     it('should not submit feedback if message has no question', () => {
@@ -268,46 +277,55 @@ describe('ChatbotComponent', () => {
 
     it('should validate support form correctly', () => {
       component.supportForm.issueDescription = '';
+      component.selectedProject = null;
       expect(component.isSupportFormValid()).toBeFalse();
 
       component.supportForm.issueDescription = 'Valid description';
+      expect(component.isSupportFormValid()).toBeFalse(); // Still false because project is null
+
+      component.selectedProject = { name: 'Project 1', code: 'P1' };
       expect(component.isSupportFormValid()).toBeTrue();
     });
 
-    // TODO: will be handled later
-    xit('should submit support request successfully', () => {
+    it('should submit support request successfully', (done) => {
       spyOn(window, 'alert');
       chatService.submitSupport.and.returnValue(of({ message: 'Success' }));
 
       component.userName = 'Test User';
       component.userEmail = 'test@example.com';
-      component.getCurrentSelectedProject = 'Project 1';
+      component.selectedProject = { name: 'Project 1', code: 'P1' };
       component.supportForm.issueDescription = 'Issue description';
 
       component.submitSupport();
 
-      expect(chatService.submitSupport).toHaveBeenCalledWith(
-        'Test User',
-        'test@example.com',
-        'Project 1',
-        'Issue description',
-      );
-      expect(window.alert).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(chatService.submitSupport).toHaveBeenCalledWith(
+          'Test User',
+          'test@example.com',
+          'Project 1',
+          'Issue description',
+        );
+        expect(window.alert).toHaveBeenCalled();
+        done();
+      }, 10);
     });
 
-    // TODO: will be handled later
-    xit('should handle support submission error', () => {
+    it('should handle support submission error', (done) => {
       spyOn(window, 'alert');
       chatService.submitSupport.and.returnValue(
         throwError(() => new Error('Error')),
       );
 
+      component.selectedProject = { name: 'Project 1', code: 'P1' };
       component.supportForm.issueDescription = 'Issue';
       component.submitSupport();
 
-      expect(window.alert).toHaveBeenCalledWith(
-        'Failed to send support request. Please try again.',
-      );
+      setTimeout(() => {
+        expect(window.alert).toHaveBeenCalledWith(
+          'Failed to send support request. Please try again.',
+        );
+        done();
+      }, 10);
     });
 
     it('should not submit if form is invalid', () => {
@@ -319,10 +337,12 @@ describe('ChatbotComponent', () => {
   });
 
   describe('openSupportPopupFromChat', () => {
-    it('should load user details from localStorage', () => {
+    it('should load user details from localStorage and projects from SharedService', () => {
+      sharedService.getListOfProjects.and.returnValue([
+        { nodeDisplayName: 'Project 1', nodeName: 'P1' },
+      ]);
+
       spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-        if (key === 'selectedTrend')
-          return JSON.stringify([{ nodeDisplayName: 'Project 1' }]);
         if (key === 'currentUserDetails')
           return JSON.stringify({
             user_name: 'John Doe',
@@ -333,7 +353,11 @@ describe('ChatbotComponent', () => {
 
       component.openSupportPopupFromChat();
 
-      expect(component.getCurrentSelectedProject).toBe('Project 1');
+      expect(sharedService.getListOfProjects).toHaveBeenCalled();
+      expect(component.getCurrentSelectedProject).toEqual([
+        { name: 'Project 1', code: 'P1' },
+      ]);
+      expect(component.selectedProject).toBeNull();
       expect(component.userName).toBe('John Doe');
       expect(component.userEmail).toBe('john@example.com');
     });

@@ -459,6 +459,7 @@ describe('BasicConfigComponent', () => {
       detail: '',
     });
     expect(gaService.createProjectData).toHaveBeenCalled();
+    tick(5000);
   }));
 
   it('should handle form submission error', fakeAsync(() => {
@@ -796,6 +797,7 @@ describe('BasicConfigComponent', () => {
         kanban: true,
         assigneeDetails: true,
         developerKpiEnabled: false,
+        teamStrength: undefined,
         project: { nodeDisplayName: 'Project A' },
         level1: { nodeDisplayName: 'Level 1 Data' },
       });
@@ -822,6 +824,7 @@ describe('BasicConfigComponent', () => {
         kanban: false,
         assigneeDetails: undefined,
         developerKpiEnabled: undefined,
+        teamStrength: undefined,
         project: undefined,
         level1: undefined,
       });

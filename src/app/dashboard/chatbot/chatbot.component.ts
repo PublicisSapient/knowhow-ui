@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { marked } from 'marked';
 import { ChatService } from 'src/app/services/chat.service';
 import { TableModule } from 'primeng/table';
+import { DropdownModule } from 'primeng/dropdown';
+import { SharedService } from 'src/app/services/shared.service';
 
 interface Message {
   text: string;
@@ -23,8 +25,7 @@ interface Message {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, TableModule],
-  providers: [ChatService],
+  imports: [CommonModule, FormsModule, TableModule, DropdownModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
 })
@@ -53,9 +54,13 @@ export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   getCurrentSelectedProject;
+  selectedProject: any;
   private hasInitialized = false;
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly sharedService: SharedService,
+  ) {}
 
   toggleChat() {
     this.isOpen = !this.isOpen;
@@ -166,7 +171,9 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   isSupportFormValid(): boolean {
-    return this.supportForm.issueDescription.trim() !== '';
+    return (
+      this.supportForm.issueDescription.trim() !== '' && !!this.selectedProject
+    );
   }
 
   submitSupport() {
@@ -176,7 +183,7 @@ export class ChatbotComponent implements AfterViewChecked {
       .submitSupport(
         this.userName,
         this.userEmail,
-        this.getCurrentSelectedProject,
+        this.selectedProject?.name || '',
         this.supportForm.issueDescription,
       )
       .subscribe({
@@ -194,13 +201,13 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   openSupportPopupFromChat() {
-    const selectedTrends = JSON.parse(
-      localStorage.getItem('selectedTrend') || '[]',
-    );
+    const listOfProjects = this.sharedService.getListOfProjects();
 
-    this.getCurrentSelectedProject = selectedTrends
-      .map((el) => el.nodeDisplayName)
-      .join(', ');
+    this.getCurrentSelectedProject = listOfProjects.map((el) => ({
+      name: el.nodeDisplayName,
+      code: el.nodeName,
+    }));
+    this.selectedProject = null;
 
     const currentUserDetails = JSON.parse(
       localStorage.getItem('currentUserDetails') || '{}',

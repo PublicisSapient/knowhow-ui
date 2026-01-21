@@ -2,24 +2,18 @@
   <div class="card-content">
     <div class="header-section">
       <div class="ai-icon"></div>
-      <span class="title">AI Recommended Target</span>
+      <span class="title">AI Recommendations</span>
     </div>
     
     <div class="target-section">
-      <span class="next-sprint">Next Sprint: </span>
+      <span class="next-sprint">Next Target: </span>
       <span class="target-value">{{ targetValue }}</span>
-      <span class="improvement">({{ improvement }} {{ improvementLabel }})</span>
+      <!-- <span class="improvement">({{ improvement }} {{ improvementLabel }})</span> -->
     </div>
     
     <div class="action-section">
-      <span class="action-link" (click)="onViewPlanClick()">Click to view AI intervention plan</span>
+      <span class="action-link" (click)="onViewPlanClick()">Click to view Recommended Next Actions</span>
     </div>
-  </div>
-  
-  <div class="chevron-icon">
-    <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
-      <path d="M1 1L7 7L1 13" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
   </div>
 </div>
 
@@ -29,24 +23,24 @@
   <p-header>
     <div>
       <div>
-        AI Intervention Plan
+        AI Recommended Next Actions
       </div>
-      <div class="export-button">
-        <span class="kpi-chip">{{kpiData.kpiDetail.kpiName}}</span>
+      <div class="export-button">`
+        <span class="kpi-chip">{{kpiData?.kpiDetail?.kpiName}}</span>
       </div>
     </div>
   </p-header>
 
   <div class="dialog-body p-mb-4">
     <app-recomm-details 
-      [infoBoxes]="aiRecommendationData.infoBoxes"
-      [kpis]="aiRecommendationData.kpis" 
-      [actionPlan]="aiRecommendationData.actionPlan"
-      [kpiSectionTitle]="aiRecommendationData.kpiSectionTitle"
-      [actionPlanTitle]="aiRecommendationData.actionPlanTitle"
-      [showAiRationale]="true"
+      [infoBoxes]="selectedRecommendation?.infoBoxes"
+      [kpis]="selectedRecommendation?.kpis" 
+      [actionPlan]="selectedRecommendation?.actionPlan"
+      [kpiSectionTitle]="selectedRecommendation?.kpiSectionTitle"
+      [actionPlanTitle]="selectedRecommendation?.actionPlanTitle"
+      [showAiRationale]="false"
       [aiRationaleTitle]="'AI Analysis'"
-      [aiRationaleDescription]="aiRecommendationData.aiRationaleDescription">
+      [aiRationaleDescription]="selectedRecommendation?.aiRationaleDescription">
     </app-recomm-details>
   </div>
 </p-dialog>

@@ -159,6 +159,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('recommendationsComponent', { read: ElementRef })
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
+  hasBaseUrl = false;
 
   monthlyMetrics: MetricItem[] = [
     { label: 'Total PRs', value: 35, trend: 'neutral' },
@@ -184,6 +185,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedDateFilterValue: string;
   perfSummaryLoader: boolean = true;
   @ViewChild('recommendationsPortal') recommendationsPortal: TemplateRef<any>;
+  kpiRecommData = {};
 
   constructor(
     public service: SharedService,
@@ -224,8 +226,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.floatingRecommendation &&
       this.isRecommendationsEnabled &&
       this.selectedtype?.toLowerCase() == 'scrum' &&
-      this.projectCount <= 2
+      this.projectCount <= 2 &&
+      this.hasBaseUrl
     );
+  }
+
+  checkConfigurationDetails() {
+    const configData = this.service.getConfigurationDetails();
+    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
   }
 
   arrayDeepCompare(a1, a2) {
@@ -339,6 +347,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.initializeUserDetails();
+    this.checkConfigurationDetails();
     this.setupScrumKanbanSwitchSubscription();
 
     this.subscriptions.push(
@@ -386,6 +395,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.mapColorToProject
         .pipe(
           mergeMap((x) => {
+            this.checkConfigurationDetails();
             this.maturityTableKpiList = [];
             this.colorObj = x;
             this.trendBoxColorObj = { ...x };
@@ -788,6 +798,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
       this.sprintGoalData = [];
+      this.kpiRecommData = {};
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         this.kpiTableDataObj[key] = [];
@@ -2953,6 +2964,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createAllKpiArray(data) {
     for (const key in data) {
+      /** Creating recomm data */
+      this.kpiRecommData[key] = data[key]?.recommendationActionPlan || {};
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
@@ -4396,16 +4409,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     let latest = '';
     let trend = '';
     let unit = '';
-    if (item?.value?.length > 0) {
+
+    // Filter out forecast data
+    const validValues = item?.value?.filter((v) => !v.isForecast);
+
+    if (validValues?.length > 0) {
       let tempVal;
-      if (item?.value[item?.value?.length - 1]?.dataValue) {
-        tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(
+      if (validValues[validValues?.length - 1]?.dataValue) {
+        tempVal = validValues[validValues?.length - 1]?.dataValue.find(
           (d) => d.lineType === 'solid',
         )?.value;
       } else {
-        tempVal = item?.value[item?.value?.length - 1]?.lineValue
-          ? item?.value[item?.value?.length - 1]?.lineValue
-          : item?.value[item?.value?.length - 1]?.value;
+        tempVal = validValues[validValues?.length - 1]?.lineValue
+          ? validValues[validValues?.length - 1]?.lineValue
+          : validValues[validValues?.length - 1]?.value;
       }
       unit =
         kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' &&
@@ -4418,7 +4435,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           ? Math.round(tempVal * 10) / 10 + (unit ? ' ' + unit : '')
           : tempVal + (unit ? ' ' + unit : '');
     }
-    if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
+    if (validValues?.length > 0 && kpiData?.kpiDetail?.showTrend) {
       if (kpiData?.kpiDetail?.trendCalculative) {
         const lhsKey =
           kpiData?.kpiDetail?.trendCalculation?.length > 0
@@ -4428,8 +4445,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           kpiData?.kpiDetail?.trendCalculation?.length > 0
             ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs
             : '';
-        const lhs = item?.value[item?.value?.length - 1][lhsKey];
-        const rhs = item?.value[item?.value?.length - 1][rhsKey];
+        const lhs = validValues[validValues?.length - 1][lhsKey];
+        const rhs = validValues[validValues?.length - 1][rhsKey];
         const operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
         const trendObj = kpiData?.kpiDetail?.trendCalculation?.find(
           (item) => item.operator == operator,
@@ -4447,16 +4464,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       } else {
         let lastVal;
         let secondLastVal;
-        if (item?.value[item?.value?.length - 1]?.dataValue) {
-          lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(
+        if (validValues[validValues?.length - 1]?.dataValue) {
+          lastVal = validValues[validValues?.length - 1]?.dataValue.find(
             (d) => d.lineType === 'solid',
           )?.value;
-          secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(
+          secondLastVal = validValues[validValues?.length - 2]?.dataValue.find(
             (d) => d.lineType === 'solid',
           )?.value;
         } else {
-          lastVal = item?.value[item?.value?.length - 1]?.value;
-          secondLastVal = item?.value[item?.value?.length - 2]?.value;
+          lastVal = validValues[validValues?.length - 1]?.value;
+          secondLastVal = validValues[validValues?.length - 2]?.value;
         }
         const isPositive = kpiData?.kpiDetail?.isPositiveTrend;
         if (secondLastVal > lastVal && !isPositive) {

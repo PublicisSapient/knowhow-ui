@@ -74,6 +74,7 @@ import { StackedBarChartComponent } from '../component/stacked-bar-chart/stacked
 import { TableComponent } from '../component/table/table.component';
 import { TabularKpiV2Component } from '../component/tabular-kpi-v2/tabular-kpi-v2.component';
 import { TabularKpiWithDonutChartComponent } from '../component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { StackedGroupBarChartComponent } from '../component/stacked-group-bar-chart/stacked-group-bar-chart.component';
 import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
 
 import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
@@ -150,6 +151,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     TabularKpiWithDonutChartComponent,
     BarchartComponent,
     MultilineComponent,
+    StackedGroupBarChartComponent,
     MultilineV2Component,
     GroupstackchartComponentv2,
     GroupBarChartComponent,
@@ -199,6 +201,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     ChartWithFiltersComponent,
     KpiAdditionalFilterComponent,
     MultilineComponent,
+    StackedGroupBarChartComponent,
     MultilineV2Component,
     StackedAreaChartComponent,
     GroupstackchartComponentv2,

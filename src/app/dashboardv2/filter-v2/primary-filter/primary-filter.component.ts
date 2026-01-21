@@ -276,6 +276,7 @@ export class PrimaryFilterComponent implements OnChanges {
       this.filters = this.helperService.sortAlphabetically(
         this.filterData[this.selectedLevel],
       );
+      this.service.setListOfProjects(this.filters);
       if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(

@@ -143,6 +143,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   public handleActionsClick(currentProject) {
+    this.sharedService.setCurrentProject(currentProject);
     this.selectedProductForExecutingAction = currentProject;
   }
 

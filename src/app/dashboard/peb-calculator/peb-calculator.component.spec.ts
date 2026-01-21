@@ -144,14 +144,15 @@ describe('PebCalculatorComponent', () => {
     component.pebForm.get('devCostControl').setValue(50000);
     component.pebForm.get('durationControl').setValue('year');
     component.selectedLevel = 'engagement';
-    component.showLoader = true;
     component.showResults = false;
+    component['pendingApiCalls'] = 1;
+    component.isLoadingPebData = true;
     const http = TestBed.inject(HttpService) as any;
     spyOn(http, 'getPebProductivityData').and.returnValue(of(productivityGain));
     spyOn(component, 'calculatePEB').and.callThrough();
     component.getPEBData();
     tick(1000);
-    expect(component.showLoader).toBe(false);
+    expect(component.isLoadingPebData).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);
   }));
@@ -167,4 +168,106 @@ describe('PebCalculatorComponent', () => {
     expect(component.showLoader).toBe(false);
     expect(component.isError).toBe(true);
   }));
+
+  // Test cases for new filter methods
+  describe('Filter Methods', () => {
+    beforeEach(() => {
+      component.items = [
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project B',
+          categoryScores: { overall: 2000 },
+        },
+      ];
+    });
+
+    it('should generate column filter data correctly', () => {
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData['organizationEntityName']).toBeDefined();
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        2,
+      );
+      expect(component.tableColumnData['organizationEntityName'][0]).toEqual({
+        name: 'Project A',
+        value: 'Project A',
+      });
+
+      expect(component.tableColumnData['categoryScores.overall']).toBeDefined();
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        2,
+      );
+
+      expect(component.tableColumnForm['organizationEntityName']).toEqual([]);
+      expect(component.tableColumnForm['categoryScores.overall']).toEqual([]);
+    });
+
+    it('should handle empty items array in generateColumnFilterData', () => {
+      component.items = [];
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData).toEqual({});
+      expect(component.tableColumnForm).toEqual({});
+    });
+
+    it('should set filteredColumn on onFilterClick', () => {
+      const columnName = 'organizationEntityName';
+      component.onFilterClick(columnName);
+
+      expect(component.filteredColumn).toBe(columnName);
+    });
+
+    it('should clear filteredColumn on onFilterBlur when same column', () => {
+      component.filteredColumn = 'organizationEntityName';
+      component.onFilterBlur('organizationEntityName');
+
+      expect(component.filteredColumn).toBe('');
+    });
+
+    it('should keep filteredColumn on onFilterBlur when different column', () => {
+      component.filteredColumn = 'organizationEntityName';
+      component.onFilterBlur('categoryScores.overall');
+
+      expect(component.filteredColumn).toBe('organizationEntityName');
+    });
+
+    it('should generate unique filter options for duplicate values', () => {
+      component.items = [
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+      ];
+
+      component.generateColumnFilterData();
+
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        1,
+      );
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        1,
+      );
+    });
+  });
+
+  it('should reset form to default values when resetForm is called', () => {
+    component.pebForm.patchValue({
+      devCountControl: 100,
+      devCostControl: 500000,
+      durationControl: 'per month',
+    });
+    spyOn(component, 'calculatePEB');
+    component.resetForm();
+    expect(component.pebForm.get('devCountControl').value).toBe(25);
+    expect(component.pebForm.get('devCostControl').value).toBe(80000);
+    expect(component.pebForm.get('durationControl').value).toBe('per year');
+    expect(component.calculatePEB).toHaveBeenCalled();
+  });
 });

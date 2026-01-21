@@ -185,6 +185,17 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('transform', `translate(${marginLeft}, ${marginTop})`);
 
     this.findMaxVal(data);
+
+    const percentiles = this.resolveBenchmarkPercentiles(this.data?.[0]);
+    const benchmarkValue = this.getBenchmarkValue(
+      data,
+      percentiles,
+      this.plannedSeriesName,
+    );
+    if (benchmarkValue !== null && benchmarkValue > this.maxYValue) {
+      this.maxYValue = benchmarkValue;
+    }
+
     if (!(this.maxYValue >= 5)) {
       this.maxYValue = 5;
     } else {
@@ -737,6 +748,60 @@ export class GroupBarChartComponent implements OnChanges {
       .style('left', 43 + 'px')
       .style('bottom', 20 + 'px')
       .style('top', y[0] + 30 + 'px');
+
+    if (benchmarkValue !== null) {
+      const tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'benchmark-tooltip')
+        .style('position', 'absolute')
+        .style('background', '#202429')
+        .style('color', '#fff')
+        .style('padding', '6px 10px')
+        .style('border-radius', '4px')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('opacity', 0);
+
+      const yVal = y(benchmarkValue);
+
+      svgX
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', yVal)
+        .attr('y2', yVal)
+        .style('stroke', '#15BA40')
+        .style('stroke-width', 2)
+        .style('stroke-dasharray', '4,4')
+        .style('opacity', 0.8)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event) => {
+          tooltip.style('opacity', 1).html('Recommended Target');
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 20 + 'px');
+        })
+        .on('mousemove', (event) => {
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 20 + 'px');
+        })
+        .on('mouseout', () => {
+          tooltip.style('opacity', 0);
+        });
+
+      // Label
+      svgX
+        .append('text')
+        .attr('x', width)
+        .attr('y', yVal - 5)
+        .attr('text-anchor', 'end')
+        .style('fill', '#15BA40')
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .text(benchmarkValue);
+    }
   }
 
   findMaxVal(data) {
@@ -763,7 +828,7 @@ export class GroupBarChartComponent implements OnChanges {
       d.value.forEach((groupD) => {
         if (
           (groupD?.kpiGroup || '').trim().toLowerCase() ===
-          this.plannedSeriesName.toLowerCase()
+          (this.plannedSeriesName || '').toLowerCase()
         ) {
           groupD.graphType = 'line';
           groupD.lineCategory = 'line';
@@ -828,7 +893,7 @@ export class GroupBarChartComponent implements OnChanges {
         return d;
       }
       if (this.xCaption.toLowerCase() === 'weeks') {
-        d['group'] = d['group'].replace(' ', '');
+        d['group'] = d['group'].replaceAll(' ', '');
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
         const date2 = new Date(dateArray[1]);
@@ -978,5 +1043,60 @@ export class GroupBarChartComponent implements OnChanges {
   getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
+  }
+
+  getBenchmarkValue(
+    data: any[],
+    percentiles?: Record<string, number>,
+    plannedSeriesName?: string,
+  ): number | null {
+    if (!data?.length || !percentiles) {
+      return null;
+    }
+
+    // Find max value only for the planned series
+    let highestActualValue = 0;
+
+    data.forEach((d) => {
+      // Check bars/values in the group
+      if (d.value && Array.isArray(d.value)) {
+        const plannedItems = d.value.filter(
+          (v) =>
+            !v.isForecast &&
+            (v.kpiGroup || '').trim().toLowerCase() ===
+              (plannedSeriesName || '').trim().toLowerCase(),
+        );
+
+        plannedItems.forEach((item) => {
+          const val = Number(item.value);
+          if (Number.isFinite(val) && val > highestActualValue) {
+            highestActualValue = val;
+          }
+        });
+      }
+    });
+
+    const sortedPercentiles = [
+      percentiles['seventyPercentile'],
+      percentiles['eightyPercentile'],
+      percentiles['nintyPercentile'],
+    ]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+
+    // Logic: Find lowest percentile > max value. If max > all, use highest percentile.
+    const result =
+      sortedPercentiles.find((val) => val > highestActualValue) ??
+      sortedPercentiles[sortedPercentiles.length - 1];
+    return Number.isFinite(result) ? Math.round(result) : result;
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.['benchmarkPercentiles']
+      ? dataEntry['benchmarkPercentiles']
+      : null;
   }
 }

@@ -18,7 +18,7 @@
 </div>
 
 <div class="kpi-details-table-container p-d-flex p-mx-2">
-  <div [ngClass]="{'p-col-12':!(nbaFlag | async) || selectedType !== 'scrum', 'p-col-9' : (nbaFlag | async) && selectedType === 'scrum'}">
+  <div [ngClass]="{'p-col-12':!(nbaFlag | async) || selectedType !== 'scrum' || !hasBaseUrl, 'p-col-9' : (nbaFlag | async) && selectedType === 'scrum' && hasBaseUrl}">
     <!-- MATURITY TABLE -->
     <div class="kpi-card-container">
       <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
@@ -83,7 +83,7 @@
                     @if(BottomTilesLoader){
                       <p-skeleton width="60px" height="2rem" />
                     } @else {
-                      <span class="styled-cell">{{ row[col.field] }}</span>
+                      <span>{{ row[col.field] }}</span>
                     }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(row[col.field])">
@@ -154,7 +154,7 @@
                     @if(productivityExpandRowDataLoader){
                       <p-skeleton width="60px" height="2rem" />
                     } @else {
-                      <span class="styled-cell">{{ childRow[childCol.field] }}</span>
+                      <span>{{ childRow[childCol.field] }}</span>
                     }
                     } @else {
                     <div class="p-p-2 styled-cell" [ngClass]="getMClass(childRow[childCol.field])">
@@ -169,7 +169,7 @@
             <tr>
               <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
                 <div class="p-d-flex p-flex-column p-align-center">
-                  <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                  <img alt="no-data" src="assets/img/NoDataFound.svg" />
                   <h4>No Data Available. </h4>
                 </div>
               </td>
@@ -198,7 +198,7 @@
         <tr style="border: none;">
           <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0" style="border: none;">
             <div class="p-d-flex p-flex-column p-align-center">
-              <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+              <img alt="no-data" src="assets/img/NoDataFound.svg" />
               <h4 style="color: rgb(32, 36, 41);">No Data Available. </h4>
             </div>
           </td>
@@ -269,8 +269,7 @@
     </div>
   </div>
 </div>
-
-<div class="p-col-3" *ngIf="(nbaFlag | async) && selectedType === 'scrum'">
+<div class="p-col-3" *ngIf="(nbaFlag | async) && selectedType === 'scrum' && hasBaseUrl">
     <app-nba [rawData]="nbaRawData" [isLoading]="nbaLoader"></app-nba>
 </div>
 
@@ -293,7 +292,7 @@
           <div class="trend-value-container">
             <div class="trend-icon">
               @if(index !== 0) {
-              <i class="fas {{ item.value.toString().includes('-') ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
+              <i class="fas {{ item.desiredTrend === 'DESCENDING' ? 'fa-caret-down' : 'fa-caret-up' }}" [style.color]="items.color"></i>
               } @else if(items.icon) {
               <i class="pi {{ items.icon }}" [style.color]="items.color"></i>
               }
@@ -308,12 +307,12 @@
     </div>
     } @else if(isFirst && !loader && items.value.length === 0){
       <div class="p-d-flex p-flex-column p-align-center">
-        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        <img alt="no-data" src="assets/img/NoDataFound.svg" />
         <h4>No Data Available.</h4>
       </div>
     } @else if(!BottomTilesLoader && items.value.length === 0 && !isFirst){
       <div class="p-d-flex p-flex-column p-align-center">
-        <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        <img alt="no-data" src="assets/img/NoDataFound.svg" />
         <h4>No Data Available.</h4>
       </div>
     } @else {

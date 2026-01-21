@@ -39,13 +39,16 @@ export class PebCalculatorComponent implements OnInit {
   errorMessage: string = '';
   items: any[] = [];
   pebProductivityTrendData: any = {};
+  tableColumnData: any = {};
+  tableColumnForm: any = {};
+  filteredColumn: string = '';
 
   performanceChartData: Array<object> = [];
   costSavingsChartData: Array<object> = [];
   subscription = [];
   selectedLevel: string = '';
   categoryVariations: CategoryVariations | null = null;
-  isLoadingPebData: boolean = false;
+  isLoadingPebData: boolean = true;
   private pendingApiCalls: number = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
@@ -84,10 +87,6 @@ export class PebCalculatorComponent implements OnInit {
    * @memberof PebCalculatorComponent
    * @lifecycle Angular
    */
-  onSliderChange(controlName: string, event: any) {
-    this.pebForm.get(controlName)?.setValue(event.value);
-    this.cdr.detectChanges();
-  }
 
   ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams
@@ -177,8 +176,6 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPEBData() {
-    this.showLoader = true;
-
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
       .getPebProductivityData(this.selectedLevel?.toLowerCase())
@@ -191,7 +188,6 @@ export class PebCalculatorComponent implements OnInit {
             this.errorMessage = '';
             this.completeApiCall();
           } else {
-            this.showLoader = false;
             this.completeApiCall();
             this.isError = true;
             console.error(
@@ -204,7 +200,6 @@ export class PebCalculatorComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to fetch productivity gain data', err.message);
-          this.showLoader = false;
           this.completeApiCall();
           this.isError = true;
           this.errorMessage = err['message'];
@@ -213,27 +208,25 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   calculatePEB() {
-    this.showLoader = true;
-    setTimeout(() => {
-      const overallGain = this.productivityGain['details']?.reduce((a, b) => {
-        return a + (b['categoryScores']['overall'] || 0);
-      }, 0);
+    const overallGain = this.productivityGain['details']?.reduce((a, b) => {
+      return a + (b['categoryScores']['overall'] || 0);
+    }, 0);
 
-      this.annualPEB = this.calculateMultipliedDetails(overallGain);
+    this.annualPEB = this.calculateMultipliedDetails(overallGain);
 
-      const details = this.productivityGain?.details;
-      this.items = details.map((item) => ({
-        ...item,
-        categoryScores: Object.fromEntries(
-          Object.entries(item.categoryScores).map(([key, value]) => [
-            key,
-            this.calculateMultipliedDetails(value as number),
-          ]),
-        ),
-      }));
+    const details = this.productivityGain?.details;
+    this.items = details.map((item) => ({
+      ...item,
+      categoryScores: Object.fromEntries(
+        Object.entries(item.categoryScores).map(([key, value]) => [
+          key,
+          this.calculateMultipliedDetails(value as number),
+        ]),
+      ),
+    }));
 
-      this.showLoader = false;
-    }, 1000);
+    // Generate filter data for the table
+    this.generateColumnFilterData();
   }
 
   getPebProjectPerformanceData(level) {
@@ -400,6 +393,65 @@ export class PebCalculatorComponent implements OnInit {
     };
 
     return currencyMap[country] || 'USD';
+  }
+
+  resetForm() {
+    this.pebForm.patchValue({
+      devCountControl: this.appConfig?.totalTeamSize || 30,
+      devCostControl: this.appConfig?.avgCostPerTeamMember || 10000,
+      durationControl:
+        this.appConfig?.timeDuration?.toLowerCase() || 'per year',
+    });
+    this.calculatePEB();
+  }
+
+  generateColumnFilterData() {
+    if (this.items.length > 0) {
+      this.tableColumnData = {};
+      this.tableColumnForm = {};
+
+      // Generate filter data for organizationEntityName
+      const entityNames = new Map();
+      this.items.forEach((item) => {
+        const key = item.organizationEntityName;
+        if (!entityNames.has(key)) {
+          entityNames.set(key, {
+            name: key,
+            value: key,
+          });
+        }
+      });
+      this.tableColumnData['organizationEntityName'] = Array.from(
+        entityNames.values(),
+      );
+      this.tableColumnForm['organizationEntityName'] = [];
+
+      // Generate filter data for categoryScores.overall
+      const savingsValues = new Map();
+      this.items.forEach((item) => {
+        const key = item.categoryScores.overall;
+        const displayValue = this.dynamicCurrencyPipe.transform(key, 'value');
+        if (!savingsValues.has(key)) {
+          savingsValues.set(key, {
+            name: displayValue,
+            value: key,
+          });
+        }
+      });
+      this.tableColumnData['categoryScores.overall'] = Array.from(
+        savingsValues.values(),
+      );
+      this.tableColumnForm['categoryScores.overall'] = [];
+    }
+  }
+
+  onFilterClick(columnName: string) {
+    this.filteredColumn = columnName;
+  }
+
+  onFilterBlur(columnName: string) {
+    this.filteredColumn =
+      this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
   ngOnDestroy() {

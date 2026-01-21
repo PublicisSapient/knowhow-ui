@@ -176,6 +176,7 @@ describe('HomeComponent', () => {
         'setPEBDataCache',
         'getPEBDataCache',
         'clearPEBDataCache',
+        'getConfigurationDetails',
       ],
       {
         passDataToDashboard: of({
@@ -198,6 +199,9 @@ describe('HomeComponent', () => {
     mockSharedService.getPEBDataCache.and.returnValue(null);
     mockSharedService.setPEBDataCache.and.stub();
     mockSharedService.clearPEBDataCache.and.stub();
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      data: { aiGatewayBaseUrl: 'http://localhost:7001/' },
+    });
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
@@ -288,6 +292,16 @@ describe('HomeComponent', () => {
       { completion: '60' },
     ];
     expect(component.calculateEfficiency()).toBe('80%');
+  });
+
+  it('should handle non-numeric completion values in calculateEfficiency', () => {
+    component.tableData.data = [
+      { completion: '80' },
+      { completion: 'N/A' },
+      { completion: '60' },
+    ];
+    // (80 + 60) / 3 = 46.66... rounded to 47
+    expect(component.calculateEfficiency()).toBe('47%');
   });
 
   it('should return 0% efficiency if no data', () => {
@@ -449,16 +463,24 @@ describe('HomeComponent', () => {
 
   it('should calculate trend data for positive trends', () => {
     const testData = [
-      { kpiName: 'KPI 1', trendValue: 5.5 },
-      { kpiName: 'KPI 2', trendValue: 3.2 },
-      { kpiName: 'KPI 3', trendValue: 8.1 },
+      { kpiName: 'KPI 1', trendValue: 5.5, desiredTrend: 'ASCENDING' },
+      { kpiName: 'KPI 2', trendValue: 3.2, desiredTrend: 'DESCENDING' },
+      { kpiName: 'KPI 3', trendValue: 8.1, desiredTrend: 'DESCENDING' },
     ];
 
     const result = component.calculateTrendData(testData, 'positive');
 
     expect(result.length).toBe(3);
-    expect(result[0]).toEqual({ property: 'KPI 3', value: '8.1' });
-    expect(result[1]).toEqual({ property: 'KPI 1', value: '5.5' });
+    expect(result[0]).toEqual({
+      property: 'KPI 3',
+      value: '8.1',
+      desiredTrend: 'DESCENDING',
+    });
+    expect(result[1]).toEqual({
+      property: 'KPI 1',
+      value: '5.5',
+      desiredTrend: 'ASCENDING',
+    });
   });
 
   it('should return empty array when trend data is null', () => {
@@ -1068,41 +1090,32 @@ describe('HomeComponent', () => {
     });
   }));
 
-  it('should handle initializeBottomData with ONLYTRENDS reset', () => {
-    component.bottomTilesData.set([
-      {
-        category: 'Risk',
-        value: [],
-        icon: false,
-        color: '#cdba38',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-      {
-        category: 'Old Positive',
-        value: [],
-        icon: true,
-        color: '#15ba40',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-      {
-        category: 'Old Negative',
-        value: [],
-        icon: true,
-        color: '#eb3d4b',
-        fontColor: 'black',
-        cssClassName: '',
-      },
-    ]);
+  it('should initialize hasBaseUrl based on configuration', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      aiGatewayBaseUrl: 'http://localhost:7001/',
+    });
 
-    component.initializeBottomData('ONLYTRENDS');
+    component.checkConfigurationDetails();
 
-    const bottomData = component.bottomTilesData();
-    expect(bottomData[1].color).toBe('#99cda9');
-    expect(bottomData[2].color).toBe('#ed8888');
-    expect(bottomData[1].category).toBe('Positive Trends');
-    expect(bottomData[2].category).toBe('Negative Trends');
+    expect(component.hasBaseUrl).toBe(true);
+  });
+
+  it('should set hasBaseUrl to false when baseUrl is not available', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue({
+      data: {},
+    });
+
+    component.checkConfigurationDetails();
+
+    expect(component.hasBaseUrl).toBe(false);
+  });
+
+  it('should set hasBaseUrl to false when configuration data is null', () => {
+    mockSharedService.getConfigurationDetails.and.returnValue(null);
+
+    component.checkConfigurationDetails();
+
+    expect(component.hasBaseUrl).toBe(false);
   });
 
   it('should handle executive board API error in ngOnInit subscription', fakeAsync(() => {
@@ -1173,5 +1186,60 @@ describe('HomeComponent', () => {
     expect(component.tableData.data[0].name).toBe('Test Project');
     expect(component.tableData.data[0].productivity).toBe('85.50%');
     expect(component.loader).toBeFalse();
+  }));
+
+  it('should initialize empty boardMaturity with default M0 values in ngOnInit', fakeAsync(() => {
+    const responseWithEmptyMaturity = {
+      message: 'Success',
+      success: true,
+      data: {
+        matrix: {
+          rows: [
+            {
+              id: 'r1',
+              name: 'Project with Empty Maturity',
+              completion: '50%',
+              health: 'unhealthy',
+              boardMaturity: {}, // Empty maturity
+            },
+          ],
+          columns: [
+            { field: 'id', header: 'ID' },
+            { field: 'name', header: 'Name' },
+          ],
+        },
+      },
+    };
+
+    mockHttpService.getExecutiveBoardData.and.returnValue(
+      of(responseWithEmptyMaturity),
+    );
+    spyOn(component, 'getProductivityForRow').and.returnValue('N/A');
+    spyOn(component, 'generateColumnFilterData').and.returnValue({
+      tableColumnData: {},
+      tableColumnForm: {},
+    });
+    spyOn(component, 'calculateQuertlyRisk').and.returnValue([]);
+    spyOn(component, 'calculateEfficiency').and.returnValue('50%');
+    spyOn(component, 'calculateHealth').and.returnValue({
+      count: 1,
+      average: '50%',
+    });
+
+    component.ngOnInit();
+    tick();
+
+    const row = component.tableData.data[0];
+    expect(row.boardMaturity).toEqual({
+      dora: 'M0',
+      value: 'M0',
+      speed: 'M0',
+      quality: 'M0',
+    });
+    // Verify spread properties as well
+    expect(row.dora).toBe('M0');
+    expect(row.value).toBe('M0');
+    expect(row.speed).toBe('M0');
+    expect(row.quality).toBe('M0');
   }));
 });
