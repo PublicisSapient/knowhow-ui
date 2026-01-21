@@ -341,7 +341,7 @@ export class RecommendationsComponent implements OnInit {
 
   private handleSprintDataError(err: any): void {
     console.error('Failed to fetch sprint recommendations:', err);
-    this.errorMessage = err?.originalError?.error?.message;
+    this.errorMessage = err?.originalError?.error?.message || err?.message;
     this.isError = true;
     this.isLoading = false;
     this.isReportGenerated = false;

@@ -47,11 +47,12 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         })),
       });
     }
+    const percentiles = this.resolveBenchmarkPercentiles(this.data?.[0]);
     this.graphData = mergedGroups;
-    this.draw();
+    this.draw(percentiles);
   }
 
-  draw() {
+  draw(percentiles = null) {
     const elem = this.elem;
     this.visibleXAxisLbl = [];
     d3.select(elem).select('#chart').select('svg').remove();
@@ -95,6 +96,11 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       maxYValue.push(Math.max(...maxY));
       minYValue.push(Math.min(...maxY));
     });
+
+    const benchmarkValue = this.getBenchmarkValue(this.graphData, percentiles);
+    if (benchmarkValue !== null) {
+      maxYValue.push(benchmarkValue);
+    }
 
     const xCoordinates = this.graphData.map((d) => d.filter);
 
@@ -427,6 +433,61 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           }
         });
     }
+
+    // Benchmark Line
+    if (benchmarkValue !== null) {
+      const tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'benchmark-tooltip')
+        .style('position', 'absolute')
+        .style('background', '#202429')
+        .style('color', '#fff')
+        .style('padding', '6px 10px')
+        .style('border-radius', '4px')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('opacity', 0);
+
+      const yVal = y(benchmarkValue);
+
+      svg
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', yVal)
+        .attr('y2', yVal)
+        .style('stroke', '#15BA40')
+        .style('stroke-width', 2)
+        .style('stroke-dasharray', '4,4')
+        .style('opacity', 0.8)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event) => {
+          tooltip.style('opacity', 1).html('Recommended Target');
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 20 + 'px');
+        })
+        .on('mousemove', (event) => {
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 20 + 'px');
+        })
+        .on('mouseout', () => {
+          tooltip.style('opacity', 0);
+        });
+
+      // Label
+      svg
+        .append('text')
+        .attr('x', width)
+        .attr('y', yVal - 5)
+        .attr('text-anchor', 'end')
+        .style('fill', '#15BA40')
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .text(benchmarkValue);
+    }
     //Add xCaption
     d3.select(elem)
       .select('#container')
@@ -561,5 +622,51 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       }
     }
     return dottedLineData;
+  }
+
+  getBenchmarkValue(
+    mergedGroups: any[],
+    percentiles?: Record<string, number>,
+  ): number | null {
+    if (!mergedGroups?.length || !percentiles) {
+      return null;
+    }
+
+    // Find highest actual value across all groups (excluding forecast)
+    let highestActualValue = 0;
+    mergedGroups.forEach((group) => {
+      const groupMax = Math.max(
+        ...group.value
+          .filter((p) => !p?.isForecast)
+          .map((p) => Number(p?.value ?? p?.data))
+          .filter(Number.isFinite),
+      );
+      if (groupMax > highestActualValue) {
+        highestActualValue = groupMax;
+      }
+    });
+
+    const sortedPercentiles = [
+      percentiles['seventyPercentile'],
+      percentiles['eightyPercentile'],
+      percentiles['nintyPercentile'],
+    ]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+
+    // Logic: Find lowest percentile > max value. If max > all, use highest percentile.
+    const result =
+      sortedPercentiles.find((val) => val > highestActualValue) ??
+      sortedPercentiles[sortedPercentiles.length - 1];
+    return Number.isFinite(result) ? Math.round(result) : result;
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.['benchmarkPercentiles']
+      ? dataEntry['benchmarkPercentiles']
+      : null;
   }
 }
