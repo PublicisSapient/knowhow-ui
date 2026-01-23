@@ -3350,42 +3350,49 @@ describe('FilterNewComponent', () => {
     it('should return true when kanban is falsy and selectedTab is "my-knowhow"', () => {
       component.kanban = null; // Falsy value
       component.selectedTab = 'my-knowhow';
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeTrue();
     });
 
     it('should return true when kanban is falsy and selectedTab is "speed"', () => {
       component.kanban = undefined; // Another falsy value
       component.selectedTab = 'speed';
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeTrue();
     });
 
     it('should return true when kanban is falsy and selectedTab is "quality"', () => {
       component.kanban = false;
       component.selectedTab = 'quality';
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeTrue();
     });
 
     it('should return false when kanban is truthy, even if selectedTab is in the list', () => {
       component.kanban = true;
       component.selectedTab = 'my-knowhow';
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeFalse();
     });
 
     it('should return false when selectedTab is not in the list', () => {
       component.kanban = false;
       component.selectedTab = 'random';
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeFalse();
     });
 
     it('should return false when selectedTab is undefined', () => {
       component.kanban = false;
       component.selectedTab = undefined;
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeFalse();
     });
 
     it('should be case-insensitive (handle uppercase "SPEED")', () => {
       component.kanban = null;
       component.selectedTab = 'SPEED'; // Uppercase
+      spyOn(sharedService, 'checkConfigurationDetails').and.returnValue(true);
       expect(component.isSprintGoalsHidden()).toBeTrue();
     });
   });

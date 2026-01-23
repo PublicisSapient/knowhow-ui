@@ -1047,6 +1047,11 @@ export class SharedService {
     return this.configData;
   }
 
+  checkConfigurationDetails(): boolean {
+    const configData = this.getConfigurationDetails();
+    return !!configData?.aiGatewayBaseUrl;
+  }
+
   setListOfProjects(listOfProjects: any[]) {
     this.listOfProjectsSubject = listOfProjects;
   }
