@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-collapsible-panel',
@@ -56,6 +57,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private sharedService: SharedService,
     public httpService: HttpService,
+    private metricsService: MetricsService,
   ) {}
 
   ngOnInit(): void {
@@ -212,6 +214,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   summariseUsingAI(data) {
+    this.metricsService.trackAiInsightsOpen();
     this.defaultMessage = true;
     const projectName = data.name;
     const accordionData = this.accordionData;

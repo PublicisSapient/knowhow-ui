@@ -40,6 +40,11 @@ export class MetricsService implements OnDestroy {
     const key = this.buildMetricKey(metricName, labels);
     const current = this.metrics.get(key) || 0;
     this.metrics.set(key, current + 1);
+    console.log(
+      `[Metrics] INCREMENT ${metricName}:`,
+      labels,
+      `-> ${current + 1}`,
+    );
     this.markDirty();
   }
 
@@ -50,6 +55,7 @@ export class MetricsService implements OnDestroy {
   ): void {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
+    console.log(`[Metrics] SET ${metricName}:`, labels, `-> ${value}`);
     this.markDirty();
   }
 
@@ -301,6 +307,74 @@ export class MetricsService implements OnDestroy {
       action: action, // start, participate, complete
       user_id: userId,
       user_role: userRole,
+    });
+  }
+
+  // === AI FEATURE TRACKING ===
+
+  // Track AI Insights button click (Speed -> Sprint Goals -> Summarize AI)
+  trackAiInsightsOpen(): void {
+    this.increment('ai_insights_modal_open_total', {
+      feature: 'sprint_goals_summary',
+    });
+  }
+
+  // Track Generate Report button in AI Insights modal
+  trackAiGenerateReport(reportType: string): void {
+    this.increment('ai_generate_report_total', {
+      report_type: reportType,
+    });
+  }
+
+  // Track Recommended Next Actions click (Home)
+  trackRecommendedActionClick(actionType: string): void {
+    this.increment('ai_recommended_action_click_total', {
+      action_type: actionType,
+    });
+  }
+
+  // Track AI Chat questions (Home)
+  trackAiChatQuestion(): void {
+    this.increment('ai_chat_questions_total', {});
+  }
+
+  // Track AI Recommendations button click (Speed -> KPI)
+  trackAiKpiRecommendation(kpiId: string): void {
+    this.increment('ai_kpi_recommendation_click_total', {
+      kpi_id: kpiId,
+    });
+  }
+
+  // === PEB (Potential Economic Benefits) TRACKING ===
+
+  // Track PEB page view
+  trackPebPageView(): void {
+    this.increment('peb_page_views_total', {});
+  }
+
+  // Track PEB page scroll
+  trackPebPageScroll(scrollPercentage: string): void {
+    this.increment('peb_page_scroll_total', {
+      scroll_percentage: scrollPercentage,
+    });
+  }
+
+  // Track PEB active time on page
+  trackPebActiveTime(durationSeconds: number): void {
+    this.set('peb_active_time_seconds', durationSeconds, {
+      duration_bucket: this.getDurationBucket(durationSeconds),
+    });
+  }
+
+  // Track Calculate PEB button click
+  trackPebCalculate(): void {
+    this.increment('peb_calculate_total', {});
+  }
+
+  // Track organization level dropdown change
+  trackPebOrganizationLevelChange(level: string): void {
+    this.increment('peb_organization_level_change_total', {
+      level: level,
     });
   }
 

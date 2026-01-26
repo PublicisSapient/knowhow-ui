@@ -13,6 +13,7 @@ import { ChatService } from 'src/app/services/chat.service';
 import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 interface Message {
   text: string;
@@ -60,6 +61,7 @@ export class ChatbotComponent implements AfterViewChecked {
   constructor(
     private readonly chatService: ChatService,
     private readonly sharedService: SharedService,
+    private readonly metricsService: MetricsService,
   ) {}
 
   toggleChat() {
@@ -68,6 +70,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
   sendMessage() {
     if (!this.userInput.trim()) return;
+    this.metricsService.trackAiChatQuestion();
 
     const question = this.userInput;
     this.lastQuestion = question;

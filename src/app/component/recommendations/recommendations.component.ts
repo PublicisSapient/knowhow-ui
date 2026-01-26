@@ -7,6 +7,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -85,6 +86,7 @@ export class RecommendationsComponent implements OnInit {
     private readonly httpService: HttpService,
     private readonly messageService: MessageService,
     public readonly service: SharedService,
+    private readonly metricsService: MetricsService,
   ) {}
 
   ngOnInit(): void {
@@ -290,6 +292,7 @@ export class RecommendationsComponent implements OnInit {
   }
 
   generateSprintReport() {
+    this.metricsService.trackAiGenerateReport('recommendation');
     if (this.kpiFilterData) {
       this.kpiFilterData['recommendationFor'] = this.selectedRole;
       this.kpiFilterData['selectedMap']['sprint'] =
