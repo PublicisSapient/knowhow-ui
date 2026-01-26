@@ -2482,7 +2482,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       !this.kanban &&
       ['my-knowhow', 'speed', 'quality'].includes(
         this.selectedTab?.toLocaleLowerCase(),
-      )
+      ) &&
+      this.service.checkConfigurationDetails()
     ) {
       return true;
     } else {

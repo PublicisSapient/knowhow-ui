@@ -917,8 +917,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   checkConfigurationDetails() {
-    const configData = this.service.getConfigurationDetails();
-    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
+    this.hasBaseUrl = this.service.checkConfigurationDetails();
   }
 
   transformMaturityResponse(data: any): { rows: any[]; columns: any[] } {

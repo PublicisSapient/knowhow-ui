@@ -176,6 +176,7 @@ describe('HomeComponent', () => {
         'getPEBDataCache',
         'clearPEBDataCache',
         'getConfigurationDetails',
+        'checkConfigurationDetails',
       ],
       {
         passDataToDashboard: of({
@@ -201,6 +202,7 @@ describe('HomeComponent', () => {
     mockSharedService.getConfigurationDetails.and.returnValue({
       data: { aiGatewayBaseUrl: 'http://localhost:7001/' },
     });
+    mockSharedService.checkConfigurationDetails.and.returnValue(true);
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
@@ -1089,9 +1091,7 @@ describe('HomeComponent', () => {
   }));
 
   it('should initialize hasBaseUrl based on configuration', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue({
-      aiGatewayBaseUrl: 'http://localhost:7001/',
-    });
+    mockSharedService.checkConfigurationDetails.and.returnValue(true);
 
     component.checkConfigurationDetails();
 
@@ -1099,9 +1099,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set hasBaseUrl to false when baseUrl is not available', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue({
-      data: {},
-    });
+    mockSharedService.checkConfigurationDetails.and.returnValue(false);
 
     component.checkConfigurationDetails();
 
@@ -1109,7 +1107,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set hasBaseUrl to false when configuration data is null', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue(null);
+    mockSharedService.checkConfigurationDetails.and.returnValue(false);
 
     component.checkConfigurationDetails();
 
