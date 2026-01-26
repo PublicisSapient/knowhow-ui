@@ -56,7 +56,7 @@ export class PebCalculatorComponent implements OnInit, OnDestroy {
   selectedLevel: string = '';
   categoryVariations: CategoryVariations | null = null;
   isLoadingPebData: boolean = true;
-  private pendingApiCalls: number = 0;
+  private pendingApiCalls = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
   userCurrency = '';

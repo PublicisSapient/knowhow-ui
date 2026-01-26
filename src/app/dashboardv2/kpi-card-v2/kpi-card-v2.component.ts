@@ -1645,4 +1645,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     return true;
   }
+
+  hasBaseUrl(): boolean {
+    return this.service.checkConfigurationDetails();
+  }
 }

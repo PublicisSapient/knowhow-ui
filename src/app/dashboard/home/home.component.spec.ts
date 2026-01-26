@@ -108,26 +108,25 @@ describe('HomeComponent', () => {
         message: 'Success',
         success: true,
         data: {
-          matrix: {
-            rows: [
-              {
-                id: 'r1',
-                name: 'Test Row',
-                completion: '80%',
-                health: 'healthy',
-                boardMaturity: {
-                  dora: 'M3',
-                  value: 'M3',
-                  speed: 'M3',
-                  quality: 'M3',
-                },
-              },
-            ],
-            columns: [
-              { field: 'id', header: 'ID' },
-              { field: 'name', header: 'Name' },
-            ],
+          summary: {
+            levelName: 'project',
+            health: 'Healthy',
+            completionPercentage: 80,
           },
+          details: [
+            {
+              hierarchyEntityNodeId: 'r1',
+              organizationEntityName: 'Test Row',
+              completionPercentage: 80,
+              health: 'Healthy',
+              maturityScores: [
+                { kpiCategory: 'dora', level: 'M3', score: 3 },
+                { kpiCategory: 'value', level: 'M3', score: 3 },
+                { kpiCategory: 'speed', level: 'M3', score: 3 },
+                { kpiCategory: 'quality', level: 'M3', score: 3 },
+              ],
+            },
+          ],
         },
       }),
     );
@@ -177,6 +176,7 @@ describe('HomeComponent', () => {
         'getPEBDataCache',
         'clearPEBDataCache',
         'getConfigurationDetails',
+        'checkConfigurationDetails',
       ],
       {
         passDataToDashboard: of({
@@ -202,6 +202,7 @@ describe('HomeComponent', () => {
     mockSharedService.getConfigurationDetails.and.returnValue({
       data: { aiGatewayBaseUrl: 'http://localhost:7001/' },
     });
+    mockSharedService.checkConfigurationDetails.and.returnValue(true);
 
     mockMessageService = jasmine.createSpyObj('MessageService', ['add']);
 
@@ -659,26 +660,25 @@ describe('HomeComponent', () => {
       message: 'Success',
       success: true,
       data: {
-        matrix: {
-          rows: [
-            {
-              id: 'child1',
-              name: 'Child Row',
-              completion: '70%',
-              health: 'healthy',
-              boardMaturity: {
-                dora: 'M2',
-                value: 'M2',
-                speed: 'M2',
-                quality: 'M2',
-              },
-            },
-          ],
-          columns: [
-            { field: 'id', header: 'ID' },
-            { field: 'name', header: 'Name' },
-          ],
+        summary: {
+          levelName: 'team',
+          health: 'Healthy',
+          completionPercentage: 70,
         },
+        details: [
+          {
+            hierarchyEntityNodeId: 'child1',
+            organizationEntityName: 'Child Row',
+            completionPercentage: 70,
+            health: 'Healthy',
+            maturityScores: [
+              { kpiCategory: 'dora', level: 'M2', score: 2 },
+              { kpiCategory: 'value', level: 'M2', score: 2 },
+              { kpiCategory: 'speed', level: 'M2', score: 2 },
+              { kpiCategory: 'quality', level: 'M2', score: 2 },
+            ],
+          },
+        ],
       },
     };
 
@@ -1091,9 +1091,7 @@ describe('HomeComponent', () => {
   }));
 
   it('should initialize hasBaseUrl based on configuration', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue({
-      aiGatewayBaseUrl: 'http://localhost:7001/',
-    });
+    mockSharedService.checkConfigurationDetails.and.returnValue(true);
 
     component.checkConfigurationDetails();
 
@@ -1101,9 +1099,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set hasBaseUrl to false when baseUrl is not available', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue({
-      data: {},
-    });
+    mockSharedService.checkConfigurationDetails.and.returnValue(false);
 
     component.checkConfigurationDetails();
 
@@ -1111,7 +1107,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set hasBaseUrl to false when configuration data is null', () => {
-    mockSharedService.getConfigurationDetails.and.returnValue(null);
+    mockSharedService.checkConfigurationDetails.and.returnValue(false);
 
     component.checkConfigurationDetails();
 
@@ -1142,27 +1138,25 @@ describe('HomeComponent', () => {
       message: 'Success',
       success: true,
       data: {
-        matrix: {
-          rows: [
-            {
-              id: 'r1',
-              name: 'Test Project',
-              completion: '85%',
-              health: 'healthy',
-              boardMaturity: {
-                dora: 'M4',
-                value: 'M4',
-                speed: 'M4',
-                quality: 'M4',
-              },
-            },
-          ],
-          columns: [
-            { field: 'id', header: 'ID' },
-            { field: 'name', header: 'Name' },
-            { field: 'completion', header: 'Completion' },
-          ],
+        summary: {
+          levelName: 'project',
+          health: 'Healthy',
+          completionPercentage: 85,
         },
+        details: [
+          {
+            hierarchyEntityNodeId: 'r1',
+            organizationEntityName: 'Test Project',
+            completionPercentage: 85,
+            health: 'Healthy',
+            maturityScores: [
+              { kpiCategory: 'dora', level: 'M4', score: 4 },
+              { kpiCategory: 'value', level: 'M4', score: 4 },
+              { kpiCategory: 'speed', level: 'M4', score: 4 },
+              { kpiCategory: 'quality', level: 'M4', score: 4 },
+            ],
+          },
+        ],
       },
     };
 
@@ -1193,21 +1187,20 @@ describe('HomeComponent', () => {
       message: 'Success',
       success: true,
       data: {
-        matrix: {
-          rows: [
-            {
-              id: 'r1',
-              name: 'Project with Empty Maturity',
-              completion: '50%',
-              health: 'unhealthy',
-              boardMaturity: {}, // Empty maturity
-            },
-          ],
-          columns: [
-            { field: 'id', header: 'ID' },
-            { field: 'name', header: 'Name' },
-          ],
+        summary: {
+          levelName: 'project',
+          health: 'Unhealthy',
+          completionPercentage: 50,
         },
+        details: [
+          {
+            hierarchyEntityNodeId: 'r1',
+            organizationEntityName: 'Project with Empty Maturity',
+            completionPercentage: 50,
+            health: 'Unhealthy',
+            maturityScores: [],
+          },
+        ],
       },
     };
 
