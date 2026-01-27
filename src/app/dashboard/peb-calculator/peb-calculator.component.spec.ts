@@ -1,7 +1,9 @@
 import {
   ComponentFixture,
   TestBed,
+  discardPeriodicTasks,
   fakeAsync,
+  flush,
   tick,
 } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -155,6 +157,8 @@ describe('PebCalculatorComponent', () => {
     expect(component.isLoadingPebData).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);
+    flush();
+    discardPeriodicTasks();
   }));
 
   it('should handle and display error when HTTP service fails', fakeAsync(() => {
