@@ -44,7 +44,9 @@ describe('KpiAiRecommendationTargetComponent', () => {
 
   beforeEach(async () => {
     const httpSpy = jasmine.createSpyObj('HttpService', ['getHomeNBAData']);
-    const metricsSpy = jasmine.createSpyObj('MetricsService', ['trackAiKpiRecommendation']);
+    const metricsSpy = jasmine.createSpyObj('MetricsService', [
+      'trackAiKpiRecommendation',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [KpiAiRecommendationTargetComponent, HttpClientTestingModule],

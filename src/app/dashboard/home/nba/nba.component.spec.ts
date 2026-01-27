@@ -25,7 +25,9 @@ describe('NbaComponent', () => {
   ];
 
   beforeEach(async () => {
-    const metricsSpy = jasmine.createSpyObj('MetricsService', ['trackRecommendedActionClick']);
+    const metricsSpy = jasmine.createSpyObj('MetricsService', [
+      'trackRecommendedActionClick',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [NbaComponent, HttpClientTestingModule],
