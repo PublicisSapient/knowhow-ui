@@ -123,22 +123,28 @@ export class HomeComponent implements OnInit, OnDestroy {
                         'Error in fetching Executive data!',
                     });
                   } else if (executiveBoard?.data) {
-                    this.tableData['data'] =
-                      executiveBoard.data.matrix.rows.map((row) => {
-                        if (Object.keys(row.boardMaturity).length === 0) {
-                          row.boardMaturity = {
-                            dora: 'M0',
-                            value: 'M0',
-                            speed: 'M0',
-                            quality: 'M0',
-                          };
-                        }
-                        return {
-                          ...row,
-                          ...row?.boardMaturity,
-                          productivity: this.getProductivityForRow(row.name),
+                    const transformed = this.transformMaturityResponse(
+                      executiveBoard.data,
+                    );
+
+                    this.tableData['data'] = transformed.rows.map((row) => {
+                      if (
+                        !row.boardMaturity ||
+                        Object.keys(row.boardMaturity).length === 0
+                      ) {
+                        row.boardMaturity = {
+                          dora: 'M0',
+                          value: 'M0',
+                          speed: 'M0',
+                          quality: 'M0',
                         };
-                      });
+                      }
+                      return {
+                        ...row,
+                        ...row?.boardMaturity,
+                        productivity: this.getProductivityForRow(row.name),
+                      };
+                    });
 
                     const projectNameMap = new Map(
                       this.service
@@ -152,14 +158,18 @@ export class HomeComponent implements OnInit, OnDestroy {
                       }),
                     );
 
-                    const filteredColumns =
-                      executiveBoard.data.matrix.columns.filter(
-                        (col) => col.field !== 'id',
-                      );
+                    const filteredColumns = transformed.columns.filter(
+                      (col) => col.field !== 'id',
+                    );
+                    const nameColIndex = filteredColumns.findIndex(
+                      (col) => col.field === 'name',
+                    );
+                    const insertIndex =
+                      nameColIndex >= 0 ? nameColIndex + 2 : 2;
                     this.tableData['columns'] = [
-                      ...filteredColumns.slice(0, 2),
+                      ...filteredColumns.slice(0, insertIndex),
                       { field: 'productivity', header: 'Productivity' },
-                      ...filteredColumns.slice(2),
+                      ...filteredColumns.slice(insertIndex),
                     ];
 
                     const { tableColumnData, tableColumnForm } =
@@ -375,8 +385,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculateEfficiency() {
     const rowData = this.tableData['data'];
     const sum = rowData.reduce((acc, num) => {
-      if (!Number.isNaN(parseInt(num.completion, 10))) {
-        return acc + parseInt(num.completion, 10);
+      const compValue = num.completion?.replace('%', '') || '0';
+      const parsed = parseFloat(compValue);
+      if (!isNaN(parsed)) {
+        return acc + parsed;
       }
       return acc;
     }, 0);
@@ -390,8 +402,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   calculateQuertlyRisk(data) {
     const ascSortedData = [...data].sort((a, b) => {
-      const compA = parseInt(a.completion.replace('%', ''), 10);
-      const compB = parseInt(b.completion.replace('%', ''), 10);
+      const compA = parseFloat(a.completion?.replace('%', '') || '0') || 0;
+      const compB = parseFloat(b.completion?.replace('%', '') || '0') || 0;
       return compA - compB;
     });
 
@@ -399,7 +411,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       ascSortedData.length > 4 ? ascSortedData.slice(0, 4) : ascSortedData;
 
     return threshodData.map((node) => {
-      return { property: node.name, value: node.completion };
+      return { property: node.name, value: node.completion || 'N/A' };
     });
   }
 
@@ -429,17 +441,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculateHealth(healthType) {
     const rowData = [
       ...this.tableData['data'].filter((data) => {
-        return data.health.toLowerCase() === healthType.toLowerCase();
+        return data.health?.toLowerCase() === healthType.toLowerCase();
       }),
     ];
-    const sum = rowData.reduce((acc, num) => {
-      return acc + parseFloat(num.completion.replace('%', ''));
-    }, 0);
 
-    // ✅ Handle empty case to avoid divide by zero
     if (rowData.length === 0) {
       return { average: '0%', count: 0 };
     }
+
+    const sum = rowData.reduce((acc, num) => {
+      const compValue = num.completion?.replace('%', '') || '0';
+      const parsed = parseFloat(compValue);
+      return acc + (isNaN(parsed) ? 0 : parsed);
+    }, 0);
 
     const average = Math.round(sum / rowData.length);
 
@@ -505,7 +519,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.productivityExpandRowDataLoader = false;
         } else {
           if (res?.data) {
-            res.data.matrix.rows = res.data.matrix.rows.map((row) => {
+            const transformed = this.transformMaturityResponse(res.data);
+
+            let childRows = transformed.rows.map((row) => {
               return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
             const projectNameMap = new Map(
@@ -513,33 +529,41 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .getFilterData()
                 .map((u: any) => [u.nodeId, u.nodeDisplayName]),
             );
-            res.data.matrix.rows = res?.data?.matrix?.rows?.map((res: any) => ({
-              ...res,
-              name: projectNameMap.get(res.id) || res.name,
+            childRows = childRows.map((row: any) => ({
+              ...row,
+              name: projectNameMap.get(row.id) || row.name,
             }));
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
             );
             if (targettedDetails) {
               targettedDetails['children'] = targettedDetails['children'] || {};
-              targettedDetails['children']['data'] = res.data.matrix.rows;
-              const childFilteredColumns = res.data.matrix.columns.filter(
+              targettedDetails['children']['data'] = childRows;
+
+              const childFilteredColumns = transformed.columns.filter(
                 (col) => col.field !== 'id',
               );
+
+              const nameColIndex = childFilteredColumns.findIndex(
+                (col) => col.field === 'name',
+              );
+
+              const insertIndex = nameColIndex >= 0 ? nameColIndex + 2 : 2;
               targettedDetails['children']['columns'] = [
-                ...childFilteredColumns.slice(0, 2),
+                ...childFilteredColumns.slice(0, insertIndex),
                 { field: 'productivity', header: 'Productivity' },
-                ...childFilteredColumns.slice(2),
+                ...childFilteredColumns.slice(insertIndex),
               ];
+
               const { tableColumnData, tableColumnForm } =
                 this.generateColumnFilterData(
                   targettedDetails['children']['data'],
                   targettedDetails['children']['columns'],
                 );
+
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
 
-              // Restore pagination state after data update
               setTimeout(() => {
                 if (this.mainTable && this.mainTable.first !== currentPage) {
                   this.mainTable.first = currentPage;
@@ -893,8 +917,77 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   checkConfigurationDetails() {
-    const configData = this.service.getConfigurationDetails();
-    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
+    this.hasBaseUrl = this.service.checkConfigurationDetails();
+  }
+
+  transformMaturityResponse(data: any): { rows: any[]; columns: any[] } {
+    const details = data?.details || [];
+
+    const extractMaturityLevel = (level: string): string => {
+      if (!level) return 'M0';
+      const match = level.match(/^(M\d)/);
+      return match ? match[1] : level;
+    };
+
+    const rows = details.map((detail: any) => {
+      const boardMaturity: any = {};
+      (detail.maturityScores || []).forEach((score: any) => {
+        if (score.kpiCategory) {
+          boardMaturity[score.kpiCategory] = extractMaturityLevel(score.level);
+        }
+      });
+
+      let completionValue = 'N/A';
+      if (detail.completionPercentage != null) {
+        completionValue = `${Math.round(detail.completionPercentage)}%`;
+      }
+
+      return {
+        id: detail.hierarchyEntityNodeId || '',
+        name: detail.organizationEntityName || '',
+        health: detail.health || 'UNKNOWN',
+        completion: completionValue,
+        boardMaturity,
+      };
+    });
+
+    const categorySet = new Set<string>();
+    details.forEach((detail: any) => {
+      (detail.maturityScores || []).forEach((score: any) => {
+        if (score.kpiCategory) {
+          categorySet.add(score.kpiCategory);
+        }
+      });
+    });
+
+    const categoryHeaderMap: { [key: string]: string } = {
+      dora: 'DORA',
+      value: 'Value',
+      speed: 'Speed',
+      quality: 'Quality',
+    };
+
+    const categoryColumns = Array.from(categorySet).map((cat) => ({
+      field: cat,
+      header:
+        categoryHeaderMap[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
+    }));
+
+    const columns = [
+      {
+        field: 'name',
+        header: data?.summary?.levelName
+          ? data.summary.levelName.charAt(0).toUpperCase() +
+            data.summary.levelName.slice(1) +
+            ' Name'
+          : 'Name',
+      },
+      { field: 'health', header: 'Overall Health' },
+      { field: 'completion', header: 'Efficiency(%)' },
+      ...categoryColumns,
+    ];
+
+    return { rows, columns };
   }
 
   ngOnDestroy() {
