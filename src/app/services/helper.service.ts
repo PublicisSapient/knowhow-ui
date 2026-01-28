@@ -1587,8 +1587,8 @@ export class HelperService {
     return finalOutput;
   }
 
-  fetchPEBaData(payload: any,selectedType : string): Observable<any> {
-    return this.httpService.getPebProductivityData(payload,selectedType).pipe(
+  fetchPEBaData(payload: any, selectedType: string): Observable<any> {
+    return this.httpService.getPebProductivityData(payload, selectedType).pipe(
       tap((response: any) => {
         if (response?.success) {
           this.sharedService.setPEBData(response.data);
