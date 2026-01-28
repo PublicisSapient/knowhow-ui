@@ -152,33 +152,36 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           console.log('requestArea', requestArea);
           console.log('environment', environment);
           if (err.status === 401) {
-            if (requestArea === 'internal') {
-              if (environment?.['SSO_LOGIN']) {
-                this.httpService.setCurrentUserDetails({});
-                console.log('SSO_LOGIN', true);
-                let redirect_uri = window.location.href;
-                window.location.href =
-                  environment.CENTRAL_LOGIN_URL +
-                  '?redirect_uri=' +
-                  redirect_uri;
-              } else {
-                if (environment.AUTHENTICATION_SERVICE) {
-                  this.redirectToLogin();
-                } else {
-                  this.httpService.setCurrentUserDetails({});
-                  this.router.navigate(['./authentication/login'], {
-                    queryParams: this.route.snapshot.queryParams,
-                  });
-                }
-              }
-            }
+            // IMPORTANT: Commented out to check for GS issue debugging
+            // if (requestArea === 'internal') {
+            //   if (environment?.['SSO_LOGIN']) {
+            //     this.httpService.setCurrentUserDetails({});
+            //     console.log('SSO_LOGIN', true);
+            //     let redirect_uri = window.location.href;
+            //     window.location.href =
+            //       environment.CENTRAL_LOGIN_URL +
+            //       '?redirect_uri=' +
+            //       redirect_uri;
+            //   } else {
+            //     if (environment.AUTHENTICATION_SERVICE) {
+            //       this.redirectToLogin();
+            //     } else {
+            //       this.httpService.setCurrentUserDetails({});
+            //       this.router.navigate(['./authentication/login'], {
+            //         queryParams: this.route.snapshot.queryParams,
+            //       });
+            //     }
+            //   }
+            // }
 
             if (environment?.['SSO_LOGIN']) {
-              this.router
-                .navigate(['./dashboard/my-knowhow'])
-                .then((success) => {
-                  window.location.reload();
-                });
+              console.log('SSO_LOGIN 178', true);
+              // this.router
+              //   .navigate(['./dashboard/my-knowhow'])
+              //   .then((success) => {
+              //     window.location.reload();
+              //   });
+              this.router.navigate(['./dashboard/my-knowhow']);
             }
           } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
             this.httpService.unauthorisedAccess = true;
