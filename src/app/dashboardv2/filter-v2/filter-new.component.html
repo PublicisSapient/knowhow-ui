@@ -12,7 +12,7 @@
         Scrum
       </div>
       <div class="tab" (click)="selectedType !== 'kanban' ? setSelectedType('Kanban') : ''"
-        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !kanbanProjectsAvailable || this.selectedTab?.toLowerCase() === 'potential-economic-benefits' }"
+        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': (!kanbanRequired?.enabled && selectedTab?.toLowerCase() !== 'developer') || !kanbanProjectsAvailable }"
         role="tab"
         tabindex="0"
         [attr.aria-selected]="selectedType === 'kanban'"
