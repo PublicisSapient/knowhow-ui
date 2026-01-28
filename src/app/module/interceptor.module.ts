@@ -148,6 +148,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
+          console.log('err', err);
+          console.log('requestArea', requestArea);
+          console.log('environment', environment);
           if (err.status === 401) {
             if (requestArea === 'internal') {
               if (environment?.['SSO_LOGIN']) {
@@ -233,8 +236,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
   redirectToLogin() {
     /** redirect to central login url*/
     const redirect_uri = window.location.href;
+    const encodedRedirectUri = encodeURIComponent(redirect_uri);
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
-    if (environment.CENTRAL_LOGIN_URL) {
+    console.log('environment', environment);
+    console.log('redirect_uri', redirect_uri);
+    console.log('encodedRedirectUri', encodedRedirectUri);
+    if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
       window.location.href =
         environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
     }
