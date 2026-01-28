@@ -58,7 +58,7 @@ export class PebCalculatorComponent implements OnInit {
   queryParamsSubscription!: Subscription;
   selectedTab = '';
   appConfig: any;
-  selectedType : string
+  selectedType: string;
 
   constructor(
     private fb: FormBuilder,
@@ -180,7 +180,10 @@ export class PebCalculatorComponent implements OnInit {
   getPEBData() {
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
-      .getPebProductivityData(this.selectedLevel?.toLowerCase(),this.selectedType.toUpperCase())
+      .getPebProductivityData(
+        this.selectedLevel?.toLowerCase(),
+        this.selectedType.toUpperCase(),
+      )
       .subscribe({
         next: (response) => {
           if (response['success']) {
@@ -232,47 +235,52 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPebProjectPerformanceData(level) {
-    this.httpService.getPebProductivityDetailsData(level,this.selectedType.toUpperCase()).subscribe({
-      next: (response) => {
-        // const response = require('src/assets/data/peb-productivity-details.json');
-        if (response['success']) {
-          this.performanceChartData =
-            this.formatCategoryScoresForCumulativeChart(
-              response['data']['categoryScores'],
-            );
-          this.costSavingsChartData =
-            this.formatCategoryScoresForCumulativeChart(
-              response['data']['categoryScores'],
-              true,
-              response['data']?.forecasts,
-            );
+    this.httpService
+      .getPebProductivityDetailsData(level, this.selectedType.toUpperCase())
+      .subscribe({
+        next: (response) => {
+          // const response = require('src/assets/data/peb-productivity-details.json');
+          if (response['success']) {
+            this.performanceChartData =
+              this.formatCategoryScoresForCumulativeChart(
+                response['data']['categoryScores'],
+              );
+            this.costSavingsChartData =
+              this.formatCategoryScoresForCumulativeChart(
+                response['data']['categoryScores'],
+                true,
+                response['data']?.forecasts,
+              );
 
-          // Handle case where API returns success but no categoryVariations data
-          if (response['data']?.categoryVariations) {
-            this.categoryVariations = JSON.parse(
-              JSON.stringify(response['data'].categoryVariations),
-            ) as CategoryVariations;
+            // Handle case where API returns success but no categoryVariations data
+            if (response['data']?.categoryVariations) {
+              this.categoryVariations = JSON.parse(
+                JSON.stringify(response['data'].categoryVariations),
+              ) as CategoryVariations;
+            } else {
+              this.categoryVariations = null;
+              console.warn('No categoryVariations data received from API');
+            }
+            this.xAxisLabel = response['data']?.temporalGrouping || 'week';
+            this.completeApiCall();
           } else {
+            console.error(
+              'Server returned unsuccessful response:',
+              response['message'],
+            );
             this.categoryVariations = null;
-            console.warn('No categoryVariations data received from API');
+            this.completeApiCall();
           }
-          this.xAxisLabel = response['data']?.temporalGrouping || 'week';
-          this.completeApiCall();
-        } else {
+        },
+        error: (err) => {
           console.error(
-            'Server returned unsuccessful response:',
-            response['message'],
+            'Failed to fetch project performance data',
+            err.message,
           );
           this.categoryVariations = null;
           this.completeApiCall();
-        }
-      },
-      error: (err) => {
-        console.error('Failed to fetch project performance data', err.message);
-        this.categoryVariations = null;
-        this.completeApiCall();
-      },
-    });
+        },
+      });
   }
   /**
    * Formats raw KPI data into the structure required by Chart
