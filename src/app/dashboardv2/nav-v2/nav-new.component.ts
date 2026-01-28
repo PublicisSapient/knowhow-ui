@@ -222,12 +222,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 command: () => {
                   this.handleMenuTabFunctionality(obj);
                 },
-                // TODO : Temp disabled PEB for kanban
-                disabled:
-                  this.sharedService.getSelectedType() === 'kanban' &&
-                  obj['boardSlug'] === 'potential-economic-benefits'
-                    ? true
-                    : false,
               };
             });
 

@@ -687,34 +687,36 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
-        next: (res) => {
-          if (res.success) {
-            // Cache the data
-            this.service.setPEBDataCache(labelKey, res.data);
-            this.processPEBData(res.data);
-          } else {
+      this.helperService
+        .fetchPEBaData(labelKey, this.selectedType.toUpperCase())
+        .subscribe({
+          next: (res) => {
+            if (res.success) {
+              // Cache the data
+              this.service.setPEBDataCache(labelKey, res.data);
+              this.processPEBData(res.data);
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Failed to load PEBa data. Please try again.',
+              });
+              this.BottomTilesLoader = false;
+              this.initializeBottomData('ONLYTRENDS');
+            }
+            this.calculatorDataLoader = false;
+          },
+          error: (error) => {
+            console.error('Failed to load PEBa data:', error);
+            this.BottomTilesLoader = false;
+            this.calculatorDataLoader = false;
+            this.initializeBottomData('ONLYTRENDS');
             this.messageService.add({
               severity: 'error',
-              summary: 'Failed to load PEBa data. Please try again.',
+              summary: 'Error',
+              detail: 'Failed to load PEBa data. Please try again.',
             });
-            this.BottomTilesLoader = false;
-            this.initializeBottomData('ONLYTRENDS');
-          }
-          this.calculatorDataLoader = false;
-        },
-        error: (error) => {
-          console.error('Failed to load PEBa data:', error);
-          this.BottomTilesLoader = false;
-          this.calculatorDataLoader = false;
-          this.initializeBottomData('ONLYTRENDS');
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to load PEBa data. Please try again.',
-          });
-        },
-      }),
+          },
+        }),
     );
   }
 
@@ -767,9 +769,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined && this.selectedType === 'scrum'
-      ? `${productivity.toFixed(2)}%`
-      : 'N/A';
+    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
@@ -806,32 +806,34 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
-        next: (res) => {
-          if (res.success && res.data.details) {
-            // Cache the data
-            this.service.setPEBDataCache(labelKey, res.data);
+      this.helperService
+        .fetchPEBaData(labelKey, this.selectedType.toUpperCase())
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.data.details) {
+              // Cache the data
+              this.service.setPEBDataCache(labelKey, res.data);
 
-            // Update productivity data for nested rows
-            res.data.details.forEach((detail) => {
-              this.productivityData[detail.organizationEntityName] =
-                detail.categoryScores.productivity;
-            });
+              // Update productivity data for nested rows
+              res.data.details.forEach((detail) => {
+                this.productivityData[detail.organizationEntityName] =
+                  detail.categoryScores.productivity;
+              });
 
-            // Update nested table data with productivity values
-            targettedDetails['children']['data'] = targettedDetails['children'][
-              'data'
-            ].map((row) => ({
-              ...row,
-              productivity: this.getProductivityForRow(row.name),
-            }));
-            this.productivityExpandRowDataLoader = false;
-          }
-        },
-        error: (error) => {
-          console.error('Failed to load nested PEBa data:', error);
-        },
-      }),
+              // Update nested table data with productivity values
+              targettedDetails['children']['data'] = targettedDetails[
+                'children'
+              ]['data'].map((row) => ({
+                ...row,
+                productivity: this.getProductivityForRow(row.name),
+              }));
+              this.productivityExpandRowDataLoader = false;
+            }
+          },
+          error: (error) => {
+            console.error('Failed to load nested PEBa data:', error);
+          },
+        }),
     );
   }
 

@@ -144,6 +144,7 @@ describe('PebCalculatorComponent', () => {
     component.pebForm.get('devCostControl').setValue(50000);
     component.pebForm.get('durationControl').setValue('year');
     component.selectedLevel = 'engagement';
+    component.selectedType = 'scrum';
     component.showResults = false;
     component['pendingApiCalls'] = 1;
     component.isLoadingPebData = true;
@@ -162,6 +163,7 @@ describe('PebCalculatorComponent', () => {
     spyOn(http, 'getPebProductivityData').and.returnValue(
       throwError(() => new Error('error')),
     );
+    component.selectedType = 'scrum';
     component.getPEBData();
     tick();
 

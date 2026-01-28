@@ -254,6 +254,10 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     this.defaultMessage = false;
   }
 
+  hasBaseURL() {
+    return this.sharedService.checkConfigurationDetails();
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
