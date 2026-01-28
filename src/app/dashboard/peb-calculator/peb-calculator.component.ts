@@ -58,6 +58,7 @@ export class PebCalculatorComponent implements OnInit {
   queryParamsSubscription!: Subscription;
   selectedTab = '';
   appConfig: any;
+  selectedType : string
 
   constructor(
     private fb: FormBuilder,
@@ -126,6 +127,7 @@ export class PebCalculatorComponent implements OnInit {
             const stateFilters =
               this.sharedService.getBackupOfFilterSelectionState();
             this.appConfig = this.sharedService.getConfigurationDetails();
+            this.selectedType = this.sharedService.getSelectedType();
             this.pebForm = this.fb.group({
               devCountControl: [this.appConfig?.totalTeamSize || 30],
               devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
@@ -178,7 +180,7 @@ export class PebCalculatorComponent implements OnInit {
   getPEBData() {
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
-      .getPebProductivityData(this.selectedLevel?.toLowerCase())
+      .getPebProductivityData(this.selectedLevel?.toLowerCase(),this.selectedType.toUpperCase())
       .subscribe({
         next: (response) => {
           if (response['success']) {
@@ -230,7 +232,7 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPebProjectPerformanceData(level) {
-    this.httpService.getPebProductivityDetailsData(level).subscribe({
+    this.httpService.getPebProductivityDetailsData(level,this.selectedType.toUpperCase()).subscribe({
       next: (response) => {
         // const response = require('src/assets/data/peb-productivity-details.json');
         if (response['success']) {

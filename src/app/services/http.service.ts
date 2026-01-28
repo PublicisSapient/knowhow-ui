@@ -1335,15 +1335,15 @@ export class HttpService {
     return this.http.post<any>(this.AIAnalyticsDataURL, payLoad);
   }
 
-  getPebProductivityData(level) {
+  getPebProductivityData(level,deliveryMethodology) {
     return this.http.get<any>(
-      `${this.pebProductivityUrl}?levelName=${level.toLowerCase()}`,
+      `${this.pebProductivityUrl}?levelName=${level.toLowerCase()}&deliveryMethodology=${deliveryMethodology}`,
     );
   }
 
-  getPebProductivityDetailsData(level) {
+  getPebProductivityDetailsData(level,deliveryMethodology) {
     return this.http.get<any>(
-      `${this.pebProductivityUrl}/trends?levelName=${level.toLowerCase()}`,
+      `${this.pebProductivityUrl}/trends?levelName=${level.toLowerCase()}&deliveryMethodology=${deliveryMethodology}`,
     );
   }
   fetchScmConnectionInfoByProject(

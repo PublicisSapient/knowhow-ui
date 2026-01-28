@@ -687,7 +687,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
+      this.helperService.fetchPEBaData(labelKey,this.selectedType.toUpperCase()).subscribe({
         next: (res) => {
           if (res.success) {
             // Cache the data
@@ -767,7 +767,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined && this.selectedType === 'scrum'
+    return productivity !== undefined
       ? `${productivity.toFixed(2)}%`
       : 'N/A';
   }
@@ -806,7 +806,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
+      this.helperService.fetchPEBaData(labelKey,this.selectedType.toUpperCase()).subscribe({
         next: (res) => {
           if (res.success && res.data.details) {
             // Cache the data
