@@ -10,6 +10,7 @@ import {
   Renderer2,
   SimpleChanges,
   ViewChild,
+  signal,
 } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -177,6 +178,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   chartType;
   @Input() selectedBoard: string = 'dashboard';
   @Input() kpiRecommData = {};
+  isAIRecommEnabled = signal<boolean>(false);
 
   constructor(
     public service: SharedService,
@@ -194,6 +196,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.chartType = this.kpiData.kpiDetail?.chartType;
+    this.getAIRecommFlag();
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
         this.filterOptions = {};
@@ -1647,6 +1650,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   hasBaseUrl(): boolean {
-    return this.service.checkConfigurationDetails();
+    return this.service.checkConfigurationDetails() && this.isAIRecommEnabled();
+  }
+
+  getAIRecommFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
+      .then((res) => this.isAIRecommEnabled.set(res));
   }
 }
