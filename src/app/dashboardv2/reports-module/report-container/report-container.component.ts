@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -24,6 +25,7 @@ export class ReportContainerComponent implements OnInit {
     private http: HttpService,
     private messageService: MessageService,
     private kpiHelperService: KpiHelperService,
+    private metrics: MetricsService,
   ) {}
 
   /**
@@ -96,6 +98,7 @@ export class ReportContainerComponent implements OnInit {
   }
 
   setSelectedReport(report) {
+    this.metrics.trackReportSelection(report?.name || 'unknown');
     Promise.resolve(null).then(() => {
       this.generateChartData(report);
     });
@@ -170,6 +173,7 @@ export class ReportContainerComponent implements OnInit {
   }
 
   printReport() {
+    this.metrics.trackReportPrint(this.selectedReport?.name || 'unknown');
     setTimeout(() => {
       window.print();
     }, 100);
@@ -180,6 +184,7 @@ export class ReportContainerComponent implements OnInit {
       this.reportsData = data['data']['content'];
 
       this.selectedReport = this.reportsData[0];
+      this.metrics.trackReportSelection(this.selectedReport?.name || 'unknown');
       this.selectedReport.kpis.forEach((kpi) => {
         kpi.chartData = JSON.parse(kpi.chartData);
       });

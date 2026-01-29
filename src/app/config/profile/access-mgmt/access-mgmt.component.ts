@@ -51,13 +51,13 @@ export class AccessMgmtComponent implements OnInit {
   searchProject: any;
   searchRoleList: any;
   dataLoading: any = [];
-  submitValidationMessage: string = '';
+  submitValidationMessage = '';
   projectHierarchyData: any = [];
   subscription: any = {};
-  toolTipHtml: string = '';
-  top: string = '';
-  left: string = '';
-  showToolTip: boolean = false;
+  toolTipHtml = '';
+  top = '';
+  left = '';
+  showToolTip = false;
   allProjectsData: any = [];
   enableAddBtn = false;
   accessConfirm: boolean;

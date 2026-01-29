@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { SkeletonModule } from 'primeng/skeleton';
 import { HomeRecommCardComponent } from 'src/app/component/home-recomm-card/home-recomm-card.component';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-nba',
@@ -19,6 +26,7 @@ import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-
   ],
 })
 export class NbaComponent implements OnChanges {
+  private metricsService = inject(MetricsService);
   displayModal = false;
   selectedRecommendation: any = {};
   recommendations: any[] = [];
@@ -33,6 +41,7 @@ export class NbaComponent implements OnChanges {
   }
 
   openProjectDetailsPopup(item: any): void {
+    this.metricsService.trackRecommendedActionClick(item.title || 'unknown');
     this.selectedRecommendation = {
       infoBoxes: [
         {

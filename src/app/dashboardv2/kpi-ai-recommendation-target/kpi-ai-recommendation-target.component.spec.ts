@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleChanges } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/services/http.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 import { KpiAiRecommendationTargetComponent } from './kpi-ai-recommendation-target.component';
 
 describe('KpiAiRecommendationTargetComponent', () => {
@@ -42,10 +44,16 @@ describe('KpiAiRecommendationTargetComponent', () => {
 
   beforeEach(async () => {
     const httpSpy = jasmine.createSpyObj('HttpService', ['getHomeNBAData']);
+    const metricsSpy = jasmine.createSpyObj('MetricsService', [
+      'trackAiKpiRecommendation',
+    ]);
 
     await TestBed.configureTestingModule({
-      imports: [KpiAiRecommendationTargetComponent],
-      providers: [{ provide: HttpService, useValue: httpSpy }],
+      imports: [KpiAiRecommendationTargetComponent, HttpClientTestingModule],
+      providers: [
+        { provide: HttpService, useValue: httpSpy },
+        { provide: MetricsService, useValue: metricsSpy },
+      ],
     }).compileComponents();
 
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
