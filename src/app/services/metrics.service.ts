@@ -40,11 +40,6 @@ export class MetricsService implements OnDestroy {
     const key = this.buildMetricKey(metricName, labels);
     const current = this.metrics.get(key) || 0;
     this.metrics.set(key, current + 1);
-    console.log(
-      `[Metrics] INCREMENT ${metricName}:`,
-      labels,
-      `-> ${current + 1}`,
-    );
     this.markDirty();
   }
 
@@ -55,7 +50,6 @@ export class MetricsService implements OnDestroy {
   ): void {
     const key = this.buildMetricKey(metricName, labels);
     this.metrics.set(key, value);
-    console.log(`[Metrics] SET ${metricName}:`, labels, `-> ${value}`);
     this.markDirty();
   }
 
@@ -375,6 +369,18 @@ export class MetricsService implements OnDestroy {
   trackPebOrganizationLevelChange(level: string): void {
     this.increment('peb_organization_level_change_total', {
       level: level,
+    });
+  }
+
+  trackReportSelection(reportName: string): void {
+    this.increment('report_selection_total', {
+      report_name: reportName || 'unknown',
+    });
+  }
+
+  trackReportPrint(reportName: string): void {
+    this.increment('report_print_total', {
+      report_name: reportName || 'unknown',
     });
   }
 
