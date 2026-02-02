@@ -7,6 +7,7 @@ import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { AnalyticsService } from './analytics.service';
 import { tap } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
 import { FeatureGuard } from '../services/feature.guard';
@@ -216,36 +217,39 @@ export class AppInitializerService {
           .then((res) => res);
         this.validateToken(loc);
       } else {
-        const env$ = this.http.get('assets/env.json').pipe(
-          tap((env) => {
-            environment['baseUrl'] = env['baseUrl'] || '';
-            environment['SSO_LOGIN'] =
-              env['SSO_LOGIN'] === 'true' ? true : false;
-            environment['AUTHENTICATION_SERVICE'] =
-              env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
-            environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
-            environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
-            environment['MAP_URL'] = env['MAP_URL'] || '';
-            environment['RETROS_URL'] = env['RETROS_URL'] || '';
-            environment['SPEED_SUITE'] =
-              env['SPEED_SUITE'] === 'true' ? true : false;
-            environment['MCP_URL'] = env['MCP_URL'] || '';
-            if (
-              loc &&
-              loc.indexOf('authentication') === -1 &&
-              loc.indexOf('Error') === -1 &&
-              loc.indexOf('Config') === -1
-            ) {
-              localStorage.setItem('shared_link', loc);
-            }
-            this.validateToken(loc);
-          }),
-        );
-        env$.toPromise().then(async (res) => {
+        try {
+          const env: any = await lastValueFrom(
+            this.http.get('assets/env.json'),
+          );
+
+          environment['baseUrl'] = env['baseUrl'] || '';
+          environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
+          environment['AUTHENTICATION_SERVICE'] =
+            env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
+          environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+          environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
+          environment['MAP_URL'] = env['MAP_URL'] || '';
+          environment['RETROS_URL'] = env['RETROS_URL'] || '';
+          environment['SPEED_SUITE'] =
+            env['SPEED_SUITE'] === 'true' ? true : false;
+          environment['MCP_URL'] = env['MCP_URL'] || '';
+
+          if (
+            loc &&
+            loc.indexOf('authentication') === -1 &&
+            loc.indexOf('Error') === -1 &&
+            loc.indexOf('Config') === -1
+          ) {
+            localStorage.setItem('shared_link', loc);
+          }
+          this.validateToken(loc);
+
           this.featureToggleService.config = this.featureToggleService
             .loadConfig()
             .then((res) => res);
-        });
+        } catch (error) {
+          console.error('Failed to load env.json', error);
+        }
       }
 
       // load google Analytics script on all instances except local and if customAPI property is true
