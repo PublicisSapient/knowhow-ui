@@ -221,6 +221,7 @@ export class AppInitializerService {
           ) {
             localStorage.setItem('shared_link', loc);
           }
+
           this.validateToken(loc);
 
           this.featureToggleService.config = this.featureToggleService
