@@ -184,6 +184,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                   environment.CENTRAL_LOGIN_URL +
                   '?redirect_uri=' +
                   redirect_uri;
+
+                // CRITICAL FIX: Stop execution here to prevent falling through to the reload logic below.
+                return throwError(() => err);
               } else {
                 console.log(
                   '[Interceptor] SSO Disabled. Using standard login flow.',
