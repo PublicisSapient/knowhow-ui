@@ -175,7 +175,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                   '[Interceptor] SSO Enabled. Attempting redirect to Central Login...',
                 );
                 console.log('SSO_LOGIN', true);
-                let redirect_uri = window.location.href;
+                const redirect_uri = window.location.href;
+
+                const encodedRedirectUri = encodeURIComponent(redirect_uri);
                 console.log(
                   `[Interceptor] Targeting: ${environment.CENTRAL_LOGIN_URL} with uri: ${redirect_uri}`,
                 );
@@ -183,7 +185,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 window.location.href =
                   environment.CENTRAL_LOGIN_URL +
                   '?redirect_uri=' +
-                  redirect_uri;
+                  encodedRedirectUri;
 
                 // CRITICAL FIX: Stop execution here to prevent falling through to the reload logic below.
                 return throwError(() => err);
