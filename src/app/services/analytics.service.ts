@@ -115,6 +115,10 @@ export class AnalyticsService {
     return inRollout;
   }
 
+  load(...scripts: string[]): Promise<any[]> {
+    return this.googleAnalytics.load(...scripts);
+  }
+
   setPageLoad(data: AnalyticsData): void {
     if (this.useGoogleAnalytics) {
       try {

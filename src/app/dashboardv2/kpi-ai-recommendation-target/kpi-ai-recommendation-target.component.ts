@@ -10,6 +10,7 @@ import {
 import { DialogModule } from 'primeng/dialog';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
 import { HttpService } from 'src/app/services/http.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-kpi-ai-recommendation-target',
@@ -31,7 +32,10 @@ export class KpiAiRecommendationTargetComponent {
 
   @Output() viewPlanClick = new EventEmitter<void>();
 
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    private metricsService: MetricsService,
+  ) {}
 
   ngOnInit(): void {
     this.aiRecommendationData = {
@@ -186,6 +190,9 @@ export class KpiAiRecommendationTargetComponent {
   }
 
   onViewPlanClick(): void {
+    this.metricsService.trackAiKpiRecommendation(
+      this.kpiData?.kpiId || 'unknown',
+    );
     this.displayAiRecommModal = true;
   }
 }
