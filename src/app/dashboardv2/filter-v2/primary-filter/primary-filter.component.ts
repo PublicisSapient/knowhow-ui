@@ -151,10 +151,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
                 // in case project in state filters has been deleted
                 if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
-                  const defaultSelection = this.selectCurrentProject();
-                  this.selectedFilters = Array.isArray(defaultSelection)
-                    ? defaultSelection
-                    : [defaultSelection];
+                  this.selectedFilters = [this.selectCurrentProject()];
                   this.service.setBackupOfFilterSelectionState({
                     primary_level: null,
                   });
@@ -225,12 +222,7 @@ export class PrimaryFilterComponent implements OnChanges {
               ) {
                 // reset
                 this.selectedFilters = [];
-                const defaultSelection = this.selectCurrentProject();
-                if (Array.isArray(defaultSelection)) {
-                  this.selectedFilters = defaultSelection;
-                } else {
-                  this.selectedFilters.push(defaultSelection);
-                }
+                this.selectedFilters.push(this.selectCurrentProject());
                 this.service.setBackupOfFilterSelectionState({
                   primary_level: null,
                 });
@@ -270,12 +262,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
   reset() {
     this.selectedFilters = [];
-    const defaultSelection = this.selectCurrentProject();
-    if (Array.isArray(defaultSelection)) {
-      this.selectedFilters = defaultSelection;
-    } else {
-      this.selectedFilters.push(defaultSelection);
-    }
+    this.selectedFilters.push(this.selectCurrentProject());
     this.service.setBackupOfFilterSelectionState({
       parent_level:
         this.service.getBackupOfFilterSelectionState('parent_level') || null,
@@ -454,17 +441,6 @@ export class PrimaryFilterComponent implements OnChanges {
           } else {
             this.service.setSelectedTrends(this.selectedFilters);
           }
-
-          // Save selection to cache
-          if (this.selectedFilters?.[0]?.typeName) {
-            const cacheKey = 'projectSelectionsByType';
-            const currentCache = JSON.parse(
-              localStorage.getItem(cacheKey) || '{}',
-            );
-            currentCache[this.selectedFilters[0].typeName] =
-              this.selectedFilters;
-            localStorage.setItem(cacheKey, JSON.stringify(currentCache));
-          }
         }
       }
 
@@ -600,25 +576,8 @@ export class PrimaryFilterComponent implements OnChanges {
       retValue = selectedTrend[0];
     }
 
-    console.log('selectedTrend ', selectedTrend);
-    console.log('selected type ', this.service.getSelectedType());
-    if (
-      Array.isArray(retValue)
-        ? retValue[0]?.typeName !== this.service.getSelectedType()
-        : retValue?.typeName !== this.service.getSelectedType()
-    ) {
-      // Check cache for this type
-      const cacheKey = 'projectSelectionsByType';
-      const cachedSelections = JSON.parse(
-        localStorage.getItem(cacheKey) || '{}',
-      );
-      const cachedForType = cachedSelections[this.service.getSelectedType()];
-
-      if (cachedForType) {
-        retValue = cachedForType;
-      } else {
-        retValue = this.filters[0];
-      }
+    if (retValue?.typeName !== this.service.getSelectedType()) {
+      retValue = this.filters[0];
     }
 
     return retValue;
