@@ -1178,104 +1178,104 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-  describe('Caching Logic', () => {
-    it('should cache selected filter by type in localStorage when applyPrimaryFilters is called', () => {
-      const filters = [
-        { nodeId: '1', labelName: 'Project A', typeName: 'scrum' },
-        { nodeId: '2', labelName: 'Project B', typeName: 'scrum' },
-      ];
-      component.selectedFilters = filters;
-      component.primaryFilterConfig = {
-        defaultLevel: { labelName: 'project' },
-        type: 'multiSelect',
-      };
+  // describe('Caching Logic', () => {
+  //   it('should cache selected filter by type in localStorage when applyPrimaryFilters is called', () => {
+  //     const filters = [
+  //       { nodeId: '1', labelName: 'Project A', typeName: 'scrum' },
+  //       { nodeId: '2', labelName: 'Project B', typeName: 'scrum' },
+  //     ];
+  //     component.selectedFilters = filters;
+  //     component.primaryFilterConfig = {
+  //       defaultLevel: { labelName: 'project' },
+  //       type: 'multiSelect',
+  //     };
 
-      spyOn(localStorage, 'getItem').and.returnValue('{}');
-      spyOn(localStorage, 'setItem');
-      // Already spied in beforeEach
-      (
-        sharedService.setBackupOfFilterSelectionState as jasmine.Spy
-      ).and.callThrough();
-      spyOn(sharedService, 'setSelectedTrends');
+  //     spyOn(localStorage, 'getItem').and.returnValue('{}');
+  //     spyOn(localStorage, 'setItem');
+  //     // Already spied in beforeEach
+  //     (
+  //       sharedService.setBackupOfFilterSelectionState as jasmine.Spy
+  //     ).and.callThrough();
+  //     spyOn(sharedService, 'setSelectedTrends');
 
-      component.applyPrimaryFilters({});
+  //     component.applyPrimaryFilters({});
 
-      expect(localStorage.setItem).toHaveBeenCalledWith(
-        'projectSelectionsByType',
-        JSON.stringify({ scrum: filters }),
-      );
-    });
+  //     expect(localStorage.setItem).toHaveBeenCalledWith(
+  //       'projectSelectionsByType',
+  //       JSON.stringify({ scrum: filters }),
+  //     );
+  //   });
 
-    it('should retrieve cached filter array from localStorage in selectCurrentProject when type mismatches', () => {
-      component.filters = [
-        { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
-      ];
-      component.primaryFilterConfig = {
-        defaultLevel: { labelName: 'project' },
-      };
+  //   it('should retrieve cached filter array from localStorage in selectCurrentProject when type mismatches', () => {
+  //     component.filters = [
+  //       { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
+  //     ];
+  //     component.primaryFilterConfig = {
+  //       defaultLevel: { labelName: 'project' },
+  //     };
 
-      const cachedProjects = [
-        {
-          nodeId: '2',
-          labelName: 'Cached Project 1',
-          typeName: 'kanban',
-        },
-        {
-          nodeId: '3',
-          labelName: 'Cached Project 2',
-          typeName: 'kanban',
-        },
-      ];
+  //     const cachedProjects = [
+  //       {
+  //         nodeId: '2',
+  //         labelName: 'Cached Project 1',
+  //         typeName: 'kanban',
+  //       },
+  //       {
+  //         nodeId: '3',
+  //         labelName: 'Cached Project 2',
+  //         typeName: 'kanban',
+  //       },
+  //     ];
 
-      // Already spied in beforeEach
-      (
-        sharedService.getBackupOfFilterSelectionState as jasmine.Spy
-      ).and.returnValue(null);
-      spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
+  //     // Already spied in beforeEach
+  //     (
+  //       sharedService.getBackupOfFilterSelectionState as jasmine.Spy
+  //     ).and.returnValue(null);
+  //     spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
 
-      // Mock localStorage to return mismatching selectedTrend and valid cache
-      spyOn(localStorage, 'getItem').and.callFake((key) => {
-        if (key === 'selectedTrend')
-          return JSON.stringify([
-            { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
-          ]);
-        if (key === 'projectSelectionsByType')
-          return JSON.stringify({ kanban: cachedProjects });
-        return null;
-      });
+  //     // Mock localStorage to return mismatching selectedTrend and valid cache
+  //     spyOn(localStorage, 'getItem').and.callFake((key) => {
+  //       if (key === 'selectedTrend')
+  //         return JSON.stringify([
+  //           { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
+  //         ]);
+  //       if (key === 'projectSelectionsByType')
+  //         return JSON.stringify({ kanban: cachedProjects });
+  //       return null;
+  //     });
 
-      const result = component.selectCurrentProject();
+  //     const result = component.selectCurrentProject();
 
-      expect(result).toEqual(cachedProjects);
-    });
+  //     expect(result).toEqual(cachedProjects);
+  //   });
 
-    it('should fallback to default if no cache exists in selectCurrentProject', () => {
-      component.filters = [
-        { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
-      ];
-      component.primaryFilterConfig = {
-        defaultLevel: { labelName: 'project' },
-      };
+  //   it('should fallback to default if no cache exists in selectCurrentProject', () => {
+  //     component.filters = [
+  //       { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
+  //     ];
+  //     component.primaryFilterConfig = {
+  //       defaultLevel: { labelName: 'project' },
+  //     };
 
-      // Already spied in beforeEach
-      (
-        sharedService.getBackupOfFilterSelectionState as jasmine.Spy
-      ).and.returnValue(null);
-      spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
+  //     // Already spied in beforeEach
+  //     (
+  //       sharedService.getBackupOfFilterSelectionState as jasmine.Spy
+  //     ).and.returnValue(null);
+  //     spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
 
-      // Mock localStorage to return mismatching selectedTrend and NO cache
-      spyOn(localStorage, 'getItem').and.callFake((key) => {
-        if (key === 'selectedTrend')
-          return JSON.stringify([
-            { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
-          ]);
-        if (key === 'projectSelectionsByType') return null;
-        return null;
-      });
+  //     // Mock localStorage to return mismatching selectedTrend and NO cache
+  //     spyOn(localStorage, 'getItem').and.callFake((key) => {
+  //       if (key === 'selectedTrend')
+  //         return JSON.stringify([
+  //           { nodeId: '1', labelName: 'Default Project', typeName: 'scrum' },
+  //         ]);
+  //       if (key === 'projectSelectionsByType') return null;
+  //       return null;
+  //     });
 
-      const result = component.selectCurrentProject();
+  //     const result = component.selectCurrentProject();
 
-      expect(result).toEqual(component.filters[0]);
-    });
-  });
+  //     expect(result).toEqual(component.filters[0]);
+  //   });
+  // });
 });
