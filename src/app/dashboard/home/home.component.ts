@@ -945,7 +945,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
 
       return {
-        id: detail.hierarchyEntityNodeId || '',
+        id:
+          detail.hierarchyEntityNodeId || detail.organizationEntityNodeId || '',
         name: detail.organizationEntityName || '',
         health: detail.health || 'UNKNOWN',
         completion: completionValue,
