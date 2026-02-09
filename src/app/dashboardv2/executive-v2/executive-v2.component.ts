@@ -4223,6 +4223,28 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           event.hasOwnProperty('filter1') ||
           event.hasOwnProperty('filter2')
         ) {
+          // For kpi171, check if filter1 is nested and flatten it
+          if (
+            kpi.kpiId === 'kpi171' &&
+            event.filter1 &&
+            typeof event.filter1 === 'object' &&
+            !Array.isArray(event.filter1)
+          ) {
+            // Flatten nested filter1 structure
+            const flattenedEvent = {};
+            if (event.filter1.hasOwnProperty('filter1')) {
+              flattenedEvent['filter1'] = event.filter1.filter1;
+            }
+            if (event.filter1.hasOwnProperty('filter2')) {
+              flattenedEvent['filter2'] = event.filter1.filter2;
+            }
+            // Merge with top-level filter2 if it exists
+            if (event.hasOwnProperty('filter2') && event.filter2 !== null) {
+              flattenedEvent['filter2'] = event.filter2;
+            }
+            event = flattenedEvent;
+          }
+
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
             const outputObject = {};
             for (const key in event) {
