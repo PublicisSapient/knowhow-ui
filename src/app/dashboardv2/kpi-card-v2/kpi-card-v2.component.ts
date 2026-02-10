@@ -1357,6 +1357,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       },
       error: (error) => {
+        console.log('error kpi card v2', error);
         this.existingReportData = [];
         this.generateReportSlider([]);
       },

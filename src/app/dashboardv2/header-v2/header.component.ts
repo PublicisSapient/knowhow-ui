@@ -236,6 +236,7 @@ export class HeaderComponent implements OnInit {
         }
       },
       error: (error) => {
+        console.log('error header v2', error);
         this.sharedService.setNoReports(true);
       },
     });
