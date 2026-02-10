@@ -1278,4 +1278,167 @@ describe('PrimaryFilterComponent', () => {
   //     expect(result).toEqual(component.filters[0]);
   //   });
   // });
+
+  describe('Smart Filter Persistence', () => {
+    // Helper to setup mock localStorage and service
+    const setupPersistence = (
+      selectedType: string,
+      cacheMap: any = {},
+      changedMap: any = {},
+    ) => {
+      component.selectedType = selectedType;
+      spyOn(sharedService, 'getSelectedType').and.returnValue(selectedType);
+
+      spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+        if (key === 'projectSelectionCache') return JSON.stringify(cacheMap);
+        if (key === 'selectionChangedInType') return JSON.stringify(changedMap);
+        if (key === 'completeHierarchyData')
+          return JSON.stringify({
+            [selectedType]: [{ hierarchyLevelName: 'Project' }],
+          });
+        return null;
+      });
+
+      spyOn(localStorage, 'setItem');
+    };
+
+    describe('applyPrimaryFilters (Caching Logic)', () => {
+      it('should cache selected projects (id array) in localStorage', () => {
+        setupPersistence('scrum');
+        component.selectedFilters = [
+          { nodeId: '1', labelName: 'P1' },
+          { nodeId: '2', labelName: 'P2' },
+        ];
+
+        component.applyPrimaryFilters({});
+
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'projectSelectionCache',
+          jasmine.stringMatching(
+            /"scrum":\{"projects":\["1","2"\],"typeName":"scrum"\}/,
+          ),
+        );
+      });
+
+      it('should set selectionChangedInType flag if selection changed from cache', () => {
+        // Setup: Previous cache exists for CURRENT type (scrum) and OTHER type (kanban)
+        const cacheMap = {
+          scrum: { projects: ['OLD'], typeName: 'scrum' },
+          kanban: { projects: ['K1'], typeName: 'kanban' },
+        };
+        setupPersistence('scrum', cacheMap, {});
+
+        // Act: User selects NEW project
+        component.selectedFilters = [{ nodeId: 'NEW', labelName: 'P_NEW' }];
+        component.applyPrimaryFilters({});
+
+        // Assert: Flag should be set because it changed from 'OLD'
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'selectionChangedInType',
+          jasmine.stringMatching(/"scrum":true/),
+        );
+      });
+
+      it('should NOT set selectionChangedInType flag on first load (no previous cache)', () => {
+        // Setup: No cache for CURRENT type (scrum), only OTHER type (kanban)
+        const cacheMap = {
+          kanban: { projects: ['K1'], typeName: 'kanban' },
+        };
+        setupPersistence('scrum', cacheMap, {});
+
+        // Act: Auto-selection happens (e.g. Default)
+        component.selectedFilters = [
+          { nodeId: 'Default', labelName: 'Default' },
+        ];
+
+        // Mock stateFilters to avoid other logic interfering
+        component.stateFilters = {};
+
+        component.applyPrimaryFilters({});
+
+        // Assert: Flag should NOT be set because it's first load
+        expect(localStorage.setItem).not.toHaveBeenCalledWith(
+          'selectionChangedInType',
+          jasmine.any(String),
+        );
+      });
+    });
+
+    describe('selectCurrentProject (Restoration Logic)', () => {
+      it('should restore from cache (multi-select) if other type NOT changed', () => {
+        // Setup: Kanban NOT changed. Cache has multiple projects.
+        const cacheMap = {
+          scrum: { projects: ['1', '2'], typeName: 'scrum' },
+        };
+        const changedMap = { kanban: false }; // Other type (kanban) not changed
+        setupPersistence('scrum', cacheMap, changedMap);
+
+        component.filters = [
+          { nodeId: '1', labelName: 'P1' },
+          { nodeId: '2', labelName: 'P2' },
+          { nodeId: '3', labelName: 'P3' },
+        ];
+
+        // Act
+        const result = component.selectCurrentProject();
+
+        // Assert
+        expect(component.selectedFilters.length).toBe(2);
+        expect(component.selectedFilters.map((f) => f.nodeId)).toEqual([
+          '1',
+          '2',
+        ]);
+        expect(result).toEqual(component.filters[0]); // Returns first of selection
+      });
+
+      it('should reset to default if other type CHANGED', () => {
+        // Setup: Kanban WAS changed. Cache has old selection P2.
+        // Mock selectedTrend to force mismatch (simulate OLD type selection persisting in trend)
+        const cacheMap = {
+          scrum: { projects: ['2'], typeName: 'scrum' },
+        };
+        const changedMap = { kanban: true }; // Other type changed!
+        setupPersistence('scrum', cacheMap, changedMap);
+
+        component.filters = [
+          { nodeId: '1', labelName: 'Default' },
+          { nodeId: '2', labelName: 'Old' },
+        ];
+
+        // Act
+        const result = component.selectCurrentProject();
+
+        // Assert: Should reset to Default (index 0)
+        expect(result).toEqual(component.filters[0]);
+      });
+
+      it('should clear other type flag after reset and update cache', () => {
+        // Setup: Kanban WAS changed.
+        const cacheMap = {
+          scrum: { projects: ['2'], typeName: 'scrum' },
+        };
+        const changedMap = { kanban: true };
+        setupPersistence('scrum', cacheMap, changedMap);
+
+        component.filters = [{ nodeId: '1', labelName: 'Default' }];
+
+        // Act
+        component.selectCurrentProject();
+
+        // Assert: Flag cleared ('kanban' flag should be false now)
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'selectionChangedInType',
+          jasmine.stringMatching(/"kanban":false/),
+        );
+
+        // Assert: Cache updated to default (to prevent loop)
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'projectSelectionCache',
+          jasmine.stringMatching(
+            /"scrum":\{"projects":\["1"\],"typeName":"scrum"\}/,
+          ),
+        );
+      });
+    });
+  });
 });
