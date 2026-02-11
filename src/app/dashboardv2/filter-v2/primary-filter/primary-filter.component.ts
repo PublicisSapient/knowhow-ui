@@ -46,6 +46,10 @@ export class PrimaryFilterComponent implements OnChanges {
   applyFilters = false;
   preventClose: boolean;
 
+  // localStorage keys for smart filter persistence
+  private readonly SELECTION_CACHE_KEY = 'projectSelectionCache';
+  private readonly SELECTION_CHANGED_KEY = 'selectionChangedInType';
+
   constructor(
     public service: SharedService,
     public helperService: HelperService,
@@ -428,6 +432,59 @@ export class PrimaryFilterComponent implements OnChanges {
           }
           this.applyFilters = false;
 
+          // Cache the current selection per type for smart persistence
+          const currentType = this.service.getSelectedType();
+          if (this.selectedFilters[0]) {
+            // Update cache in localStorage
+            const cacheMap = JSON.parse(
+              localStorage.getItem(this.SELECTION_CACHE_KEY) || '{}',
+            );
+
+            // Check if selection actually changed from what was cached
+            const previousCacheForCurrentType = cacheMap[currentType];
+            const selectionChanged =
+              !previousCacheForCurrentType ||
+              JSON.stringify(
+                this.selectedFilters.map((f) => f.nodeId).sort(),
+              ) !==
+                JSON.stringify(
+                  (previousCacheForCurrentType.projects || []).sort(),
+                );
+
+            // Check if there was a previous cached selection for a different type
+            const otherType = currentType === 'scrum' ? 'kanban' : 'scrum';
+            const hadPreviousCacheInOtherType =
+              cacheMap[otherType] !== undefined;
+
+            cacheMap[currentType] = {
+              projects: this.selectedFilters.map((f) => f.nodeId),
+              typeName: currentType,
+            };
+            localStorage.setItem(
+              this.SELECTION_CACHE_KEY,
+              JSON.stringify(cacheMap),
+            );
+
+            // Only mark as changed if:
+            // 1. User applied filter in a different type (after having cache in other type)
+            // 2. AND there was already a cache for current type (not first time)
+            // 3. AND selection actually changed from cached value
+            if (
+              hadPreviousCacheInOtherType &&
+              previousCacheForCurrentType &&
+              selectionChanged
+            ) {
+              const selectionChangedMap = JSON.parse(
+                localStorage.getItem(this.SELECTION_CHANGED_KEY) || '{}',
+              );
+              selectionChangedMap[currentType] = true;
+              localStorage.setItem(
+                this.SELECTION_CHANGED_KEY,
+                JSON.stringify(selectionChangedMap),
+              );
+            }
+          }
+
           if (
             this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' ||
             this.selectedFilters[0]?.labelName?.toLowerCase() === 'release'
@@ -577,7 +634,67 @@ export class PrimaryFilterComponent implements OnChanges {
     }
 
     if (retValue?.typeName !== this.service.getSelectedType()) {
-      retValue = this.filters[0];
+      const currentType = this.service.getSelectedType();
+
+      // Read from localStorage
+      const selectionChangedMap = JSON.parse(
+        localStorage.getItem(this.SELECTION_CHANGED_KEY) || '{}',
+      );
+      // Check if selection was changed in the OTHER type (not the one we are loading)
+      const otherType = currentType === 'scrum' ? 'kanban' : 'scrum';
+      const wasChangedInOtherType = selectionChangedMap[otherType];
+      if (wasChangedInOtherType) {
+        // User changed selection in other type, reset to first
+        retValue = this.filters[0];
+
+        // Clear the flag for the OTHER type that caused the reset
+        if (otherType) {
+          selectionChangedMap[otherType] = false;
+        }
+
+        localStorage.setItem(
+          this.SELECTION_CHANGED_KEY,
+          JSON.stringify(selectionChangedMap),
+        );
+
+        // Update cache for current type to match this reset
+        // This prevents applyPrimaryFilters from flagging this system reset as a user change
+        const cacheMap = JSON.parse(
+          localStorage.getItem(this.SELECTION_CACHE_KEY) || '{}',
+        );
+        cacheMap[currentType] = {
+          projects: [retValue.nodeId],
+          typeName: currentType,
+        };
+        localStorage.setItem(
+          this.SELECTION_CACHE_KEY,
+          JSON.stringify(cacheMap),
+        );
+      } else {
+        // No change in other type, restore cached selection
+        const cacheMap = JSON.parse(
+          localStorage.getItem(this.SELECTION_CACHE_KEY) || '{}',
+        );
+        if (cacheMap[currentType] && cacheMap[currentType].projects) {
+          // Restore all cached projects (multiselect support)
+          const cachedNodeIds = cacheMap[currentType].projects;
+          const cachedProjects = this.filters.filter((f) =>
+            cachedNodeIds.includes(f.nodeId),
+          );
+
+          if (cachedProjects.length > 0) {
+            // Set all cached selections directly
+            this.selectedFilters = cachedProjects;
+            retValue = cachedProjects[0];
+          } else {
+            // Cache was invalid, use first filter
+            retValue = this.filters[0];
+          }
+        } else {
+          // No cache exists, use first filter
+          retValue = this.filters[0];
+        }
+      }
     }
 
     return retValue;
