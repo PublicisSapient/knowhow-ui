@@ -53,11 +53,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
     const requestArea = req.headers.get('requestArea') || 'internal';
 
-    // [DEBUG] Trace incoming requests to verify 'requestArea' logic
-    console.log(
-      `[Interceptor] Req: ${req.method} ${req.url} | Area: ${requestArea}`,
-    );
-
     if (environment.AUTHENTICATION_SERVICE) {
       const cookie = document.cookie?.split(';');
       let authCookie_EXPIRY = cookie?.find((x) =>
@@ -154,34 +149,16 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
-          console.groupCollapsed(
-            `[Interceptor] Error ${err.status}: ${req.url}`,
-          );
-          console.log('Debugging Context:', {
-            requestArea,
-            isSSO: environment?.['SSO_LOGIN'],
-            centralLoginUrl: environment.CENTRAL_LOGIN_URL,
-            error: err,
-          });
 
           if (err.status === 401) {
-            console.warn(
-              '[Interceptor] 401 Detected. Checking redirection logic...',
-            );
 
             if (requestArea === 'internal') {
               if (environment?.['SSO_LOGIN']) {
                 this.httpService.setCurrentUserDetails({});
-                console.log(
-                  '[Interceptor] SSO Enabled. Attempting redirect to Central Login...',
-                );
-                console.log('SSO_LOGIN', true);
+
                 const redirect_uri = window.location.href;
 
                 const encodedRedirectUri = encodeURIComponent(redirect_uri);
-                console.log(
-                  `[Interceptor] Targeting: ${environment.CENTRAL_LOGIN_URL} with uri: ${redirect_uri}`,
-                );
 
                 window.location.href =
                   environment.CENTRAL_LOGIN_URL +
@@ -191,9 +168,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 // CRITICAL FIX: Stop execution here to prevent falling through to the reload logic below.
                 return throwError(() => err);
               } else {
-                console.log(
-                  '[Interceptor] SSO Disabled. Using standard login flow.',
-                );
+
                 if (environment.AUTHENTICATION_SERVICE) {
                   this.redirectToLogin();
                 } else {
@@ -204,28 +179,19 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 }
               }
             } else {
-              console.log(
-                '[Interceptor] Request Area is NOT internal. skipping login redirect.',
-              );
+
             }
 
             if (environment?.['SSO_LOGIN']) {
-              console.log(
-                '[Interceptor] Fallback SSO Logic: Navigating to Dashboard',
-              );
+
               this.router
                 .navigate(['./dashboard/my-knowhow'])
                 .then((success) => {
-                  console.warn(
-                    '[Interceptor] Fallback Logic Triggering RELOAD now.',
-                  );
                   window.location.reload();
                 });
             }
           } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
-            console.warn(
-              '[Interceptor] 403 Forbidden. Navigating to Unauthorized page.',
-            );
+
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
@@ -234,9 +200,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
               err?.statusText === 'Unknown Error' &&
               environment.SSO_LOGIN
             ) {
-              console.error(
-                '[Interceptor] Status 0 (Unknown Error) with SSO. Clearing cookies and Reloading.',
-              );
+
               this.service.clearAllCookies();
               this.router
                 .navigate(['./dashboard/my-knowhow'])
@@ -257,9 +221,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                       !environment?.['SSO_LOGIN'] ||
                       (environment.SSO_LOGIN && !req.url.includes('api/sso/'))
                     ) {
-                      console.warn(
-                        '[Interceptor] Generic Error (Not 401/403/0). Navigating to /dashboard/Error',
-                      );
                       this.router.navigate(['./dashboard/Error']);
                     }
                   }
@@ -289,11 +250,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const redirect_uri = window.location.href;
     const encodedRedirectUri = encodeURIComponent(redirect_uri);
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
-    console.log('[Interceptor] redirectToLogin triggered.');
-    console.log(
-      `[Interceptor] Central Login URL: ${environment.CENTRAL_LOGIN_URL}`,
-    );
-    console.log(`[Interceptor] Redirect URI: ${redirect_uri}`);
 
     if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
       window.location.href =
