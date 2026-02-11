@@ -452,7 +452,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     //#endregion
 
-    console.log('kpicard onchanges called');
     // -- export widget to confluence
     if (
       this.selectedTab === 'my-knowhow' ||
@@ -463,7 +462,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.menuItems = this.menuItems.filter(
         (item) => item.label !== 'Export to Confluence',
       );
-      // console.log(this.kpiTitle, 'kpi title in card');
       if (
         this.kpiTitle === 'Release Frequency' ||
         this.kpiTitle === 'Value Delivery (Cost of Delay)'
@@ -1357,7 +1355,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       },
       error: (error) => {
-        console.log('error kpi card v2', error);
         this.existingReportData = [];
         this.generateReportSlider([]);
       },
