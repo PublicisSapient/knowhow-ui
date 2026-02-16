@@ -4536,6 +4536,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               enabledKpiObj,
               this.kpiChartData[kpiId][i],
             );
+            this.kpiChartData[kpiId][i].trend = trend;
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
               let selectedNode;
               if (this.nonUniqueNames) {
@@ -4588,6 +4589,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             enabledKpiObj,
             this.kpiChartData[kpiId][averageCoverageIdx],
           );
+          this.kpiChartData[kpiId][averageCoverageIdx].trend = trend;
           const selectedNode = this.filterData.filter(
             (x) =>
               x.nodeDisplayName ===
