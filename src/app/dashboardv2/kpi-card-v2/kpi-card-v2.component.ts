@@ -203,62 +203,52 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         if (x && Object.keys(x)?.length) {
           this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
 
-          for (const key in x[this.kpiData?.kpiId]) {
-            const kpiFilterType =
-              this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
+          const kpiFilters = x[this.kpiData?.kpiId];
+          const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
 
-            const currentFilterArray = x[this.kpiData?.kpiId][key];
-
-            if (
-              Array.isArray(currentFilterArray) &&
-              currentFilterArray.includes('Overall')
-            ) {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1' || key === 'filter2') {
-                  this.filterOptions[key] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
+          if (
+            kpiFilters &&
+            typeof kpiFilters === 'object' &&
+            !Array.isArray(kpiFilters)
+          ) {
+            for (const key in kpiFilters) {
+              const currentFilterArray = kpiFilters[key];
+              if (
+                Array.isArray(currentFilterArray) &&
+                currentFilterArray.includes('Overall')
+              ) {
+                if (this.kpiData?.kpiId === 'kpi72') {
+                  this.filterOptions[key] = currentFilterArray[0];
                 } else {
-                  this.filterOptions = { ...this.filterOptions };
+                  if (kpiFilterType === 'multiselectdropdown') {
+                    this.filterOptions[key] = [];
+                  } else {
+                    this.dropdownArr?.forEach((filter, idx) => {
+                      if (filter?.options?.length) {
+                        this.filterOptions['filter' + (idx + 1)] =
+                          filter.options[0];
+                      }
+                    });
+                  }
                 }
               } else {
-                if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions =
-                    Array.isArray(currentFilterArray) &&
-                    currentFilterArray.includes('Overall')
-                      ? { filter1: null }
-                      : [...currentFilterArray];
+                if (this.kpiData?.kpiId === 'kpi72') {
+                  this.filterOptions[key] = Array.isArray(currentFilterArray)
+                    ? currentFilterArray[0]
+                    : currentFilterArray;
                 } else {
-                  this.dropdownArr?.forEach((filter, idx) => {
-                    if (filter?.options?.length) {
-                      this.filterOptions['filter' + (idx + 1)] =
-                        filter.options[0];
-                    }
-                  });
-                }
-              }
-            } else {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1' || key === 'filter2') {
-                  this.filterOptions[key] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
-                }
-              } else {
-                if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions = {
-                    filter1:
-                      currentFilterArray !== 'Overall'
-                        ? Array.isArray(x[this.kpiData?.kpiId])
-                          ? [...x[this.kpiData?.kpiId]]
-                          : x[this.kpiData?.kpiId]
-                        : null,
-                  };
-                } else {
-                  this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
-                    ? { filter1: x[this.kpiData?.kpiId] }
-                    : { ...x[this.kpiData?.kpiId] };
+                  if (kpiFilterType === 'multiselectdropdown') {
+                    this.filterOptions[key] = currentFilterArray;
+                  } else {
+                    this.filterOptions[key] = currentFilterArray;
+                  }
                 }
               }
             }
+          } else if (Array.isArray(kpiFilters)) {
+            this.filterOptions = { filter1: kpiFilters };
+          } else {
+            this.filterOptions = { filter1: kpiFilters };
           }
 
           if (
@@ -606,8 +596,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.optionSelected.emit(this.filterOptions['filter1']);
         } else {
           if (
-            !this.filterOptions.hasOwnProperty('filter1') ||
-            this.filterOptions['filter1'].length === 0
+            Object.values(this.filterOptions).every(
+              (val) => !val || (Array.isArray(val) && val.length === 0),
+            )
           ) {
             this.optionSelected.emit('Overall');
           } else {
