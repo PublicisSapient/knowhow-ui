@@ -33,8 +33,8 @@ export class KpiAiRecommendationTargetComponent {
   @Output() viewPlanClick = new EventEmitter<void>();
 
   constructor(
-    private httpService: HttpService,
-    private metricsService: MetricsService,
+    private readonly httpService: HttpService,
+    private readonly metricsService: MetricsService,
   ) {}
 
   ngOnInit(): void {

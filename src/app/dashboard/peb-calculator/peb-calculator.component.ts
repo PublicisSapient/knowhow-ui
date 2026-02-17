@@ -76,7 +76,7 @@ export class PebCalculatorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
     private cdr: ChangeDetectorRef,
-    private metricsService: MetricsService,
+    private readonly metricsService: MetricsService,
   ) {
     this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
     this.appConfig = this.sharedService.getConfigurationDetails();
@@ -175,8 +175,8 @@ export class PebCalculatorComponent implements OnInit, OnDestroy {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
-  private pebStartTime: number = 0;
-  private scrollTracked: Set<string> = new Set();
+  private pebStartTime = 0;
+  private readonly scrollTracked: Set<string> = new Set();
 
   private setupPebTracking(): void {
     this.pebStartTime = Date.now();

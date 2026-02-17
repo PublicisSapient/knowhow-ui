@@ -4352,7 +4352,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   updateKPI138FilterOptions(kpiId) {
     const idx = this.ifKpiExist(kpiId);
-    if (idx === -1) return;
+    if (idx === -1) {
+      return;
+    }
 
     // Reset dropdowns to original options first
     const filtersBase = this.allKpiArray[idx]?.filters;
@@ -4376,7 +4378,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const availableF2 = new Set();
       trendValueList.forEach((item) => {
         if (selectedF1.includes(item.filter1)) {
-          if (item.filter2) availableF2.add(item.filter2);
+          if (item.filter2) {
+            availableF2.add(item.filter2);
+          }
         }
       });
 
