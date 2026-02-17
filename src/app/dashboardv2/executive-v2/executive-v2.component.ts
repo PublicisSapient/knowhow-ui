@@ -3753,19 +3753,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  // applyAggregationLogicForkpi138(arr) {
-  //   const aggregatedArr = JSON.parse(JSON.stringify(arr));
-  //   aggregatedArr.forEach((x) => {
-  //     x.data[2].value = x.data[2].value * x.data[0]?.value;
-  //   });
-
-  //   const kpi138 = this.applyAggregationLogic(aggregatedArr);
-  //   kpi138[0].data[2].value = Math.round(
-  //     kpi138[0]?.data[2].value / kpi138[0]?.data[0]?.value,
-  //   );
-  //   return kpi138;
-  // }
-
   populateKPIFilters(data, key) {
     const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
     this.getDropdownArray(data[key]?.kpiId);
