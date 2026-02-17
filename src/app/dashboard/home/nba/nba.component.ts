@@ -26,7 +26,7 @@ import { MetricsService } from 'src/app/services/metrics.service';
   ],
 })
 export class NbaComponent implements OnChanges {
-  private metricsService = inject(MetricsService);
+  private readonly metricsService = inject(MetricsService);
   displayModal = false;
   selectedRecommendation: any = {};
   recommendations: any[] = [];

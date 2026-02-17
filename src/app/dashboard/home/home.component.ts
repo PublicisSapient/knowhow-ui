@@ -275,6 +275,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   initializeBottomData(typeOfReset) {
+    const negativeTrends = 'Negative Trends';
     if (typeOfReset === 'ALL') {
       this.bottomTilesData.set([
         {
@@ -295,7 +296,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         },
         {
           cssClassName: '',
-          category: 'Negative Trends',
+          category: negativeTrends,
           value: [],
           icon: true,
           color: '#eb3d4b',
@@ -315,7 +316,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         };
         tempState[2] = {
           cssClassName: '',
-          category: 'Negative Trends',
+          category: negativeTrends,
           value: [],
           icon: true,
           color: '#ed8888',
@@ -924,7 +925,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     const details = data?.details || [];
 
     const extractMaturityLevel = (level: string): string => {
-      if (!level) return 'M0';
+      if (!level) {
+        return 'M0';
+      }
       const match = level.match(/^(M\d)/);
       return match ? match[1] : level;
     };
@@ -981,9 +984,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       {
         field: 'name',
         header: data?.summary?.levelName
-          ? data.summary.levelName.charAt(0).toUpperCase() +
-            data.summary.levelName.slice(1) +
-            ' Name'
+          ? `${data.summary.levelName
+              .charAt(0)
+              .toUpperCase()} ${data.summary.levelName.slice(1)} Name`
           : 'Name',
       },
       { field: 'health', header: 'Overall Health' },

@@ -1130,6 +1130,40 @@ describe('KpiCardV2Component', () => {
     // expect(component.filterOptions["filter1"]).toEqual(['Overall']);
   });
 
+  it('should set filterOptions to empty array instead of null for multiselectdropdown when Overall is present', () => {
+    const filterData = {
+      kpi127: {
+        filter1: ['Overall'],
+      },
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi127',
+      kpiName: 'Production Defects Ageing',
+      isEnabled: true,
+      order: 1,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi127',
+        kpiFilter: 'multiselectdropdown',
+      },
+      shown: true,
+    };
+
+    component.dropdownArr = [
+      {
+        filterType: 'Priority',
+        options: ['P1', 'P2', 'P3', 'P4'],
+      },
+    ];
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.filterOptions).toEqual({ filter1: [] });
+  });
+
   xit('should show tooltip', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBeTrue();

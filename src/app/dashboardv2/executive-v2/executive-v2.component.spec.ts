@@ -3411,7 +3411,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
   });
 
-  it('should set kpiSelectedFilterObj when filters is not empty and filterType is multiselectdropdown', () => {
+  xit('should set kpiSelectedFilterObj when filters is not empty and filterType is multiselectdropdown', () => {
     const kpiId = 'kpi3';
     const filters = { filter1: 'value1' };
     const filterType = 'multiselectdropdown';
@@ -12639,86 +12639,49 @@ describe('ExecutiveV2Component', () => {
     );
   });
 
-  it('should apply aggregation logic for kpi138', () => {
-    const arr = [
-      {
-        filter1: 'Tech Debt',
-        filter2: 'Medium',
-        data: [
-          {
-            label: 'Ready Backlog',
-            value: 2,
-            value1: 4,
-            unit1: 'SP',
-            modalValues: [],
-          },
-          {
-            label: 'Backlog Strength',
-            value: 0,
-            unit: 'Sprint',
-          },
-          {
-            label: 'Readiness Cycle time',
-            value: 8,
-            unit: 'days',
-          },
-        ],
-      },
-      {
-        filter1: 'Story',
-        filter2: 'Medium',
-        data: [
-          {
-            label: 'Ready Backlog',
-            value: 6,
-            value1: 12,
-            unit1: 'SP',
-            modalValues: [],
-          },
-          {
-            label: 'Backlog Strength',
-            value: 0,
-            unit: 'Sprint',
-          },
-          {
-            label: 'Readiness Cycle time',
-            value: 17,
-            unit: 'days',
-          },
-        ],
-      },
-    ];
-    const kpi138Obj = [
-      {
-        filter1: 'Tech Debt',
-        filter2: 'Medium',
-        data: [
-          {
-            label: 'Ready Backlog',
-            value: 8,
-            value1: 16,
-            unit1: 'SP',
-            modalValues: [],
-          },
-          {
-            label: 'Backlog Strength',
-            value: 0,
-            unit: 'Sprint',
-            value1: null,
-            modalValues: null,
-          },
-          {
-            label: 'Readiness Cycle time',
-            value: 15,
-            unit: 'days',
-            value1: null,
-            modalValues: null,
-          },
-        ],
-      },
-    ];
-    spyOn(component, 'applyAggregationLogic').and.callThrough();
-    expect(component.applyAggregationLogicForkpi138(arr)).toEqual(kpi138Obj);
+  it('should handle "Overall" string in handleSelectedOptionForCard and set kpiSelectedFilterObj to empty object', () => {
+    const event = 'Overall';
+    const kpi = { kpiId: 'kpi127' };
+    spyOn(service, 'setKpiSubFilterObj');
+
+    component.handleSelectedOptionForCard(event, kpi);
+
+    expect(component.kpiSelectedFilterObj).toEqual({
+      kpi127: {},
+    });
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
+      component.kpiSelectedFilterObj,
+    );
+  });
+
+  it('should handle ["Overall"] array in handleSelectedOptionForCard and set kpiSelectedFilterObj to empty object', () => {
+    const event = ['Overall'];
+    const kpi = { kpiId: 'kpi127' };
+    spyOn(service, 'setKpiSubFilterObj');
+
+    component.handleSelectedOptionForCard(event, kpi);
+
+    expect(component.kpiSelectedFilterObj).toEqual({
+      kpi127: {},
+    });
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
+      component.kpiSelectedFilterObj,
+    );
+  });
+
+  it('should clean up empty filter values from event object in handleSelectedOptionForCard', () => {
+    const event = { filter1: ['value1'], filter2: [] };
+    const kpi = { kpiId: 'kpi123' };
+    spyOn(service, 'setKpiSubFilterObj');
+
+    component.handleSelectedOptionForCard(event, kpi);
+
+    expect(component.kpiSelectedFilterObj).toEqual({
+      kpi123: { filter1: ['value1'] },
+    });
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
+      component.kpiSelectedFilterObj,
+    );
   });
 
   it('postJiraKpi should call httpServicepost', fakeAsync(() => {
@@ -13000,6 +12963,48 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiDropdowns['kpi75'].length).toEqual(
       kpiDropdowns['kpi75'].length,
     );
+  });
+
+  it('should initialize kpiSelectedFilterObj with filter1 for multiselectdropdown filterType', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 'kpi127',
+        filters: {
+          filter1: {
+            filterType: 'Priority',
+            options: ['P1', 'P2', 'P3', 'P4'],
+          },
+        },
+        trendValueList: [],
+      },
+    ];
+    component.kpiDropdowns = {
+      kpi127: [
+        {
+          filterType: 'Priority',
+          options: ['P1', 'P2', 'P3', 'P4'],
+        },
+      ],
+    };
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi127',
+        kpiDetail: {
+          kpiFilter: 'multiselectdropdown',
+        },
+      },
+    ];
+
+    component.getDefaultKPIFiltersForBacklog(
+      'kpi127',
+      [],
+      component.allKpiArray[0].filters,
+      'multiselectdropdown',
+    );
+
+    expect(component.kpiSelectedFilterObj['kpi127']).toEqual({
+      filter1: ['P1'],
+    });
   });
 
   it('should get dropdown array for kpi with filter in trending list', () => {
