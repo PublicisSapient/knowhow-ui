@@ -237,11 +237,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
                     ? currentFilterArray[0]
                     : currentFilterArray;
                 } else {
-                  if (kpiFilterType === 'multiselectdropdown') {
-                    this.filterOptions[key] = currentFilterArray;
-                  } else {
-                    this.filterOptions[key] = currentFilterArray;
-                  }
+                  this.filterOptions[key] = currentFilterArray;
                 }
               }
             }
