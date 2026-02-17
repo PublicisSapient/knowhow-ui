@@ -128,20 +128,24 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       catchError((err) => {
         if (
           reqUrl.indexOf('kpiRecommendation') !== -1 ||
+          reqUrl.indexOf('stats?levelName=') !== -1 ||
+          reqUrl.indexOf('/fetch/scm') !== -1 ||
           reqUrl.indexOf('notifications') !== -1 ||
           reqUrl.indexOf('kpisearch') !== -1 ||
-          reqUrl.indexOf('executive') !== -1 ||
+          reqUrl.indexOf('kpi-maturity') !== -1 ||
           reqUrl.indexOf('productivity') !== -1 ||
-          reqUrl.indexOf('reports') !== -1
+          reqUrl.indexOf('ai-usage') !== -1 ||
+          reqUrl.indexOf('recommendations') !== -1 ||
+          reqUrl.indexOf('mcp') !== -1
         ) {
           // Return error as successful response instead of throwing
           return of(
             new HttpResponse({
               body: {
                 error: true,
-                message: err.error.message,
-                status: err.error.status,
-                originalError: err.error,
+                message: err?.error?.message || 'Failed to fetch data.',
+                status: err?.error?.status || false,
+                originalError: err?.error || 'Failed to fetch data.',
               },
               status: 200, // Return as successful response
               url: req.url,
@@ -149,26 +153,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
-
           if (err.status === 401) {
-
             if (requestArea === 'internal') {
-              if (environment?.['SSO_LOGIN']) {
-                this.httpService.setCurrentUserDetails({});
+              this.httpService.setCurrentUserDetails({});
 
-                const redirect_uri = window.location.href;
-
-                const encodedRedirectUri = encodeURIComponent(redirect_uri);
-
-                window.location.href =
-                  environment.CENTRAL_LOGIN_URL +
-                  '?redirect_uri=' +
-                  encodedRedirectUri;
-
-                // CRITICAL FIX: Stop execution here to prevent falling through to the reload logic below.
-                return throwError(() => err);
-              } else {
-
+              if (!environment?.['SSO_LOGIN']) {
+                console.log('SSO LOGIN is false, navigate to login page');
                 if (environment.AUTHENTICATION_SERVICE) {
                   this.redirectToLogin();
                 } else {
@@ -178,20 +168,40 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                   });
                 }
               }
-            } else {
-
+              // if (environment?.['SSO_LOGIN']) {
+              //   this.httpService.setCurrentUserDetails({});
+              //   console.log('SSO_LOGIN', true);
+              //   const redirect_uri = window.location.href;
+              //   const encodedRedirectUri = encodeURIComponent(redirect_uri);
+              //   if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
+              //     window.location.href =
+              //       environment.CENTRAL_LOGIN_URL +
+              //       '?redirect_uri=' +
+              //       encodedRedirectUri;
+              //   } else {
+              //     window.location.reload();
+              //   }
+              // } else {
+              //   if (environment.AUTHENTICATION_SERVICE) {
+              //     this.redirectToLogin();
+              //   } else {
+              //     this.httpService.setCurrentUserDetails({});
+              //     this.router.navigate(['./authentication/login'], {
+              //       queryParams: this.route.snapshot.queryParams,
+              //     });
+              //   }
+              // }
             }
 
             if (environment?.['SSO_LOGIN']) {
-
+              console.log('SSO LOGIN is true, navigate to knowhow dashboard');
               this.router
                 .navigate(['./dashboard/my-knowhow'])
                 .then((success) => {
-                  window.location.reload();
+                  // window.location.reload();
                 });
             }
           } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
-
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
@@ -200,7 +210,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
               err?.statusText === 'Unknown Error' &&
               environment.SSO_LOGIN
             ) {
-
               this.service.clearAllCookies();
               this.router
                 .navigate(['./dashboard/my-knowhow'])
@@ -250,10 +259,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const redirect_uri = window.location.href;
     const encodedRedirectUri = encodeURIComponent(redirect_uri);
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
-
     if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
       window.location.href =
         environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + encodedRedirectUri;
+    } else {
+      window.location.reload();
     }
   }
 }
