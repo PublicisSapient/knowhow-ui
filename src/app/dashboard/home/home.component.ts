@@ -161,15 +161,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                     const filteredColumns = transformed.columns.filter(
                       (col) => col.field !== 'id',
                     );
-                    const nameColIndex = filteredColumns.findIndex(
-                      (col) => col.field === 'name',
-                    );
-                    const insertIndex =
-                      nameColIndex >= 0 ? nameColIndex + 2 : 2;
                     this.tableData['columns'] = [
-                      ...filteredColumns.slice(0, insertIndex),
+                      ...filteredColumns,
                       { field: 'productivity', header: 'Productivity' },
-                      ...filteredColumns.slice(insertIndex),
                     ];
 
                     const { tableColumnData, tableColumnForm } =
@@ -205,7 +199,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'gauge',
-                        category: 'Avg. Efficiency',
+                        category: 'Avg. Score',
                         value: this.tableData['data'].length,
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
@@ -431,12 +425,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       decendingData.length > 4 ? decendingData.slice(0, 4) : decendingData;
 
     return threshodData.map((node) => {
+      const rawValue = parseFloat(node.trendValue);
+      const displayValue =
+        trendType === 'negative' ? Math.abs(rawValue) : rawValue;
       return {
         property: node.kpiName,
-        value: parseFloat(node.trendValue).toFixed(1),
+        value: displayValue.toFixed(1),
         desiredTrend: node.desiredTrend,
       };
     });
+  }
+
+  getTrendCaretClass(trendItem: any, section: any): string {
+    const isDescending = trendItem?.desiredTrend === 'DESCENDING';
+    const invert = section?.category === 'Negative Trends';
+    const showDown = invert ? !isDescending : isDescending;
+    return showDown ? 'fa-caret-down' : 'fa-caret-up';
   }
 
   calculateHealth(healthType) {
@@ -545,15 +549,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                 (col) => col.field !== 'id',
               );
 
-              const nameColIndex = childFilteredColumns.findIndex(
-                (col) => col.field === 'name',
-              );
-
-              const insertIndex = nameColIndex >= 0 ? nameColIndex + 2 : 2;
               targettedDetails['children']['columns'] = [
-                ...childFilteredColumns.slice(0, insertIndex),
+                ...childFilteredColumns,
                 { field: 'productivity', header: 'Productivity' },
-                ...childFilteredColumns.slice(insertIndex),
               ];
 
               const { tableColumnData, tableColumnForm } =
@@ -891,7 +889,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       {
         cssClassName: 'gauge',
-        category: 'Avg. Efficiency',
+        category: 'Avg. Score',
         value: 'N/A',
         icon: 'pi-gauge',
         average: 'N/A',
@@ -973,11 +971,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       quality: 'Quality',
     };
 
-    const categoryColumns = Array.from(categorySet).map((cat) => ({
-      field: cat,
-      header:
-        categoryHeaderMap[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
-    }));
+    const categoryOrder = ['speed', 'quality', 'value', 'dora'];
+    const categoryColumns = categoryOrder
+      .filter((cat) => categorySet.has(cat))
+      .map((cat) => ({
+        field: cat,
+        header:
+          categoryHeaderMap[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
+      }));
 
     const columns = [
       {
@@ -989,7 +990,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           : 'Name',
       },
       { field: 'health', header: 'Overall Health' },
-      { field: 'completion', header: 'Efficiency(%)' },
+      { field: 'completion', header: 'Score(%)' },
       ...categoryColumns,
     ];
 
