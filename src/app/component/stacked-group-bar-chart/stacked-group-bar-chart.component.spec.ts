@@ -13,6 +13,8 @@ import {
 } from '@angular/forms';
 import { SimpleChange } from '@angular/core';
 import * as d3 from 'd3';
+import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'p-multiSelect',
@@ -71,6 +73,30 @@ describe('StackedGroupBarChartComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [StackedGroupBarChartComponent, MockMultiSelectComponent],
       imports: [FormsModule],
+      providers: [
+        {
+          provide: SharedService,
+          useValue: {
+            getSelectedTab: jasmine
+              .createSpy('getSelectedTab')
+              .and.returnValue('Iteration'),
+            getSelectedTrends: jasmine
+              .createSpy('getSelectedTrends')
+              .and.returnValue([{ nodeName: 'Project A' }]),
+            getSelectedDateFilter: jasmine
+              .createSpy('getSelectedDateFilter')
+              .and.returnValue('Weeks'),
+          },
+        },
+        {
+          provide: HelperService,
+          useValue: {
+            getFormatedDateBasedOnType: jasmine
+              .createSpy('getFormatedDateBasedOnType')
+              .and.callFake((date, type) => date),
+          },
+        },
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
@@ -81,6 +107,8 @@ describe('StackedGroupBarChartComponent', () => {
     component.kpiId = 'kpi195';
     component.defectsBreachedSLAs = [];
     component.defectsBreachedSLAsAllValues = [];
+    component.selectedtype = 'scrum';
+    component.xAxisLabel = 'Sprints';
 
     fixture.detectChanges();
   });
