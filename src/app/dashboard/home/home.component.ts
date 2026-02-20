@@ -986,7 +986,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         header: data?.summary?.levelName
           ? `${data.summary.levelName
               .charAt(0)
-              .toUpperCase()} ${data.summary.levelName.slice(1)} Name`
+              .toUpperCase()}${data.summary.levelName.slice(1)} Name`
           : 'Name',
       },
       { field: 'health', header: 'Overall Health' },
