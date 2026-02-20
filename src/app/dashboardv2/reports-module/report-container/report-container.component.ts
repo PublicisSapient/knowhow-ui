@@ -25,7 +25,7 @@ export class ReportContainerComponent implements OnInit {
     private http: HttpService,
     private messageService: MessageService,
     private kpiHelperService: KpiHelperService,
-    private metrics: MetricsService,
+    private readonly metrics: MetricsService,
   ) {}
 
   /**

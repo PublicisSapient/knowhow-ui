@@ -35,7 +35,7 @@ export class AppInitializerService {
     private featureToggleService: FeatureFlagsService,
     private http: HttpClient,
     private route: ActivatedRoute,
-    private ga: AnalyticsService,
+    private readonly ga: AnalyticsService,
     private helperService: HelperService,
   ) {}
   commonRoutes: Routes = [
