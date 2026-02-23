@@ -1422,13 +1422,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPost() {
-    if (this.reportName.trim() === '') {
+    const trimmedReportName = this.reportName.trim();
+    if (trimmedReportName === '') {
+      return;
+    }
+    const reportNameExists = this.existingReportData.some(
+      (report) =>
+        report?.name?.trim().toLowerCase() === trimmedReportName.toLowerCase(),
+    );
+    if (reportNameExists) {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Enter name ${trimmedReportName} which already exists in report`,
+      });
+      this.success = false;
       return;
     }
     const data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
     const submitData = {
-      name: this.reportName,
+      name: trimmedReportName,
       kpis: [data],
     };
 
