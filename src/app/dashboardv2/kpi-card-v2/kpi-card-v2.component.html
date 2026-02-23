@@ -102,12 +102,12 @@
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
       *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
          [ngClass]="{
-    'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
+    'hidden': selectedTab?.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
     'table-layout-fix': kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
   }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
-        <ng-container *ngFor="let filter of dropdownArr; let k = index">
+        <ng-container *ngFor="let filter of dropdownArr; let k = index; trackBy: trackByFilter">
           <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length"
                       [options]="filter?.options"
                       [(ngModel)]="filterOptions['filter'+(k+1)]"
@@ -124,7 +124,7 @@
         </ng-container>
       </div>
       <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
-        <ng-container *ngFor="let filter of dropdownArr; let k = index">
+        <ng-container *ngFor="let filter of dropdownArr; let k = index; trackBy: trackByFilter">
           <ng-select *ngIf="filter?.options?.length && filterOptions['filter'+(k+1)]?.[0] && filter.filterType === 'Duration'"
                      [(ngModel)]="filterOptions['filter'+(k+1)][0]" [dropdownPosition]="'bottom'" [filter]="false"
                      [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType || 'Select a filter'" [clearable]="false"
@@ -167,7 +167,7 @@
 
       <ng-container *ngSwitchCase="'multitypefilters'">
         <div class="multi-filter-section">
-          <ng-container *ngFor="let filter of dropdownArr;let k = index">
+          <ng-container *ngFor="let filter of dropdownArr;let k = index; trackBy: trackByFilter">
             <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
               <ng-container *ngIf="filter?.options && filter?.options.length ">
                 <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
