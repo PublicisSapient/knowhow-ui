@@ -2998,7 +2998,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   createAllKpiArray(data) {
     for (const key in data) {
       /** Creating recomm data */
-      this.kpiRecommData[key] = data[key]?.recommendationActionPlan || {};
+      const kpiId = data[key]?.kpiId || key;
+      this.kpiRecommData[kpiId] = data[key]?.recommendationActionPlan || {};
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
