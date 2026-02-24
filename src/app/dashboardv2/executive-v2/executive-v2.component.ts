@@ -4344,7 +4344,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       filters = this.allKpiArray[idx]?.filters;
       if (filters && Object.keys(filters).length !== 0) {
         Object.keys(filters)?.forEach((x) => {
-          dropdownArr.push(filters[x]);
+          dropdownArr.push(JSON.parse(JSON.stringify(filters[x])));
         });
       }
     }
@@ -4357,7 +4357,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return;
     }
 
-    // Reset dropdowns to original options first
     const filtersBase = this.allKpiArray[idx]?.filters;
     const originalDropdownArr = [];
     if (filtersBase && Object.keys(filtersBase).length !== 0) {
@@ -4365,7 +4364,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         originalDropdownArr.push(JSON.parse(JSON.stringify(filtersBase[x])));
       });
     }
-    this.kpiDropdowns[kpiId] = [...originalDropdownArr];
+
+    // Initialize if not present
+    if (!this.kpiDropdowns[kpiId] || this.kpiDropdowns[kpiId].length === 0) {
+      this.kpiDropdowns[kpiId] = [...originalDropdownArr];
+    } else {
+      // Update existing elements to maintain object reference
+      originalDropdownArr.forEach((newFilter, i) => {
+        if (this.kpiDropdowns[kpiId][i]) {
+          // Keep filterType as is and only update options if needed
+          // Actually, for kpi138 we specifically want to update filter2 options based on filter1 selection
+          // but we reset to original first according to existing logic.
+          // To maintain reference, we update the 'options' property of existing objects.
+          this.kpiDropdowns[kpiId][i].options = newFilter.options;
+          this.kpiDropdowns[kpiId][i].filterType = newFilter.filterType;
+        } else {
+          this.kpiDropdowns[kpiId][i] = newFilter;
+        }
+      });
+      // Handle cases where original arrangement might have changed (unlikely for a single KPI but good for safety)
+      if (this.kpiDropdowns[kpiId].length > originalDropdownArr.length) {
+        this.kpiDropdowns[kpiId].splice(originalDropdownArr.length);
+      }
+    }
 
     const trendValueList = this.allKpiArray[idx]?.trendValueList?.value || [];
     const selectedFilters = this.kpiSelectedFilterObj[kpiId];
@@ -4647,14 +4668,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleSelectedOptionForCard(event, kpi) {
-    // Handle the 'Overall' string case (when all filters are cleared)
     if (
-      event === 'Overall' ||
-      (Array.isArray(event) && event.length === 1 && event[0] === 'Overall')
+      event &&
+      typeof event === 'object' &&
+      !Array.isArray(event) &&
+      Object.keys(event).length === 0
     ) {
       this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     } else if (event && typeof event === 'object' && !Array.isArray(event)) {
-      // Clean up empty filter values from the object
       for (const key in event) {
         if (
           !event[key] ||
@@ -4665,8 +4686,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      // Fallback for any other case
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: [event] };
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);

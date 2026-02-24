@@ -12639,51 +12639,6 @@ describe('ExecutiveV2Component', () => {
     );
   });
 
-  it('should handle "Overall" string in handleSelectedOptionForCard and set kpiSelectedFilterObj to empty object', () => {
-    const event = 'Overall';
-    const kpi = { kpiId: 'kpi127' };
-    spyOn(service, 'setKpiSubFilterObj');
-
-    component.handleSelectedOptionForCard(event, kpi);
-
-    expect(component.kpiSelectedFilterObj).toEqual({
-      kpi127: {},
-    });
-    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
-      component.kpiSelectedFilterObj,
-    );
-  });
-
-  it('should handle ["Overall"] array in handleSelectedOptionForCard and set kpiSelectedFilterObj to empty object', () => {
-    const event = ['Overall'];
-    const kpi = { kpiId: 'kpi127' };
-    spyOn(service, 'setKpiSubFilterObj');
-
-    component.handleSelectedOptionForCard(event, kpi);
-
-    expect(component.kpiSelectedFilterObj).toEqual({
-      kpi127: {},
-    });
-    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
-      component.kpiSelectedFilterObj,
-    );
-  });
-
-  it('should clean up empty filter values from event object in handleSelectedOptionForCard', () => {
-    const event = { filter1: ['value1'], filter2: [] };
-    const kpi = { kpiId: 'kpi123' };
-    spyOn(service, 'setKpiSubFilterObj');
-
-    component.handleSelectedOptionForCard(event, kpi);
-
-    expect(component.kpiSelectedFilterObj).toEqual({
-      kpi123: { filter1: ['value1'] },
-    });
-    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(
-      component.kpiSelectedFilterObj,
-    );
-  });
-
   it('postJiraKpi should call httpServicepost', fakeAsync(() => {
     const jiraKpiData = {
       kpi14: {
