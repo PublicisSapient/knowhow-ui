@@ -1284,6 +1284,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy,
       additional_filters: additional_filters,
+      kpiRecommData: this.kpiRecommData || null,
+      selectedRecommendation: this.buildSelectedRecommendation(),
     };
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -1641,6 +1643,77 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       .catch((err) => {
         console.error('Failed to copy URL: ', err);
       });
+  }
+
+  /**
+   * Builds the selectedRecommendation object to be persisted in the report metadata.
+   * Mirrors the logic in KpiAiRecommendationTargetComponent.preapareToRenderData().
+   * Returns null when kpiRecommData is empty or missing.
+   */
+  buildSelectedRecommendation(): any {
+    if (this.checkIfEmpty(this.kpiRecommData)) {
+      return null;
+    }
+    try {
+      const recommData: any = this.kpiRecommData;
+      const raw = recommData?.recommendations;
+      const getPriorityColor = (priority: string) => {
+        switch ((priority || '').toLowerCase()) {
+          case 'high':
+            return '#f68605';
+          case 'medium':
+            return '#fbcf5f';
+          case 'critical':
+            return '#ed8888';
+          default:
+            return '#49535e';
+        }
+      };
+      const formatDescription = (description: string): string => {
+        if (!description) {
+          return '';
+        }
+        const parts = description.split('**');
+        let result = '';
+        if (parts.length > 1) {
+          for (let i = 0; i < parts.length; i++) {
+            result +=
+              i % 2 === 0
+                ? parts[i]
+                : `<span class="bold-text">${parts[i]}</span>`;
+          }
+        } else {
+          result = description;
+        }
+        return result.replace(/\. /g, '. <span class="sentence-break"></span>');
+      };
+      return {
+        infoBoxes: [
+          {
+            label: 'Implementation',
+            value: raw?.severity,
+            color: getPriorityColor(raw?.severity),
+          },
+          {
+            label: 'Time to Value',
+            value: raw?.timeToValue,
+            color: 'purple',
+          },
+        ],
+        kpis: raw?.keyPerformanceIndicator || [],
+        kpiSectionTitle: 'Affected Key Performance Indicators',
+        actionPlanTitle: 'Recommended Action Plan',
+        actionPlan: (raw?.actionPlans || []).map((list: any, i: number) => ({
+          step: i + 1,
+          title: list.title,
+          description: formatDescription(list.description),
+        })),
+        title: recommData?.recommendations?.title,
+        nodeName: recommData?.projectName,
+      };
+    } catch {
+      return null;
+    }
   }
 
   checkIfEmpty(obj) {

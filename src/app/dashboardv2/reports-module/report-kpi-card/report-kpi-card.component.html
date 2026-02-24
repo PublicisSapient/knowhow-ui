@@ -445,4 +445,16 @@
       </li>
     </ul>
   </div>
+
+  <!-- AI Recommendation Details (shown inline in reports when available) -->
+  <div class="ai-recommendation-section p-mx-3 p-my-3" *ngIf="!checkIfEmpty(kpiRecommData)">
+    <app-recomm-details
+      [infoBoxes]="selectedRecommendation?.infoBoxes"
+      [kpis]="selectedRecommendation?.kpis"
+      [actionPlan]="selectedRecommendation?.actionPlan"
+      [kpiSectionTitle]="selectedRecommendation?.kpiSectionTitle"
+      [actionPlanTitle]="selectedRecommendation?.actionPlanTitle"
+      [showAiRationale]="false">
+    </app-recomm-details>
+  </div>
 </div>

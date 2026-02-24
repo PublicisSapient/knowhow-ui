@@ -2381,6 +2381,51 @@ describe('KpiCardV2Component', () => {
         component.addToReportAction();
         expect(component.reportObj.chartData).toBe('chartData');
       });
+
+      it('should include kpiRecommData and selectedRecommendation in metadata', () => {
+        component.kpiData = {
+          kpiName: 'Test KPI',
+          kpiId: 'kpi123',
+          kpiDetail: {
+            kpiSource: 'source',
+            kpiUnit: 'unit',
+            xaxisLabel: 'x-axis',
+            chartType: 'bar',
+            kpiFilter: 'multiSelectDropDown',
+          },
+        };
+        const mockRecommData = {
+          recommendations: { title: 'Test' },
+          projectName: 'Project',
+        };
+        component.kpiRecommData = mockRecommData;
+        component.kpiSelectedFilterObj = { kpi123: {} };
+        component.filterOptions = {};
+
+        spyOn(component, 'buildSelectedRecommendation').and.returnValue({
+          title: 'Test',
+        });
+        spyOn(component, 'getExistingReports').and.stub();
+        spyOn(component, 'setAdditionalFilterLevels').and.callFake((x) => x);
+        spyOn(component, 'twickFilterForMultiSelectOverall').and.returnValue(
+          {},
+        );
+
+        const sharedService = TestBed.inject(SharedService);
+        spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(
+          {},
+        );
+        spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
+
+        component.addToReportAction();
+
+        expect(component.reportObj.metadata.kpiRecommData).toEqual(
+          mockRecommData,
+        );
+        expect(component.reportObj.metadata.selectedRecommendation).toEqual({
+          title: 'Test',
+        });
+      });
     });
   });
 
@@ -2716,6 +2761,41 @@ describe('KpiCardV2Component', () => {
     it('should set isTooltip to false when showTooltip is called with false', () => {
       component.showTooltip(false);
       expect(component.isTooltip).toBe(false);
+    });
+  });
+
+  describe('KpiCardV2Component.buildSelectedRecommendation() buildSelectedRecommendation method', () => {
+    it('should return null if kpiRecommData is empty', () => {
+      component.kpiRecommData = {};
+      const result = component.buildSelectedRecommendation();
+      expect(result).toBeNull();
+    });
+
+    it('should return null if kpiRecommData is null', () => {
+      component.kpiRecommData = null;
+      const result = component.buildSelectedRecommendation();
+      expect(result).toBeNull();
+    });
+
+    it('should return formulated recommendation object when kpiRecommData is provided', () => {
+      const mockRecommData = {
+        recommendations: {
+          severity: 'High',
+          title: 'Test Recommendation',
+          actionPlans: [{ title: 'Step 1', description: 'Do something' }],
+          keyPerformanceIndicator: ['kpi1'],
+        },
+        projectName: 'Test Project',
+      };
+      component.kpiRecommData = mockRecommData;
+
+      const result = component.buildSelectedRecommendation();
+
+      expect(result).toBeDefined();
+      expect(result.title).toBe('Test Recommendation');
+      expect(result.nodeName).toBe('Test Project');
+      expect(result.infoBoxes.length).toBe(2);
+      expect(result.actionPlan.length).toBe(1);
     });
   });
 });
