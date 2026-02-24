@@ -757,10 +757,19 @@ export class RecommendationsComponent implements OnInit {
     }
   }
   getCorrelatedKpis(recommendation: any): string[] {
-    return (recommendation?.correlatedKpis ?? [])
-      .filter((kpi): kpi is string => typeof kpi === 'string')
-      .map((kpi) => kpi.trim().split(':')[0].trim())
-      .filter(Boolean);
+    const kpis = recommendation?.correlatedKpis;
+
+    if (!Array.isArray(kpis)) return [];
+
+    return kpis.filter((kpi): kpi is string => {
+      if (typeof kpi !== 'string') return false;
+
+      const trimmed = kpi.trim();
+      if (!trimmed) return false;
+
+      const idx = trimmed.indexOf(':');
+      return (idx === -1 ? trimmed : trimmed.slice(0, idx)).trim().length > 0;
+    });
   }
   formatKpiLabel(kpi: string): string {
     if (!kpi) return '';
