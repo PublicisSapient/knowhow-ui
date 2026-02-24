@@ -458,6 +458,15 @@
   margin-top: -5%;
 }
 
+.ai-recommendation-section {
+  border-top: 1px solid #d5dbe1;
+}
+
+:host ::ng-deep h5 {
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
 @media print {
   :host ::ng-deep body {
     -webkit-print-color-adjust: exact;
