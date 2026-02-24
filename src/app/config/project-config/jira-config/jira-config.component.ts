@@ -637,6 +637,7 @@ export class JiraConfigComponent implements OnInit {
                   tool['connectionName'] = connection.connectionName;
                 }
               });
+              this.normalizeJiraQueryEnabled(tool);
             });
 
             if (
@@ -3035,6 +3036,7 @@ export class JiraConfigComponent implements OnInit {
                   tool['connectionName'] = connection.connectionName;
                 }
               });
+              this.normalizeJiraQueryEnabled(tool);
             });
             this.configuredTools = [...this.originalConfigTools];
 
@@ -3108,6 +3110,7 @@ export class JiraConfigComponent implements OnInit {
                     tool['connectionName'] = connection.connectionName;
                   }
                 });
+                this.normalizeJiraQueryEnabled(tool);
               });
             }
             // empty the form
@@ -3144,6 +3147,16 @@ export class JiraConfigComponent implements OnInit {
     );
 
     return theFormElement.type === 'array';
+  }
+
+  normalizeJiraQueryEnabled(tool) {
+    if (this.urlParam?.toLowerCase() !== 'jira') {
+      return;
+    }
+    const configType = tool?.jiraConfigurationType;
+    if (configType !== undefined && configType !== null) {
+      tool.queryEnabled = String(configType) === '2';
+    }
   }
 
   editTool(tool) {
