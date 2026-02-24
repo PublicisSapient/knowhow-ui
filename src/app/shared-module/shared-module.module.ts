@@ -96,6 +96,7 @@ import { DashToBulletsPipe } from './pipes/dash-to-bullets/dash-to-bullets.pipe'
 import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 import { UtcToLocalUserPipe } from './pipes/utc-to-local-user/utc-to-local-user.pipe';
 import { ProjectFilterComponent } from './project-filter/project-filter.component';
+import { RecommDetailsComponent } from '../component/recomm-details/recomm-details.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -126,6 +127,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
     NgOptimizedImage,
     ProgressChartComponent,
     ScatterPlotChartComponent,
+    RecommDetailsComponent,
   ],
   exports: [
     NgSelectModule,

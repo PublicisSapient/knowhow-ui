@@ -393,4 +393,32 @@ describe('ReportKpiCardComponent', () => {
       expect(component.defectsBreachedSLAs).toBeUndefined();
     });
   });
+
+  describe('ReportKpiCardComponent.checkIfEmpty() checkIfEmpty method', () => {
+    describe('Happy paths', () => {
+      it('should return false if object is not empty', () => {
+        const obj = { key: 'value' };
+        const result = component.checkIfEmpty(obj);
+        expect(result).toBe(false);
+      });
+
+      it('should return true if object is empty', () => {
+        const obj = {};
+        const result = component.checkIfEmpty(obj);
+        expect(result).toBe(true);
+      });
+    });
+
+    describe('Edge cases', () => {
+      it('should return true if object is null', () => {
+        const result = component.checkIfEmpty(null);
+        expect(result).toBe(true);
+      });
+
+      it('should return true if object is undefined', () => {
+        const result = component.checkIfEmpty(undefined);
+        expect(result).toBe(true);
+      });
+    });
+  });
 });

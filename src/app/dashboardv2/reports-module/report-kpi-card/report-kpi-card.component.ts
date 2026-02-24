@@ -36,6 +36,8 @@ export class ReportKpiCardComponent {
   @Input() additional_filters: any = {};
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
+  @Input() kpiRecommData: any = null;
+  @Input() selectedRecommendation: any = null;
 
   constructor(private kpiHelperService: KpiHelperService) {}
 
@@ -211,5 +213,16 @@ export class ReportKpiCardComponent {
       // Get the processed chart data
       this.defectsBreachedSLAs = this.currentChartData;
     }
+  }
+
+  /**
+   * Checks whether the given recommendation object is absent or empty.
+   * Mirrors the same helper in KpiCardV2Component.
+   */
+  checkIfEmpty(obj: any): boolean {
+    if (obj && Object.keys(obj).length > 0) {
+      return false;
+    }
+    return true;
   }
 }
