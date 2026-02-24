@@ -78,7 +78,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() showTrendIndicator = true;
   @Input() board?: string;
   @Input() showExport: boolean;
-  @Input() selectedTab: any;
+  @Input() selectedTab: any = '';
   @Input() dropdownArr: any;
   @Input() trendBoxColorObj: any;
   @Input() loader = true;
@@ -199,89 +199,110 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.getAIRecommFlag();
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
-        this.filterOptions = {};
-        if (x && Object.keys(x)?.length) {
-          this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
-
-          const kpiFilters = x[this.kpiData?.kpiId];
-          const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
-
-          if (
-            kpiFilters &&
-            typeof kpiFilters === 'object' &&
-            !Array.isArray(kpiFilters)
-          ) {
-            for (const key in kpiFilters) {
-              const currentFilterArray = kpiFilters[key];
-              if (
-                Array.isArray(currentFilterArray) &&
-                currentFilterArray.includes('Overall')
-              ) {
-                if (this.kpiData?.kpiId === 'kpi72') {
-                  this.filterOptions[key] = currentFilterArray[0];
-                } else {
-                  if (kpiFilterType === 'multiselectdropdown') {
-                    this.filterOptions[key] = [];
-                  } else {
-                    this.dropdownArr?.forEach((filter, idx) => {
-                      if (filter?.options?.length) {
-                        this.filterOptions['filter' + (idx + 1)] =
-                          filter.options[0];
-                      }
-                    });
-                  }
-                }
-              } else {
-                if (this.kpiData?.kpiId === 'kpi72') {
-                  this.filterOptions[key] = Array.isArray(currentFilterArray)
-                    ? currentFilterArray[0]
-                    : currentFilterArray;
-                } else {
-                  this.filterOptions[key] = currentFilterArray;
-                }
-              }
-            }
-          } else if (Array.isArray(kpiFilters)) {
-            this.filterOptions = { filter1: kpiFilters };
-          } else {
-            this.filterOptions = { filter1: kpiFilters };
-          }
-
-          if (
-            this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
-            (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-              'radiobutton' ||
-              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-                'multitypefilters')
-          ) {
-            if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-              const filterObj = this.kpiSelectedFilterObj[this.kpiData?.kpiId];
-              const isMultiType =
-                this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
-                'multitypefilters';
-
-              if (filterObj.hasOwnProperty('filter1')) {
-                if (isMultiType) {
-                  this.radioOption = Array.isArray(filterObj['filter2'])
-                    ? filterObj['filter2'][0]
-                    : null;
-                } else {
-                  this.radioOption = Array.isArray(filterObj['filter1'])
-                    ? filterObj['filter1'][0]
-                    : null;
-                }
-              } else {
-                this.radioOption = Array.isArray(filterObj)
-                  ? filterObj[0]
-                  : null;
-              }
-            }
-          }
-          this.cdr.detectChanges();
-        }
         this.selectedTab = this.service.getSelectedTab()
           ? this.service.getSelectedTab().toLowerCase()
           : '';
+        this.kpiSelectedFilterObj = x ? JSON.parse(JSON.stringify(x)) : {};
+        if (!this.kpiData?.kpiDetail) {
+          return;
+        }
+        const kpiFilters = this.kpiSelectedFilterObj[this.kpiData?.kpiId] || {};
+        const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
+
+        if (
+          kpiFilters &&
+          typeof kpiFilters === 'object' &&
+          !Array.isArray(kpiFilters)
+        ) {
+          for (const key in kpiFilters) {
+            const currentFilterArray = kpiFilters[key];
+            let targetValue;
+            if (
+              Array.isArray(currentFilterArray) &&
+              currentFilterArray.includes('Overall')
+            ) {
+              if (this.kpiData?.kpiId === 'kpi72') {
+                targetValue = currentFilterArray[0];
+              } else {
+                if (kpiFilterType === 'multiselectdropdown') {
+                  targetValue = [];
+                } else {
+                  const filterIdx = parseInt(key.replace('filter', '')) - 1;
+                  if (this.dropdownArr?.[filterIdx]?.options?.length) {
+                    targetValue = this.dropdownArr[filterIdx].options[0];
+                  }
+                }
+              }
+            } else {
+              if (this.kpiData?.kpiId === 'kpi72') {
+                targetValue = Array.isArray(currentFilterArray)
+                  ? currentFilterArray[0]
+                  : currentFilterArray;
+              } else {
+                targetValue = currentFilterArray;
+              }
+            }
+
+            if (
+              JSON.stringify(this.filterOptions[key]) !==
+              JSON.stringify(targetValue)
+            ) {
+              this.filterOptions[key] = targetValue;
+            }
+          }
+        } else if (Array.isArray(kpiFilters)) {
+          if (
+            JSON.stringify(this.filterOptions['filter1']) !==
+            JSON.stringify(kpiFilters)
+          ) {
+            this.filterOptions = { filter1: kpiFilters };
+          }
+        }
+
+        // Robust initialization: Ensure all keys from dropdownArr are present in filterOptions
+        // This must happen after processing state to catch missing keys when state is {}
+        this.dropdownArr?.forEach((filter, idx) => {
+          const key = 'filter' + (idx + 1);
+          if (
+            !this.filterOptions.hasOwnProperty(key) ||
+            (kpiFilters && !kpiFilters.hasOwnProperty(key))
+          ) {
+            if (kpiFilterType === 'multiselectdropdown') {
+              this.filterOptions[key] = [];
+            } else if (filter?.options?.length) {
+              this.filterOptions[key] = filter.options[0];
+            }
+          }
+        });
+
+        if (
+          this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
+          (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' ||
+            this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
+              'multitypefilters')
+        ) {
+          if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+            const filterObj = this.kpiSelectedFilterObj[this.kpiData?.kpiId];
+            const isMultiType =
+              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
+              'multitypefilters';
+
+            if (filterObj.hasOwnProperty('filter1')) {
+              if (isMultiType) {
+                this.radioOption = Array.isArray(filterObj['filter2'])
+                  ? filterObj['filter2'][0]
+                  : null;
+              } else {
+                this.radioOption = Array.isArray(filterObj['filter1'])
+                  ? filterObj['filter1'][0]
+                  : null;
+              }
+            } else {
+              this.radioOption = Array.isArray(filterObj) ? filterObj[0] : null;
+            }
+          }
+        }
+        this.cdr.detectChanges();
       }),
     );
     /** assign 1st value to radio button by default */
@@ -552,11 +573,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach((selectedItem) => {
-        this.dropdownArr[filterIndex]?.options.splice(
-          this.dropdownArr[filterIndex]?.options.indexOf(selectedItem),
-          1,
-        ); // remove the item from list
-        this.dropdownArr[filterIndex]?.options.unshift(selectedItem); // this will add selected item on the top
+        if (
+          typeof selectedItem === 'string' ||
+          typeof selectedItem === 'number'
+        ) {
+          const index =
+            this.dropdownArr[filterIndex]?.options.indexOf(selectedItem);
+          if (index > -1) {
+            this.dropdownArr[filterIndex]?.options.splice(index, 1);
+            this.dropdownArr[filterIndex]?.options.unshift(selectedItem);
+          }
+        }
       });
     }
     if (typeof value === 'object') {
@@ -569,37 +596,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.filterOptions['filter' + (filterIndex + 1)] = [value];
       }
     }
-    if (this.kpiData?.kpiId === 'kpi28') {
-      this.filterOptions['filter' + (filterIndex + 1)] = [value];
-    }
     if (
       value &&
       type?.toLowerCase() == 'radio' &&
       this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'
     ) {
-      if (this.kpiData?.kpiId === 'kpi28') {
-        this.optionSelected.emit(this.filterOptions['filter1']);
-      } else {
-        this.optionSelected.emit(value);
-      }
+      this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
         this.optionSelected.emit(['Overall']);
       } else {
-        if (this.kpiData?.kpiId === 'kpi28') {
-          this.optionSelected.emit(this.filterOptions['filter1']);
+        if (
+          Object.values(this.filterOptions).every(
+            (val) => !val || (Array.isArray(val) && val.length === 0),
+          )
+        ) {
+          this.optionSelected.emit('Overall');
         } else {
-          if (
-            Object.values(this.filterOptions).every(
-              (val) => !val || (Array.isArray(val) && val.length === 0),
-            )
-          ) {
-            this.optionSelected.emit('Overall');
-          } else {
-            this.optionSelected.emit(this.filterOptions);
-          }
+          this.optionSelected.emit(this.filterOptions);
         }
       }
     }
@@ -615,11 +631,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleClearAll(event) {
-    if (this.dropdownArr.length === 1) {
-      for (const key in this.filterOptions) {
-        if (key?.toLowerCase() == event?.toLowerCase()) {
-          delete this.filterOptions[key];
-        }
+    if (this.dropdownArr?.length === 1) {
+      if (this.filterOptions && this.filterOptions.hasOwnProperty(event)) {
+        this.filterOptions[event] = [];
       }
       this.optionSelected.emit(['Overall']);
     } else if (
@@ -628,7 +642,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.filterOptions[event] = [];
       this.optionSelected.emit(this.filterOptions);
     } else {
-      // hacky way - clear All sets null value, which we want to avoid
+      // For multitypefilters, ensure all relevant filters are reset to []
       for (const key in this.filterOptions) {
         if (key?.toLowerCase() == event?.toLowerCase()) {
           this.filterOptions[key] = [];
@@ -1422,13 +1436,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPost() {
-    if (this.reportName.trim() === '') {
+    const trimmedReportName = this.reportName.trim();
+    if (trimmedReportName === '') {
+      return;
+    }
+    const reportNameExists = this.existingReportData.some(
+      (report) =>
+        report?.name?.trim().toLowerCase() === trimmedReportName.toLowerCase(),
+    );
+    if (reportNameExists) {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Enter name ${trimmedReportName} which already exists in report`,
+      });
+      this.success = false;
       return;
     }
     const data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
     const submitData = {
-      name: this.reportName,
+      name: trimmedReportName,
       kpis: [data],
     };
 
@@ -1644,5 +1671,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.featureFlagService
       .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
       .then((res) => this.isAIRecommEnabled.set(res));
+  }
+
+  trackByFilter(index: number, item: any) {
+    return item.filterType || index;
   }
 }
