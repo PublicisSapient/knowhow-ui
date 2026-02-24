@@ -38,6 +38,7 @@ export class ReportKpiCardComponent {
   @Input() yAxisLabel: string;
   @Input() kpiRecommData: any = null;
   @Input() selectedRecommendation: any = null;
+  @Input() targetValue: any = null;
 
   constructor(private kpiHelperService: KpiHelperService) {}
 
