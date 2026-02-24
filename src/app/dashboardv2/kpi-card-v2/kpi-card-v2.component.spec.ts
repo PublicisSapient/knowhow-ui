@@ -2425,6 +2425,7 @@ describe('KpiCardV2Component', () => {
         expect(component.reportObj.metadata.selectedRecommendation).toEqual({
           title: 'Test',
         });
+        expect(component.reportObj.metadata.targetValue).toBeDefined();
       });
     });
   });

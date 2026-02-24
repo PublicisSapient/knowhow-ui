@@ -421,4 +421,9 @@ describe('ReportKpiCardComponent', () => {
       });
     });
   });
+
+  it('should receive targetValue as input', () => {
+    component.targetValue = '50.00';
+    expect(component.targetValue).toBe('50.00');
+  });
 });

@@ -1286,6 +1286,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       additional_filters: additional_filters,
       kpiRecommData: this.kpiRecommData || null,
       selectedRecommendation: this.buildSelectedRecommendation(),
+      targetValue: this.calculateTargetValue(),
     };
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -1748,5 +1749,109 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   trackByFilter(index: number, item: any) {
     return item.filterType || index;
+  }
+
+  calculateTargetValue() {
+    if (!this.kpiChartData || !this.kpiChartData.length) {
+      return 'NA';
+    }
+    const benchmark = this.resolveBenchmarkPercentiles(this.kpiChartData?.[0]);
+    const targetValue =
+      parseFloat(
+        this.getBenchmarkValue(
+          this.kpiChartData?.[0]?.value,
+          benchmark,
+          this.kpiChartData?.[0],
+        )?.toFixed(2),
+      ) || 'NA';
+    return targetValue;
+  }
+
+  getBenchmarkValue(
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+    percentiles?: Record<string, number>,
+    dataEntry?: Record<string, any>,
+  ): number | null {
+    if (!points?.length || !percentiles) {
+      return null;
+    }
+    const highestActualValue = Math.max(
+      ...points
+        .filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite),
+    );
+
+    const sortedPercentiles = [
+      percentiles.seventyPercentile,
+      percentiles.eightyPercentile,
+      percentiles.nintyPercentile,
+    ]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+
+    if (this.isNegativeTrend(this.getTrendIndicator(dataEntry), points)) {
+      return sortedPercentiles[0] ?? null;
+    }
+
+    return (
+      sortedPercentiles.find((val) => val > highestActualValue) ??
+      sortedPercentiles[sortedPercentiles.length - 1]
+    );
+  }
+
+  getTrendIndicator(dataEntry?: Record<string, any>): string {
+    return (
+      dataEntry?.trend ??
+      dataEntry?.trendValue ??
+      dataEntry?.trendStatus ??
+      dataEntry?.trendDirection ??
+      dataEntry?.trendIndicator ??
+      ''
+    );
+  }
+
+  isNegativeTrend(
+    trendIndicator?: string,
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+  ): boolean {
+    const normalized = (trendIndicator || '').toLowerCase();
+    if (normalized) {
+      return (
+        normalized.includes('-ve') ||
+        normalized.includes('negative') ||
+        normalized.includes('down')
+      );
+    }
+
+    const actualValues =
+      points
+        ?.filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite) || [];
+    if (actualValues.length < 2) {
+      return false;
+    }
+    return (
+      actualValues[actualValues.length - 1] <
+      actualValues[actualValues.length - 2]
+    );
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.benchmarkPercentiles
+      ? dataEntry?.benchmarkPercentiles
+      : null;
   }
 }

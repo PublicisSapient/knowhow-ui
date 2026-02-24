@@ -404,6 +404,10 @@
         <span [ngStyle]="{ 'background-color': footer.color }"></span
         >{{ footer.category }}
       </li>
+      <li class="p-px-3 p-py-0" *ngIf="targetValue && targetValue !== 'NA'">
+        <span class="next-sprint">Next Target: </span>
+        <span class="target-value">{{ targetValue }}</span>
+      </li>
     </ul>
   </div>
   <div
@@ -415,6 +419,10 @@
     class="kpi-card-footer p-p-3">
     <app-trend-indicator-v2 [trendData]="kpiTrendsObj" [colorObj]="trendColors">
     </app-trend-indicator-v2>
+    <div class="target-section p-mb-2" *ngIf="targetValue && targetValue !== 'NA'">
+      <span class="next-sprint">Next Target: </span>
+      <span class="target-value">{{ targetValue }}</span>
+    </div>
   </div>
   <div
     *ngIf="
@@ -429,6 +437,10 @@
         <span [ngStyle]="{ 'background-color': footer.color }"></span
         >{{ footer.category }}
       </li>
+      <li class="p-px-3 p-py-0" *ngIf="targetValue && targetValue !== 'NA'">
+        <span class="next-sprint">Next Target: </span>
+        <span class="target-value">{{ targetValue }}</span>
+      </li>
     </ul>
   </div>
 
@@ -442,6 +454,10 @@
         <span
           [ngStyle]="{ 'background-color': footer['color' + (i + 1)] }"></span
         >{{ footer['category' + (i + 1)] }}
+      </li>
+      <li class="p-px-3 p-py-0" *ngIf="targetValue && targetValue !== 'NA'">
+        <span class="next-sprint">Next Target: </span>
+        <span class="target-value">{{ targetValue }}</span>
       </li>
     </ul>
   </div>
