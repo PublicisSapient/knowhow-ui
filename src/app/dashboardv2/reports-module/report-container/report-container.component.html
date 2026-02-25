@@ -84,13 +84,14 @@
 </div>
 <!-- Existing Reports Slider End-->
 
-<div class="print-header">
+<div class="print-header" id="printable-header">
   <h1 tabindex="0">{{ selectedReport?.name }}</h1>
 </div>
 
 <div
   *ngIf="selectedReport"
   class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100"
+  id="printable-report"
   role="region"
   aria-label="KPI Container">
   <ng-container *ngFor="let kpi of selectedReport?.kpis; let i = index">
