@@ -1924,9 +1924,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 0
             ) {
               Object.keys(this.kpiSelectedFilterObj[kpiId]).forEach((key) => {
-                this.kpiChartData[kpiId] = trendValueList?.filter(
-                  (x) => x['filter'] == this.kpiSelectedFilterObj[kpiId][key],
-                )[0]?.value;
+                const selectedVal = this.kpiSelectedFilterObj[kpiId][key];
+                if (Array.isArray(selectedVal) && selectedVal.length > 1) {
+                  const tempArr = {};
+                  selectedVal.forEach((val) => {
+                    const matched = trendValueList?.filter(
+                      (x) => x['filter'] == val,
+                    )[0];
+                    if (matched) {
+                      tempArr[val] = matched.value;
+                    }
+                  });
+                  this.kpiChartData[kpiId] =
+                    this.helperService.applyAggregationLogic(
+                      tempArr,
+                      aggregationType,
+                      this.tooltip.percentile,
+                    );
+                } else {
+                  const valToCompare = Array.isArray(selectedVal)
+                    ? selectedVal[0]
+                    : selectedVal;
+                  this.kpiChartData[kpiId] = trendValueList?.filter(
+                    (x) => x['filter'] == valToCompare,
+                  )[0]?.value;
+                }
               });
 
               if (
@@ -1945,7 +1967,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               )[0]?.value;
             }
           }
-        } else if (filterPropArr.includes('filter1')) {
+        } else if (
+          filterPropArr.includes('filter1') ||
+          filterPropArr.includes('filter2')
+        ) {
           if (
             filterPropArr.includes('filter1') &&
             filterPropArr.includes('filter2')
@@ -2022,7 +2047,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 ),
               ];
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+            this.kpiChartData[kpiId] = [];
+            if (preAggregatedValues.length > 1) {
+              const transformFilter = {};
+              preAggregatedValues.forEach((obj, index) => {
+                const key = obj.filter1 || obj.filter2 || index;
+                transformFilter[key] = obj.value;
+              });
+              this.kpiChartData[kpiId] =
+                this.helperService.applyAggregationLogic(
+                  transformFilter,
+                  aggregationType,
+                  this.tooltip.percentile,
+                );
+            } else {
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value || [];
+            }
           } else {
             this.kpiChartData[kpiId] = [];
             if (trendValueList && trendValueList?.length > 0) {
@@ -2409,31 +2449,61 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       trendValueList?.length > 0 &&
       trendValueList[0]?.hasOwnProperty('filter')
     ) {
-      if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
-        const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = trendValueList?.filter(
-            (x) => x['filter'] == this.kpiSelectedFilterObj[kpiId][i],
-          )[0]?.value;
-        }
-        if (this.getChartType(kpiId) === 'progress-bar') {
-          this.kpiChartData[kpiId] =
-            this.applyAggregationLogicForProgressBar(tempArr);
-        } else {
-          if (tempArr) {
-            this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(
-              tempArr,
-              aggregationType,
-              this.tooltip.percentile,
+      if (
+        this.kpiSelectedFilterObj[kpiId] &&
+        Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 0
+      ) {
+        const selectedVal = Array.isArray(this.kpiSelectedFilterObj[kpiId])
+          ? this.kpiSelectedFilterObj[kpiId]
+          : Object.values(this.kpiSelectedFilterObj[kpiId])[0];
+
+        if (Array.isArray(selectedVal) && selectedVal.length > 1) {
+          if (kpiId === 'kpi138') {
+            // For KPI 138, we want separate items for each selected filter, not aggregation
+            this.kpiChartData[kpiId] = trendValueList?.filter((x) =>
+              selectedVal.includes(x['filter']),
             );
+          } else {
+            const tempArr = {};
+            selectedVal.forEach((val) => {
+              const matched = trendValueList?.filter(
+                (x) => x['filter'] == val,
+              )[0];
+              if (matched) {
+                tempArr[val] = matched.value;
+              }
+            });
+            if (this.getChartType(kpiId) === 'progress-bar') {
+              this.kpiChartData[kpiId] =
+                this.applyAggregationLogicForProgressBar(tempArr);
+            } else {
+              this.kpiChartData[kpiId] =
+                this.helperService.applyAggregationLogic(
+                  tempArr,
+                  aggregationType,
+                  this.tooltip.percentile,
+                );
+            }
+          }
+        } else {
+          const valToCompare = Array.isArray(selectedVal)
+            ? selectedVal[0]
+            : selectedVal;
+          if (kpiId === 'kpi138') {
+            this.kpiChartData[kpiId] = trendValueList?.filter(
+              (x) => x['filter'] == valToCompare,
+            );
+          } else {
+            this.kpiChartData[kpiId] = trendValueList?.filter(
+              (x) => x['filter'] == valToCompare,
+            )[0]?.value;
           }
         }
       } else {
-        if (Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1) {
+        if (kpiId === 'kpi138') {
           this.kpiChartData[kpiId] = trendValueList?.filter(
-            (x) =>
-              x['filter'] == Object.values(this.kpiSelectedFilterObj[kpiId])[0],
-          )[0]?.value;
+            (x) => x['filter'] == 'Overall',
+          );
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(
             (x) => x['filter'] == 'Overall',
@@ -2979,8 +3049,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       /** Handled for Multi Type Dropdown */
       return [
         {
-          filter1: [],
-          filter2: arr2,
+          filter1: ['Overall'],
+          filter2: arr2?.length > 0 ? arr2 : ['Overall'],
         },
       ];
     }
@@ -4438,6 +4508,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleSelectedOption(event, kpi) {
+    // Deep copy event to prevent shared state mutation with card component
+    event = JSON.parse(JSON.stringify(event));
     if (kpi?.kpiId === 'kpi138') {
       if (
         event &&

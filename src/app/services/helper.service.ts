@@ -892,9 +892,11 @@ export class HelperService {
 
   createCombinations(arr1, arr2) {
     const arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+    const val1 = arr1?.length > 0 ? arr1 : ['Overall'];
+    const val2 = arr2?.length > 0 ? arr2 : ['Overall'];
+    for (let i = 0; i < val1.length; i++) {
+      for (let j = 0; j < val2.length; j++) {
+        arr.push({ filter1: val1[i], filter2: val2[j] });
       }
     }
     return arr;
