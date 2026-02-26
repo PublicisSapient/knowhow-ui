@@ -63,6 +63,7 @@ import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { MessageService } from 'primeng/api';
 import { throwError } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
@@ -2971,6 +2972,7 @@ describe('ExecutiveV2Component', () => {
         SharedService,
         ExcelService,
         DatePipe,
+        FeatureFlagsService,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
@@ -15494,4 +15496,33 @@ describe('ExecutiveV2Component', () => {
       });
     });
   });
+
+  it('should initialize isAskMeEnabled as false', () => {
+    expect(component.isAskMeEnabled).toBe(false);
+  });
+
+  it('should check ASK_ME feature flag on init', fakeAsync(() => {
+    const featureFlagService = TestBed.inject(FeatureFlagsService);
+    spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(
+      Promise.resolve(true),
+    );
+
+    component.ngOnInit();
+    tick();
+
+    expect(featureFlagService.isFeatureEnabled).toHaveBeenCalledWith('ASK_ME');
+    expect(component.isAskMeEnabled).toBe(true);
+  }));
+
+  it('should set isAskMeEnabled to false when ASK_ME flag is disabled', fakeAsync(() => {
+    const featureFlagService = TestBed.inject(FeatureFlagsService);
+    spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(
+      Promise.resolve(false),
+    );
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.isAskMeEnabled).toBe(false);
+  }));
 });

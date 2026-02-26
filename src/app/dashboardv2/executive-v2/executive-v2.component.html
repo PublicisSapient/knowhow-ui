@@ -549,7 +549,7 @@
   </ng-container>
 </ng-template>
 
-<app-chatbot></app-chatbot>
+<app-chatbot *ngIf="isAskMeEnabled"></app-chatbot>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>

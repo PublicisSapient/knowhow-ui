@@ -13,6 +13,7 @@ import {
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardV2Component } from '../dashboard-v2/dashboard-v2.component';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 const mockHierarchyData = {
   kanban: [
@@ -119,6 +120,7 @@ describe('NavNewComponent', () => {
   let messageService: jasmine.SpyObj<MessageService>;
   let router: jasmine.SpyObj<Router>;
   let helperService: jasmine.SpyObj<HelperService>;
+  let featureFlagService: jasmine.SpyObj<FeatureFlagsService>;
 
   // const originalLocation = window.location;
 
@@ -158,6 +160,9 @@ describe('NavNewComponent', () => {
       'setBackupOfFilterSelectionState',
       'deepEqual',
     ]);
+    const featureFlagSpy = jasmine.createSpyObj('FeatureFlagsService', [
+      'isFeatureEnabled',
+    ]);
     const routes: Routes = [
       { path: 'dashboard', component: DashboardV2Component },
     ];
@@ -174,6 +179,7 @@ describe('NavNewComponent', () => {
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: Router, useValue: routerSpy },
         { provide: HelperService, useValue: helperSpy },
+        { provide: FeatureFlagsService, useValue: featureFlagSpy },
       ],
     }).compileComponents();
 
@@ -190,6 +196,9 @@ describe('NavNewComponent', () => {
     helperService = TestBed.inject(
       HelperService,
     ) as jasmine.SpyObj<HelperService>;
+    featureFlagService = TestBed.inject(
+      FeatureFlagsService,
+    ) as jasmine.SpyObj<FeatureFlagsService>;
 
     // Set default mocks
     // spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
@@ -227,6 +236,10 @@ describe('NavNewComponent', () => {
       ],
       configDetails: undefined,
     };
+
+    featureFlagService.isFeatureEnabled.and.returnValue(Promise.resolve(true));
+    component.homeTabFlag.next(true);
+    component.pebFlag.next(true);
   });
 
   afterEach(() => {
@@ -598,6 +611,133 @@ describe('NavNewComponent', () => {
         //   });
         // });
       });
+    });
+  });
+
+  describe('Feature Flag Methods', () => {
+    it('should call getHomeTabFeatureFlag and set homeTabFlag', async () => {
+      featureFlagService.isFeatureEnabled.and.returnValue(
+        Promise.resolve(true),
+      );
+
+      await component.getHomeTabFeatureFlag();
+
+      expect(featureFlagService.isFeatureEnabled).toHaveBeenCalledWith(
+        'HOME_TAB',
+      );
+      expect(component.homeTabFlag.value).toBe(true);
+    });
+
+    it('should call getPEBFeatureFlag and set pebFlag', async () => {
+      featureFlagService.isFeatureEnabled.and.returnValue(
+        Promise.resolve(false),
+      );
+
+      await component.getPEBFeatureFlag();
+
+      expect(featureFlagService.isFeatureEnabled).toHaveBeenCalledWith('PEB');
+      expect(component.pebFlag.value).toBe(false);
+    });
+  });
+
+  describe('setBoards with feature flags', () => {
+    it('should filter out home tab when homeTabFlag is false', () => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.homeTabFlag.next(false);
+      component.pebFlag.next(true);
+
+      const response = {
+        success: true,
+        data: {
+          userBoardConfigDTO: {
+            scrum: [
+              {
+                boardName: 'Home',
+                boardSlug: 'home',
+                filters: {
+                  primaryFilter: { defaultLevel: { labelName: 'project' } },
+                },
+                kpis: [{ kpiId: 'kpi1', shown: true }],
+              },
+            ],
+            others: [],
+          },
+        },
+      };
+
+      component.setBoards(response);
+
+      expect(component.items.length).toBe(0);
+    });
+
+    it('should filter out PEB tab when pebFlag is false', () => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.homeTabFlag.next(true);
+      component.pebFlag.next(false);
+
+      const response = {
+        success: true,
+        data: {
+          userBoardConfigDTO: {
+            scrum: [
+              {
+                boardName: 'PEB',
+                boardSlug: 'potential-economic-benefits',
+                filters: {
+                  primaryFilter: { defaultLevel: { labelName: 'project' } },
+                },
+                kpis: [{ kpiId: 'kpi1', shown: true }],
+              },
+            ],
+            others: [],
+          },
+        },
+      };
+
+      component.setBoards(response);
+
+      expect(component.items.length).toBe(0);
+    });
+
+    it('should disable PEB for kanban or when pebFlag is false', () => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'kanban';
+      component.pebFlag.next(true);
+      spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
+
+      const response = {
+        success: true,
+        data: {
+          userBoardConfigDTO: {
+            kanban: [
+              {
+                boardName: 'PEB',
+                boardSlug: 'potential-economic-benefits',
+                filters: {
+                  primaryFilter: { defaultLevel: { labelName: 'project' } },
+                },
+                kpis: [{ kpiId: 'kpi1', shown: true }],
+              },
+            ],
+            others: [],
+          },
+        },
+      };
+
+      component.setBoards(response);
+
+      expect(component.items[0].disabled).toBe(true);
     });
   });
 });

@@ -47,6 +47,7 @@ import { Location } from '@angular/common';
 import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
 import { mockConfigGlobalData } from './executive-mock-data';
 import { error } from 'console';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-executive-v2',
@@ -187,6 +188,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('recommendationsPortal') recommendationsPortal: TemplateRef<any>;
   kpiRecommData = {};
 
+  isAskMeEnabled = false;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -198,6 +201,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private location: Location,
     private renderer2: Renderer2,
     private viewContainerRef: ViewContainerRef,
+    private featureFlagService: FeatureFlagsService,
   ) {}
 
   ngAfterViewInit() {
@@ -344,6 +348,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     // const selectedTab = window.location.hash.substring(1);
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+    this.featureFlagService.isFeatureEnabled('ASK_ME').then((res) => {
+      this.isAskMeEnabled = res;
+    });
 
     this.initializeUserDetails();
     this.checkConfigurationDetails();

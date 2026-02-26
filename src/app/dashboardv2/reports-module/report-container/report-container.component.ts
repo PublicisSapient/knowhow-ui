@@ -266,12 +266,16 @@ export class ReportContainerComponent implements OnInit {
     try {
       const reportElement = document.getElementById('printable-report');
       const headerElement = document.getElementById('printable-header');
-      if (!reportElement) throw new Error('Report element not found');
+      if (!reportElement) {
+        throw new Error('Report element not found');
+      }
 
       const kpiElements = Array.from(
         reportElement.querySelectorAll('.kpi-div'),
       ).filter((el: any) => el.style.display !== 'none');
-      if (kpiElements.length === 0) throw new Error('No visible KPIs found');
+      if (kpiElements.length === 0) {
+        throw new Error('No visible KPIs found');
+      }
 
       const pdfInstance = this.pdfService.createPdf();
 
@@ -356,7 +360,7 @@ export class ReportContainerComponent implements OnInit {
         const pdfWidth = contentWidth;
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        let position = padding;
+        const position = padding;
 
         // If it's not the first page, we already added a page in the previous iteration
         if (i > 0) {
