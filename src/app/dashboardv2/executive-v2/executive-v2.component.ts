@@ -201,7 +201,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private location: Location,
     private renderer2: Renderer2,
     private viewContainerRef: ViewContainerRef,
-    private featureFlagService: FeatureFlagsService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngAfterViewInit() {
@@ -1929,7 +1929,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   const tempArr = {};
                   selectedVal.forEach((val) => {
                     const matched = trendValueList?.filter(
-                      (x) => x['filter'] == val,
+                      (x) => x['filter'] === val,
                     )[0];
                     if (matched) {
                       tempArr[val] = matched.value;
@@ -1946,7 +1946,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                     ? selectedVal[0]
                     : selectedVal;
                   this.kpiChartData[kpiId] = trendValueList?.filter(
-                    (x) => x['filter'] == valToCompare,
+                    (x) => x['filter'] === valToCompare,
                   )[0]?.value;
                 }
               });
@@ -2467,7 +2467,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             const tempArr = {};
             selectedVal.forEach((val) => {
               const matched = trendValueList?.filter(
-                (x) => x['filter'] == val,
+                (x) => x['filter'] === val,
               )[0];
               if (matched) {
                 tempArr[val] = matched.value;
@@ -2491,22 +2491,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             : selectedVal;
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = trendValueList?.filter(
-              (x) => x['filter'] == valToCompare,
+              (x) => x['filter'] === valToCompare,
             );
           } else {
             this.kpiChartData[kpiId] = trendValueList?.filter(
-              (x) => x['filter'] == valToCompare,
+              (x) => x['filter'] === valToCompare,
             )[0]?.value;
           }
         }
       } else {
         if (kpiId === 'kpi138') {
           this.kpiChartData[kpiId] = trendValueList?.filter(
-            (x) => x['filter'] == 'Overall',
+            (x) => x['filter'] === 'Overall',
           );
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(
-            (x) => x['filter'] == 'Overall',
+            (x) => x['filter'] === 'Overall',
           )[0]?.value;
         }
       }
