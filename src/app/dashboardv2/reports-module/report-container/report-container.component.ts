@@ -3,8 +3,10 @@ import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { MetricsService } from 'src/app/services/metrics.service';
-import { catchError, tap } from 'rxjs/operators';
+import { SharedService } from 'src/app/services/shared.service';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { PdfService } from 'src/app/services/pdf.service';
 
 @Component({
   selector: 'app-report-container',
@@ -21,11 +23,15 @@ export class ReportContainerComponent implements OnInit {
   @ViewChild('sliderContainer', { static: false })
   sliderContainer!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('printableReport') printableReport: ElementRef;
+
   constructor(
     private http: HttpService,
     private messageService: MessageService,
     private kpiHelperService: KpiHelperService,
     private readonly metrics: MetricsService,
+    public readonly sharedService: SharedService,
+    private readonly pdfService: PdfService,
   ) {}
 
   /**
@@ -172,11 +178,255 @@ export class ReportContainerComponent implements OnInit {
     }
   }
 
-  printReport() {
+  async printReport() {
     this.metrics.trackReportPrint(this.selectedReport?.name || 'unknown');
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    await this.exportAsPDF();
+  }
+
+  private async prepareElementForCapture(element: HTMLElement): Promise<
+    Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >
+  > {
+    const originalStyles = new Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >();
+
+    const scrollableElements = Array.from(element.querySelectorAll('*')).filter(
+      (el: HTMLElement) => {
+        const computedStyle = window.getComputedStyle(el);
+        const overflow = computedStyle.overflow;
+        const overflowX = computedStyle.overflowX;
+        const overflowY = computedStyle.overflowY;
+        return (
+          overflow === 'auto' ||
+          overflow === 'scroll' ||
+          overflowX === 'auto' ||
+          overflowX === 'scroll' ||
+          overflowY === 'auto' ||
+          overflowY === 'scroll'
+        );
+      },
+    );
+
+    scrollableElements.forEach((el: HTMLElement) => {
+      originalStyles.set(el, {
+        height: el.style.height,
+        maxHeight: el.style.maxHeight,
+        overflow: el.style.overflow,
+        overflowX: el.style.overflowX,
+        overflowY: el.style.overflowY,
+      });
+      el.style.height = 'auto';
+      el.style.maxHeight = 'none';
+      el.style.overflow = 'visible';
+      el.style.overflowX = 'visible';
+      el.style.overflowY = 'visible';
+    });
+
+    return originalStyles;
+  }
+
+  private restoreElementStyles(
+    originalStyles: Map<
+      HTMLElement,
+      {
+        height: string;
+        maxHeight: string;
+        overflow: string;
+        overflowX: string;
+        overflowY: string;
+      }
+    >,
+  ): void {
+    originalStyles.forEach((styles, element) => {
+      element.style.height = styles.height;
+      element.style.maxHeight = styles.maxHeight;
+      element.style.overflow = styles.overflow;
+      element.style.overflowX = styles.overflowX;
+      element.style.overflowY = styles.overflowY;
+    });
+  }
+
+  async exportAsPDF(): Promise<void> {
+    try {
+      const reportElement = document.getElementById('printable-report');
+      const headerElement = document.getElementById('printable-header');
+      if (!reportElement) {
+        throw new Error('Report element not found');
+      }
+
+      const kpiElements = Array.from(
+        reportElement.querySelectorAll('.kpi-div'),
+      ).filter((el: any) => el.style.display !== 'none');
+      if (kpiElements.length === 0) {
+        throw new Error('No visible KPIs found');
+      }
+
+      const pdfInstance = this.pdfService.createPdf();
+
+      const padding = 10;
+      const pageWidth = pdfInstance.internal.pageSize.getWidth();
+      const pageHeight = pdfInstance.internal.pageSize.getHeight();
+      const contentWidth = pageWidth - 2 * padding;
+
+      const userDetails = this.sharedService.getCurrentUserDetails();
+
+      for (let i = 0; i < kpiElements.length; i++) {
+        const kpiElement = kpiElements[i] as HTMLElement;
+
+        // Create a temporary container for individual KPI capture
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.top = '0';
+        tempContainer.style.width = reportElement.offsetWidth + 'px';
+        tempContainer.style.backgroundColor = '#ffffff';
+        tempContainer.style.padding = '20px';
+
+        if (i === 0) {
+          // Add App Header and Report Title on the first page
+          const appHeader = document.createElement('div');
+          appHeader.style.display = 'flex';
+          appHeader.style.justifyContent = 'space-between';
+          appHeader.style.alignItems = 'center';
+          appHeader.style.borderBottom = '1px solid #eee';
+          appHeader.style.paddingBottom = '10px';
+          appHeader.style.marginBottom = '20px';
+
+          const logoImg = document.createElement('img');
+          logoImg.src = 'assets/img/PSKnowHowLogo.svg';
+          logoImg.style.height = '30px';
+          appHeader.appendChild(logoImg);
+
+          if (userDetails && userDetails['user_name']) {
+            const userNameContainer = document.createElement('div');
+            userNameContainer.style.fontSize = '14px';
+            userNameContainer.innerText = userDetails['user_name'];
+            appHeader.appendChild(userNameContainer);
+          }
+          tempContainer.appendChild(appHeader);
+
+          if (headerElement) {
+            const headerClone = headerElement.cloneNode(true) as HTMLElement;
+            headerClone.style.display = 'block';
+            headerClone.style.marginBottom = '20px';
+            headerClone.style.textAlign = 'center';
+            tempContainer.appendChild(headerClone);
+          }
+        }
+
+        const kpiClone = kpiElement.cloneNode(true) as HTMLElement;
+        kpiClone.style.width = '100%';
+        kpiClone.style.marginBottom = '0';
+
+        // Remove delete buttons from clone
+        const deleteButtons = kpiClone.querySelectorAll('.delete-kpi-btn');
+        deleteButtons.forEach((btn: any) => btn.remove());
+
+        tempContainer.appendChild(kpiClone);
+        document.body.appendChild(tempContainer);
+
+        const originalStyles = await this.prepareElementForCapture(
+          tempContainer,
+        );
+
+        const canvas = await this.pdfService.generateCanvas(tempContainer, {
+          height: tempContainer.scrollHeight,
+          windowHeight: tempContainer.scrollHeight,
+        });
+
+        this.restoreElementStyles(originalStyles);
+        if (document.body.contains(tempContainer)) {
+          document.body.removeChild(tempContainer);
+        }
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const imgProps = pdfInstance.getImageProperties(imgData);
+        const pdfWidth = contentWidth;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        const position = padding;
+
+        // If it's not the first page, we already added a page in the previous iteration
+        if (i > 0) {
+          pdfInstance.addPage();
+        }
+
+        // Handle scaling if KPI is still taller than a page (rare for one KPI, but possible for multi-row tables)
+        if (pdfHeight > pageHeight - 2 * padding) {
+          // Fit to page height if it exceeds
+          const scaledWidth =
+            (pdfWidth * (pageHeight - 2 * padding)) / pdfHeight;
+          const centeredX = (pageWidth - scaledWidth) / 2;
+          pdfInstance.addImage(
+            imgData,
+            'JPEG',
+            centeredX,
+            position,
+            scaledWidth,
+            pageHeight - 2 * padding,
+            undefined,
+            'FAST',
+          );
+        } else {
+          const centeredX = (pageWidth - pdfWidth) / 2;
+          pdfInstance.addImage(
+            imgData,
+            'JPEG',
+            centeredX,
+            position,
+            pdfWidth,
+            pdfHeight,
+            undefined,
+            'FAST',
+          );
+        }
+
+        // Cover margins
+        pdfInstance.setFillColor(255, 255, 255);
+        pdfInstance.rect(0, 0, pageWidth, padding, 'F');
+        pdfInstance.rect(0, pageHeight - padding, pageWidth, padding, 'F');
+      }
+
+      // Trigger browser print using a hidden iframe
+      pdfInstance.autoPrint();
+      const pdfBlob = pdfInstance.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.focus();
+          URL.revokeObjectURL(pdfUrl);
+        }, 100);
+      };
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'PDF Generation Failed',
+        detail: error.message,
+      });
+    }
   }
 
   getReportsData() {
