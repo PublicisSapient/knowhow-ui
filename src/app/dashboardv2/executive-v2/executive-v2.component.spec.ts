@@ -12163,7 +12163,9 @@ describe('ExecutiveV2Component', () => {
     component.selectedTab = 'value';
     component.handleSelectedOption(mockEvent, mockKpi);
 
-    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({
+      filter1: ['test1', 'test2'],
+    });
   });
 
   it('should handle selected option on release when event is an object when event key equals to 0 and dor single dropdown', () => {
@@ -15525,4 +15527,94 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.isAskMeEnabled).toBe(false);
   }));
+
+  describe('Multi-select Filter Robustness', () => {
+    it('should deep copy event in handleSelectedOption to prevent mutation', () => {
+      const event = { filter1: ['value1'] };
+      const kpi = {
+        kpiId: 'kpi36',
+        kpiDetail: { kpiFilter: 'multiselectdropdown' },
+      };
+      component.handleSelectedOption(event, kpi);
+      expect(component.kpiSelectedFilterObj['kpi36']).toEqual(event);
+      expect(component.kpiSelectedFilterObj['kpi36']).not.toBe(event); // Verify different reference
+    });
+
+    it('should correctly aggregate multi-select data in getChartData', () => {
+      const kpiId = 'kpi36';
+      component.allKpiArray = [
+        {
+          kpiId,
+          trendValueList: [
+            {
+              filter: 'A',
+              value: [
+                {
+                  data: 'Proj1',
+                  value: [{ value: 10, sDate: '2023-01-01', hoverValue: {} }],
+                },
+              ],
+            },
+            {
+              filter: 'B',
+              value: [
+                {
+                  data: 'Proj1',
+                  value: [{ value: 20, sDate: '2023-01-01', hoverValue: {} }],
+                },
+              ],
+            },
+          ],
+        },
+      ];
+      component.kpiSelectedFilterObj[kpiId] = { filter: ['A', 'B'] };
+      component.tooltip = { percentile: 90 };
+
+      spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+      component.getChartData(kpiId, 0, 'sum');
+
+      expect(helperService.applyAggregationLogic).toHaveBeenCalled();
+      expect(component.kpiChartData[kpiId][0].value[0].value).toBe(30);
+    });
+
+    it('should handle multi-select for kpi138 in getChartDataForBacklog by returning flat array', () => {
+      const kpiId = 'kpi138';
+      component.allKpiArray = [
+        {
+          kpiId,
+          trendValueList: [
+            { filter: 'A', value: [1, 2] },
+            { filter: 'B', value: [3, 4] },
+            { filter: 'C', value: [5, 6] },
+          ],
+        },
+      ];
+      const selectedFilters = ['A', 'B'];
+      component.kpiSelectedFilterObj[kpiId] = selectedFilters;
+
+      // Mock SharedService to return the filters so it doesn't reset to default in getBackupKPIFiltersForBacklog
+      spyOn(service, 'getKpiSubFilterObj').and.returnValue({
+        [kpiId]: selectedFilters,
+      });
+
+      component.getChartDataForBacklog(kpiId, 0, 'sum');
+
+      expect(component.kpiChartData[kpiId].length).toBe(2);
+      expect(component.kpiChartData[kpiId][0].filter).toBe('A');
+      expect(component.kpiChartData[kpiId][1].filter).toBe('B');
+    });
+
+    it('should return Overall combinations when one filter is missing in createCombinations', () => {
+      const t1 = [];
+      const t2 = ['Option1'];
+      const response = component.createCombinations(t1, t2, 'anyKpi');
+
+      expect(response).toEqual([
+        {
+          filter1: ['Overall'],
+          filter2: ['Option1'],
+        },
+      ]);
+    });
+  });
 });

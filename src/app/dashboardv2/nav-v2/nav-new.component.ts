@@ -38,7 +38,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public router: Router,
     public helperService: HelperService,
     private authorizationService: GetAuthorizationService,
-    private featureFlagService: FeatureFlagsService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
