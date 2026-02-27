@@ -141,6 +141,11 @@
   color: white;
 }
 
+.undetermined {
+  background: #e6e8ea;
+  color: #373e47;
+}
+
 .styled-cell {
   padding: 0.35rem 0.75rem;
   border-radius: 20px;

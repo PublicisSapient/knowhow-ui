@@ -64,7 +64,7 @@
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                   <tr *ngIf="data?.sprintGoals?.length > 0">
                     <td *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" tabindex="0" [attr.aria-label]="col.header + ': ' + rowData[col.field]">
-                      {{ rowData[col.field] }}
+                      {{ col.field === 'goal' ? (rowData[col.field]?.trim() ? rowData[col.field] : 'Sprint goals are not available') : rowData[col.field] }}
                     </td>
                   </tr>
                   <tr *ngIf="!data?.sprintGoals || data?.sprintGoals?.length === 0">

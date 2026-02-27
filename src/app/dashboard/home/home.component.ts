@@ -478,6 +478,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       critical: 'critical',
       unhealthy: 'unhealthy',
       moderate: 'moderate',
+      undetermined: 'undetermined',
     }[v];
   }
 
