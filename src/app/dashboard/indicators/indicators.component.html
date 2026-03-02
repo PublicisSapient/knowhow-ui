@@ -15,7 +15,7 @@
 
   @if(absoluteTrendValue) {
     <div class="trend-container">
-      <div [class]="'trend ' + (isPositiveTrend ? 'positive' : 'negative')">
+      <div [class]="'trend ' + (trendSeverity === 'success' ? 'positive' : 'negative')">
         <i [class]="'pi ' + trendIcon + ' trend-icon'"></i>
         <span class="trend-text">{{ absoluteTrendValue }}{{ trendUnit }} from last {{dateFilter}}</span>
       </div>
