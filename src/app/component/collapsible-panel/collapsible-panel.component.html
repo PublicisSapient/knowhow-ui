@@ -50,7 +50,7 @@
                 </div>
               </article>
               <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh"
-              [loading]="loader" loadingIcon="loading-img" [caption]="'Sprint Goals Table'" aria-labelledby="sprintGoalsTableLabel">
+              [loading]="loader" loadingIcon="loading-img" [caption]="'Sprint Goals Table'" aria-labelledby="sprintGoalsTableLabel" *ngIf="!noSummarizeData">
                 <ng-template pTemplate="caption">
                   <h4 [style.margin]="0" id="sprintGoalsTableLabel">Sprint Goals Overview</h4>
                 </ng-template>
@@ -72,6 +72,9 @@
                   </tr>
                 </ng-template>
               </p-table>
+              <div *ngIf="noSummarizeData">
+                <h3 class="p-text-center" role="alert" aria-live="assertive" tabindex="0">Sprint goals unavailable for summarization.</h3>
+              </div>
             </p-accordionTab>
         </ng-container>
     </p-accordion>
