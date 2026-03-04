@@ -54,8 +54,8 @@ export class IndicatorsComponent {
 
   get trendSeverity(): string {
     const upwardIsPositive =
-      this.kpiData?.isPositiveTrend !== undefined
-        ? this.kpiData.isPositiveTrend
+      this.kpiData?.kpiDetail?.isPositiveTrend !== undefined
+        ? this.kpiData.kpiDetail.isPositiveTrend
         : true;
     if (this.isUpwardTrend) {
       return upwardIsPositive ? 'success' : 'danger';
