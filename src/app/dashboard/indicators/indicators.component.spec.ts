@@ -51,25 +51,25 @@ describe('IndicatorsComponent', () => {
   describe('trendSeverity', () => {
     it('should return success for positive trend when upwardIsPositive is true', () => {
       component.trendValue = 10;
-      component.kpiData = { isPositiveTrend: true };
+      component.kpiData = { kpiDetail: { isPositiveTrend: true } };
       expect(component.trendSeverity).toBe('success');
     });
 
     it('should return danger for negative trend when upwardIsPositive is true', () => {
       component.trendValue = -10;
-      component.kpiData = { isPositiveTrend: true };
+      component.kpiData = { kpiDetail: { isPositiveTrend: true } };
       expect(component.trendSeverity).toBe('danger');
     });
 
     it('should return danger for positive trend when upwardIsPositive is false', () => {
       component.trendValue = 10;
-      component.kpiData = { isPositiveTrend: false };
+      component.kpiData = { kpiDetail: { isPositiveTrend: false } };
       expect(component.trendSeverity).toBe('danger');
     });
 
     it('should return success for negative trend when upwardIsPositive is false', () => {
       component.trendValue = -10;
-      component.kpiData = { isPositiveTrend: false };
+      component.kpiData = { kpiDetail: { isPositiveTrend: false } };
       expect(component.trendSeverity).toBe('success');
     });
 

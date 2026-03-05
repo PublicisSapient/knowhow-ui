@@ -886,7 +886,7 @@ export class SharedService {
     if (this.sprintGoalSUmmerizeData.hasOwnProperty(array)) {
       return this.sprintGoalSUmmerizeData[array];
     }
-    return '';
+    return null;
   }
 
   setSprintGoalSUmmerizeData(data) {
