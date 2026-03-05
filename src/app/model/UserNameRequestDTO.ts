@@ -17,5 +17,6 @@
  ******************************************************************************/
 
 export interface UserNameRequestDTO {
+  userEmail: string;
   username: string;
 }
