@@ -928,6 +928,81 @@ describe('CollapsiblePanelComponent', () => {
       );
     });
 
+    it('should handle project with only whitespace sprint goals', () => {
+      // Arrange
+      const projectName = 'Whitespace Project';
+      component.accordionData = [
+        {
+          name: projectName,
+          sprintGoals: [{ goal: '   ' }, { goal: '\n' }],
+        },
+      ];
+      const testData = { name: projectName };
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).not.toHaveBeenCalled();
+      expect(component.noSummarizeData).toBe(true);
+    });
+
+    it('should handle project with null or undefined sprint goals', () => {
+      // Arrange
+      const projectName = 'Null Project';
+      component.accordionData = [
+        {
+          name: projectName,
+          sprintGoals: [{ goal: null }, { goal: undefined }],
+        },
+      ];
+      const testData = { name: projectName };
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).not.toHaveBeenCalled();
+      expect(component.noSummarizeData).toBe(true);
+    });
+
+    it('should use cached summary from SharedService if available', () => {
+      // Arrange
+      const projectName = 'Project A';
+      const testData = { name: projectName };
+      const cachedSummary = 'This is a cached summary';
+      (sharedService.getSprintGoalSUmmerizeData as jasmine.Spy).and.returnValue(
+        cachedSummary,
+      );
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(httpService.summariseSprintGoalsCall).not.toHaveBeenCalled();
+      expect(component.summarisedSprintGoalsMap[projectName]).toEqual({
+        summary: cachedSummary,
+      });
+      expect(component.noSummarizeData).toBe(false);
+    });
+
+    it('should store new summary in SharedService on successful API call', () => {
+      // Arrange
+      const projectName = 'Project A';
+      const testData = { name: projectName };
+      const apiResponse = { summary: 'New API summary' };
+      httpServiceMock.summariseSprintGoalsCall.and.returnValue(of(apiResponse));
+
+      // Act
+      component.summariseUsingAI(testData);
+
+      // Assert
+      expect(sharedService.setSprintGoalSUmmerizeData).toHaveBeenCalledWith({
+        'Complete user authentication||Implement dashboard||Setup CI/CD pipeline':
+          apiResponse.summary,
+      });
+    });
+
     it('should preserve existing data in maps when processing new projects', () => {
       // Arrange
       const testData = { name: 'Project A' };

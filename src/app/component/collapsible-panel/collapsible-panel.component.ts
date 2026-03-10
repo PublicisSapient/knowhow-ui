@@ -234,9 +234,12 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       requestBody.sprintGoals.join('||'),
     );
 
-    const allEmpty = requestBody.sprintGoals.every((goal) => goal === '');
+    const isEmptyValue = (v) =>
+      v == null || (typeof v === 'string' && v.trim() === '');
 
-    if (!allEmpty) {
+    const allEmpty = (sprintGoals) => sprintGoals.every(isEmptyValue);
+
+    if (!allEmpty(requestBody.sprintGoals)) {
       this.noSummarizeData = false;
       if (existingSummary) {
         this.summarisedSprintGoalsMap[projectName] = {
