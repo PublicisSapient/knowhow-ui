@@ -975,6 +975,7 @@ describe('AccessMgmtComponent', () => {
 
   it('should handle delete access request', () => {
     const username = 'testUser';
+    const userId = '1234jh12j3gf';
     const userEmail = 'test@example.com';
     const isSuperAdmin = true;
     const deleteAccessError = { message: 'Error deleting access' };
@@ -982,7 +983,7 @@ describe('AccessMgmtComponent', () => {
       throwError(deleteAccessError),
     );
     const spy = spyOn(component, 'accessDeletionStatus');
-    component.deleteAccessReq(username, userEmail, isSuperAdmin);
+    component.deleteAccessReq(username, userEmail, userId, isSuperAdmin);
     expect(spy).toHaveBeenCalled();
   });
 
