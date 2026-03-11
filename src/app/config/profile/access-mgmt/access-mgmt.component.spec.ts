@@ -360,14 +360,16 @@ describe('AccessMgmtComponent', () => {
 
   it('should accessconfirm enabled and superadmin should enabled for superadmin user', () => {
     const userName = 'userName';
+    const userId = 'asd87as6d85as678d5';
     const userEmail = 'user@example.com';
     const userRole = ['ROLE_VIEWER', 'ROLE_SUPERADMIN'];
-    component.deleteUser(userName, userEmail, userRole);
+    component.deleteUser(userName, userEmail, userId, userRole);
     expect(component.accessConfirm).toBeTruthy();
   });
 
   it('should delete project', () => {
     const userName = 'userName';
+    const userId = 'asd87as6d85as678d5';
     const userEmail = 'user@example.com';
     const isSuperAdmin = true;
     spyOn(component, 'accessDeletionStatus');
@@ -378,7 +380,7 @@ describe('AccessMgmtComponent', () => {
         },
       }),
     );
-    component.deleteAccessReq(userName, userEmail, isSuperAdmin);
+    component.deleteAccessReq(userName, userEmail, userId, isSuperAdmin);
     expect(component.accessDeletionStatus).toHaveBeenCalled();
   });
 
