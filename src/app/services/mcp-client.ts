@@ -9,7 +9,7 @@ export class McpClientService {
   private client: Client | null = null;
 
   async connectToServer(serverUrl: string) {
-    // 1. Initialize the Transport (SSE is used for browser-based clients)
+    // 1. Initialize the Transport (Streamable HTTP is used for modern browser-based clients)
     const transport = new StreamableHTTPClientTransport(new URL(serverUrl));
 
     // 2. Initialize the Client

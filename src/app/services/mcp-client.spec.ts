@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { McpClient } from './mcp-client';
+import { McpClientService } from './mcp-client';
 
-describe('McpClient', () => {
-  let service: McpClient;
+describe('McpClientService', () => {
+  let service: McpClientService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(McpClient);
+    service = TestBed.inject(McpClientService);
   });
 
   it('should be created', () => {

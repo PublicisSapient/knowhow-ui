@@ -48,6 +48,7 @@ import { MetricItem } from 'src/app/dashboard/list-block/list-block.component';
 import { mockConfigGlobalData } from './executive-mock-data';
 import { error } from 'console';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { McpClientService } from '../../services/mcp-client';
 
 @Component({
   selector: 'app-executive-v2',
@@ -190,6 +191,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   isAskMeEnabled = false;
 
+  isMcpPanelOpen = false;
+  mcpTools: any[] = [];
+  mcpStatus: 'Disconnected' | 'Connecting' | 'Connected' | 'Error' =
+    'Disconnected';
+  isMcpConnecting = false;
+  mcpErrorMessage = '';
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -202,6 +210,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     private renderer2: Renderer2,
     private viewContainerRef: ViewContainerRef,
     private readonly featureFlagService: FeatureFlagsService,
+    private readonly mcpClientService: McpClientService,
   ) {}
 
   ngAfterViewInit() {
@@ -5553,6 +5562,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.filteredBranchData = this.allPerformanceSummaryData.find(
         (item) => item.label === this.currentBranch,
       );
+    }
+  }
+
+  toggleMcpPanel() {
+    this.isMcpPanelOpen = !this.isMcpPanelOpen;
+  }
+
+  async connectMcp() {
+    this.mcpStatus = 'Connecting';
+    this.isMcpConnecting = true;
+    this.mcpErrorMessage = '';
+    try {
+      await this.mcpClientService.connectToServer('http://localhost:8081/mcp');
+      this.mcpStatus = 'Connected';
+      this.mcpTools = await this.mcpClientService.listTools();
+    } catch (err) {
+      console.error('MCP Connection failed:', err);
+      this.mcpStatus = 'Error';
+      this.mcpErrorMessage = 'Failed to connect to MCP server.';
+    } finally {
+      this.isMcpConnecting = false;
     }
   }
 }
