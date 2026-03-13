@@ -29,7 +29,7 @@ export class IndicatorsComponent {
   @Input() kpiIcon: string;
 
   ngOnInit() {
-    // console.log('Data: ', this.data);
+    console.log('kpiData: ', this.kpiData);
   }
 
   private roundToTwoDecimals(value: number): number {
@@ -44,16 +44,24 @@ export class IndicatorsComponent {
     return this.roundToTwoDecimals(Math.abs(this.trendValue));
   }
 
-  get isPositiveTrend(): boolean {
+  get isUpwardTrend(): boolean {
     return this.trendValue >= 0;
   }
 
   get trendIcon(): string {
-    return this.isPositiveTrend ? 'pi-arrow-up' : 'pi-arrow-down';
+    return this.isUpwardTrend ? 'pi-arrow-up' : 'pi-arrow-down';
   }
 
   get trendSeverity(): string {
-    return this.isPositiveTrend ? 'success' : 'danger';
+    const upwardIsPositive =
+      this.kpiData?.kpiDetail?.isPositiveTrend !== undefined
+        ? this.kpiData.kpiDetail.isPositiveTrend
+        : true;
+    if (this.isUpwardTrend) {
+      return upwardIsPositive ? 'success' : 'danger';
+    } else {
+      return upwardIsPositive ? 'danger' : 'success';
+    }
   }
 
   get absoluteTrendValue(): number {

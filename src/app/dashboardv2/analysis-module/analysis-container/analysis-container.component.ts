@@ -78,8 +78,8 @@ export class AnalysisContainerComponent implements OnInit {
   public aiUsageTableData: any[] = [];
   aiUsageProjectHeaders: ProjectHeader[] = [];
   aiUsageSubColumns: SubColumn[] = [];
-  aiUsageBaseColumnHeader: string = '';
-  aiUsageBaseColumnKey: string = '';
+  aiUsageBaseColumnHeader = '';
+  aiUsageBaseColumnKey = '';
   aiUsageSummaryDisplayData: AnalyticsSummary[] = [];
 
   // --- VARIABLES FOR METRICS TABLE ---
@@ -87,8 +87,8 @@ export class AnalysisContainerComponent implements OnInit {
   public metricsTableData: any[] = [];
   metricsProjectHeaders: ProjectHeader[] = [];
   metricsSubColumns: SubColumn[] = [];
-  metricsBaseColumnHeader: string = '';
-  metricsBaseColumnHeader2: string = '';
+  metricsBaseColumnHeader = '';
+  metricsBaseColumnHeader2 = '';
   metricsSummaryDisplayData: AnalyticsSummary[] = [];
 
   selectedProjects: any = [];

@@ -1,7 +1,9 @@
 import {
   ComponentFixture,
   TestBed,
+  discardPeriodicTasks,
   fakeAsync,
+  flush,
   tick,
 } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -144,6 +146,7 @@ describe('PebCalculatorComponent', () => {
     component.pebForm.get('devCostControl').setValue(50000);
     component.pebForm.get('durationControl').setValue('year');
     component.selectedLevel = 'engagement';
+    component.selectedType = 'scrum';
     component.showResults = false;
     component['pendingApiCalls'] = 1;
     component.isLoadingPebData = true;
@@ -155,6 +158,8 @@ describe('PebCalculatorComponent', () => {
     expect(component.isLoadingPebData).toBe(false);
     expect(component.showResults).toBe(true);
     expect(component.annualPEB).toBeGreaterThan(0);
+    flush();
+    discardPeriodicTasks();
   }));
 
   it('should handle and display error when HTTP service fails', fakeAsync(() => {
@@ -162,6 +167,7 @@ describe('PebCalculatorComponent', () => {
     spyOn(http, 'getPebProductivityData').and.returnValue(
       throwError(() => new Error('error')),
     );
+    component.selectedType = 'scrum';
     component.getPEBData();
     tick();
 

@@ -892,9 +892,11 @@ export class HelperService {
 
   createCombinations(arr1, arr2) {
     const arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+    const val1 = arr1?.length > 0 ? arr1 : ['Overall'];
+    const val2 = arr2?.length > 0 ? arr2 : ['Overall'];
+    for (let i = 0; i < val1.length; i++) {
+      for (let j = 0; j < val2.length; j++) {
+        arr.push({ filter1: val1[i], filter2: val2[j] });
       }
     }
     return arr;
@@ -1587,8 +1589,8 @@ export class HelperService {
     return finalOutput;
   }
 
-  fetchPEBaData(payload: any): Observable<any> {
-    return this.httpService.getPebProductivityData(payload).pipe(
+  fetchPEBaData(payload: any, selectedType: string): Observable<any> {
+    return this.httpService.getPebProductivityData(payload, selectedType).pipe(
       tap((response: any) => {
         if (response?.success) {
           this.sharedService.setPEBData(response.data);
@@ -1599,5 +1601,57 @@ export class HelperService {
         return throwError(() => error);
       }),
     );
+  }
+
+  alignSprintDataRightToLeft(chartData: any[]): any[] {
+    if (!chartData || chartData.length <= 1) {
+      return chartData;
+    }
+
+    const maxSprintCount = chartData.reduce((max, project) => {
+      const nonForecastCount =
+        project.value?.filter((v: any) => !v?.isForecast)?.length || 0;
+      return Math.max(max, nonForecastCount);
+    }, 0);
+
+    const allSameLength = chartData.every((project) => {
+      const nonForecastCount =
+        project.value?.filter((v: any) => !v?.isForecast)?.length || 0;
+      return nonForecastCount === maxSprintCount;
+    });
+
+    if (allSameLength) {
+      return chartData;
+    }
+
+    return chartData.map((project) => {
+      if (!project.value || project.value.length === 0) {
+        return project;
+      }
+
+      const forecastEntries = project.value.filter((v: any) => v?.isForecast);
+      const nonForecastEntries = project.value.filter(
+        (v: any) => !v?.isForecast,
+      );
+
+      const currentSprintCount = nonForecastEntries.length;
+      const paddingNeeded = maxSprintCount - currentSprintCount;
+
+      if (paddingNeeded <= 0) {
+        return project;
+      }
+
+      const nullPadding = Array(paddingNeeded).fill(null);
+      const alignedValue = [
+        ...nullPadding,
+        ...nonForecastEntries,
+        ...forecastEntries,
+      ];
+
+      return {
+        ...project,
+        value: alignedValue,
+      };
+    });
   }
 }

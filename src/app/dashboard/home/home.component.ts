@@ -123,22 +123,28 @@ export class HomeComponent implements OnInit, OnDestroy {
                         'Error in fetching Executive data!',
                     });
                   } else if (executiveBoard?.data) {
-                    this.tableData['data'] =
-                      executiveBoard.data.matrix.rows.map((row) => {
-                        if (Object.keys(row.boardMaturity).length === 0) {
-                          row.boardMaturity = {
-                            dora: 'M0',
-                            value: 'M0',
-                            speed: 'M0',
-                            quality: 'M0',
-                          };
-                        }
-                        return {
-                          ...row,
-                          ...row?.boardMaturity,
-                          productivity: this.getProductivityForRow(row.name),
+                    const transformed = this.transformMaturityResponse(
+                      executiveBoard.data,
+                    );
+
+                    this.tableData['data'] = transformed.rows.map((row) => {
+                      if (
+                        !row.boardMaturity ||
+                        Object.keys(row.boardMaturity).length === 0
+                      ) {
+                        row.boardMaturity = {
+                          dora: 'M0',
+                          value: 'M0',
+                          speed: 'M0',
+                          quality: 'M0',
                         };
-                      });
+                      }
+                      return {
+                        ...row,
+                        ...row?.boardMaturity,
+                        productivity: this.getProductivityForRow(row.name),
+                      };
+                    });
 
                     const projectNameMap = new Map(
                       this.service
@@ -152,14 +158,12 @@ export class HomeComponent implements OnInit, OnDestroy {
                       }),
                     );
 
-                    const filteredColumns =
-                      executiveBoard.data.matrix.columns.filter(
-                        (col) => col.field !== 'id',
-                      );
+                    const filteredColumns = transformed.columns.filter(
+                      (col) => col.field !== 'id',
+                    );
                     this.tableData['columns'] = [
-                      ...filteredColumns.slice(0, 2),
+                      ...filteredColumns,
                       { field: 'productivity', header: 'Productivity' },
-                      ...filteredColumns.slice(2),
                     ];
 
                     const { tableColumnData, tableColumnForm } =
@@ -195,7 +199,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                       },
                       {
                         cssClassName: 'gauge',
-                        category: 'Avg. Efficiency',
+                        category: 'Avg. Score',
                         value: this.tableData['data'].length,
                         icon: 'pi-gauge',
                         average: this.calculateEfficiency(),
@@ -271,6 +275,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   initializeBottomData(typeOfReset) {
+    const negativeTrends = 'Negative Trends';
     if (typeOfReset === 'ALL') {
       this.bottomTilesData.set([
         {
@@ -291,7 +296,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         },
         {
           cssClassName: '',
-          category: 'Negative Trends',
+          category: negativeTrends,
           value: [],
           icon: true,
           color: '#eb3d4b',
@@ -311,7 +316,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         };
         tempState[2] = {
           cssClassName: '',
-          category: 'Negative Trends',
+          category: negativeTrends,
           value: [],
           icon: true,
           color: '#ed8888',
@@ -375,8 +380,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   calculateEfficiency() {
     const rowData = this.tableData['data'];
     const sum = rowData.reduce((acc, num) => {
-      if (!Number.isNaN(parseInt(num.completion, 10))) {
-        return acc + parseInt(num.completion, 10);
+      const compValue = num.completion?.replace('%', '') || '0';
+      const parsed = parseFloat(compValue);
+      if (!isNaN(parsed)) {
+        return acc + parsed;
       }
       return acc;
     }, 0);
@@ -390,8 +397,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   calculateQuertlyRisk(data) {
     const ascSortedData = [...data].sort((a, b) => {
-      const compA = parseInt(a.completion.replace('%', ''), 10);
-      const compB = parseInt(b.completion.replace('%', ''), 10);
+      const compA = parseFloat(a.completion?.replace('%', '') || '0') || 0;
+      const compB = parseFloat(b.completion?.replace('%', '') || '0') || 0;
       return compA - compB;
     });
 
@@ -399,7 +406,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       ascSortedData.length > 4 ? ascSortedData.slice(0, 4) : ascSortedData;
 
     return threshodData.map((node) => {
-      return { property: node.name, value: node.completion };
+      return { property: node.name, value: node.completion || 'N/A' };
     });
   }
 
@@ -418,28 +425,40 @@ export class HomeComponent implements OnInit, OnDestroy {
       decendingData.length > 4 ? decendingData.slice(0, 4) : decendingData;
 
     return threshodData.map((node) => {
+      const rawValue = parseFloat(node.trendValue);
+      const displayValue =
+        trendType === 'negative' ? Math.abs(rawValue) : rawValue;
       return {
         property: node.kpiName,
-        value: parseFloat(node.trendValue).toFixed(1),
+        value: displayValue.toFixed(1),
         desiredTrend: node.desiredTrend,
       };
     });
   }
 
+  getTrendCaretClass(trendItem: any, section: any): string {
+    const isDescending = trendItem?.desiredTrend === 'DESCENDING';
+    const invert = section?.category === 'Negative Trends';
+    const showDown = invert ? !isDescending : isDescending;
+    return showDown ? 'fa-caret-down' : 'fa-caret-up';
+  }
+
   calculateHealth(healthType) {
     const rowData = [
       ...this.tableData['data'].filter((data) => {
-        return data.health.toLowerCase() === healthType.toLowerCase();
+        return data.health?.toLowerCase() === healthType.toLowerCase();
       }),
     ];
-    const sum = rowData.reduce((acc, num) => {
-      return acc + parseFloat(num.completion.replace('%', ''));
-    }, 0);
 
-    // ✅ Handle empty case to avoid divide by zero
     if (rowData.length === 0) {
       return { average: '0%', count: 0 };
     }
+
+    const sum = rowData.reduce((acc, num) => {
+      const compValue = num.completion?.replace('%', '') || '0';
+      const parsed = parseFloat(compValue);
+      return acc + (isNaN(parsed) ? 0 : parsed);
+    }, 0);
 
     const average = Math.round(sum / rowData.length);
 
@@ -505,7 +524,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.productivityExpandRowDataLoader = false;
         } else {
           if (res?.data) {
-            res.data.matrix.rows = res.data.matrix.rows.map((row) => {
+            const transformed = this.transformMaturityResponse(res.data);
+
+            let childRows = transformed.rows.map((row) => {
               return { ...row, ...row?.boardMaturity, productivity: 'N/A' };
             });
             const projectNameMap = new Map(
@@ -513,33 +534,35 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .getFilterData()
                 .map((u: any) => [u.nodeId, u.nodeDisplayName]),
             );
-            res.data.matrix.rows = res?.data?.matrix?.rows?.map((res: any) => ({
-              ...res,
-              name: projectNameMap.get(res.id) || res.name,
+            childRows = childRows.map((row: any) => ({
+              ...row,
+              name: projectNameMap.get(row.id) || row.name,
             }));
             const targettedDetails = this.tableData.data.find(
               (list) => list.id === this.selectedRowToExpand.id,
             );
             if (targettedDetails) {
               targettedDetails['children'] = targettedDetails['children'] || {};
-              targettedDetails['children']['data'] = res.data.matrix.rows;
-              const childFilteredColumns = res.data.matrix.columns.filter(
+              targettedDetails['children']['data'] = childRows;
+
+              const childFilteredColumns = transformed.columns.filter(
                 (col) => col.field !== 'id',
               );
+
               targettedDetails['children']['columns'] = [
-                ...childFilteredColumns.slice(0, 2),
+                ...childFilteredColumns,
                 { field: 'productivity', header: 'Productivity' },
-                ...childFilteredColumns.slice(2),
               ];
+
               const { tableColumnData, tableColumnForm } =
                 this.generateColumnFilterData(
                   targettedDetails['children']['data'],
                   targettedDetails['children']['columns'],
                 );
+
               targettedDetails['children']['tableColumnData'] = tableColumnData;
               targettedDetails['children']['tableColumnForm'] = tableColumnForm;
 
-              // Restore pagination state after data update
               setTimeout(() => {
                 if (this.mainTable && this.mainTable.first !== currentPage) {
                   this.mainTable.first = currentPage;
@@ -663,34 +686,36 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
-        next: (res) => {
-          if (res.success) {
-            // Cache the data
-            this.service.setPEBDataCache(labelKey, res.data);
-            this.processPEBData(res.data);
-          } else {
+      this.helperService
+        .fetchPEBaData(labelKey, this.selectedType.toUpperCase())
+        .subscribe({
+          next: (res) => {
+            if (res.success) {
+              // Cache the data
+              this.service.setPEBDataCache(labelKey, res.data);
+              this.processPEBData(res.data);
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Failed to load PEBa data. Please try again.',
+              });
+              this.BottomTilesLoader = false;
+              this.initializeBottomData('ONLYTRENDS');
+            }
+            this.calculatorDataLoader = false;
+          },
+          error: (error) => {
+            console.error('Failed to load PEBa data:', error);
+            this.BottomTilesLoader = false;
+            this.calculatorDataLoader = false;
+            this.initializeBottomData('ONLYTRENDS');
             this.messageService.add({
               severity: 'error',
-              summary: 'Failed to load PEBa data. Please try again.',
+              summary: 'Error',
+              detail: 'Failed to load PEBa data. Please try again.',
             });
-            this.BottomTilesLoader = false;
-            this.initializeBottomData('ONLYTRENDS');
-          }
-          this.calculatorDataLoader = false;
-        },
-        error: (error) => {
-          console.error('Failed to load PEBa data:', error);
-          this.BottomTilesLoader = false;
-          this.calculatorDataLoader = false;
-          this.initializeBottomData('ONLYTRENDS');
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to load PEBa data. Please try again.',
-          });
-        },
-      }),
+          },
+        }),
     );
   }
 
@@ -743,9 +768,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProductivityForRow(rowName: string): string {
     const productivity = this.productivityData[rowName];
-    return productivity !== undefined && this.selectedType === 'scrum'
-      ? `${productivity.toFixed(2)}%`
-      : 'N/A';
+    return productivity !== undefined ? `${productivity.toFixed(2)}%` : 'N/A';
   }
 
   fetchNestedPEBData(filterApplyData: any, targettedDetails: any): void {
@@ -782,32 +805,34 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.subscription.push(
-      this.helperService.fetchPEBaData(labelKey).subscribe({
-        next: (res) => {
-          if (res.success && res.data.details) {
-            // Cache the data
-            this.service.setPEBDataCache(labelKey, res.data);
+      this.helperService
+        .fetchPEBaData(labelKey, this.selectedType.toUpperCase())
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.data.details) {
+              // Cache the data
+              this.service.setPEBDataCache(labelKey, res.data);
 
-            // Update productivity data for nested rows
-            res.data.details.forEach((detail) => {
-              this.productivityData[detail.organizationEntityName] =
-                detail.categoryScores.productivity;
-            });
+              // Update productivity data for nested rows
+              res.data.details.forEach((detail) => {
+                this.productivityData[detail.organizationEntityName] =
+                  detail.categoryScores.productivity;
+              });
 
-            // Update nested table data with productivity values
-            targettedDetails['children']['data'] = targettedDetails['children'][
-              'data'
-            ].map((row) => ({
-              ...row,
-              productivity: this.getProductivityForRow(row.name),
-            }));
-            this.productivityExpandRowDataLoader = false;
-          }
-        },
-        error: (error) => {
-          console.error('Failed to load nested PEBa data:', error);
-        },
-      }),
+              // Update nested table data with productivity values
+              targettedDetails['children']['data'] = targettedDetails[
+                'children'
+              ]['data'].map((row) => ({
+                ...row,
+                productivity: this.getProductivityForRow(row.name),
+              }));
+              this.productivityExpandRowDataLoader = false;
+            }
+          },
+          error: (error) => {
+            console.error('Failed to load nested PEBa data:', error);
+          },
+        }),
     );
   }
 
@@ -864,7 +889,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       {
         cssClassName: 'gauge',
-        category: 'Avg. Efficiency',
+        category: 'Avg. Score',
         value: 'N/A',
         icon: 'pi-gauge',
         average: 'N/A',
@@ -893,8 +918,83 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   checkConfigurationDetails() {
-    const configData = this.service.getConfigurationDetails();
-    this.hasBaseUrl = !!configData?.aiGatewayBaseUrl;
+    this.hasBaseUrl = this.service.checkConfigurationDetails();
+  }
+
+  transformMaturityResponse(data: any): { rows: any[]; columns: any[] } {
+    const details = data?.details || [];
+
+    const extractMaturityLevel = (level: string): string => {
+      if (!level) {
+        return 'M0';
+      }
+      const match = level.match(/^(M\d)/);
+      return match ? match[1] : level;
+    };
+
+    const rows = details.map((detail: any) => {
+      const boardMaturity: any = {};
+      (detail.maturityScores || []).forEach((score: any) => {
+        if (score.kpiCategory) {
+          boardMaturity[score.kpiCategory] = extractMaturityLevel(score.level);
+        }
+      });
+
+      let completionValue = 'N/A';
+      if (detail.completionPercentage != null) {
+        completionValue = `${Math.round(detail.completionPercentage)}%`;
+      }
+
+      return {
+        id:
+          detail.hierarchyEntityNodeId || detail.organizationEntityNodeId || '',
+        name: detail.organizationEntityName || '',
+        health: detail.health || 'UNKNOWN',
+        completion: completionValue,
+        boardMaturity,
+      };
+    });
+
+    const categorySet = new Set<string>();
+    details.forEach((detail: any) => {
+      (detail.maturityScores || []).forEach((score: any) => {
+        if (score.kpiCategory) {
+          categorySet.add(score.kpiCategory);
+        }
+      });
+    });
+
+    const categoryHeaderMap: { [key: string]: string } = {
+      dora: 'DORA',
+      value: 'Value',
+      speed: 'Speed',
+      quality: 'Quality',
+    };
+
+    const categoryOrder = ['speed', 'quality', 'value', 'dora'];
+    const categoryColumns = categoryOrder
+      .filter((cat) => categorySet.has(cat))
+      .map((cat) => ({
+        field: cat,
+        header:
+          categoryHeaderMap[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
+      }));
+
+    const columns = [
+      {
+        field: 'name',
+        header: data?.summary?.levelName
+          ? `${data.summary.levelName
+              .charAt(0)
+              .toUpperCase()}${data.summary.levelName.slice(1)} Name`
+          : 'Name',
+      },
+      { field: 'health', header: 'Overall Health' },
+      { field: 'completion', header: 'Score(%)' },
+      ...categoryColumns,
+    ];
+
+    return { rows, columns };
   }
 
   ngOnDestroy() {

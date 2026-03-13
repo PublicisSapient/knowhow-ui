@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-collapsible-panel',
@@ -41,6 +42,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   summarisedData: any;
   userRole: any;
   isAdmin = false;
+  noSummarizeData: boolean;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const targetElement = event.target as HTMLElement;
@@ -56,6 +58,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private sharedService: SharedService,
     public httpService: HttpService,
+    private metricsService: MetricsService,
   ) {}
 
   ngOnInit(): void {
@@ -212,6 +215,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   summariseUsingAI(data) {
+    this.metricsService.trackAiInsightsOpen();
     this.defaultMessage = true;
     const projectName = data.name;
     const accordionData = this.accordionData;
@@ -230,28 +234,47 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
       requestBody.sprintGoals.join('||'),
     );
 
-    if (existingSummary) {
-      this.summarisedSprintGoalsMap[projectName] = { summary: existingSummary };
+    const isEmptyValue = (v) =>
+      v == null || (typeof v === 'string' && v.trim() === '');
+
+    const allEmpty = (sprintGoals) => sprintGoals.every(isEmptyValue);
+
+    if (!allEmpty(requestBody.sprintGoals)) {
+      this.noSummarizeData = false;
+      if (existingSummary) {
+        this.summarisedSprintGoalsMap[projectName] = {
+          summary: existingSummary,
+        };
+      } else {
+        // --- post call with the above request body --- //
+        this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
+          next: (res: any) => {
+            this.summarisedSprintGoalsMap[projectName] = res;
+            // Store the summary in shared service for future use
+            if (res?.summary) {
+              this.sharedService.setSprintGoalSUmmerizeData({
+                [requestBody.sprintGoals.join('||')]: res?.summary,
+              });
+            }
+          },
+          error: (error) => {
+            console.error('Error summarising sprint goals:', error);
+            this.summarisedSprintGoalsMap[
+              projectName
+            ] = `Failed to summarize: ${error.message}`;
+          },
+        });
+      }
     } else {
-      // --- post call with the above request body --- //
-      this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
-        next: (res: any) => {
-          this.summarisedSprintGoalsMap[projectName] = res;
-          // Store the summary in shared service for future use
-          this.sharedService.setSprintGoalSUmmerizeData({
-            [requestBody.sprintGoals.join('||')]: res?.summary,
-          });
-        },
-        error: (error) => {
-          console.error('Error summarising sprint goals:', error);
-          this.summarisedSprintGoalsMap[
-            projectName
-          ] = `Failed to summarize: ${error.message}`;
-        },
-      });
+      console.log('payload is empty');
+      this.noSummarizeData = true;
     }
     this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
     this.defaultMessage = false;
+  }
+
+  hasBaseURL() {
+    return this.sharedService.checkConfigurationDetails();
   }
 
   ngOnDestroy() {

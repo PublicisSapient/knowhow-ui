@@ -53,7 +53,7 @@ export class AdvancedSettingsComponent implements OnInit {
   configuredToolList: any;
   azureSnapshotToggleTooltip = `Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning.
     Subsequent changes will be tracked as scope changes.Applies to active sprints only - use with caution.`;
-  dateTimeFormat: string = 'dd-MMM-yyyy (EEE) - hh:mmaaa';
+  dateTimeFormat = 'dd-MMM-yyyy (EEE) - hh:mmaaa';
   constructor(
     private readonly httpService: HttpService,
     private readonly messageService: MessageService,

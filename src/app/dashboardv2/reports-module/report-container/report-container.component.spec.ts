@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { ReportContainerComponent } from './report-container.component';
@@ -8,6 +9,7 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { PdfService } from 'src/app/services/pdf.service';
 
 const reportsResponse = {
   message: 'Reports fetched successfully',
@@ -8596,12 +8598,14 @@ const reportsResponse = {
     empty: false,
   },
 };
+
 describe('ReportContainerComponent', () => {
   let component: ReportContainerComponent;
   let fixture: ComponentFixture<ReportContainerComponent>;
   let httpService;
   let messageService;
-  let kpiHelperService;
+  let kpiHelperService: KpiHelperService;
+  let pdfService: jasmine.SpyObj<PdfService>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ReportContainerComponent],
@@ -8611,8 +8615,16 @@ describe('ReportContainerComponent', () => {
         SharedService,
         MessageService,
         KpiHelperService,
+        {
+          provide: PdfService,
+          useValue: jasmine.createSpyObj('PdfService', [
+            'generateCanvas',
+            'createPdf',
+          ]),
+        },
       ],
       imports: [RouterTestingModule, HttpClientTestingModule],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportContainerComponent);
@@ -8620,6 +8632,7 @@ describe('ReportContainerComponent', () => {
     httpService = TestBed.inject(HttpService);
     messageService = TestBed.inject(MessageService);
     kpiHelperService = TestBed.inject(KpiHelperService);
+    pdfService = TestBed.inject(PdfService) as jasmine.SpyObj<PdfService>;
     httpService.setCurrentUserDetails({
       user_email: 'rishabh@mailinator.com',
       user_id: '67a9dc720edaa90655f684b6',
@@ -9063,6 +9076,106 @@ describe('ReportContainerComponent', () => {
 
         expect(component.selectedReport).toBe(report);
       });
+    });
+  });
+
+  describe('ReportContainerComponent PDF Export and Printing', () => {
+    let mockJsPdf: any;
+    let mockCanvas: any;
+
+    beforeEach(() => {
+      // Mock Canvas
+      mockCanvas = document.createElement('canvas');
+      spyOn(mockCanvas, 'toDataURL').and.returnValue(
+        'data:image/jpeg;base64,mockData',
+      );
+
+      // Mock jsPDF instance
+      mockJsPdf = {
+        internal: {
+          pageSize: {
+            getWidth: () => 210,
+            getHeight: () => 297,
+          },
+        },
+        addImage: jasmine.createSpy('addImage'),
+        addPage: jasmine.createSpy('addPage'),
+        autoPrint: jasmine.createSpy('autoPrint'),
+        output: jasmine.createSpy('output').and.returnValue(new Blob()),
+        save: jasmine.createSpy('save'),
+        setFillColor: jasmine.createSpy('setFillColor'),
+        rect: jasmine.createSpy('rect'),
+        getImageProperties: jasmine
+          .createSpy('getImageProperties')
+          .and.returnValue({ width: 100, height: 100 }),
+      };
+
+      // Create mock elements for PDF generation
+      const printableReport = document.createElement('div');
+      printableReport.id = 'printable-report';
+      const kpiDiv = document.createElement('div');
+      kpiDiv.className = 'kpi-div';
+      printableReport.appendChild(kpiDiv);
+      document.body.appendChild(printableReport);
+
+      const printableHeader = document.createElement('div');
+      printableHeader.id = 'printable-header';
+      document.body.appendChild(printableHeader);
+    });
+
+    afterEach(() => {
+      document.getElementById('printable-report')?.remove();
+      document.getElementById('printable-header')?.remove();
+    });
+
+    it('should track report print and call exportAsPDF using printReport()', (done) => {
+      spyOn(component, 'exportAsPDF').and.returnValue(Promise.resolve());
+      spyOn(component['metrics'], 'trackReportPrint');
+      component.selectedReport = { name: 'Test Report' };
+
+      component.printReport();
+
+      setTimeout(() => {
+        expect(component['metrics'].trackReportPrint).toHaveBeenCalledWith(
+          'Test Report',
+        );
+        expect(component.exportAsPDF).toHaveBeenCalled();
+        done();
+      }, 150);
+    });
+
+    it('should execute exportAsPDF and handle header injection', async () => {
+      const userSpy = spyOn(
+        component['sharedService'],
+        'getCurrentUserDetails',
+      ).and.returnValue({ user_name: 'John Doe' });
+
+      pdfService.generateCanvas.and.returnValue(Promise.resolve(mockCanvas));
+      pdfService.createPdf.and.returnValue(mockJsPdf);
+
+      await component.exportAsPDF();
+
+      expect(userSpy).toHaveBeenCalled();
+      expect(pdfService.generateCanvas).toHaveBeenCalled();
+      // Should at least add one image (header + first kpi)
+      expect(mockJsPdf.addImage).toHaveBeenCalled();
+      expect(mockJsPdf.autoPrint).toHaveBeenCalled();
+    });
+
+    it('should handle errors during PDF generation gracefully', async () => {
+      pdfService.generateCanvas.and.returnValue(Promise.reject('Canvas Error'));
+      pdfService.createPdf.and.returnValue(mockJsPdf);
+      spyOn(console, 'error');
+      spyOn(component['messageService'], 'add');
+
+      await component.exportAsPDF();
+
+      expect(component['messageService'].add).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          severity: 'error',
+          summary: 'PDF Generation Failed',
+        }),
+      );
     });
   });
 });

@@ -129,6 +129,9 @@ export class MultilineV2Component implements OnChanges {
     data.forEach((project) => {
       const projectName = project.data.trim();
       project.value.forEach((sprint, index) => {
+        if (sprint == null) {
+          return;
+        }
         const xAxisLabelName = sprint;
         const sprintKey = index;
 
@@ -319,6 +322,9 @@ export class MultilineV2Component implements OnChanges {
       let formatedData;
       // if (this.board !== 'backlog') {
       formatedData = this.data[0]?.value?.map((details) => {
+        if (details == null) {
+          return null;
+        }
         const XValue = details.date || details.sSprintName;
         const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
         const removeProject = XValue?.includes(projectName)
@@ -338,10 +344,12 @@ export class MultilineV2Component implements OnChanges {
       //     return project;
       //   })
       // }
-      const isAllBelowFromThreshold = this.data[0]?.value?.every(
-        (details) =>
-          Math.round(details.value * 100) / 100 < this.thresholdValue,
-      );
+      const isAllBelowFromThreshold = this.data[0]?.value
+        ?.filter((details) => details != null)
+        ?.every(
+          (details) =>
+            Math.round(details.value * 100) / 100 < this.thresholdValue,
+        );
       if (this.data[0]) {
         this.data[0].value = formatedData;
       }
@@ -377,9 +385,9 @@ export class MultilineV2Component implements OnChanges {
       const showWeek = false;
       const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
       const board = this.board;
-      const sprintList = data[0]?.value?.map(
-        (details) => details.date || details?.sortSprint,
-      );
+      const sprintList = data[0]?.value
+        ?.filter((details) => details != null)
+        ?.map((details) => details.date || details?.sortSprint);
       const unitAbbs = {
         hours: 'Hrs',
         sp: 'SP',
@@ -409,6 +417,9 @@ export class MultilineV2Component implements OnChanges {
       // used to find maxvalue of y axis
       for (const i in data) {
         for (let j = 0; j < data[i].value?.length; j++) {
+          if (data[i].value[j] == null) {
+            continue;
+          }
           data[i].value[j].xName = data[i]?.value[j]?.hasOwnProperty(
             'xAxisTick',
           )
@@ -422,7 +433,11 @@ export class MultilineV2Component implements OnChanges {
           }
         }
       }
-      benchmarkValue = this.getBenchmarkValue(data?.[0]?.value, percentiles);
+      benchmarkValue = this.getBenchmarkValue(
+        data?.[0]?.value,
+        percentiles,
+        this.data?.[0],
+      );
       if (benchmarkValue !== null && benchmarkValue > maxYValue) {
         maxYValue = benchmarkValue;
       }
@@ -439,6 +454,9 @@ export class MultilineV2Component implements OnChanges {
       /* Format Data */
       data?.forEach(function (d) {
         d.value?.forEach(function (dataObj: { value: number }) {
+          if (dataObj == null) {
+            return;
+          }
           dataObj.value = +dataObj.value;
         });
       });
@@ -458,6 +476,9 @@ export class MultilineV2Component implements OnChanges {
           .padding(0)
           .domain(
             data[maxObjectNo].value?.map(function (d, i) {
+              if (d == null) {
+                return i + 1;
+              }
               let returnObj = '';
               if (board == 'dora') {
                 returnObj = d.date;
@@ -469,6 +490,9 @@ export class MultilineV2Component implements OnChanges {
           );
       }
       const getXCoordinate = (point, index) => {
+        if (point == null) {
+          return xScale(index + 1);
+        }
         if (board == 'dora') {
           return xScale(point.date);
         } else if (kpiId === 'kpi997') {
@@ -806,7 +830,7 @@ export class MultilineV2Component implements OnChanges {
       /* Add line into SVG acoording to data */
       const line = d3
         .line()
-        .defined((d: any) => !d?.isForecast)
+        .defined((d: any) => d != null && !d?.isForecast)
         .x((d, i) => getXCoordinate(d, i))
         .y((d) => yScale(d.value));
 
@@ -933,7 +957,7 @@ export class MultilineV2Component implements OnChanges {
         .style('fill', (d, i) => color && color[i])
         .style('stroke', (d, i) => color && color[i])
         .selectAll('circle')
-        .data((d) => d.value)
+        .data((d) => d.value.filter((v) => v != null))
         .enter()
         .append('g')
         .attr('class', 'circle')
@@ -1162,6 +1186,7 @@ export class MultilineV2Component implements OnChanges {
       isForecast?: boolean;
     }>,
     percentiles?: Record<string, number>,
+    dataEntry?: Record<string, any>,
   ): number | null {
     if (!points?.length || !percentiles) {
       return null;
@@ -1182,9 +1207,55 @@ export class MultilineV2Component implements OnChanges {
       .filter(Number.isFinite)
       .sort((a, b) => a - b);
 
+    if (this.isNegativeTrend(this.getTrendIndicator(dataEntry), points)) {
+      return sortedPercentiles[0] ?? null;
+    }
+
     return (
       sortedPercentiles.find((val) => val > highestActualValue) ??
       sortedPercentiles[sortedPercentiles.length - 1]
+    );
+  }
+
+  getTrendIndicator(dataEntry?: Record<string, any>): string {
+    return (
+      dataEntry?.trend ??
+      dataEntry?.trendValue ??
+      dataEntry?.trendStatus ??
+      dataEntry?.trendDirection ??
+      dataEntry?.trendIndicator ??
+      ''
+    );
+  }
+
+  isNegativeTrend(
+    trendIndicator?: string,
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+  ): boolean {
+    const normalized = (trendIndicator || '').toLowerCase();
+    if (normalized) {
+      return (
+        normalized.includes('-ve') ||
+        normalized.includes('negative') ||
+        normalized.includes('down')
+      );
+    }
+
+    const actualValues =
+      points
+        ?.filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite) || [];
+    if (actualValues.length < 2) {
+      return false;
+    }
+    return (
+      actualValues[actualValues.length - 1] <
+      actualValues[actualValues.length - 2]
     );
   }
 
