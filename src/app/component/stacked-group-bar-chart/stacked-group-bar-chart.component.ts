@@ -29,6 +29,8 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import * as d3 from 'd3';
+import { HelperService } from 'src/app/services/helper.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-stacked-group-bar-chart',
@@ -45,9 +47,12 @@ export class StackedGroupBarChartComponent
   @Input() kpiId;
   @Input() thresholdValue: number;
   @Input() source = '';
+  @Input() selectedtype: string;
+  @Input() xAxisLabel: string;
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
   hasFilter: boolean = true;
+  xCaption: string = 'Sprints';
 
   elemObserver = new ResizeObserver(() => {
     this.createChart();
@@ -70,7 +75,11 @@ export class StackedGroupBarChartComponent
     { option: 'S4', value: 's4', selected: true },
   ];
 
-  constructor(private readonly viewContainerRef: ViewContainerRef) {}
+  constructor(
+    private readonly viewContainerRef: ViewContainerRef,
+    private service: SharedService,
+    private helper: HelperService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
@@ -138,6 +147,9 @@ export class StackedGroupBarChartComponent
 
       this.defectsBreachedSLAs?.forEach((project: any) => {
         project.value.forEach((sprint: any, index: number) => {
+          if (sprint == null) {
+            return;
+          }
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
 
@@ -166,6 +178,9 @@ export class StackedGroupBarChartComponent
       this.yAxisLabel = 'Avg. Execution Time';
       this.data?.forEach((elem: any) => {
         elem.value.forEach((val: any, index: number) => {
+          if (val == null) {
+            return;
+          }
           let temp = 0;
           const sprintKey = `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
@@ -665,12 +680,19 @@ export class StackedGroupBarChartComponent
     rows
       .append('td')
       .attr('role', 'cell')
-      .text((d) => d.sprintLabel)
+      .text((d) => {
+        return this.getFormatedDateBasedOnType(d.sprintLabel, xAxisCaption);
+      })
       .style('padding', '10px 10px')
       .style('border-bottom', '1px solid #eee')
       .style('word-break', 'break-word')
       .style('color', '#666');
     // }
+  }
+
+  getFormatedDateBasedOnType(date, xCaptionType) {
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 
   private findOriginalData(

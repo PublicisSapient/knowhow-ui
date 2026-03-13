@@ -886,7 +886,7 @@ export class SharedService {
     if (this.sprintGoalSUmmerizeData.hasOwnProperty(array)) {
       return this.sprintGoalSUmmerizeData[array];
     }
-    return '';
+    return null;
   }
 
   setSprintGoalSUmmerizeData(data) {
@@ -1045,6 +1045,11 @@ export class SharedService {
 
   getConfigurationDetails() {
     return this.configData;
+  }
+
+  checkConfigurationDetails(): boolean {
+    const configData = this.getConfigurationDetails();
+    return !!configData?.aiGatewayBaseUrl;
   }
 
   setListOfProjects(listOfProjects: any[]) {

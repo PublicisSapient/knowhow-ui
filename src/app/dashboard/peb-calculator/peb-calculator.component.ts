@@ -1,10 +1,17 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Message } from 'primeng/api';
 import { DatePipe, Location } from '@angular/common';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 import { DynamicCurrencyPipe } from 'src/app/shared-module/pipes/dynamic-currency/dynamic-currency.pipe';
 import { ActivatedRoute } from '@angular/router';
 
@@ -20,7 +27,7 @@ interface CategoryVariations {
   styleUrls: ['./peb-calculator.component.css'],
   providers: [DatePipe, DynamicCurrencyPipe],
 })
-export class PebCalculatorComponent implements OnInit {
+export class PebCalculatorComponent implements OnInit, OnDestroy {
   pebForm: FormGroup;
   durationOptions = [
     { label: 'Per Month', value: 'per month' },
@@ -49,7 +56,7 @@ export class PebCalculatorComponent implements OnInit {
   selectedLevel: string = '';
   categoryVariations: CategoryVariations | null = null;
   isLoadingPebData: boolean = true;
-  private pendingApiCalls: number = 0;
+  private pendingApiCalls = 0;
   productivityGain: any = {};
   xAxisLabel: string = '';
   userCurrency = '';
@@ -58,6 +65,7 @@ export class PebCalculatorComponent implements OnInit {
   queryParamsSubscription!: Subscription;
   selectedTab = '';
   appConfig: any;
+  selectedType: string;
 
   constructor(
     private fb: FormBuilder,
@@ -68,6 +76,7 @@ export class PebCalculatorComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private cdr: ChangeDetectorRef,
+    private readonly metricsService: MetricsService,
   ) {
     this.userCurrency = 'EUR'; // Default to EUR, but keep detectCurrency for future use
     this.appConfig = this.sharedService.getConfigurationDetails();
@@ -89,6 +98,8 @@ export class PebCalculatorComponent implements OnInit {
    */
 
   ngOnInit() {
+    this.metricsService.trackPebPageView();
+    this.setupPebTracking();
     this.queryParamsSubscription = this.route.queryParams
       // .pipe(first())
       .subscribe((params) => {
@@ -126,6 +137,7 @@ export class PebCalculatorComponent implements OnInit {
             const stateFilters =
               this.sharedService.getBackupOfFilterSelectionState();
             this.appConfig = this.sharedService.getConfigurationDetails();
+            this.selectedType = this.sharedService.getSelectedType();
             this.pebForm = this.fb.group({
               devCountControl: [this.appConfig?.totalTeamSize || 30],
               devCostControl: [this.appConfig?.avgCostPerTeamMember || 10000],
@@ -163,6 +175,34 @@ export class PebCalculatorComponent implements OnInit {
    *
    * @throws Will display an error message if productivity gain data fetch fails
    */
+  private pebStartTime = 0;
+  private readonly scrollTracked: Set<string> = new Set();
+
+  private setupPebTracking(): void {
+    this.pebStartTime = Date.now();
+
+    // Track scroll
+    window.addEventListener('scroll', this.handleScroll.bind(this));
+  }
+
+  private handleScroll(): void {
+    const scrollTop = window.scrollY;
+    const docHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+
+    const thresholds = ['25', '50', '75', '100'];
+    for (const threshold of thresholds) {
+      if (
+        scrollPercent >= parseInt(threshold) &&
+        !this.scrollTracked.has(threshold)
+      ) {
+        this.scrollTracked.add(threshold);
+        this.metricsService.trackPebPageScroll(threshold);
+      }
+    }
+  }
+
   private startLoading(): void {
     this.pendingApiCalls = 3;
     this.isLoadingPebData = true;
@@ -178,7 +218,10 @@ export class PebCalculatorComponent implements OnInit {
   getPEBData() {
     // IMPORTANT --> Added back just to unblock for demo. Will remove later.
     this.httpService
-      .getPebProductivityData(this.selectedLevel?.toLowerCase())
+      .getPebProductivityData(
+        this.selectedLevel?.toLowerCase(),
+        this.selectedType.toUpperCase(),
+      )
       .subscribe({
         next: (response) => {
           if (response['success']) {
@@ -208,6 +251,7 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   calculatePEB() {
+    this.metricsService.trackPebCalculate();
     const overallGain = this.productivityGain['details']?.reduce((a, b) => {
       return a + (b['categoryScores']['overall'] || 0);
     }, 0);
@@ -230,47 +274,52 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   getPebProjectPerformanceData(level) {
-    this.httpService.getPebProductivityDetailsData(level).subscribe({
-      next: (response) => {
-        // const response = require('src/assets/data/peb-productivity-details.json');
-        if (response['success']) {
-          this.performanceChartData =
-            this.formatCategoryScoresForCumulativeChart(
-              response['data']['categoryScores'],
-            );
-          this.costSavingsChartData =
-            this.formatCategoryScoresForCumulativeChart(
-              response['data']['categoryScores'],
-              true,
-              response['data']?.forecasts,
-            );
+    this.httpService
+      .getPebProductivityDetailsData(level, this.selectedType.toUpperCase())
+      .subscribe({
+        next: (response) => {
+          // const response = require('src/assets/data/peb-productivity-details.json');
+          if (response['success']) {
+            this.performanceChartData =
+              this.formatCategoryScoresForCumulativeChart(
+                response['data']['categoryScores'],
+              );
+            this.costSavingsChartData =
+              this.formatCategoryScoresForCumulativeChart(
+                response['data']['categoryScores'],
+                true,
+                response['data']?.forecasts,
+              );
 
-          // Handle case where API returns success but no categoryVariations data
-          if (response['data']?.categoryVariations) {
-            this.categoryVariations = JSON.parse(
-              JSON.stringify(response['data'].categoryVariations),
-            ) as CategoryVariations;
+            // Handle case where API returns success but no categoryVariations data
+            if (response['data']?.categoryVariations) {
+              this.categoryVariations = JSON.parse(
+                JSON.stringify(response['data'].categoryVariations),
+              ) as CategoryVariations;
+            } else {
+              this.categoryVariations = null;
+              console.warn('No categoryVariations data received from API');
+            }
+            this.xAxisLabel = response['data']?.temporalGrouping || 'week';
+            this.completeApiCall();
           } else {
+            console.error(
+              'Server returned unsuccessful response:',
+              response['message'],
+            );
             this.categoryVariations = null;
-            console.warn('No categoryVariations data received from API');
+            this.completeApiCall();
           }
-          this.xAxisLabel = response['data']?.temporalGrouping || 'week';
-          this.completeApiCall();
-        } else {
+        },
+        error: (err) => {
           console.error(
-            'Server returned unsuccessful response:',
-            response['message'],
+            'Failed to fetch project performance data',
+            err.message,
           );
           this.categoryVariations = null;
           this.completeApiCall();
-        }
-      },
-      error: (err) => {
-        console.error('Failed to fetch project performance data', err.message);
-        this.categoryVariations = null;
-        this.completeApiCall();
-      },
-    });
+        },
+      });
   }
   /**
    * Formats raw KPI data into the structure required by Chart
@@ -455,6 +504,13 @@ export class PebCalculatorComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    const durationSeconds = Math.floor((Date.now() - this.pebStartTime) / 1000);
+    if (durationSeconds > 0) {
+      this.metricsService.trackPebActiveTime(durationSeconds);
+    }
+
+    window.removeEventListener('scroll', this.handleScroll.bind(this));
+
     this.subscription.forEach((sub) => sub.unsubscribe()); // Ensure cleanup
     this.sub$?.unsubscribe();
   }

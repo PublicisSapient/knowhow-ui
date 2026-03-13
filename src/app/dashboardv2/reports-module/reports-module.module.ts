@@ -5,19 +5,16 @@ import { ReportsRoutingModule } from './reports.routes';
 
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
+import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
 
 @NgModule({
-  declarations: [
-    ReportContainerComponent,
-    // StackedBarChartComponent,
-    // BarchartComponent,
-    // StackedBarComponent,
-    // SemiCircleDonutChartComponent,
-    // TabularKpiV2Component,
-    // GroupedBarChartComponent,
-    // TabularKpiWithDonutChartComponent
+  declarations: [ReportContainerComponent],
+  imports: [
+    CommonModule,
+    ReportsRoutingModule,
+    SharedModuleModule,
+    RecommDetailsComponent,
   ],
-  imports: [CommonModule, ReportsRoutingModule, SharedModuleModule],
   providers: [KpiHelperService],
   schemas: [NO_ERRORS_SCHEMA],
 })

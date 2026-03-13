@@ -10,6 +10,7 @@ import {
 import { DialogModule } from 'primeng/dialog';
 import { RecommDetailsComponent } from 'src/app/component/recomm-details/recomm-details.component';
 import { HttpService } from 'src/app/services/http.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-kpi-ai-recommendation-target',
@@ -31,7 +32,10 @@ export class KpiAiRecommendationTargetComponent {
 
   @Output() viewPlanClick = new EventEmitter<void>();
 
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly metricsService: MetricsService,
+  ) {}
 
   ngOnInit(): void {
     this.aiRecommendationData = {
@@ -140,6 +144,7 @@ export class KpiAiRecommendationTargetComponent {
         this.getBenchmarkValue(
           this.kpiChartData?.[0]?.value,
           benchmark,
+          this.kpiChartData?.[0],
         )?.toFixed(2),
       ) || 'NA';
   }
@@ -151,6 +156,7 @@ export class KpiAiRecommendationTargetComponent {
       isForecast?: boolean;
     }>,
     percentiles?: Record<string, number>,
+    dataEntry?: Record<string, any>,
   ): number | null {
     if (!points?.length || !percentiles) {
       return null;
@@ -171,9 +177,55 @@ export class KpiAiRecommendationTargetComponent {
       .filter(Number.isFinite)
       .sort((a, b) => a - b);
 
+    if (this.isNegativeTrend(this.getTrendIndicator(dataEntry), points)) {
+      return sortedPercentiles[0] ?? null;
+    }
+
     return (
       sortedPercentiles.find((val) => val > highestActualValue) ??
       sortedPercentiles[sortedPercentiles.length - 1]
+    );
+  }
+
+  getTrendIndicator(dataEntry?: Record<string, any>): string {
+    return (
+      dataEntry?.trend ??
+      dataEntry?.trendValue ??
+      dataEntry?.trendStatus ??
+      dataEntry?.trendDirection ??
+      dataEntry?.trendIndicator ??
+      ''
+    );
+  }
+
+  isNegativeTrend(
+    trendIndicator?: string,
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+  ): boolean {
+    const normalized = (trendIndicator || '').toLowerCase();
+    if (normalized) {
+      return (
+        normalized.includes('-ve') ||
+        normalized.includes('negative') ||
+        normalized.includes('down')
+      );
+    }
+
+    const actualValues =
+      points
+        ?.filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite) || [];
+    if (actualValues.length < 2) {
+      return false;
+    }
+    return (
+      actualValues[actualValues.length - 1] <
+      actualValues[actualValues.length - 2]
     );
   }
 
@@ -186,6 +238,9 @@ export class KpiAiRecommendationTargetComponent {
   }
 
   onViewPlanClick(): void {
+    this.metricsService.trackAiKpiRecommendation(
+      this.kpiData?.kpiId || 'unknown',
+    );
     this.displayAiRecommModal = true;
   }
 }

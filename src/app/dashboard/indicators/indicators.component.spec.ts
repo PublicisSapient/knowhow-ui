@@ -19,20 +19,20 @@ describe('IndicatorsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('isPositiveTrend', () => {
+  describe('isUpwardTrend', () => {
     it('should return true for positive trend value', () => {
       component.trendValue = 10;
-      expect(component.isPositiveTrend).toBe(true);
+      expect(component.isUpwardTrend).toBe(true);
     });
 
     it('should return true for zero trend value', () => {
       component.trendValue = 0;
-      expect(component.isPositiveTrend).toBe(true);
+      expect(component.isUpwardTrend).toBe(true);
     });
 
     it('should return false for negative trend value', () => {
       component.trendValue = -10;
-      expect(component.isPositiveTrend).toBe(false);
+      expect(component.isUpwardTrend).toBe(false);
     });
   });
 
@@ -49,14 +49,34 @@ describe('IndicatorsComponent', () => {
   });
 
   describe('trendSeverity', () => {
-    it('should return success for positive trend', () => {
+    it('should return success for positive trend when upwardIsPositive is true', () => {
       component.trendValue = 10;
+      component.kpiData = { kpiDetail: { isPositiveTrend: true } };
       expect(component.trendSeverity).toBe('success');
     });
 
-    it('should return danger for negative trend', () => {
+    it('should return danger for negative trend when upwardIsPositive is true', () => {
       component.trendValue = -10;
+      component.kpiData = { kpiDetail: { isPositiveTrend: true } };
       expect(component.trendSeverity).toBe('danger');
+    });
+
+    it('should return danger for positive trend when upwardIsPositive is false', () => {
+      component.trendValue = 10;
+      component.kpiData = { kpiDetail: { isPositiveTrend: false } };
+      expect(component.trendSeverity).toBe('danger');
+    });
+
+    it('should return success for negative trend when upwardIsPositive is false', () => {
+      component.trendValue = -10;
+      component.kpiData = { kpiDetail: { isPositiveTrend: false } };
+      expect(component.trendSeverity).toBe('success');
+    });
+
+    it('should return success for positive trend when kpiData is missing (default true)', () => {
+      component.trendValue = 10;
+      component.kpiData = undefined;
+      expect(component.trendSeverity).toBe('success');
     });
   });
 

@@ -7,6 +7,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -85,6 +86,7 @@ export class RecommendationsComponent implements OnInit {
     private readonly httpService: HttpService,
     private readonly messageService: MessageService,
     public readonly service: SharedService,
+    private readonly metricsService: MetricsService,
   ) {}
 
   ngOnInit(): void {
@@ -290,6 +292,7 @@ export class RecommendationsComponent implements OnInit {
   }
 
   generateSprintReport() {
+    this.metricsService.trackAiGenerateReport('recommendation');
     if (this.kpiFilterData) {
       this.kpiFilterData['recommendationFor'] = this.selectedRole;
       this.kpiFilterData['selectedMap']['sprint'] =
@@ -754,10 +757,19 @@ export class RecommendationsComponent implements OnInit {
     }
   }
   getCorrelatedKpis(recommendation: any): string[] {
-    return (recommendation?.correlatedKpis ?? [])
-      .filter((kpi): kpi is string => typeof kpi === 'string')
-      .map((kpi) => kpi.trim().split(':')[0].trim())
-      .filter(Boolean);
+    const kpis = recommendation?.correlatedKpis;
+
+    if (!Array.isArray(kpis)) return [];
+
+    return kpis.filter((kpi): kpi is string => {
+      if (typeof kpi !== 'string') return false;
+
+      const trimmed = kpi.trim();
+      if (!trimmed) return false;
+
+      const idx = trimmed.indexOf(':');
+      return (idx === -1 ? trimmed : trimmed.slice(0, idx)).trim().length > 0;
+    });
   }
   formatKpiLabel(kpi: string): string {
     if (!kpi) return '';

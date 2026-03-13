@@ -6,7 +6,8 @@ import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { catchError, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-nav-new',
@@ -27,6 +28,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   @Input() kpiSearchQuery!: string;
 
+  homeTabFlag = new BehaviorSubject(false);
+  pebFlag = new BehaviorSubject(false);
+
   constructor(
     public httpService: HttpService,
     public sharedService: SharedService,
@@ -34,12 +38,16 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public router: Router,
     public helperService: HelperService,
     private authorizationService: GetAuthorizationService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
     this.selectedType = this.sharedService.getSelectedType()
       ? this.sharedService.getSelectedType()
       : 'scrum';
+    this.getHomeTabFeatureFlag();
+    this.getPEBFeatureFlag();
+
     this.sharedService.setScrumKanban(this.selectedType);
     this.selectedTab = this.sharedService.getSelectedTab();
     this.sharedService.onTabSwitch.subscribe((data) => {
@@ -84,6 +92,18 @@ export class NavNewComponent implements OnInit, OnDestroy {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  getHomeTabFeatureFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('HOME_TAB')
+      .then((res) => this.homeTabFlag.next(res));
+  }
+
+  getPEBFeatureFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('PEB')
+      .then((res) => this.pebFlag.next(res));
   }
 
   getBoardConfig(projectList) {
@@ -224,11 +244,25 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 },
                 // TODO : Temp disabled PEB for kanban
                 disabled:
-                  this.sharedService.getSelectedType() === 'kanban' &&
-                  obj['boardSlug'] === 'potential-economic-benefits'
+                  (this.sharedService.getSelectedType() === 'kanban' &&
+                    obj['boardSlug'] === 'potential-economic-benefits') ||
+                  (obj['boardSlug'] === 'potential-economic-benefits' &&
+                    !this.pebFlag.value)
                     ? true
                     : false,
               };
+            })
+            .filter((board: any) => {
+              if (board.slug === 'home' && !this.homeTabFlag.value) {
+                return false;
+              }
+              if (
+                board.slug === 'potential-economic-benefits' &&
+                !this.pebFlag.value
+              ) {
+                return false;
+              }
+              return true;
             });
 
           // Home tab will visible for superadmin only

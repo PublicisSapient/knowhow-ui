@@ -5,7 +5,7 @@ import { HttpService } from './http.service';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
-import { GoogleAnalyticsService } from './google-analytics.service';
+import { AnalyticsService } from './analytics.service';
 import { tap } from 'rxjs/operators';
 import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
@@ -35,7 +35,7 @@ export class AppInitializerService {
     private featureToggleService: FeatureFlagsService,
     private http: HttpClient,
     private route: ActivatedRoute,
-    private ga: GoogleAnalyticsService,
+    private readonly ga: AnalyticsService,
     private helperService: HelperService,
   ) {}
   commonRoutes: Routes = [

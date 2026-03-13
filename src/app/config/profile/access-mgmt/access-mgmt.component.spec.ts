@@ -360,13 +360,17 @@ describe('AccessMgmtComponent', () => {
 
   it('should accessconfirm enabled and superadmin should enabled for superadmin user', () => {
     const userName = 'userName';
+    const userId = 'asd87as6d85as678d5';
+    const userEmail = 'user@example.com';
     const userRole = ['ROLE_VIEWER', 'ROLE_SUPERADMIN'];
-    component.deleteUser(userName, userRole);
+    component.deleteUser(userName, userEmail, userId, userRole);
     expect(component.accessConfirm).toBeTruthy();
   });
 
   it('should delete project', () => {
     const userName = 'userName';
+    const userId = 'asd87as6d85as678d5';
+    const userEmail = 'user@example.com';
     const isSuperAdmin = true;
     spyOn(component, 'accessDeletionStatus');
     spyOn(httpService, 'deleteAccess').and.returnValue(
@@ -376,7 +380,7 @@ describe('AccessMgmtComponent', () => {
         },
       }),
     );
-    component.deleteAccessReq(userName, isSuperAdmin);
+    component.deleteAccessReq(userName, userEmail, userId, isSuperAdmin);
     expect(component.accessDeletionStatus).toHaveBeenCalled();
   });
 
@@ -971,13 +975,15 @@ describe('AccessMgmtComponent', () => {
 
   it('should handle delete access request', () => {
     const username = 'testUser';
+    const userId = '1234jh12j3gf';
+    const userEmail = 'test@example.com';
     const isSuperAdmin = true;
     const deleteAccessError = { message: 'Error deleting access' };
     spyOn(httpService, 'deleteAccess').and.returnValue(
       throwError(deleteAccessError),
     );
     const spy = spyOn(component, 'accessDeletionStatus');
-    component.deleteAccessReq(username, isSuperAdmin);
+    component.deleteAccessReq(username, userEmail, userId, isSuperAdmin);
     expect(spy).toHaveBeenCalled();
   });
 

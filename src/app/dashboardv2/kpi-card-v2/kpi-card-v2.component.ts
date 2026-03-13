@@ -10,6 +10,7 @@ import {
   Renderer2,
   SimpleChanges,
   ViewChild,
+  signal,
 } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -77,7 +78,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() showTrendIndicator = true;
   @Input() board?: string;
   @Input() showExport: boolean;
-  @Input() selectedTab: any;
+  @Input() selectedTab: any = '';
   @Input() dropdownArr: any;
   @Input() trendBoxColorObj: any;
   @Input() loader = true;
@@ -177,6 +178,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   chartType;
   @Input() selectedBoard: string = 'dashboard';
   @Input() kpiRecommData = {};
+  isAIRecommEnabled = signal<boolean>(false);
 
   constructor(
     public service: SharedService,
@@ -194,105 +196,113 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.chartType = this.kpiData.kpiDetail?.chartType;
+    this.getAIRecommFlag();
     this.subscriptions.push(
       this.service.selectedFilterOptionObs.subscribe((x) => {
-        this.filterOptions = {};
-        if (x && Object.keys(x)?.length) {
-          this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
+        this.selectedTab = this.service.getSelectedTab()
+          ? this.service.getSelectedTab().toLowerCase()
+          : '';
+        this.kpiSelectedFilterObj = x ? JSON.parse(JSON.stringify(x)) : {};
+        if (!this.kpiData?.kpiDetail) {
+          return;
+        }
+        const kpiFilters = this.kpiSelectedFilterObj[this.kpiData?.kpiId] || {};
+        const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
 
-          for (const key in x[this.kpiData?.kpiId]) {
-            const kpiFilterType =
-              this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
-
-            const currentFilterArray = x[this.kpiData?.kpiId][key];
-
+        if (
+          kpiFilters &&
+          typeof kpiFilters === 'object' &&
+          !Array.isArray(kpiFilters)
+        ) {
+          for (const key in kpiFilters) {
+            const currentFilterArray = kpiFilters[key];
+            let targetValue;
             if (
               Array.isArray(currentFilterArray) &&
               currentFilterArray.includes('Overall')
             ) {
               if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1' || key === 'filter2') {
-                  this.filterOptions[key] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
-                } else {
-                  this.filterOptions = { ...this.filterOptions };
-                }
+                targetValue = currentFilterArray[0];
               } else {
                 if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions =
-                    Array.isArray(currentFilterArray) &&
-                    currentFilterArray.includes('Overall')
-                      ? { filter1: null }
-                      : [...currentFilterArray];
+                  targetValue = [];
                 } else {
-                  this.dropdownArr?.forEach((filter, idx) => {
-                    if (filter?.options?.length) {
-                      this.filterOptions['filter' + (idx + 1)] =
-                        filter.options[0];
-                    }
-                  });
+                  const filterIdx = parseInt(key.replace('filter', '')) - 1;
+                  if (this.dropdownArr?.[filterIdx]?.options?.length) {
+                    targetValue = this.dropdownArr[filterIdx].options[0];
+                  }
                 }
               }
             } else {
               if (this.kpiData?.kpiId === 'kpi72') {
-                if (key === 'filter1' || key === 'filter2') {
-                  this.filterOptions[key] =
-                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0];
-                }
+                targetValue = Array.isArray(currentFilterArray)
+                  ? currentFilterArray[0]
+                  : currentFilterArray;
               } else {
-                if (kpiFilterType === 'multiselectdropdown') {
-                  this.filterOptions = {
-                    filter1:
-                      currentFilterArray !== 'Overall'
-                        ? Array.isArray(x[this.kpiData?.kpiId])
-                          ? [...x[this.kpiData?.kpiId]]
-                          : x[this.kpiData?.kpiId]
-                        : null,
-                  };
-                } else {
-                  this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
-                    ? { filter1: x[this.kpiData?.kpiId] }
-                    : { ...x[this.kpiData?.kpiId] };
-                }
+                targetValue = currentFilterArray;
               }
             }
+
+            if (
+              JSON.stringify(this.filterOptions[key]) !==
+              JSON.stringify(targetValue)
+            ) {
+              this.filterOptions[key] = targetValue;
+            }
           }
-
+        } else if (Array.isArray(kpiFilters)) {
           if (
-            this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
-            (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-              'radiobutton' ||
-              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
-                'multitypefilters')
+            JSON.stringify(this.filterOptions['filter1']) !==
+            JSON.stringify(kpiFilters)
           ) {
-            if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-              const filterObj = this.kpiSelectedFilterObj[this.kpiData?.kpiId];
-              const isMultiType =
-                this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
-                'multitypefilters';
+            this.filterOptions = { filter1: kpiFilters };
+          }
+        }
 
-              if (filterObj.hasOwnProperty('filter1')) {
-                if (isMultiType) {
-                  this.radioOption = Array.isArray(filterObj['filter2'])
-                    ? filterObj['filter2'][0]
-                    : null;
-                } else {
-                  this.radioOption = Array.isArray(filterObj['filter1'])
-                    ? filterObj['filter1'][0]
-                    : null;
-                }
+        // Robust initialization: Ensure all keys from dropdownArr are present in filterOptions
+        // This must happen after processing state to catch missing keys when state is {}
+        this.dropdownArr?.forEach((filter, idx) => {
+          const key = 'filter' + (idx + 1);
+          if (
+            !this.filterOptions.hasOwnProperty(key) ||
+            (kpiFilters && !kpiFilters.hasOwnProperty(key))
+          ) {
+            if (kpiFilterType === 'multiselectdropdown') {
+              this.filterOptions[key] = [];
+            } else if (filter?.options?.length) {
+              this.filterOptions[key] = filter.options[0];
+            }
+          }
+        });
+
+        if (
+          this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
+          (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' ||
+            this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ==
+              'multitypefilters')
+        ) {
+          if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+            const filterObj = this.kpiSelectedFilterObj[this.kpiData?.kpiId];
+            const isMultiType =
+              this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() ===
+              'multitypefilters';
+
+            if (filterObj.hasOwnProperty('filter1')) {
+              if (isMultiType) {
+                this.radioOption = Array.isArray(filterObj['filter2'])
+                  ? filterObj['filter2'][0]
+                  : null;
               } else {
-                this.radioOption = Array.isArray(filterObj)
-                  ? filterObj[0]
+                this.radioOption = Array.isArray(filterObj['filter1'])
+                  ? filterObj['filter1'][0]
                   : null;
               }
+            } else {
+              this.radioOption = Array.isArray(filterObj) ? filterObj[0] : null;
             }
           }
-          this.cdr.detectChanges();
         }
-        this.selectedTab = this.service.getSelectedTab()
-          ? this.service.getSelectedTab().toLowerCase()
-          : '';
+        this.cdr.detectChanges();
       }),
     );
     /** assign 1st value to radio button by default */
@@ -563,11 +573,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach((selectedItem) => {
-        this.dropdownArr[filterIndex]?.options.splice(
-          this.dropdownArr[filterIndex]?.options.indexOf(selectedItem),
-          1,
-        ); // remove the item from list
-        this.dropdownArr[filterIndex]?.options.unshift(selectedItem); // this will add selected item on the top
+        if (
+          typeof selectedItem === 'string' ||
+          typeof selectedItem === 'number'
+        ) {
+          const index =
+            this.dropdownArr[filterIndex]?.options.indexOf(selectedItem);
+          if (index > -1) {
+            this.dropdownArr[filterIndex]?.options.splice(index, 1);
+            this.dropdownArr[filterIndex]?.options.unshift(selectedItem);
+          }
+        }
       });
     }
     if (typeof value === 'object') {
@@ -580,36 +596,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.filterOptions['filter' + (filterIndex + 1)] = [value];
       }
     }
-    if (this.kpiData?.kpiId === 'kpi28') {
-      this.filterOptions['filter' + (filterIndex + 1)] = [value];
-    }
     if (
       value &&
       type?.toLowerCase() == 'radio' &&
       this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'
     ) {
-      if (this.kpiData?.kpiId === 'kpi28') {
-        this.optionSelected.emit(this.filterOptions['filter1']);
-      } else {
-        this.optionSelected.emit(value);
-      }
+      this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
         this.optionSelected.emit(['Overall']);
       } else {
-        if (this.kpiData?.kpiId === 'kpi28') {
-          this.optionSelected.emit(this.filterOptions['filter1']);
+        if (
+          Object.values(this.filterOptions).every(
+            (val) => !val || (Array.isArray(val) && val.length === 0),
+          )
+        ) {
+          this.optionSelected.emit('Overall');
         } else {
-          if (
-            !this.filterOptions.hasOwnProperty('filter1') ||
-            this.filterOptions['filter1'].length === 0
-          ) {
-            this.optionSelected.emit('Overall');
-          } else {
-            this.optionSelected.emit(this.filterOptions);
-          }
+          this.optionSelected.emit(this.filterOptions);
         }
       }
     }
@@ -625,11 +631,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleClearAll(event) {
-    if (this.dropdownArr.length === 1) {
-      for (const key in this.filterOptions) {
-        if (key?.toLowerCase() == event?.toLowerCase()) {
-          delete this.filterOptions[key];
-        }
+    if (this.dropdownArr?.length === 1) {
+      if (this.filterOptions && this.filterOptions.hasOwnProperty(event)) {
+        this.filterOptions[event] = [];
       }
       this.optionSelected.emit(['Overall']);
     } else if (
@@ -638,7 +642,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.filterOptions[event] = [];
       this.optionSelected.emit(this.filterOptions);
     } else {
-      // hacky way - clear All sets null value, which we want to avoid
+      // For multitypefilters, ensure all relevant filters are reset to []
       for (const key in this.filterOptions) {
         if (key?.toLowerCase() == event?.toLowerCase()) {
           this.filterOptions[key] = [];
@@ -1280,6 +1284,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy,
       additional_filters: additional_filters,
+      kpiRecommData: this.kpiRecommData || null,
+      selectedRecommendation: this.buildSelectedRecommendation(),
+      targetValue: this.calculateTargetValue(),
     };
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -1432,13 +1439,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPost() {
-    if (this.reportName.trim() === '') {
+    const trimmedReportName = this.reportName.trim();
+    if (trimmedReportName === '') {
+      return;
+    }
+    const reportNameExists = this.existingReportData.some(
+      (report) =>
+        report?.name?.trim().toLowerCase() === trimmedReportName.toLowerCase(),
+    );
+    if (reportNameExists) {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Enter name ${trimmedReportName} which already exists in report`,
+      });
+      this.success = false;
       return;
     }
     const data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
     const submitData = {
-      name: this.reportName,
+      name: trimmedReportName,
       kpis: [data],
     };
 
@@ -1639,10 +1659,199 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       });
   }
 
+  /**
+   * Builds the selectedRecommendation object to be persisted in the report metadata.
+   * Mirrors the logic in KpiAiRecommendationTargetComponent.preapareToRenderData().
+   * Returns null when kpiRecommData is empty or missing.
+   */
+  buildSelectedRecommendation(): any {
+    if (this.checkIfEmpty(this.kpiRecommData)) {
+      return null;
+    }
+    try {
+      const recommData: any = this.kpiRecommData;
+      const raw = recommData?.recommendations;
+      const getPriorityColor = (priority: string) => {
+        switch ((priority || '').toLowerCase()) {
+          case 'high':
+            return '#f68605';
+          case 'medium':
+            return '#fbcf5f';
+          case 'critical':
+            return '#ed8888';
+          default:
+            return '#49535e';
+        }
+      };
+      const formatDescription = (description: string): string => {
+        if (!description) {
+          return '';
+        }
+        const parts = description.split('**');
+        let result = '';
+        if (parts.length > 1) {
+          for (let i = 0; i < parts.length; i++) {
+            result +=
+              i % 2 === 0
+                ? parts[i]
+                : `<span class="bold-text">${parts[i]}</span>`;
+          }
+        } else {
+          result = description;
+        }
+        return result.replace(/\. /g, '. <span class="sentence-break"></span>');
+      };
+      return {
+        infoBoxes: [
+          {
+            label: 'Implementation',
+            value: raw?.severity,
+            color: getPriorityColor(raw?.severity),
+          },
+          {
+            label: 'Time to Value',
+            value: raw?.timeToValue,
+            color: 'purple',
+          },
+        ],
+        kpis: raw?.keyPerformanceIndicator || [],
+        kpiSectionTitle: 'Affected Key Performance Indicators',
+        actionPlanTitle: 'Recommended Action Plan',
+        actionPlan: (raw?.actionPlans || []).map((list: any, i: number) => ({
+          step: i + 1,
+          title: list.title,
+          description: formatDescription(list.description),
+        })),
+        title: recommData?.recommendations?.title,
+        nodeName: recommData?.projectName,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   checkIfEmpty(obj) {
     if (obj && Object.keys(obj).length > 0) {
       return false;
     }
     return true;
+  }
+
+  hasBaseUrl(): boolean {
+    return this.service.checkConfigurationDetails() && this.isAIRecommEnabled();
+  }
+
+  getAIRecommFlag() {
+    this.featureFlagService
+      .isFeatureEnabled('RECOMMENDATION_ACTION_PLAN')
+      .then((res) => this.isAIRecommEnabled.set(res));
+  }
+
+  trackByFilter(index: number, item: any) {
+    return item.filterType || index;
+  }
+
+  calculateTargetValue() {
+    if (!this.kpiChartData || !this.kpiChartData.length) {
+      return 'NA';
+    }
+    const benchmark = this.resolveBenchmarkPercentiles(this.kpiChartData?.[0]);
+    const targetValue =
+      parseFloat(
+        this.getBenchmarkValue(
+          this.kpiChartData?.[0]?.value,
+          benchmark,
+          this.kpiChartData?.[0],
+        )?.toFixed(2),
+      ) || 'NA';
+    return targetValue;
+  }
+
+  getBenchmarkValue(
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+    percentiles?: Record<string, number>,
+    dataEntry?: Record<string, any>,
+  ): number | null {
+    if (!points?.length || !percentiles) {
+      return null;
+    }
+    const highestActualValue = Math.max(
+      ...points
+        .filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite),
+    );
+
+    const sortedPercentiles = [
+      percentiles.seventyPercentile,
+      percentiles.eightyPercentile,
+      percentiles.nintyPercentile,
+    ]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+
+    if (this.isNegativeTrend(this.getTrendIndicator(dataEntry), points)) {
+      return sortedPercentiles[0] ?? null;
+    }
+
+    return (
+      sortedPercentiles.find((val) => val > highestActualValue) ??
+      sortedPercentiles[sortedPercentiles.length - 1]
+    );
+  }
+
+  getTrendIndicator(dataEntry?: Record<string, any>): string {
+    return (
+      dataEntry?.trend ??
+      dataEntry?.trendValue ??
+      dataEntry?.trendStatus ??
+      dataEntry?.trendDirection ??
+      dataEntry?.trendIndicator ??
+      ''
+    );
+  }
+
+  isNegativeTrend(
+    trendIndicator?: string,
+    points?: Array<{
+      value: number | string;
+      data?: number | string;
+      isForecast?: boolean;
+    }>,
+  ): boolean {
+    const normalized = (trendIndicator || '').toLowerCase();
+    if (normalized) {
+      return (
+        normalized.includes('-ve') ||
+        normalized.includes('negative') ||
+        normalized.includes('down')
+      );
+    }
+
+    const actualValues =
+      points
+        ?.filter((p) => !p?.isForecast)
+        .map((p) => Number(p?.value ?? p?.data))
+        .filter(Number.isFinite) || [];
+    if (actualValues.length < 2) {
+      return false;
+    }
+    return (
+      actualValues[actualValues.length - 1] <
+      actualValues[actualValues.length - 2]
+    );
+  }
+
+  resolveBenchmarkPercentiles(
+    dataEntry?: Record<string, any>,
+  ): Record<string, number> | null {
+    return dataEntry?.benchmarkPercentiles
+      ? dataEntry?.benchmarkPercentiles
+      : null;
   }
 }

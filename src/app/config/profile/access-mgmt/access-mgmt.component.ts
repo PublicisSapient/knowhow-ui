@@ -51,13 +51,13 @@ export class AccessMgmtComponent implements OnInit {
   searchProject: any;
   searchRoleList: any;
   dataLoading: any = [];
-  submitValidationMessage: string = '';
+  submitValidationMessage = '';
   projectHierarchyData: any = [];
   subscription: any = {};
-  toolTipHtml: string = '';
-  top: string = '';
-  left: string = '';
-  showToolTip: boolean = false;
+  toolTipHtml = '';
+  top = '';
+  left = '';
+  showToolTip = false;
   allProjectsData: any = [];
   enableAddBtn = false;
   accessConfirm: boolean;
@@ -537,7 +537,7 @@ export class AccessMgmtComponent implements OnInit {
     }
   }
 
-  deleteUser(userName, userRole) {
+  deleteUser(userName, userEmail, userId, userRole) {
     this.accessConfirm = true;
     let isSuperAdmin = false;
     if (userRole?.length > 0) {
@@ -553,14 +553,16 @@ export class AccessMgmtComponent implements OnInit {
       header: `Delete ${userName}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.deleteAccessReq(userName, isSuperAdmin);
+        this.deleteAccessReq(userName, userEmail, userId, isSuperAdmin);
       },
     });
   }
 
-  deleteAccessReq(userName, isSuperAdmin) {
+  deleteAccessReq(userName, userEmail, userId, isSuperAdmin) {
     this.httpService
       .deleteAccess({
+        userId: userId,
+        userEmail: userEmail,
         username: userName,
       })
       .pipe(

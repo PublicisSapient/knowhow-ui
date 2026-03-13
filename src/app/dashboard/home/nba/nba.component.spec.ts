@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleChanges } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MetricsService } from 'src/app/services/metrics.service';
 import { NbaComponent } from './nba.component';
 
 describe('NbaComponent', () => {
@@ -23,8 +25,13 @@ describe('NbaComponent', () => {
   ];
 
   beforeEach(async () => {
+    const metricsSpy = jasmine.createSpyObj('MetricsService', [
+      'trackRecommendedActionClick',
+    ]);
+
     await TestBed.configureTestingModule({
-      imports: [NbaComponent],
+      imports: [NbaComponent, HttpClientTestingModule],
+      providers: [{ provide: MetricsService, useValue: metricsSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NbaComponent);

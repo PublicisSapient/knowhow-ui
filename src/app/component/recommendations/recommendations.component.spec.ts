@@ -1,6 +1,8 @@
 import {
   ComponentFixture,
+  discardPeriodicTasks,
   fakeAsync,
+  flush,
   TestBed,
   tick,
 } from '@angular/core/testing';
@@ -156,6 +158,8 @@ describe('RecommendationsComponent', () => {
     expect(component.isReportGenerated).toBeTrue();
     expect(component.projectScore).toBe(85);
     expect(component.onDialogClose).toHaveBeenCalled();
+    flush();
+    discardPeriodicTasks();
   }));
 
   it('should format current date correctly', () => {
