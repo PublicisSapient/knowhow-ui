@@ -799,7 +799,7 @@ export class JiraConfigComponent implements OnInit {
     );
   };
 
-  filterBoards = (event) => {
+  filterBoards = (event) => { 
     const filtered: any[] = [];
     const query = event?.query || '';
     if (this.boardsData?.length) {
