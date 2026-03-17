@@ -799,12 +799,15 @@ export class JiraConfigComponent implements OnInit {
     );
   };
 
-  filterBoards = (event) => { 
+  filterBoards = (event) => {
     const filtered: any[] = [];
     const query = event?.query || '';
     if (this.boardsData?.length) {
       for (const board of this.boardsData) {
-        if (board?.boardName && board.boardName.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+        if (
+          board?.boardName &&
+          board.boardName.toLowerCase().indexOf(query.toLowerCase()) === 0
+        ) {
           filtered.push(board);
         }
       }
@@ -817,7 +820,10 @@ export class JiraConfigComponent implements OnInit {
     const query = event?.query || '';
     if (this.teamData?.length) {
       for (const team of this.teamData) {
-        if (team?.name && team.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+        if (
+          team?.name &&
+          team.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+        ) {
           filtered.push(team);
         }
       }
