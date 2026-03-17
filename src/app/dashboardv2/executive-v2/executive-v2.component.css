@@ -191,3 +191,169 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* MCP Styles */
+.mcp-launcher {
+  position: fixed;
+  bottom: 80px; /* Above chatbot which is at 20px */
+  right: 20px;
+  height: 50px;
+  border-radius: 20px;
+  background: #0b4bc8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 10px rgba(102, 126, 234, 0.25);
+  z-index: 1000;
+  animation: mcp-pulse 2s ease-in-out infinite, mcp-glow 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+  padding: 0 15px;
+}
+
+.mcp-launcher:hover {
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+}
+
+.mcp-window {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  width: 400px;
+  height: 600px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  animation: mcp-slideUp 0.3s ease-out;
+  transform: translate(0, -50%);
+}
+
+.mcp-header {
+  background: #0b4bc8;
+  color: #fff;
+  padding: 15px;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mcp-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.mcp-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mcp-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.mcp-status {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.mcp-status.connected {
+  border-left: 4px solid #4caf50;
+}
+
+.mcp-status.connecting {
+  border-left: 4px solid #ff9800;
+}
+
+.mcp-status.error {
+  border-left: 4px solid #f44336;
+}
+
+.mcp-error {
+  color: #f44336;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.mcp-connect-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0b4bc8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mcp-connect-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.mcp-connect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mcp-tools-list h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.mcp-tools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mcp-tool-item {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.mcp-tool-item strong {
+  display: block;
+  color: #0b4bc8;
+  margin-bottom: 4px;
+}
+
+.mcp-tool-item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+@keyframes mcp-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes mcp-glow {
+  0%, 100% { box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+  50% { box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6); }
+}
+
+@keyframes mcp-slideUp {
+  from { opacity: 0; transform: translate(0, -40%); }
+  to { opacity: 1; transform: translate(0, -50%); }
+}

@@ -549,6 +549,41 @@
   </ng-container>
 </ng-template>
 
+<!-- MCP Launcher -->
+<div *ngIf="!isMcpPanelOpen" class="mcp-launcher" (click)="toggleMcpPanel()">
+  <i class="pi pi-server" style="font-size: 1.2rem;"></i>
+  <span style="margin-left: 5px;">MCP</span>
+</div>
+
+<!-- MCP Panel -->
+<div *ngIf="isMcpPanelOpen" class="mcp-window">
+  <div class="mcp-header">
+    <h3><i class="pi pi-server" style="font-size: 1rem;"></i> Model Context Protocol</h3>
+    <button class="mcp-close-btn" (click)="toggleMcpPanel()">×</button>
+  </div>
+
+  <div class="mcp-content">
+    <div class="mcp-status" [ngClass]="mcpStatus.toLowerCase()">
+      Status: <strong>{{ mcpStatus }}</strong>
+      <div *ngIf="mcpErrorMessage" class="mcp-error">{{ mcpErrorMessage }}</div>
+    </div>
+
+    <button *ngIf="mcpStatus !== 'Connected'" class="mcp-connect-btn" (click)="connectMcp()" [disabled]="isMcpConnecting">
+      {{ isMcpConnecting ? 'Connecting...' : 'Connect' }}
+    </button>
+
+    <div *ngIf="mcpStatus === 'Connected'" class="mcp-tools-list">
+      <h4>Available Tools ({{ mcpTools.length }}):</h4>
+      <div class="mcp-tools-container">
+        <div *ngFor="let tool of mcpTools" class="mcp-tool-item">
+          <strong>{{ tool.name }}</strong>
+          <p>{{ tool.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <app-chatbot *ngIf="isAskMeEnabled"></app-chatbot>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
