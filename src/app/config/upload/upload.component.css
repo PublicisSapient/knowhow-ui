@@ -626,3 +626,7 @@ button.btn:enabled:focus-visible {
   color: #fff;
 }
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+.on-hold-option {
+  font-style: italic;
+  color: #c0c0c0;
+}

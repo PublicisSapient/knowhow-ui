@@ -52,7 +52,7 @@ export class StackedGroupBarChartComponent
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
   hasFilter: boolean = true;
-  xCaption: string = 'Sprints';
+  @Input() xCaption: string;
 
   elemObserver = new ResizeObserver(() => {
     this.createChart();
@@ -84,6 +84,12 @@ export class StackedGroupBarChartComponent
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
+    }
+    if (
+      this.selectedtype?.toLowerCase() === 'kanban' ||
+      this.service.getSelectedTab()?.toLowerCase() === 'developer'
+    ) {
+      this.xCaption = this.service.getSelectedDateFilter();
     }
     this.createChart();
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -458,12 +464,16 @@ export class StackedGroupBarChartComponent
           .attr('stroke', '#EDEFF2')
           .attr('stroke-width', 1);
       });
+    this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
+    // -- Fallback, incase this.xAxisLabel is also empty/undefined
+    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+
     svg
       .append('text')
       .attr('x', width / 2)
       .attr('y', height + 40)
       .attr('text-anchor', 'middle')
-      .text('Sprints')
+      .text(this.xCaption)
       .style('font-size', '16px')
       .style('fill', '#49535e');
 
@@ -499,7 +509,7 @@ export class StackedGroupBarChartComponent
         this.flattenData(
           this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
         ),
-        'Sprints',
+        this.xCaption,
       );
     }
   }

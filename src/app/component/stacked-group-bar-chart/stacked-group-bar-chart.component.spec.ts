@@ -219,4 +219,24 @@ describe('StackedGroupBarChartComponent', () => {
       'Unknown kpiId: unknown, skipping chart creation',
     );
   });
+
+  it('should set xCaption from getSelectedDateFilter when selectedtype is kanban', () => {
+    spyOn(component as any, 'createChart');
+    component.selectedtype = 'kanban';
+    component.ngOnChanges({
+      selectedtype: new SimpleChange(null, 'kanban', true),
+    });
+    expect(component.xCaption).toEqual('Weeks');
+  });
+
+  it('should set xCaption from getSelectedDateFilter when selectedTab is developer', () => {
+    spyOn(component as any, 'createChart');
+    const sharedService = TestBed.inject(SharedService);
+    (sharedService.getSelectedTab as jasmine.Spy).and.returnValue('developer');
+    component.selectedtype = 'scrum';
+    component.ngOnChanges({
+      selectedtype: new SimpleChange(null, 'scrum', true),
+    });
+    expect(component.xCaption).toEqual('Weeks');
+  });
 });

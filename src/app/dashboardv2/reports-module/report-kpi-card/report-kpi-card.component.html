@@ -69,6 +69,7 @@
                         [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart> -->
           <ng-container *ngSwitchCase="'stacked-bar-chart'">
             <app-stacked-group-bar-chart
+              *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197'; else standardStackedBar"
               [defectsBreachedSLAs]="defectsBreachedSLAs"
               [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
               [data]="currentChartData"
@@ -76,6 +77,12 @@
               [thresholdValue]="kpiData?.kpiThresholdObj"
               [color]="colors"
               [source]="fromReport"></app-stacked-group-bar-chart>
+            <ng-template #standardStackedBar>
+              <app-stacked-bar-chart
+                [data]="currentChartData"
+                [width]="chartWidth"
+                [height]="chartHeight"></app-stacked-bar-chart>
+            </ng-template>
           </ng-container>
           <app-barchart
             [data]="currentChartData"
