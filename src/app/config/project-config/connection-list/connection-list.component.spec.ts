@@ -1440,7 +1440,9 @@ describe('ConnectionListComponent', () => {
       expect(component.basicConnectionForm.get('password').value).toBe('');
       expect(component.basicConnectionForm.get('password').enabled).toBeTrue();
       expect(component.basicConnectionForm.get('accessToken').value).toBe('');
-      expect(component.basicConnectionForm.get('accessToken').disabled).toBeTrue();
+      expect(
+        component.basicConnectionForm.get('accessToken').disabled,
+      ).toBeTrue();
     });
   });
 
@@ -1474,7 +1476,9 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     fixture.whenStable().then(() => {
       expect(component.basicConnectionForm.get('password').value).toBe('');
-      expect(component.basicConnectionForm.get('accessToken').enabled).toBeTrue();
+      expect(
+        component.basicConnectionForm.get('accessToken').enabled,
+      ).toBeTrue();
     });
   });
 
@@ -1492,7 +1496,9 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     fixture.whenStable().then(() => {
       expect(component.basicConnectionForm.get('password').enabled).toBeTrue();
-      expect(component.basicConnectionForm.get('accessToken').disabled).toBeTrue();
+      expect(
+        component.basicConnectionForm.get('accessToken').disabled,
+      ).toBeTrue();
     });
   });
 
