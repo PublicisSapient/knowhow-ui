@@ -1422,11 +1422,12 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should be username,accesstoken blank when Sonar connection selected and cloudEnv switch is enabled', () => {
+  it('should be username,password enabled and accesstoken disabled when Sonar connection selected and cloudEnv/vault switch is enabled but accessTokenEnabled is false', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = true;
     component.connection['cloudEnv'] = true;
+    component.connection['accessTokenEnabled'] = false;
     component.selectedConnectionType = 'Sonar';
 
     component.connectionTypeFieldsAssignment();
@@ -1435,8 +1436,11 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     fixture.whenStable().then(() => {
       expect(component.basicConnectionForm.get('username').value).toBe('');
+      expect(component.basicConnectionForm.get('username').enabled).toBeTrue();
       expect(component.basicConnectionForm.get('password').value).toBe('');
+      expect(component.basicConnectionForm.get('password').enabled).toBeTrue();
       expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+      expect(component.basicConnectionForm.get('accessToken').disabled).toBeTrue();
     });
   });
 
@@ -1456,11 +1460,12 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should be password blank when cloudEnv switch is true and sonar connection is selected', () => {
+  it('should be password blank and accessToken enabled when cloudEnv switch is true and sonar connection is selected and accessTokenEnabled is true', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = false;
     component.connection['cloudEnv'] = true;
+    component.connection['accessTokenEnabled'] = true;
     component.selectedConnectionType = 'Sonar';
 
     component.connectionTypeFieldsAssignment();
@@ -1469,6 +1474,25 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     fixture.whenStable().then(() => {
       expect(component.basicConnectionForm.get('password').value).toBe('');
+      expect(component.basicConnectionForm.get('accessToken').enabled).toBeTrue();
+    });
+  });
+
+  it('should be password enabled and accessToken disabled when cloudEnv switch is true and sonar connection is selected and accessTokenEnabled is false', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.connection['accessTokenEnabled'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').enabled).toBeTrue();
+      expect(component.basicConnectionForm.get('accessToken').disabled).toBeTrue();
     });
   });
 
@@ -1636,7 +1660,7 @@ describe('ConnectionListComponent', () => {
     ).toBeTruthy();
   });
 
-  it('should be fields enable when checkbox is checked', () => {
+  it('should be fields enabled and connection state updated when checkbox is checked', () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
     const field = 'vault';
     component.enableDisableOnToggle = enableDisableMatrix;
@@ -1647,6 +1671,7 @@ describe('ConnectionListComponent', () => {
       apiKey: new FormControl(),
     });
     component.enableDisableSwitch(fakeEvent, field);
+    expect(component.connection[field]).toBeTrue();
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
         expect(
