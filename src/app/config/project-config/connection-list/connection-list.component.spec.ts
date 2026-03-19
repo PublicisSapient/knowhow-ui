@@ -1435,7 +1435,7 @@ describe('ConnectionListComponent', () => {
     component.enableDisableFieldsOnIsCloudSwithChange();
     fixture.detectChanges();
     fixture.whenStable().then(() => {
-      expect(component.basicConnectionForm.get('username').value).toBe(''); 
+      expect(component.basicConnectionForm.get('username').value).toBe('');
       expect(component.basicConnectionForm.get('username').enabled).toBeTrue();
       expect(component.basicConnectionForm.get('password').value).toBe('');
       expect(component.basicConnectionForm.get('password').enabled).toBeTrue();
