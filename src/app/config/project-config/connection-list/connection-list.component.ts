@@ -1245,12 +1245,12 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['baseUrl']['value'];
     }
 
-    if (
-      this.connection['type']?.toLowerCase() === 'sonar' &&
-      this.connection['cloudEnv'] === true
-    ) {
-      reqData['accessTokenEnabled'] = true;
-    }
+    // if (
+    //   this.connection['type']?.toLowerCase() === 'sonar' &&
+    //   this.connection['cloudEnv'] === true
+    // ) {
+    //   reqData['accessTokenEnabled'] = true;
+    // }
 
     if (this.isNewlyConfigAdded) {
       this.addConnectionReq(reqData);
@@ -1492,6 +1492,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableSwitch(event, field, type?) {
+    this.connection[field] = event.checked;
     /* Enable/Disable fields on the basis of flag selection at one time */
     if (this.enableDisableOnToggle.enableDisableEachTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableEachTime[field].forEach(
@@ -1509,15 +1510,15 @@ export class ConnectionListComponent implements OnInit {
       );
     }
 
-    if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
-      if (event.checked) {
-        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
-      } else {
-        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(
-          false,
-        );
-      }
-    }
+    // if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
+    //   if (event.checked) {
+    //     this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
+    //   } else {
+    //     this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(
+    //       false,
+    //     );
+    //   }
+    // }
 
     this.checkBitbucketValue(event.checked, field, type);
     if (type?.toLowerCase() === 'zephyr') {
@@ -1576,12 +1577,12 @@ export class ConnectionListComponent implements OnInit {
       reqData['apiKey'] = '';
     }
 
-    if (
-      this.connection['type'].toLowerCase() === 'sonar' &&
-      this.connection['cloudEnv'] === true
-    ) {
-      reqData['accessTokenEnabled'] = true;
-    }
+    // if (
+    //   this.connection['type'].toLowerCase() === 'sonar' &&
+    //   this.connection['cloudEnv'] === true
+    // ) {
+    //   reqData['accessTokenEnabled'] = true;
+    // }
 
     this.testConnectionMsg = '';
     this.testConnectionValid = true;
@@ -2123,29 +2124,23 @@ export class ConnectionListComponent implements OnInit {
   }
   enableDisableFieldsOnIsCloudSwithChange() {
     if (this.connection['type']?.toLowerCase() == 'sonar') {
-      if (
-        this.connection['vault'] == true &&
-        this.connection['cloudEnv'] == true
-      ) {
+      const isVault = this.connection['vault'] === true;
+      const isCloud = this.connection['cloudEnv'] === true;
+
+      if (isVault && isCloud) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      } else if (
-        this.connection['vault'] == true &&
-        !this.connection['cloudEnv'] == false
-      ) {
+      } else if (isVault && !isCloud) {
         this.basicConnectionForm.controls['username'].enable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      } else if (
-        !this.connection['vault'] == false &&
-        this.connection['cloudEnv'] == true
-      ) {
+      } else if (!isVault && isCloud) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
@@ -2158,11 +2153,15 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessToken'].disable();
       }
 
-      if (
-        this.connection['cloudEnv'] === true ||
-        this.connection['vault'] === true
-      ) {
-        this.basicConnectionForm.controls['accessTokenEnabled'].disable();
+      if (isCloud || isVault) {
+        // this.basicConnectionForm.controls['accessTokenEnabled'].disable();
+        if (this.connection['accessTokenEnabled'] === true) {
+          this.basicConnectionForm.controls['accessToken']?.enable();
+        } else {
+          this.basicConnectionForm.controls['accessToken']?.disable();
+          this.basicConnectionForm.controls['username'].enable();
+          this.basicConnectionForm.controls['password'].enable();
+        }
       } else {
         this.basicConnectionForm.controls['accessTokenEnabled'].enable();
         this.enableDisableFieldsOnAccessTokenORPasswordToggle();
