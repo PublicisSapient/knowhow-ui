@@ -69,15 +69,7 @@ export class HeaderComponent implements OnInit {
     this.userDetails = this.sharedService.getCurrentUserDetails();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.ifProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
-    // this.userMenuItems = [
-    //   {
-    //     label: 'Logout',
-    //     icon: 'fas fa-sign-out-alt',
-    //     command: () => {
-    //       this.logout();
-    //     },
-    //   },
-    // ];
+    this.userMenuItems = [];
     let authoritiesArr;
     if (this.sharedService.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.sharedService.getCurrentUserDetails('authorities');
