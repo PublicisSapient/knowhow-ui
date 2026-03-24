@@ -1402,10 +1402,17 @@ describe('KpiCardV2Component', () => {
       });
     });
 
-    it('should move selected option to top', () => {
-      component.dropdownArr[0].options = ['option1', 'option2'];
+    it('should move selected option to top and create a new array reference', () => {
+      const originalOptions = ['option1', 'option2', 'option3'];
+      component.dropdownArr[0].options = originalOptions;
       component.handleChange('multi', { value: ['option2'] });
-      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1']);
+      expect(component.dropdownArr[0].options).toEqual([
+        'option2',
+        'option1',
+        'option3',
+      ]);
+      // Verify that the array reference changed (non-mutating update)
+      expect(component.dropdownArr[0].options).not.toBe(originalOptions);
     });
   });
 
