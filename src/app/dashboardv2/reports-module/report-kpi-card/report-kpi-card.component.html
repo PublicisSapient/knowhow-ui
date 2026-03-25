@@ -67,7 +67,7 @@
         <div class="p-px-3 p-py-0" style="height: auto" [ngSwitch]="chartType">
           <!-- <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
                         [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart> -->
-          <ng-container *ngSwitchCase="'stacked-bar-chart'">
+                        <ng-container *ngSwitchCase="'stacked-bar-chart'">
             <app-stacked-group-bar-chart
               *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197'; else standardStackedBar"
               [defectsBreachedSLAs]="defectsBreachedSLAs"
@@ -97,6 +97,15 @@
               [board]="kpiData?.selectedTab"
               [kpiId]="kpiData?.kpiId">
             </app-scatter-plot-chart>
+          </ng-container>
+          <ng-container *ngSwitchCase="'progressbar'">
+            <app-progress-chart
+              [chartData]="currentChartData"
+              [selectedtype]="kpiData?.selectedType"
+              [viewType]="showChart"
+              [board]="kpiData?.selectedTab"
+              [unit]="kpiData?.kpiUnit"
+              [kpiId]="kpiData?.kpiId"></app-progress-chart>
           </ng-container>
           <app-barchart
             [data]="currentChartData"
