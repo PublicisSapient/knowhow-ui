@@ -13738,7 +13738,7 @@ describe('ExecutiveV2Component', () => {
     });
 
     describe('handleSelectedOptionOnBacklog', () => {
-      xit('should update kpiSelectedFilterObj with single dropdown event', () => {
+      it('should update kpiSelectedFilterObj with single dropdown event', () => {
         const kpi = {
           kpiId: 'kpi-1',
           kpiDetail: {
@@ -13748,6 +13748,7 @@ describe('ExecutiveV2Component', () => {
         const event = { filter1: 'option1' };
 
         component.kpiSelectedFilterObj = { 'kpi-1': {} };
+        spyOn(component, 'getChartDataForBacklog');
 
         component.handleSelectedOptionOnBacklog(event, kpi);
 
@@ -13756,7 +13757,26 @@ describe('ExecutiveV2Component', () => {
         });
       });
 
-      xit('should update kpiSelectedFilterObj with multi dropdown event', () => {
+      it('should update kpiSelectedFilterObj with single dropdown event when event value is an array', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: {
+            aggregationCriteria: 'sum',
+          },
+        };
+        const event = { filter1: ['option1', 'option2'] };
+
+        component.kpiSelectedFilterObj = { 'kpi-1': {} };
+        spyOn(component, 'getChartDataForBacklog');
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.kpiSelectedFilterObj).toEqual({
+          'kpi-1': { filter1: ['option1', 'option2'] },
+        });
+      });
+
+      it('should update kpiSelectedFilterObj with multi dropdown event', () => {
         const kpi = {
           kpiId: 'kpi-1',
           kpiDetail: {
@@ -13778,6 +13798,7 @@ describe('ExecutiveV2Component', () => {
 
         component.kpiSelectedFilterObj = {};
         component.kpiSelectedFilterObj[kpi.kpiId] = selectedFilterBackup;
+        spyOn(component, 'getChartDataForBacklog');
 
         component.handleSelectedOptionOnBacklog(event, kpi);
 
@@ -13821,11 +13842,12 @@ describe('ExecutiveV2Component', () => {
         component.selectedTab = 'backlog';
         component.kpiSelectedFilterObj = {};
         component.kpiSelectedFilterObj[kpi.kpiId] = selectedFilterBackup;
+        spyOn(component, 'getChartDataForBacklog');
 
         component.handleSelectedOptionOnBacklog(event, kpi);
 
         expect(component.kpiSelectedFilterObj).toEqual({
-          'kpi-1': { filter1: 'option1' },
+          'kpi-1': { filter1: ['option1'] },
         });
       });
 

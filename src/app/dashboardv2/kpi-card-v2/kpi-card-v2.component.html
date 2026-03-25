@@ -138,7 +138,7 @@
           </ng-select>
 
           <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
-                         inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+                         [inputId]="'multiselectFilter' + kpiData?.kpiId" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
                          [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
                          (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
                          [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
@@ -176,7 +176,7 @@
             </ng-container>
             <ng-template #dropdown>
               <div>
-                <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1 inputId="multiselectFilter"
+                <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1 [inputId]="'multiselectFilter' + kpiData?.kpiId + k"
                   [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]" [maxSelectedLabels]="3"
                   selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
                   (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
