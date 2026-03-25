@@ -84,6 +84,20 @@
                 [height]="chartHeight"></app-stacked-bar-chart>
             </ng-template>
           </ng-container>
+          <ng-container *ngSwitchCase="'scatter'">
+            <app-scatter-plot-chart
+              [thresholdValue]="kpiData?.kpiThresholdObj"
+              [unit]="kpiData?.kpiUnit"
+              [data]="currentChartData"
+              [xCaption]="kpiData?.xAxis"
+              [yCaption]="kpiData?.yAxis"
+              [color]=""
+              [selectedtype]="kpiData?.selectedType"
+              [viewType]="showChart"
+              [board]="kpiData?.selectedTab"
+              [kpiId]="kpiData?.kpiId">
+            </app-scatter-plot-chart>
+          </ng-container>
           <app-barchart
             [data]="currentChartData"
             [height]="chartHeight"
@@ -94,12 +108,15 @@
             [data]="currentChartData"
             [width]="chartWidth"
             [height]="chartHeight"></app-stacked-bar>
-          <app-semi-circle-donut-chart
-            *ngSwitchCase="'semi-circle-donut-chart'"
-            [value]="currentChartData"
-            [max]="100"
-            [width]="chartWidth"
-            [height]="chartHeight"></app-semi-circle-donut-chart>
+          <ng-container *ngSwitchCase="'semi-circle-donut-chart'">
+            <app-semi-circle-donut-chart
+              [value]="currentChartData"
+              [max]="100"
+              [kpiId]="kpiData?.kpiId"
+              [width]="chartWidth"
+              [height]="chartHeight"
+              [viewType]="showChart"></app-semi-circle-donut-chart>
+          </ng-container>
           <app-chart-with-filters
             [data]="currentChartData?.chartData || currentChartData[0]?.data"
             *ngSwitchCase="'chartWithFilter'"

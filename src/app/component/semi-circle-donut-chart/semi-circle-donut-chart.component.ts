@@ -32,40 +32,77 @@ export class SemiCircleDonutChartComponent implements OnInit, OnChanges {
       this.service.showTableViewObs.subscribe((view) => {
         this.viewType = view;
       });
-      this.extractKpi182Data();
     }
+    this.processInputData();
     this.createDonutChart();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Check if the value input has changed
-    if (changes.value) {
-      this.value = parseInt(this.value + '');
-      this.totalIssues = parseInt(this.totalIssues + '');
-      this.createDonutChart();
-    }
-
-    // Handle chartData changes for kpi182
-    if (changes['chartData'] && this.kpiId === 'kpi182') {
-      this.extractKpi182Data();
+    if (changes['value'] || changes['chartData'] || changes['totalIssues']) {
+      this.processInputData();
       this.createDonutChart();
     }
   }
 
-  private extractKpi182Data(): void {
-    if (!this.chartData || this.chartData.length === 0) {
-      console.warn('No chartData available for kpi182');
-      this.value = 0;
-      this.totalIssues = 0;
+  private processInputData(): void {
+    let dataToUse = null;
+
+    // Prioritize chartData if available and not empty
+    if (
+      this.chartData &&
+      Array.isArray(this.chartData) &&
+      this.chartData.length > 0
+    ) {
+      dataToUse = this.chartData;
+    } else if (this.value !== undefined && this.value !== null) {
+      dataToUse = this.value;
+    }
+
+    if (!dataToUse) {
       return;
     }
 
-    // Extract value from the nested structure
-    const firstItem = this.chartData[0];
-    if (firstItem?.value && firstItem.value.length > 0) {
-      const dataValue = firstItem.value[0];
-      this.value = dataValue.value || 0; // Extract numeric value
-      this.totalIssues = 100; // Set max value to 100 for percentage display
+    if (Array.isArray(dataToUse) && dataToUse.length > 0) {
+      const firstItem = dataToUse[0];
+      // Handle nested structured data (likely from API/chartData)
+      if (
+        firstItem?.value &&
+        Array.isArray(firstItem.value) &&
+        firstItem.value.length > 0
+      ) {
+        const nestedValue = firstItem.value[0];
+        this.value = nestedValue.value !== undefined ? nestedValue.value : 0;
+        // If it was percentage data (like kpi182), or if totalIssues is 0, default to 100 for percentage display
+        if (this.kpiId === 'kpi182' || !this.totalIssues) {
+          this.totalIssues = 100;
+        }
+      } else if (typeof firstItem === 'number') {
+        this.value = firstItem;
+      } else if (
+        typeof firstItem === 'object' &&
+        firstItem?.value !== undefined
+      ) {
+        this.value = firstItem.value;
+      }
+    } else if (typeof dataToUse === 'number' || typeof dataToUse === 'string') {
+      this.value = parseFloat(dataToUse + '');
+      if (isNaN(this.value)) {
+        this.value = 0;
+      }
+      this.totalIssues = parseFloat(this.totalIssues + '');
+      if (isNaN(this.totalIssues)) {
+        this.totalIssues = 0;
+      }
+    }
+
+    // Ensure totalIssues is at least 100 if value is percentage-like and total is 0, and not kpi124
+    if (
+      this.totalIssues === 0 &&
+      this.value > 0 &&
+      this.value <= 100 &&
+      this.kpiId !== 'kpi124'
+    ) {
+      this.totalIssues = 100;
     }
   }
 
