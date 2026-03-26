@@ -220,7 +220,7 @@
 
               <button *ngIf="!isProjectAdmin" type="button" pRipple pButton [disabled]="rowData.authorities.includes('ROLE_SUPERADMIN')"
                 class="p-button-text p-button-plain btn-toggle p-ml-1" [icon]="'pi pi-trash'" tabindex="0"
-                (click)="deleteUser(rowData?.username, rowData?.emailAddress, rowData?.id, rowData?.authorities)"></button>
+                (click)="deleteUser(rowData?.username, rowData?.emailAddress, rowData?.authorities)"></button>
 
 
             </td>

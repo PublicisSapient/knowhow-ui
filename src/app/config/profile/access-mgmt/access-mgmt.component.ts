@@ -537,7 +537,7 @@ export class AccessMgmtComponent implements OnInit {
     }
   }
 
-  deleteUser(userName, userEmail, userId, userRole) {
+  deleteUser(userName, userEmail, userRole) {
     this.accessConfirm = true;
     let isSuperAdmin = false;
     if (userRole?.length > 0) {
@@ -553,15 +553,14 @@ export class AccessMgmtComponent implements OnInit {
       header: `Delete ${userName}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.deleteAccessReq(userName, userEmail, userId, isSuperAdmin);
+        this.deleteAccessReq(userName, userEmail, isSuperAdmin);
       },
     });
   }
 
-  deleteAccessReq(userName, userEmail, userId, isSuperAdmin) {
+  deleteAccessReq(userName, userEmail, isSuperAdmin) {
     this.httpService
       .deleteAccess({
-        userId: userId,
         userEmail: userEmail,
         username: userName,
       })

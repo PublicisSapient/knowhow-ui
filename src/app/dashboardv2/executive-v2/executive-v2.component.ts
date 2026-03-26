@@ -4708,11 +4708,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       for (const key in event) {
         if (typeof event[key] === 'string') {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+          this.kpiSelectedFilterObj[kpi?.kpiId][key] = [event[key]];
         } else {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
-          }
+          this.kpiSelectedFilterObj[kpi?.kpiId][key] = event[key];
         }
       }
       /** When we have multi dropdown */
