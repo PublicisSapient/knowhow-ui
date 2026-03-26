@@ -1559,6 +1559,10 @@ a:hover {
   max-height: 180px;
   overflow-y: scroll;
 }
+
+.p-datatable > .p-datatable-wrapper {
+  overflow: initial;
+}
 .icon-circle {
   position: absolute;
   top: 4px;
