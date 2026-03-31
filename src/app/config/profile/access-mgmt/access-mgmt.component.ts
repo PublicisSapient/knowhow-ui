@@ -421,10 +421,10 @@ export class AccessMgmtComponent implements OnInit {
       return;
     }
     if (!this.displayDuplicateProject && this.uniqueArrUserData.length > 0) {
-      this.uniqueArrUserData = [];
       this.httpService.updateAccess(userData).subscribe({
         next: (response) => {
           if (response['success']) {
+            this.uniqueArrUserData = [];
             this.getUsers();
             if (this.showAddUserForm) {
               this.showAddUserForm = false;
