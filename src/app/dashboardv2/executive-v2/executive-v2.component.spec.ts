@@ -13757,6 +13757,22 @@ describe('ExecutiveV2Component', () => {
         });
       });
 
+      it('should handle raw array events correctly without double wrapping', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: { aggregationCriteria: 'sum' },
+        };
+        const event = ['Overall'];
+        component.kpiSelectedFilterObj = { 'kpi-1': {} };
+        spyOn(component, 'getChartDataForBacklog');
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.kpiSelectedFilterObj).toEqual({
+          'kpi-1': { filter1: ['Overall'] },
+        });
+      });
+
       it('should update kpiSelectedFilterObj with single dropdown event when event value is an array', () => {
         const kpi = {
           kpiId: 'kpi-1',
