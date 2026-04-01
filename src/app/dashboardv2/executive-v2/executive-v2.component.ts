@@ -4704,6 +4704,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       event &&
       Object.keys(event)?.length !== 0 &&
       typeof event === 'object' &&
+      !Array.isArray(event) &&
       !selectedFilterBackup?.hasOwnProperty('filter2')
     ) {
       for (const key in event) {
@@ -4718,6 +4719,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       event &&
       Object.keys(event)?.length !== 0 &&
       typeof event === 'object' &&
+      !Array.isArray(event) &&
       !Array.isArray(selectedFilterBackup) &&
       selectedFilterBackup.hasOwnProperty('filter2')
     ) {
@@ -4732,7 +4734,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ...selectedFilter,
       };
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: [event] };
+      const updatedValue = Array.isArray(event) ? event : [event];
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: updatedValue };
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
