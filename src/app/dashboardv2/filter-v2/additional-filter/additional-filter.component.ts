@@ -6,6 +6,7 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  HostListener,
 } from '@angular/core';
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
@@ -384,5 +385,12 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscriptions?.forEach((subscription) => subscription?.unsubscribe());
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event: any) {
+    if (this.multiSelect) {
+      this.multiSelect.hide();
+    }
   }
 }

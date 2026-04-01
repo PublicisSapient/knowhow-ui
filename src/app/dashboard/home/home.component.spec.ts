@@ -286,6 +286,16 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should hide all multiSelect and dropdown components on scroll', () => {
+    component.multiSelects = [{ hide: jasmine.createSpy('hide') }] as any;
+    component.dropdowns = [{ hide: jasmine.createSpy('hide') }] as any;
+
+    window.dispatchEvent(new Event('scroll'));
+
+    component.multiSelects.forEach((ms) => expect(ms.hide).toHaveBeenCalled());
+    component.dropdowns.forEach((dd) => expect(dd.hide).toHaveBeenCalled());
+  });
+
   it('should return correct efficiency percentage', () => {
     component.tableData.data = [
       { completion: '80' },
