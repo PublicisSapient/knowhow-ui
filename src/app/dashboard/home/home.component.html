@@ -32,7 +32,7 @@
       <div class="kpi-card-body">
         <p-table #mainTable *ngIf="!loader" [value]="tableData['data']" [columns]="tableData['columns']" responsiveLayout="scroll"
           class="mt-3" [expandedRowKeys]="expandedRows" dataKey="id" (onRowExpand)="onRowExpand($event)"
-          rowExpandMode="single" [paginator]="true" [rows]="10">
+          rowExpandMode="single" [paginator]="true" [rows]="10" [scrollable]="true">
           <ng-template pTemplate="header" let-columns>
             <tr>
               <ng-container *ngFor="let col of columns">

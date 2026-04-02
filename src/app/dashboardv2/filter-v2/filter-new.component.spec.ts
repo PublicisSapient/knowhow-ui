@@ -106,6 +106,20 @@ describe('FilterNewComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should hide all dropdowns and search panels on scroll', () => {
+    component.showHideDdn = { hide: jasmine.createSpy('hide') } as any;
+    component.autoComplete = { hide: jasmine.createSpy('hide') } as any;
+    component.toggleDateDropdown = true;
+    component.dropdowns = [{ hide: jasmine.createSpy('hide') }] as any;
+
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(component.showHideDdn.hide).toHaveBeenCalled();
+    expect(component.autoComplete.hide).toHaveBeenCalled();
+    expect(component.toggleDateDropdown).toBeFalsy();
+    component.dropdowns.forEach((dd) => expect(dd.hide).toHaveBeenCalled());
+  });
+
   it('should return an array of object values', () => {
     const obj = { a: 1, b: 2, c: 3 };
     expect(component.objectKeys(obj)).toEqual([1, 2, 3]);

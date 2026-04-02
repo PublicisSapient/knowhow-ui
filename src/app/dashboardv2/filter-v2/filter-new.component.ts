@@ -6,8 +6,12 @@ import {
   ViewChild,
   Output,
   EventEmitter,
+  HostListener,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -19,7 +23,6 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { FormsModule } from '@angular/forms';
 import { Button, ButtonDirective } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
 import {
   JsonPipe,
   NgClass,
@@ -141,6 +144,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   @Output() onKPISearch = new EventEmitter<string>();
   @ViewChild('autoComplete') autoComplete: AutoComplete;
+  @ViewChildren(Dropdown) dropdowns: QueryList<Dropdown>;
   isSearchingKPI: boolean = false;
   private kpiSearchCache: { [query: string]: any[] } = {}; // Cache for AI search results
 
@@ -362,6 +366,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.boardData = {};
     this.projectList = null;
     this.previousFilterEvent = null;
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  @HostListener('scroll', ['$event'])
+  onScroll(event: any) {
+    if (this.showHideDdn) {
+      this.showHideDdn.hide();
+    }
+    if (this.autoComplete) {
+      this.autoComplete.hide();
+    }
+    this.toggleDateDropdown = false;
+    if (this.dropdowns) {
+      this.dropdowns.forEach((dd) => dd.hide());
+    }
   }
 
   setSelectedDateType(label: string) {
