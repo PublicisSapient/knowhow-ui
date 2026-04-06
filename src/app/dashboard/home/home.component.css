@@ -206,9 +206,9 @@
   z-index: 2000;
 }
 
-:host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper {
+/* :host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper {
   min-height: 300px;
-}
+} */
 
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
   text-align: left;

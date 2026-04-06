@@ -20,6 +20,7 @@ import { HelperService } from 'src/app/services/helper.service';
 class MockMultiSelect {
   overlayVisible = false;
   close = jasmine.createSpy();
+  hide = jasmine.createSpy('hide');
 }
 
 interface MockSimpleChanges {
@@ -99,6 +100,12 @@ describe('PrimaryFilterComponent', () => {
     component.selectedTab = 'my-knowhow';
     spyOn(sharedService, 'selectedTrendsEvent').and.returnValue([]);
     fixture.detectChanges();
+  });
+
+  it('should hide multiSelect on scroll', () => {
+    component.multiSelect = mockMultiSelect as any;
+    window.dispatchEvent(new Event('scroll'));
+    expect(mockMultiSelect.hide).toHaveBeenCalled();
   });
 
   describe('Happy Path', () => {

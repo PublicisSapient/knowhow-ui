@@ -73,11 +73,25 @@ describe('ParentFilterComponent', () => {
       sprint: [{ nodeId: 1, nodeName: 'Node 1' }],
       Level2: [{ nodeId: 2, nodeName: 'Node 2' }],
     };
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify({
+        scrum: [{ hierarchyLevelName: 'Project', level: 1 }],
+        kanban: [{ hierarchyLevelName: 'Project', level: 1 }],
+      }),
+    );
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should hide dropdown on scroll', () => {
+    component.dropdown = { hide: jasmine.createSpy('hide') } as any;
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.dropdown.hide).toHaveBeenCalled();
   });
 
   it('should update filterLevels and selectedLevel when selectedTab or selectedType changes and parentFilterConfig labelName is Organization Level', () => {
