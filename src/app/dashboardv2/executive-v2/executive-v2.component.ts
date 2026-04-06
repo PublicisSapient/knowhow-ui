@@ -4552,18 +4552,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         const flattenedEvent: any = { filter1: [], filter2: [] };
         event.filter1.forEach((opt: any) => {
           if (opt && opt.filter1) {
-            if (!flattenedEvent.filter1.includes(opt.filter1))
+            if (!flattenedEvent.filter1.includes(opt.filter1)) {
               flattenedEvent.filter1.push(opt.filter1);
+            }
           }
           if (opt && opt.filter2) {
             if (Array.isArray(opt.filter2)) {
               opt.filter2.forEach((val) => {
-                if (!flattenedEvent.filter2.includes(val))
+                if (!flattenedEvent.filter2.includes(val)) {
                   flattenedEvent.filter2.push(val);
+                }
               });
             } else {
-              if (!flattenedEvent.filter2.includes(opt.filter2))
+              if (!flattenedEvent.filter2.includes(opt.filter2)) {
                 flattenedEvent.filter2.push(opt.filter2);
+              }
             }
           }
         });
