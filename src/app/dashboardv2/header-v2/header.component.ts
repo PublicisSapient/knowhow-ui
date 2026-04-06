@@ -127,16 +127,16 @@ export class HeaderComponent implements OnInit {
               window.open(this.configDetails['supportChannel'], '_blank');
             },
           },
-          {
-            label: 'Logout',
-            subheading: '',
-            externalLink: false,
-            icon: 'fas fa-sign-out-alt',
-            iconColorClass: 'text-grey',
-            command: () => {
-              this.logout();
-            },
-          },
+          // {
+          //   label: 'Logout',
+          //   subheading: '',
+          //   externalLink: false,
+          //   icon: 'fas fa-sign-out-alt',
+          //   iconColorClass: 'text-grey',
+          //   command: () => {
+          //     this.logout();
+          //   },
+          // },
         ],
       },
     ];
