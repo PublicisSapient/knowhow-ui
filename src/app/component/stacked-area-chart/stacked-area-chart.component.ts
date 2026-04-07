@@ -1,36 +1,53 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   Input,
+  OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
-  ViewContainerRef,
+  ViewChild,
 } from '@angular/core';
 import * as d3 from 'd3';
+
+let instanceCounter = 0;
 
 @Component({
   selector: 'app-stacked-area-chart',
   templateUrl: './stacked-area-chart.component.html',
 })
-export class StackedAreaChartComponent implements OnInit {
+export class StackedAreaChartComponent
+  implements OnInit, OnChanges, AfterViewInit, OnDestroy
+{
+  @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
   @Input() data: any; // json data
   elem;
   @Input() kpiId = '';
   @Input() activeTab?: number = 0;
+  private instanceId = `stacked-area-${instanceCounter++}`;
+
   elemObserver = new ResizeObserver(() => {
     this.draw();
   });
-  constructor(private viewContainerRef: ViewContainerRef) {}
+  constructor() {}
 
   ngOnInit(): void {}
   ngAfterViewInit(): void {
+    this.elem = this.chartContainer.nativeElement;
     this.elemObserver.observe(this.elem);
+    setTimeout(() => {
+      this.draw();
+    }, 0);
   }
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
     if (Object.keys(changes)?.length > 0) {
-      if (changes['data']) {
-        this.elem = this.viewContainerRef.element.nativeElement;
-        this.draw();
+      if (changes['data'] && this.chartContainer) {
+        this.elem = this.chartContainer.nativeElement;
+        setTimeout(() => {
+          this.draw();
+        }, 0);
       }
     }
     if (changes['activeTab']) {
@@ -41,13 +58,14 @@ export class StackedAreaChartComponent implements OnInit {
   }
 
   draw() {
+    if (!this.elem || !this.data || this.data.length === 0) {
+      return;
+    }
     /** Preventing Drop event for Bubbling */
-    d3.select(this.elem)
-      .select('#stacked-area')
-      .on('mousedown', (event) => {
-        event.stopPropagation();
-      });
-    d3.select(this.elem).select('#stacked-area').select('svg').remove();
+    d3.select(this.elem).on('mousedown', (event) => {
+      event.stopPropagation();
+    });
+    d3.select(this.elem).select('svg').remove();
     const kpiId = this.kpiId;
     let keys = [];
     if (this.data[0]) {
@@ -92,13 +110,12 @@ export class StackedAreaChartComponent implements OnInit {
 
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 };
-    const width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
+    const width = this.elem?.offsetWidth ? this.elem.offsetWidth - 70 : 0;
     const height = 228;
 
     // append the svg object to the body of the page
     const svg = d3
       .select(this.elem)
-      .select('#stacked-area')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -182,10 +199,11 @@ export class StackedAreaChartComponent implements OnInit {
     //////////
 
     // Add a clipPath: everything out of this area won't be drawn.
+    const clipId = `clip-${this.instanceId}`;
     const clip = svg
       .append('defs')
       .append('svg:clipPath')
-      .attr('id', 'clip')
+      .attr('id', clipId)
       .append('svg:rect')
       .attr('width', width)
       .attr('height', height)
@@ -202,7 +220,7 @@ export class StackedAreaChartComponent implements OnInit {
       .on('end', updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
 
     // Create the scatter variable: where both the circles and the brush take place
-    const areaChart = svg.append('g').attr('clip-path', 'url(#clip)');
+    const areaChart = svg.append('g').attr('clip-path', `url(#${clipId})`);
 
     // Area generator
     const area = d3
@@ -339,8 +357,10 @@ export class StackedAreaChartComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    d3.select(this.elem).select('#stacked-area').select('svg').remove();
+    if (this.elem) {
+      d3.select(this.elem).select('svg').remove();
+      this.elemObserver.unobserve(this.elem);
+    }
     this.data = [];
-    this.elemObserver.unobserve(this.elem);
   }
 }
