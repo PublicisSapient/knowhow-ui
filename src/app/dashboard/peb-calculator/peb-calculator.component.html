@@ -162,7 +162,8 @@
                               (onPanelShow)="onFilterClick('organizationEntityName')" (onPanelHide)="onFilterBlur('organizationEntityName')"
                               [options]="tableColumnData['organizationEntityName']" placeholder="Select Entity"
                               (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
-                              [ngModel]="tableColumnForm['organizationEntityName']" styleClass="column-filter">
+                              [ngModel]="tableColumnForm['organizationEntityName']" styleClass="column-filter"
+                              (keydown.space)="$event.stopPropagation()">
                               <ng-template pTemplate="selectedItems">
                                 <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                               </ng-template>
@@ -185,7 +186,8 @@
                               (onPanelShow)="onFilterClick('categoryScores.overall')" (onPanelHide)="onFilterBlur('categoryScores.overall')"
                               [options]="tableColumnData['categoryScores.overall']" placeholder="Select Savings"
                               (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
-                              [ngModel]="tableColumnForm['categoryScores.overall']" styleClass="column-filter">
+                              [ngModel]="tableColumnForm['categoryScores.overall']" styleClass="column-filter"
+                              (keydown.space)="$event.stopPropagation()">
                               <ng-template pTemplate="selectedItems">
                                 <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                               </ng-template>
