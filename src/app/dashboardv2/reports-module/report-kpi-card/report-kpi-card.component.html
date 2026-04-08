@@ -189,7 +189,7 @@
                 [thresholdValue]="kpiThresholdObj"
                 [data]="currentChartData"
                 [color]="chartColorList"
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [selectedtype]="selectedtype"
                 [isAggregationStacks]="
                   kpiData?.isAggregationStacks === false ? false : true
@@ -225,7 +225,7 @@
                 [data]="currentChartData"
                 [xCaption]="kpiData?.xaxisLabel"
                 [yCaption]="kpiData?.yaxisLabel"
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [thresholdValue]="kpiData?.kpiThresholdObj"
                 [color]="colors"
                 [source]="fromReport"
@@ -252,7 +252,8 @@
                 [source]="fromReport"
                 [thresholdValue]="kpiData?.kpiThresholdObj"
                 [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel">
+                [yAxisLabel]="yAxisLabel"
+                [kpiId]="kpiData?.kpiId">
               </app-grouped-column-plus-line-chart-v2>
             </ng-container>
           </ng-container>
@@ -275,7 +276,8 @@
                 [yAxisOrder]="kpiData?.yaxisOrder"
                 [source]="fromReport"
                 [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel">
+                [yAxisLabel]="yAxisLabel"
+                [kpiId]="kpiData?.kpiId">
               </app-bar-with-y-axis-group>
             </ng-container>
           </ng-container>
@@ -305,7 +307,7 @@
           <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
             <ng-container>
               <app-horizontal-percent-bar-chartv2
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [kpiWidth]="kpiData?.kpiWidth"
                 [data]="currentChartData">
               </app-horizontal-percent-bar-chartv2>
@@ -318,7 +320,7 @@
           <ng-container *ngSwitchCase="'stacked-area'">
             <ng-container>
               <app-stacked-area-chart
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [data]="currentChartData"></app-stacked-area-chart>
             </ng-container>
           </ng-container>

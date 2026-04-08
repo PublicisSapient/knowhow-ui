@@ -26,6 +26,7 @@ interface MaturityData {
 })
 export class ProgressChartComponent implements OnChanges, AfterViewInit {
   @ViewChild('chartSvg', { static: false }) svgRef!: ElementRef;
+  @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
   @Input() chartData: MaturityData[];
 
   private transformedData: {
@@ -42,7 +43,9 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
     // console.log('progress chart ', this.chartData);
     if (this.chartData) {
       this.transformData();
-      this.createChart();
+      setTimeout(() => {
+        this.createChart();
+      }, 0);
     }
   }
 
@@ -52,7 +55,9 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
       d3.select(this.svgRef?.nativeElement).selectAll('*').remove();
 
       this.transformData();
-      this.createChart();
+      setTimeout(() => {
+        this.createChart();
+      }, 0);
     }
   }
 
@@ -75,15 +80,15 @@ export class ProgressChartComponent implements OnChanges, AfterViewInit {
 
   private createChart(): void {
     const svg = d3.select(this.svgRef?.nativeElement);
-    const width = 825;
+    const containerWidth =
+      this.chartContainer?.nativeElement?.offsetWidth ||
+      this.svgRef?.nativeElement?.parentElement?.offsetWidth ||
+      825;
+    const width = containerWidth;
     const height = 300;
     const margin = { top: 20, right: 20, bottom: 40, left: 20 };
 
-    svg
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .style('width', '100%')
-      .style('height', 'auto');
+    svg.attr('width', width).attr('height', height).style('display', 'block');
 
     const g = svg
       .append('g')
