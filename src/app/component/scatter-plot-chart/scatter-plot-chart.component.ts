@@ -99,7 +99,9 @@ export class ScatterPlotChartComponent {
 
   ngAfterViewInit(): void {
     if (this.svgRef?.nativeElement) {
-      this.elem = this.svgRef.nativeElement.parentElement;
+      this.elem =
+        this.chartContainer?.nativeElement ||
+        this.svgRef.nativeElement.parentElement;
       this.createChart();
     }
   }
@@ -226,18 +228,18 @@ export class ScatterPlotChartComponent {
       plotPoints.length > 0 ? this.applyJitter(plotPoints) : [];
 
     const svg = d3.select(this.svgRef?.nativeElement);
-    const width = 825;
+    const containerWidth =
+      this.chartContainer?.nativeElement?.offsetWidth ||
+      this.svgRef?.nativeElement?.parentElement?.offsetWidth ||
+      825;
+    const width = containerWidth;
     const height = 350;
     const margin = { top: 20, right: 20, bottom: 60, left: 60 };
 
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
-    svg
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .style('width', '100%')
-      .style('height', 'auto');
+    svg.attr('width', width).attr('height', height).style('display', 'block');
 
     const g = svg
       .append('g')

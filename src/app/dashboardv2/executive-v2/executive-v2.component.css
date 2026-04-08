@@ -51,6 +51,26 @@
   scroll-snap-type: both mandatory;
 }
 
+/* Equalize KPI card heights within the same grid row */
+:host ::ng-deep .p-grid.justify-content-start {
+  align-items: stretch;
+}
+
+:host ::ng-deep .p-grid.justify-content-start > [class*='p-col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+:host
+  ::ng-deep
+  .p-grid.justify-content-start
+  > [class*='p-col-']
+  > app-kpi-card-v2 {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .tabs-container {
   display: flex;
   padding: 0 0.5rem;
