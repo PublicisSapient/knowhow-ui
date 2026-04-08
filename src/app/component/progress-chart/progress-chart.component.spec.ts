@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { ProgressChartComponent } from './progress-chart.component';
 import { SimpleChange } from '@angular/core';
 import * as d3 from 'd3';
@@ -38,16 +43,17 @@ describe('ProgressChartComponent', () => {
   });
 
   describe('ngAfterViewInit', () => {
-    it('should transform data and create chart when chartData exists', () => {
+    it('should transform data and create chart when chartData exists', fakeAsync(() => {
       component.chartData = mockChartData;
       spyOn<any>(component, 'transformData');
       spyOn<any>(component, 'createChart');
 
       component.ngAfterViewInit();
+      tick();
 
       expect(component['transformData']).toHaveBeenCalled();
       expect(component['createChart']).toHaveBeenCalled();
-    });
+    }));
 
     it('should not create chart when chartData is undefined', () => {
       component.chartData = undefined;
@@ -60,7 +66,7 @@ describe('ProgressChartComponent', () => {
   });
 
   describe('ngOnChanges', () => {
-    it('should clear previous chart and recreate on data change', () => {
+    it('should clear previous chart and recreate on data change', fakeAsync(() => {
       component.chartData = mockChartData;
       fixture.detectChanges();
 
@@ -72,10 +78,11 @@ describe('ProgressChartComponent', () => {
       };
 
       component.ngOnChanges(changes);
+      tick();
 
       expect(component['transformData']).toHaveBeenCalled();
       expect(component['createChart']).toHaveBeenCalled();
-    });
+    }));
 
     it('should not process if chartData change has no currentValue', () => {
       spyOn<any>(component, 'transformData');
