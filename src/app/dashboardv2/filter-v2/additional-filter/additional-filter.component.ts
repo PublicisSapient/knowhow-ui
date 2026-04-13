@@ -67,7 +67,9 @@ export class AdditionalFilterComponent implements OnChanges {
             Object.keys(data)?.length &&
             data[Object.keys(data)[0]]?.length
           ) {
-            this.selectedFilters = [];
+            if (this.selectedTab?.toLowerCase() !== 'developer') {
+              this.selectedFilters = [];
+            }
             this.selectedTrends = this.service.getSelectedTrends();
 
             if (
@@ -79,6 +81,7 @@ export class AdditionalFilterComponent implements OnChanges {
               )
             ) {
               this.filterData = [];
+              this.selectedFilters = [];
               this.previousSelectedTrends = [...this.selectedTrends];
               // project changed, reset addtnl. filters
               // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
@@ -109,13 +112,27 @@ export class AdditionalFilterComponent implements OnChanges {
                   a.nodeId === 'Overall' ? -1 : b.nodeId === 'Overall' ? 1 : 0,
                 );
               }
-              this.applyDefaultFilter();
+              const stateFilters =
+                JSON.parse(this.service.getBackupOfUrlFilters())[
+                  'additional_level'
+                ] ||
+                this.service.getBackupOfFilterSelectionState(
+                  'additional_level',
+                );
+              if (stateFilters && Object.keys(stateFilters).length > 0) {
+                this.restoreDeveloperFilters(stateFilters);
+              } else {
+                this.applyDefaultFilter();
+              }
             }
           } else {
             this.resetFilterData();
           }
         }),
     );
+    window.addEventListener('scroll', () => {
+      this.multiSelect?.hide();
+    });
   }
 
   populateFilterDataForDeveloper(f, index, data) {
@@ -218,6 +235,30 @@ export class AdditionalFilterComponent implements OnChanges {
     }, 100);
   }
 
+  restoreDeveloperFilters(stateFilters) {
+    Object.keys(stateFilters).forEach((key) => {
+      this.filterData.forEach((data, index) => {
+        const matchingFilter = data.find(
+          (f) =>
+            f.labelName === key &&
+            stateFilters[key].some((s) => s.nodeId === f.nodeId),
+        );
+        if (matchingFilter) {
+          const currentSelectedId = this.selectedFilters[index]?.nodeId;
+          const matchId = matchingFilter.nodeId;
+          if (currentSelectedId !== matchId) {
+            this.selectedFilters[index] = matchingFilter;
+            const payload = {
+              value: matchId,
+              index: index + 1,
+            };
+            this.service.applyAdditionalFilters(payload);
+          }
+        }
+      });
+    });
+  }
+
   arrayCompare(arr1, arr2) {
     if (arr1.length !== arr2.length) {
       return false;
@@ -318,7 +359,12 @@ export class AdditionalFilterComponent implements OnChanges {
         this.service.setBackupOfFilterSelectionState({ additional_level: e });
       }
     } else {
-      this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
+      const filterVal = e && e.hasOwnProperty('value') ? e.value : e;
+      this.appliedFilters[filterKey] = Array.isArray(filterVal)
+        ? filterVal
+        : filterVal
+        ? [filterVal]
+        : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
       const nodeId = {};
@@ -326,10 +372,22 @@ export class AdditionalFilterComponent implements OnChanges {
       nodeId['index'] = index;
 
       this.service.applyAdditionalFilters(nodeId);
+
+      const obj = {};
+      this.selectedFilters?.forEach((filter) => {
+        if (filter) {
+          const firstFilter = Array.isArray(filter) ? filter[0] : filter;
+          const labelName = firstFilter?.labelName;
+          if (labelName) {
+            obj[labelName] = Array.isArray(filter) ? filter : [filter];
+          }
+        }
+      });
+      this.service.setBackupOfFilterSelectionState({ additional_level: obj });
     }
 
     if (this.multiSelect?.overlayVisible) {
-      if (!e.hasOwnProperty('preventDefault')) {
+      if (e && typeof e === 'object' && !e.hasOwnProperty('preventDefault')) {
         e.preventDefault = () => {};
         e.stopPropagation = () => {};
       }

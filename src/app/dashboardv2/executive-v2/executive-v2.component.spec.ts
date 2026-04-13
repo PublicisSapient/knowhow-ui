@@ -38,7 +38,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 declare let $: any;
 import { CircularProgressComponent } from '../../component/circular-progress/circular-progress.component';
@@ -78,6 +78,7 @@ describe('ExecutiveV2Component', () => {
   let helperService: HelperService;
   let excelService: ExcelService;
   let exportExcelComponent;
+  let router: Router;
   const baseUrl = environment.baseUrl; // Servers Env
   const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
   const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
@@ -2986,6 +2987,7 @@ describe('ExecutiveV2Component', () => {
     helperService = TestBed.inject(HelperService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
 
     // Mock getConfigurationDetails method
     spyOn(service, 'getConfigurationDetails').and.returnValue({
@@ -3802,6 +3804,21 @@ describe('ExecutiveV2Component', () => {
     };
     component.receiveSharedData(event);
     expect(component.noTabAccess).toBe(false);
+  });
+
+  it('should not clear additional filter backup when on developer dashboard (via URL)', () => {
+    spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/developer');
+    spyOn(service, 'setAddtionalFilterBackup');
+    component.selectedTab = 'Overall';
+    const event = {
+      masterData: { kpiList: [] },
+      filterData: [],
+      filterApplyData: {},
+      selectedTab: 'developer',
+      isAdditionalFilters: false,
+    };
+    component.receiveSharedData(event);
+    expect(service.setAddtionalFilterBackup).not.toHaveBeenCalled();
   });
 
   xit('should call grouping kpi functions when filterdata is available', () => {
