@@ -1035,11 +1035,8 @@ export class HelperService {
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
-        this.router.navigate(['/authentication/login']).then(() => {
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        });
+
+        this.router.navigateByUrl('/authentication/login');
       } else {
         localStorage.removeItem('sprintGoalSummaryCache');
         this.sharedService.clearPEBDataCache();

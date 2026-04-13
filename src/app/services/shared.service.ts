@@ -442,12 +442,6 @@ export class SharedService {
 
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
-    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
-    const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
-    const hasConfig = segments && segments.includes('Config');
-    const hasHelp = segments && segments.includes('Help');
-    const hasError = segments && segments.includes('Error');
-
     if (
       selectedFilterObj &&
       Object.keys(selectedFilterObj).length === 1 &&
@@ -465,22 +459,26 @@ export class SharedService {
     this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
-    if (
-      this.tempStateFilters !== stateFilterEnc &&
-      !hasConfig &&
-      !hasError &&
-      !hasHelp
-    ) {
+    if (this.tempStateFilters !== stateFilterEnc) {
       this.tempStateFilters = stateFilterEnc;
       setTimeout(() => {
-        this.router.navigate([], {
-          queryParams: {
-            stateFilters: stateFilterEnc,
-            selectedTab: this.selectedTab,
-            selectedType: this.selectedtype,
-          },
-          relativeTo: this.route,
-        });
+        const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+        const segments = routerUrl?.split('/');
+        const hasConfig = segments.includes('Config');
+        const hasHelp = segments.includes('Help');
+        const hasError = segments.includes('Error');
+        const hasAuth = segments.includes('authentication');
+
+        if (!hasConfig && !hasError && !hasHelp && !hasAuth) {
+          this.router.navigate([], {
+            queryParams: {
+              stateFilters: stateFilterEnc,
+              selectedTab: this.selectedTab,
+              selectedType: this.selectedtype,
+            },
+            relativeTo: this.route,
+          });
+        }
       });
     }
   }
@@ -532,11 +530,6 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
-    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
-    const segments = routerUrl?.split('/');
-    const hasConfig = segments.includes('Config');
-    const hasHelp = segments.includes('Help');
-    const hasError = segments.includes('Error');
     if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (
@@ -553,17 +546,26 @@ export class SharedService {
         : '',
     );
 
-    if (!hasConfig && !hasError && !hasHelp) {
-      this.router.navigate([], {
-        queryParams: {
-          stateFilters: this.tempStateFilters,
-          kpiFilters: kpiFilterParamStr,
-          selectedTab: this.selectedTab,
-          selectedType: this.selectedtype,
-        }, // Pass the object here
-        relativeTo: this.route,
-      });
-    }
+    setTimeout(() => {
+      const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+      const segments = routerUrl?.split('/');
+      const hasConfig = segments.includes('Config');
+      const hasHelp = segments.includes('Help');
+      const hasError = segments.includes('Error');
+      const hasAuth = segments.includes('authentication');
+
+      if (!hasConfig && !hasError && !hasHelp && !hasAuth) {
+        this.router.navigate([], {
+          queryParams: {
+            stateFilters: this.tempStateFilters,
+            kpiFilters: kpiFilterParamStr,
+            selectedTab: this.selectedTab,
+            selectedType: this.selectedtype,
+          }, // Pass the object here
+          relativeTo: this.route,
+        });
+      }
+    });
     this.selectedFilterOption.next(value);
   }
 
