@@ -12643,6 +12643,43 @@ describe('ExecutiveV2Component', () => {
     );
   });
 
+  it('should updateKPI138FilterOptions and prevent filter2 from disappearing on manual deselect', () => {
+    const kpiId = 'kpi138';
+
+    // Setup component state
+    component.allKpiArray = [
+      {
+        kpiId: 'kpi138',
+        filters: {
+          filter1: { filterType: 'multiselectdropdown', options: ['A', 'B'] },
+          filter2: { filterType: 'multiselectdropdown', options: ['X', 'Y'] },
+        },
+        trendValueList: {
+          value: [{ filter1: 'A', filter2: 'Y' }],
+        },
+      },
+    ];
+
+    component.kpiDropdowns = {
+      kpi138: [
+        { filterType: 'multiselectdropdown', options: ['A', 'B'] },
+        { filterType: 'multiselectdropdown', options: ['X', 'Y'] },
+      ],
+    };
+
+    // Simulate manual deselection where selected filters have no items causing availableF2 to be empty
+    component.kpiSelectedFilterObj = {
+      kpi138: { filter1: ['B'] }, // 'B' has no associated filter2 options in trendValueList mock above
+    };
+
+    component.updateKPI138FilterOptions(kpiId);
+
+    // Filter 2 options should fallback to the original options rather than becoming empty
+    const filter2Dropdown = component.kpiDropdowns[kpiId][1];
+    expect(filter2Dropdown.options.length).toBeGreaterThan(0);
+    expect(filter2Dropdown.options).toEqual(['X', 'Y']);
+  });
+
   it('postJiraKpi should call httpServicepost', fakeAsync(() => {
     const jiraKpiData = {
       kpi14: {

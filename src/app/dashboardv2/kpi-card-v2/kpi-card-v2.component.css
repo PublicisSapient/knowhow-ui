@@ -1,11 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 :host .kpi-card-container {
   background: #fff;
   border: 1px solid #d5dbe1;
   border-radius: 10px;
   opacity: 1;
   position: relative;
-  /* max-height: 500px;
-  height: 400px; */
+  height: 100%;
+  box-sizing: border-box;
 }
 
 :host .kpi-card-container-v2 {

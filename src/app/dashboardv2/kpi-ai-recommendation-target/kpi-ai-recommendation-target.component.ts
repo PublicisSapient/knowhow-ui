@@ -98,7 +98,9 @@ export class KpiAiRecommendationTargetComponent {
   }
 
   formatActionPlanDescription(description: string): string {
-    if (!description) return '';
+    if (!description) {
+      return '';
+    }
 
     // Replace **text** with <strong>text</strong> using safer string manipulation
     let result = description;

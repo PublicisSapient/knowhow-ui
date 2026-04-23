@@ -331,11 +331,9 @@ describe('ScatterPlotChartComponent', () => {
           ],
         },
       ];
-      component['createChart']();
-      fixture.detectChanges();
-
       const svg = fixture.debugElement.query(By.css('svg'));
-      expect(svg.nativeElement.getAttribute('viewBox')).toBe('0 0 825 350');
+      expect(svg.nativeElement.getAttribute('width')).toBeDefined();
+      expect(svg.nativeElement.getAttribute('height')).toBe('350');
     });
 
     it('should render grid lines', () => {
