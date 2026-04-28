@@ -161,18 +161,19 @@ export class AccessMgmtComponent implements OnInit {
   }
 
   mouseEnter(event, item, node) {
+    console.log(event, item, node);
     const accessLevel = node.accessLevel;
     if (this.allProjectsData?.length) {
       if (accessLevel.toLowerCase() === 'project') {
         const tooltipProject = this.allProjectsData?.filter(
-          (proj) => proj.id === item.itemId,
+          (proj) => proj.projectNodeId === item.itemId,
         );
         this.toolTipHtml = `<span>Project: ${tooltipProject[0]?.projectDisplayName}</span><br/>`;
         tooltipProject[0]?.hierarchy.forEach((hier) => {
           this.toolTipHtml += `<span>${hier.hierarchyLevel.hierarchyLevelName}: ${hier.value}</span><br/>`;
         });
       } else {
-        let selectedHierarchy = [];
+        let selectedHierarchy: any[] = [];
         this.allProjectsData.every((proj) => {
           proj.hierarchy.forEach((hier) => {
             if (
