@@ -219,6 +219,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         }
 
         if (this.dashConfigData[this.selectedType]?.length) {
+          const pebBoardSlug = 'potential-economic-benefits';
           if (this.selectedType === 'scrum') {
             this.dashConfigData[this.selectedType].forEach((board) => {
               if (board.boardSlug === 'iteration') {
@@ -245,9 +246,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
                 // TODO : Temp disabled PEB for kanban
                 disabled:
                   (this.sharedService.getSelectedType() === 'kanban' &&
-                    obj['boardSlug'] === 'potential-economic-benefits') ||
-                  (obj['boardSlug'] === 'potential-economic-benefits' &&
-                    !this.pebFlag.value)
+                    obj['boardSlug'] === pebBoardSlug) ||
+                  (obj['boardSlug'] === pebBoardSlug && !this.pebFlag.value)
                     ? true
                     : false,
               };
@@ -256,10 +256,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
               if (board.slug === 'home' && !this.homeTabFlag.value) {
                 return false;
               }
-              if (
-                board.slug === 'potential-economic-benefits' &&
-                !this.pebFlag.value
-              ) {
+              if (board.slug === pebBoardSlug && !this.pebFlag.value) {
                 return false;
               }
               return true;

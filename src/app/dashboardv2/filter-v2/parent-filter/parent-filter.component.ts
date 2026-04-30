@@ -5,7 +5,10 @@ import {
   OnChanges,
   Output,
   SimpleChanges,
+  ViewChild,
+  HostListener,
 } from '@angular/core';
+import { Dropdown } from 'primeng/dropdown';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -39,6 +42,7 @@ export class ParentFilterComponent implements OnChanges {
   stateFilters = '';
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
+  @ViewChild(Dropdown) dropdown: Dropdown;
   filterValue = '';
   constructor(
     public service: SharedService,
@@ -296,6 +300,13 @@ export class ParentFilterComponent implements OnChanges {
   onDropdownChange($event: any) {
     if (this.helperService.isDropdownElementSelected($event)) {
       this.handleSelectedLevelChange(true);
+    }
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event: any) {
+    if (this.dropdown) {
+      this.dropdown.hide();
     }
   }
 }

@@ -6,6 +6,7 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  HostListener,
 } from '@angular/core';
 import { NgClass, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -745,6 +746,13 @@ export class PrimaryFilterComponent implements OnChanges {
   handleFooterKeydown(event: KeyboardEvent) {
     if (event.key === 'Tab') {
       this.preventClose = true; // Prevent close when tabbing within panel
+    }
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event: any) {
+    if (this.multiSelect) {
+      this.multiSelect.hide();
     }
   }
 }

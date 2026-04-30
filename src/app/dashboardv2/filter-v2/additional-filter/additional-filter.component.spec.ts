@@ -61,6 +61,12 @@ describe('AdditionalFilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should hide multiSelect on scroll', () => {
+    component.multiSelect = { hide: jasmine.createSpy('hide') } as any;
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.multiSelect.hide).toHaveBeenCalled();
+  });
+
   xit('should reset filterData, filterSet, and additional filter config when selectedTab changes', () => {
     component.filterData = ['Filter 1', 'Filter 2'];
     component.filterSet = new Set(['Filter 1', 'Filter 2']);

@@ -4473,7 +4473,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       ? [selectedFilters.filter1]
       : [];
 
-    if (selectedF1.length > 0 && this.kpiDropdowns[kpiId]?.length > 1) {
+    if (
+      selectedF1.length > 0 &&
+      !selectedF1.includes('Overall') &&
+      this.kpiDropdowns[kpiId]?.length > 1
+    ) {
       const availableF2 = new Set();
       trendValueList.forEach((item) => {
         if (selectedF1.includes(item.filter1)) {
@@ -4486,9 +4490,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       // Update Filter 2 (index 1) options
       const filter2Dropdown = this.kpiDropdowns[kpiId][1];
       if (filter2Dropdown && filter2Dropdown.options) {
-        filter2Dropdown.options = filter2Dropdown.options.filter((opt) =>
+        const filteredOptions = filter2Dropdown.options.filter((opt) =>
           availableF2.has(opt),
         );
+        // Only apply filter if it leaves some options, otherwise we revert to original options so the dropdown doesn't disappear
+        if (filteredOptions.length > 0) {
+          filter2Dropdown.options = filteredOptions;
+        } else {
+          // Fallback to original options if filtering would hide the dropdown entirely
+          const originalF2Options = originalDropdownArr[1]?.options || [];
+          filter2Dropdown.options = originalF2Options;
+        }
       }
 
       // Also ensure that if Filter 2 has selections that are no longer available, they are removed
@@ -4517,7 +4529,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         typeof event.filter1 === 'object' &&
         !Array.isArray(event.filter1)
       ) {
-        const flattenedEvent = {};
+        const flattenedEvent: any = {};
         if (event.filter1.hasOwnProperty('filter1')) {
           flattenedEvent['filter1'] = event.filter1.filter1;
         }
@@ -4525,6 +4537,44 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           flattenedEvent['filter2'] = event.filter1.filter2;
         }
         if (event.hasOwnProperty('filter2') && event.filter2 !== null) {
+          // If we had a flat filter2 already, prefer it or merge it
+          flattenedEvent['filter2'] = event.filter2;
+        }
+        event = flattenedEvent;
+      } else if (
+        event &&
+        typeof event.filter1 === 'object' &&
+        Array.isArray(event.filter1) &&
+        event.filter1.length > 0 &&
+        typeof event.filter1[0] === 'object'
+      ) {
+        // Handle case where user selects multiple object options from a multiselect
+        const flattenedEvent: any = { filter1: [], filter2: [] };
+        event.filter1.forEach((opt: any) => {
+          if (opt && opt.filter1) {
+            if (!flattenedEvent.filter1.includes(opt.filter1)) {
+              flattenedEvent.filter1.push(opt.filter1);
+            }
+          }
+          if (opt && opt.filter2) {
+            if (Array.isArray(opt.filter2)) {
+              opt.filter2.forEach((val) => {
+                if (!flattenedEvent.filter2.includes(val)) {
+                  flattenedEvent.filter2.push(val);
+                }
+              });
+            } else {
+              if (!flattenedEvent.filter2.includes(opt.filter2)) {
+                flattenedEvent.filter2.push(opt.filter2);
+              }
+            }
+          }
+        });
+        if (
+          event.hasOwnProperty('filter2') &&
+          event.filter2 !== null &&
+          (!Array.isArray(event.filter2) || event.filter2.length > 0)
+        ) {
           flattenedEvent['filter2'] = event.filter2;
         }
         event = flattenedEvent;
@@ -4704,15 +4754,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       event &&
       Object.keys(event)?.length !== 0 &&
       typeof event === 'object' &&
+      !Array.isArray(event) &&
       !selectedFilterBackup?.hasOwnProperty('filter2')
     ) {
       for (const key in event) {
         if (typeof event[key] === 'string') {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+          this.kpiSelectedFilterObj[kpi?.kpiId][key] = [event[key]];
         } else {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
-          }
+          this.kpiSelectedFilterObj[kpi?.kpiId][key] = event[key];
         }
       }
       /** When we have multi dropdown */
@@ -4720,6 +4769,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       event &&
       Object.keys(event)?.length !== 0 &&
       typeof event === 'object' &&
+      !Array.isArray(event) &&
       !Array.isArray(selectedFilterBackup) &&
       selectedFilterBackup.hasOwnProperty('filter2')
     ) {
@@ -4734,7 +4784,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ...selectedFilter,
       };
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: [event] };
+      const updatedValue = Array.isArray(event) ? event : [event];
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: updatedValue };
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
@@ -4765,7 +4816,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: [event] };
+      if (event === 'Overall') {
+        this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+      } else {
+        this.kpiSelectedFilterObj[kpi?.kpiId] = { filter1: [event] };
+      }
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);

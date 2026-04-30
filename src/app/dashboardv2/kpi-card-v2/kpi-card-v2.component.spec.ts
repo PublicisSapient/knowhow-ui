@@ -818,9 +818,9 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
   });
 
-  it('should delete the matching key from filterOptions', () => {
+  it('should reset the matching key to [] in filterOptions', () => {
     const event = 'Event 1';
-    const filterOptions = {
+    component.filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
       'Event 3': 'Option 3',
@@ -828,12 +828,12 @@ describe('KpiCardV2Component', () => {
 
     component.handleClearAll(event);
 
-    expect(filterOptions[event]).toEqual('Option 1');
+    expect(component.filterOptions[event]).toEqual([]);
   });
 
   it('should emit the correct event', () => {
     const event = 'Event 1';
-    const filterOptions = {
+    component.filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
       'Event 3': 'Option 3',
@@ -1402,10 +1402,17 @@ describe('KpiCardV2Component', () => {
       });
     });
 
-    it('should move selected option to top', () => {
-      component.dropdownArr[0].options = ['option1', 'option2'];
+    it('should move selected option to top and create a new array reference', () => {
+      const originalOptions = ['option1', 'option2', 'option3'];
+      component.dropdownArr[0].options = originalOptions;
       component.handleChange('multi', { value: ['option2'] });
-      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1']);
+      expect(component.dropdownArr[0].options).toEqual([
+        'option2',
+        'option1',
+        'option3',
+      ]);
+      // Verify that the array reference changed (non-mutating update)
+      expect(component.dropdownArr[0].options).not.toBe(originalOptions);
     });
   });
 

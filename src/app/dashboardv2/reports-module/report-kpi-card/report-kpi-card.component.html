@@ -67,8 +67,9 @@
         <div class="p-px-3 p-py-0" style="height: auto" [ngSwitch]="chartType">
           <!-- <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
                         [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart> -->
-          <ng-container *ngSwitchCase="'stacked-bar-chart'">
+                        <ng-container *ngSwitchCase="'stacked-bar-chart'">
             <app-stacked-group-bar-chart
+              *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197'; else standardStackedBar"
               [defectsBreachedSLAs]="defectsBreachedSLAs"
               [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
               [data]="currentChartData"
@@ -76,6 +77,35 @@
               [thresholdValue]="kpiData?.kpiThresholdObj"
               [color]="colors"
               [source]="fromReport"></app-stacked-group-bar-chart>
+            <ng-template #standardStackedBar>
+              <app-stacked-bar-chart
+                [data]="currentChartData"
+                [width]="chartWidth"
+                [height]="chartHeight"></app-stacked-bar-chart>
+            </ng-template>
+          </ng-container>
+          <ng-container *ngSwitchCase="'scatter'">
+            <app-scatter-plot-chart
+              [thresholdValue]="kpiData?.kpiThresholdObj"
+              [unit]="kpiData?.kpiUnit"
+              [data]="currentChartData"
+              [xCaption]="kpiData?.xAxis"
+              [yCaption]="kpiData?.yAxis"
+              [color]=""
+              [selectedtype]="kpiData?.selectedType"
+              [viewType]="showChart"
+              [board]="kpiData?.selectedTab"
+              [kpiId]="kpiData?.kpiId">
+            </app-scatter-plot-chart>
+          </ng-container>
+          <ng-container *ngSwitchCase="'progressbar'">
+            <app-progress-chart
+              [chartData]="currentChartData"
+              [selectedtype]="kpiData?.selectedType"
+              [viewType]="showChart"
+              [board]="kpiData?.selectedTab"
+              [unit]="kpiData?.kpiUnit"
+              [kpiId]="kpiData?.kpiId"></app-progress-chart>
           </ng-container>
           <app-barchart
             [data]="currentChartData"
@@ -87,12 +117,15 @@
             [data]="currentChartData"
             [width]="chartWidth"
             [height]="chartHeight"></app-stacked-bar>
-          <app-semi-circle-donut-chart
-            *ngSwitchCase="'semi-circle-donut-chart'"
-            [value]="currentChartData"
-            [max]="100"
-            [width]="chartWidth"
-            [height]="chartHeight"></app-semi-circle-donut-chart>
+          <ng-container *ngSwitchCase="'semi-circle-donut-chart'">
+            <app-semi-circle-donut-chart
+              [value]="currentChartData"
+              [max]="100"
+              [kpiId]="kpiData?.kpiId"
+              [width]="chartWidth"
+              [height]="chartHeight"
+              [viewType]="showChart"></app-semi-circle-donut-chart>
+          </ng-container>
           <app-chart-with-filters
             [data]="currentChartData?.chartData || currentChartData[0]?.data"
             *ngSwitchCase="'chartWithFilter'"
@@ -156,7 +189,7 @@
                 [thresholdValue]="kpiThresholdObj"
                 [data]="currentChartData"
                 [color]="chartColorList"
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [selectedtype]="selectedtype"
                 [isAggregationStacks]="
                   kpiData?.isAggregationStacks === false ? false : true
@@ -192,7 +225,7 @@
                 [data]="currentChartData"
                 [xCaption]="kpiData?.xaxisLabel"
                 [yCaption]="kpiData?.yaxisLabel"
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [thresholdValue]="kpiData?.kpiThresholdObj"
                 [color]="colors"
                 [source]="fromReport"
@@ -219,7 +252,8 @@
                 [source]="fromReport"
                 [thresholdValue]="kpiData?.kpiThresholdObj"
                 [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel">
+                [yAxisLabel]="yAxisLabel"
+                [kpiId]="kpiData?.kpiId">
               </app-grouped-column-plus-line-chart-v2>
             </ng-container>
           </ng-container>
@@ -242,7 +276,8 @@
                 [yAxisOrder]="kpiData?.yaxisOrder"
                 [source]="fromReport"
                 [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel">
+                [yAxisLabel]="yAxisLabel"
+                [kpiId]="kpiData?.kpiId">
               </app-bar-with-y-axis-group>
             </ng-container>
           </ng-container>
@@ -272,7 +307,7 @@
           <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
             <ng-container>
               <app-horizontal-percent-bar-chartv2
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [kpiWidth]="kpiData?.kpiWidth"
                 [data]="currentChartData">
               </app-horizontal-percent-bar-chartv2>
@@ -285,7 +320,7 @@
           <ng-container *ngSwitchCase="'stacked-area'">
             <ng-container>
               <app-stacked-area-chart
-                [kpiId]="kpi?.kpiId"
+                [kpiId]="kpiData?.kpiId"
                 [data]="currentChartData"></app-stacked-area-chart>
             </ng-container>
           </ng-container>
