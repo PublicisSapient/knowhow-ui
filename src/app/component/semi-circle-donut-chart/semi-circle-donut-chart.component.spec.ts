@@ -60,12 +60,12 @@ describe('SemiCircleDonutChartComponent', () => {
           value: [{ value: 75 }],
         },
       ];
-      spyOn<any>(component, 'extractKpi182Data').and.callThrough();
+      spyOn<any>(component, 'processInputData').and.callThrough();
       spyOn<any>(component, 'createDonutChart');
 
       component.ngOnInit();
 
-      expect(component['extractKpi182Data']).toHaveBeenCalled();
+      expect(component['processInputData']).toHaveBeenCalled();
       expect(component['createDonutChart']).toHaveBeenCalled();
     });
 
@@ -91,16 +91,16 @@ describe('SemiCircleDonutChartComponent', () => {
       expect(component['createDonutChart']).toHaveBeenCalled();
     });
 
-    it('should parse string values to integers', () => {
+    it('should parse string values to floats', () => {
       spyOn<any>(component, 'createDonutChart');
-      component.value = '75' as any;
+      component.value = '75.5' as any;
       component.totalIssues = '100' as any;
 
       component.ngOnChanges({
-        value: new SimpleChange(null, '75', false),
+        value: new SimpleChange(null, '75.5', false),
       });
 
-      expect(component.value).toBe(75);
+      expect(component.value).toBe(75.5);
       expect(component.totalIssues).toBe(100);
     });
 
@@ -108,30 +108,27 @@ describe('SemiCircleDonutChartComponent', () => {
       component.kpiId = 'kpi182';
       const newChartData = [{ value: [{ value: 85 }] }];
 
-      spyOn<any>(component, 'extractKpi182Data').and.callThrough();
+      spyOn<any>(component, 'processInputData').and.callThrough();
       spyOn<any>(component, 'createDonutChart');
 
       component.ngOnChanges({
         chartData: new SimpleChange(null, newChartData, false),
       });
 
-      expect(component['extractKpi182Data']).toHaveBeenCalled();
+      expect(component['processInputData']).toHaveBeenCalled();
       expect(component['createDonutChart']).toHaveBeenCalled();
     });
 
-    it('should not call extractKpi182Data for non-kpi182', () => {
-      component.kpiId = 'kpi123';
-      spyOn<any>(component, 'extractKpi182Data');
-
+    it('should call processInputData when totalIssues changes', () => {
+      spyOn<any>(component, 'processInputData');
       component.ngOnChanges({
-        chartData: new SimpleChange(null, [], false),
+        totalIssues: new SimpleChange(null, 100, false),
       });
-
-      expect(component['extractKpi182Data']).not.toHaveBeenCalled();
+      expect(component['processInputData']).toHaveBeenCalled();
     });
   });
 
-  describe('extractKpi182Data', () => {
+  describe('processInputData', () => {
     it('should extract value from valid chartData', () => {
       component.kpiId = 'kpi182';
       component.chartData = [
@@ -140,51 +137,39 @@ describe('SemiCircleDonutChartComponent', () => {
         },
       ];
 
-      component['extractKpi182Data']();
+      component['processInputData']();
 
       expect(component.value).toBe(65.5);
       expect(component.totalIssues).toBe(100);
     });
 
-    it('should handle empty chartData', () => {
-      component.kpiId = 'kpi182';
-      component.chartData = [];
+    it('should extract value from valid value input (nested)', () => {
+      component.value = [
+        {
+          value: [{ value: 86.5 }],
+        },
+      ] as any;
 
-      spyOn(console, 'warn');
-      component['extractKpi182Data']();
+      component['processInputData']();
 
-      expect(component.value).toBe(0);
-      expect(component.totalIssues).toBe(0);
-      expect(console.warn).toHaveBeenCalledWith(
-        'No chartData available for kpi182',
-      );
+      expect(component.value).toBe(86.5);
+      expect(component.totalIssues).toBe(100);
     });
 
-    it('should handle null chartData', () => {
-      component.kpiId = 'kpi182';
-      component.chartData = null;
+    it('should handle empty data', () => {
+      component.chartData = [];
+      component.value = null;
 
-      spyOn(console, 'warn');
-      component['extractKpi182Data']();
+      component['processInputData']();
 
-      expect(component.value).toBe(0);
-      expect(component.totalIssues).toBe(0);
+      expect(component.value).toBe(null);
     });
 
     it('should handle chartData with missing value property', () => {
       component.kpiId = 'kpi182';
-      component.chartData = [{}];
+      component.chartData = [{}] as any;
 
-      component['extractKpi182Data']();
-
-      expect(component.value).toBe(0);
-    });
-
-    it('should handle chartData with empty value array', () => {
-      component.kpiId = 'kpi182';
-      component.chartData = [{ value: [] }];
-
-      component['extractKpi182Data']();
+      component['processInputData']();
 
       expect(component.value).toBe(0);
     });

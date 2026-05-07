@@ -1,4 +1,15 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  signal,
+  ViewChildren,
+  QueryList,
+  HostListener,
+} from '@angular/core';
+import { MultiSelect } from 'primeng/multiselect';
+import { Dropdown } from 'primeng/dropdown';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -32,6 +43,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('maturityComponent')
   maturityComponent: MaturityComponent;
   @ViewChild('mainTable') mainTable: any;
+  @ViewChildren(MultiSelect) multiSelects: QueryList<MultiSelect>;
+  @ViewChildren(Dropdown) dropdowns: QueryList<Dropdown>;
   expandedRows: { [key: string]: boolean } = {};
   selectedType: string = '';
   filterApplyData: any = {};
@@ -488,6 +501,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   onFilterBlur(columnName) {
     this.filteredColumn =
       this.filteredColumn === columnName ? '' : this.filteredColumn;
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  @HostListener('scroll', ['$event'])
+  onScroll(event: any) {
+    if (this.multiSelects) {
+      this.multiSelects.forEach((ms) => ms.hide());
+    }
+    if (this.dropdowns) {
+      this.dropdowns.forEach((dd) => dd.hide());
+    }
   }
 
   sortableColumn(columnName, tableDataSet = {}) {

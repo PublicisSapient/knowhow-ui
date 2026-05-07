@@ -572,19 +572,22 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   handleChange(type, value = null, filterIndex = 0) {
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
+      const options = [...(this.dropdownArr[filterIndex]?.options || [])];
       value.value.forEach((selectedItem) => {
         if (
           typeof selectedItem === 'string' ||
           typeof selectedItem === 'number'
         ) {
-          const index =
-            this.dropdownArr[filterIndex]?.options.indexOf(selectedItem);
+          const index = options.indexOf(selectedItem);
           if (index > -1) {
-            this.dropdownArr[filterIndex]?.options.splice(index, 1);
-            this.dropdownArr[filterIndex]?.options.unshift(selectedItem);
+            options.splice(index, 1);
+            options.unshift(selectedItem);
           }
         }
       });
+      if (this.dropdownArr[filterIndex]) {
+        this.dropdownArr[filterIndex].options = options;
+      }
     }
     if (typeof value === 'object') {
       value = value?.value;
