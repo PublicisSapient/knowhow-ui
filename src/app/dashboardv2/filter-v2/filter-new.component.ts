@@ -40,6 +40,7 @@ import { ParentFilterComponent } from './parent-filter/parent-filter.component';
 import { PrimaryFilterComponent } from './primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './additional-filter/additional-filter.component';
 import { ChatbotComponent } from 'src/app/dashboard/chatbot/chatbot.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-filter-new',
@@ -160,6 +161,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private analytics: AnalyticsService,
     private featureFlagsService: FeatureFlagsService,
+    private router: Router,
   ) {}
 
   async ngOnInit() {
@@ -472,9 +474,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         ];
       } else {
         this.additionalFilterConfig = null;
-        this.service.setBackupOfFilterSelectionState({
-          additional_level: null,
-        });
+        const backupOfUrlFilters = this.service.getBackupOfUrlFilters();
+        const hasAdditionalLevelInUrl =
+          backupOfUrlFilters &&
+          JSON.parse(backupOfUrlFilters)?.additional_level;
+        const isDeveloperObj =
+          this.selectedTab?.toLowerCase() === 'developer' ||
+          this.router.url.toLowerCase().includes('developer');
+        if (!isDeveloperObj) {
+          this.service.setBackupOfFilterSelectionState({
+            additional_level: null,
+          });
+        }
       }
       this.cdr.detectChanges();
     }
@@ -958,7 +969,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           );
         }
 
-        delete stateFilters['additional_level'];
+        const isDeveloperTab =
+          this.selectedTab?.toLowerCase() === 'developer' ||
+          this.router.url.toLowerCase().includes('developer');
+        if (!isDeveloperTab) {
+          delete stateFilters['additional_level'];
+        }
         if (this.filterApplyData['selectedMap']) {
           this.filterApplyData['selectedMap']['Project'] = stateFilters[
             'primary_level'

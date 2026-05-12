@@ -16,7 +16,15 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -29,7 +37,7 @@ import { Router } from '@angular/router';
   templateUrl: './project-filter.component.html',
   styleUrls: ['./project-filter.component.css'],
 })
-export class ProjectFilterComponent implements OnInit {
+export class ProjectFilterComponent implements OnInit, OnChanges {
   @Output() projectSelectedEvent = new EventEmitter<string>();
   @Input() projectAdminAccessLevels: any = [];
   data = <any>[];
@@ -63,6 +71,12 @@ export class ProjectFilterComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjects();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['projectAdminAccessLevels'] && this.formData) {
+      this.updateFieldDisability();
+    }
   }
 
   filterHierarchy(userRoles: any[], hierarchyData: any[]): any[] {
@@ -176,28 +190,7 @@ export class ProjectFilterComponent implements OnInit {
           this.filteredSuggestions[level.hierarchyLevelId] = level.list ?? [];
         });
 
-        if (isProjectAdmin && isAccessMgmtPage) {
-          const hierarchyOrder = this.formData.map(
-            (item) => item.hierarchyLevelId,
-          );
-
-          const firstMatchedIndex = Math.min(
-            ...this.projectAdminAccessLevels
-              .map((level) => hierarchyOrder.indexOf(level))
-              .filter((i) => i !== -1),
-          );
-
-          this.formData = this.formData.map((item, index) => ({
-            ...item,
-            isDisabled:
-              firstMatchedIndex !== Infinity && index >= firstMatchedIndex,
-          }));
-        } else {
-          this.formData = this.formData.map((item) => ({
-            ...item,
-            isDisabled: true,
-          }));
-        }
+        this.updateFieldDisability();
 
         this.service.sendProjectData(this.data);
       } else {
@@ -209,6 +202,36 @@ export class ProjectFilterComponent implements OnInit {
         });
       }
     });
+  }
+
+  updateFieldDisability() {
+    const currentUrl = this.router.url;
+    const isAccessMgmtPage = currentUrl.includes(
+      '/dashboard/Config/Profile/AccessMgmt',
+    );
+    const isProjectAdmin = this.authService.checkIfProjectAdmin();
+
+    if (isProjectAdmin && isAccessMgmtPage) {
+      const hierarchyOrder = this.formData.map((item) => item.hierarchyLevelId);
+
+      const rolesLevels = this.projectAdminAccessLevels || [];
+      const firstMatchedIndex = Math.min(
+        ...rolesLevels
+          .map((level) => hierarchyOrder.indexOf(level))
+          .filter((i) => i !== -1),
+      );
+
+      this.formData = this.formData.map((item, index) => ({
+        ...item,
+        isDisabled:
+          firstMatchedIndex !== Infinity && index >= firstMatchedIndex,
+      }));
+    } else {
+      this.formData = this.formData.map((item) => ({
+        ...item,
+        isDisabled: true,
+      }));
+    }
   }
   getData() {
     this.httpService.getProjectListData().subscribe((responseList) => {

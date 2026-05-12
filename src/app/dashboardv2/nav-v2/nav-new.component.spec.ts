@@ -145,17 +145,9 @@ describe('NavNewComponent', () => {
       'isActive',
       'events',
       'routerState',
-      'url',
-      'urlHandlingStrategy',
-      'config',
-      'resetConfig',
-      'ngOnDestroy',
-      'dispose',
-      'initialNavigation',
-      'setUpLocationChangeListener',
-      'getCurrentNavigation',
       'triggerEvent',
     ]);
+    routerSpy.url = '/dashboard/iteration';
     const helperSpy = jasmine.createSpyObj('HelperService', [
       'setBackupOfFilterSelectionState',
       'deepEqual',

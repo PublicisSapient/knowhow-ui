@@ -29,6 +29,7 @@
         appendTo="body"
         [(ngModel)]="selectedFilters[i]"
         [options]="filterData[i]"
+        dataKey="nodeId"
         (onChange)="onSelectionChange($event, i)"
         (onPanelShow)="moveSelectedOptionToTop($event, i)">
         <ng-template pTemplate="footer">
@@ -61,6 +62,7 @@
         appendTo="body"
         [(ngModel)]="selectedFilters[i]"
         [options]="filterData[i]"
+        dataKey="nodeId"
         (onChange)="onDropDownChange($event, i + 1)">
       </p-dropdown>
       <label class="floating-label" [for]="'singleselectFilter_' + i"
