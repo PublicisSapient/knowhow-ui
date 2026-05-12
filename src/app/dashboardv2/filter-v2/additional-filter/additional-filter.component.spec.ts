@@ -381,6 +381,21 @@ describe('AdditionalFilterComponent', () => {
     });
   });
 
+  it('should standardize payload to string nodeId when value is an object (Developer Dashboard)', () => {
+    component.selectedTab = 'Developer';
+    spyOn(sharedService, 'applyAdditionalFilters');
+
+    // Passing an object as the value (e.g., from a PrimeNG selection event)
+    const event = { value: { nodeId: 'test-node-123', nodeName: 'Test Node' } };
+    component.applyAdditionalFilter(event, 0);
+
+    // Should have called Service with ONLY the nodeId string
+    expect(sharedService.applyAdditionalFilters).toHaveBeenCalledWith({
+      value: 'test-node-123',
+      index: 0,
+    });
+  });
+
   it('should apply additional filters and update appliedFilters when selectedTab is developer and filterData has length greater than 1', () => {
     component.selectedTab = 'Developer';
     component.filterData = [
@@ -555,6 +570,7 @@ describe('AdditionalFilterComponent', () => {
     component.appliedFilters = {};
     component.service = jasmine.createSpyObj('Service', [
       'applyAdditionalFilters',
+      'setBackupOfFilterSelectionState',
     ]);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
 
@@ -593,6 +609,7 @@ describe('AdditionalFilterComponent', () => {
     component.appliedFilters = {};
     component.service = jasmine.createSpyObj('Service', [
       'applyAdditionalFilters',
+      'setBackupOfFilterSelectionState',
     ]);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
 
@@ -631,6 +648,7 @@ describe('AdditionalFilterComponent', () => {
     component.appliedFilters = {};
     component.service = jasmine.createSpyObj('Service', [
       'applyAdditionalFilters',
+      'setBackupOfFilterSelectionState',
     ]);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
     const mockEvent = { value: 'value1' };

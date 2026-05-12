@@ -810,7 +810,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiTableDataObj[key] = [];
       }
 
-      this.service.setAddtionalFilterBackup({});
+      const isDeveloper =
+        this.selectedTab?.toLowerCase() === 'developer' ||
+        this.router.url.toLowerCase().includes('developer');
+      if (!isDeveloper) {
+        this.service.setAddtionalFilterBackup({});
+      }
       if (this.configGlobalData?.length) {
         // set up dynamic tabs
         this.setUpTabs();
@@ -1819,7 +1824,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab.toLowerCase() === 'developer' &&
       developerBoardKpis?.includes(kpiId)
     ) {
-      this.service.setBackupOfFilterSelectionState({ additional_level: null });
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
@@ -4680,8 +4684,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
-          if (event.value.includes('->')) {
-            this.currentBranch = event.value;
+          const eventValue =
+            typeof event.value === 'object' && event.value !== null
+              ? event.value.nodeId
+              : event.value;
+          if (
+            eventValue &&
+            typeof eventValue === 'string' &&
+            eventValue.includes('->')
+          ) {
+            this.currentBranch = eventValue;
             this.filterPerformanceSummaryData();
           }
           const trendValueList =
@@ -4693,16 +4705,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           ) {
             if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
               this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [
-                event.value,
+                eventValue,
               ];
             } else {
               this.kpiSelectedFilterObj[kpi?.kpiId] = {};
               this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [
-                event.value,
+                eventValue,
               ];
             }
           } else {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [event.value];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [eventValue];
           }
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = [];
