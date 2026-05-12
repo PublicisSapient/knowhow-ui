@@ -442,6 +442,7 @@ export class SharedService {
 
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
+    const isDeveloperTab = this.router.url.toLowerCase().includes('developer');
     if (
       selectedFilterObj &&
       Object.keys(selectedFilterObj).length === 1 &&
@@ -449,9 +450,26 @@ export class SharedService {
     ) {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
+      // Protection layer for additional_level on developer tab
+      // If the incoming payload tries to clear additional_level but we are on developer tab
+      // and already have a valid state, we preserve the existing state.
+      if (
+        isDeveloperTab &&
+        selectedFilterObj.hasOwnProperty('additional_level') &&
+        (selectedFilterObj['additional_level'] === null ||
+          Object.keys(selectedFilterObj['additional_level'] || {}).length === 0)
+      ) {
+        const currentBackup = this.selectedFilters?.['additional_level'];
+        if (currentBackup && Object.keys(currentBackup).length > 0) {
+          selectedFilterObj['additional_level'] = currentBackup;
+        }
+      }
       this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
     } else {
-      this.selectedFilters = null;
+      // Protect from global null reset on developer tab during initialization
+      if (!isDeveloperTab) {
+        this.selectedFilters = null;
+      }
     }
 
     // Navigate and update query parameters

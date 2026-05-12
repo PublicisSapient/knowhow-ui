@@ -25,6 +25,7 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -56,6 +57,7 @@ describe('FilterNewComponent', () => {
   let messageService;
   let gaService;
   let mockMultiSelect: MockMultiSelect;
+  let router: Router;
   beforeEach(async () => {
     mockMultiSelect = new MockMultiSelect() as any;
     await TestBed.configureTestingModule({
@@ -88,6 +90,7 @@ describe('FilterNewComponent', () => {
     featureFlagsService = TestBed.inject(FeatureFlagsService);
     messageService = TestBed.inject(MessageService);
     gaService = TestBed.inject(GoogleAnalyticsService);
+    router = TestBed.inject(Router);
     component.selectedTab = 'iteration';
     component.selectedType = 'scrum';
     component.showHideDdn = mockMultiSelect as any;
@@ -554,6 +557,36 @@ describe('FilterNewComponent', () => {
         expect(component.additionalFilterConfig).toEqual([
           { someKey: 'someValue' },
         ]);
+      });
+
+      it('should not clear additional_level state when on developer dashboard (via URL) in processBoardData', () => {
+        spyOnProperty(router, 'url', 'get').and.returnValue(
+          '/dashboard/developer',
+        );
+        spyOn(sharedService, 'setBackupOfFilterSelectionState');
+        const boardData = {
+          scrum: [
+            {
+              boardSlug: 'iteration',
+              filters: { projectTypeSwitch: { enabled: true } },
+              kpis: [],
+            },
+          ],
+          others: [],
+        };
+        component.selectedTab = 'iteration';
+        component.processBoardData(boardData);
+        // Should NOT call setBackupOfFilterSelectionState with additional_level: null
+        const calls = (
+          sharedService.setBackupOfFilterSelectionState as jasmine.Spy
+        ).calls.allArgs();
+        const hasAdditionalLevelNullCall = calls.some(
+          (args) =>
+            args[0] &&
+            args[0].hasOwnProperty('additional_level') &&
+            args[0].additional_level === null,
+        );
+        expect(hasAdditionalLevelNullCall).toBeFalsy();
       });
 
       it('should process board data correctly and set primary filter config when parent filter config is not there', () => {
