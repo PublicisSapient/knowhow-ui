@@ -63,6 +63,20 @@ export class DashboardV2Component implements AfterContentInit {
     this.sideNavStyle = { toggled: this.isApply };
     this.authorized = this.getAuth.checkAuth();
 
+    // Initialize selectedTab from service or URL on page load/refresh
+    // this.selectedTab = this.service.getSelectedTab();
+    // if (!this.selectedTab) {
+    //   // Extract tab from URL if not in service
+    //   const urlParts = this.router.url.split('/');
+    //   if (urlParts.length > 2) {
+    //     const tabFromUrl = urlParts[2].split('?')[0];
+    //     if (tabFromUrl && tabFromUrl !== 'Error' && tabFromUrl !== 'Config') {
+    //       this.selectedTab = tabFromUrl;
+    //       this.service.setSelectedBoard(tabFromUrl);
+    //     }
+    //   }
+    // }
+
     this.service.onTabSwitch.subscribe((data) => {
       if (data?.selectedBoard) {
         this.selectedTab = data.selectedBoard;
