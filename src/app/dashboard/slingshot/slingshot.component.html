@@ -37,39 +37,6 @@
           </app-kpi-card-v2>
         </div>
       }
-      @if (dynamicKpis.length === 0 && kpiWidgets.length > 0) {
-        @for (kpi of kpiWidgets; track kpi.id) {
-          <div class="p-col-6 p-p-2">
-            <div class="kpi-card-container">
-              <div class="kpi-card-header p-pr-5 p-pl-3 p-jc-between">
-                <div class="kpi-card-name-placeholder" role="region" aria-label="KPI Card Header">
-                  <div class="kpi-card-title-container">
-                    <h3 tabindex="0" [attr.aria-label]="kpi.title">{{ kpi.title }}</h3>
-                  </div>
-                </div>
-              </div>
-  
-              <div class="kpi-card-body p-p-4">
-                @if(kpi.data && kpi.data.length > 0) {
-                  <div class="kpi-content">
-                    @for (dataItem of kpi.data; track dataItem.label) {
-                      <div class="p-d-flex p-jc-between p-ai-center p-mb-3">
-                        <span class="kpi-label">{{ dataItem.label }}</span>
-                        <span class="kpi-value" [style.color]="dataItem.color || '#111827'">{{ dataItem.value }}</span>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <div class="p-d-flex p-flex-column p-align-center p-py-5">
-                    <img alt="no-data" src="assets/img/NoDataFound.svg" />
-                    <h4>No Data Available.</h4>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-        }
-      }
     </div>
   </div>
 </div>

@@ -8,12 +8,14 @@ describe('SlingshotComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SlingshotComponent ],
+      declarations: [SlingshotComponent],
       providers: [
-        { provide: SharedService, useValue: { getSelectedType: () => 'scrum' } }
-      ]
-    })
-    .compileComponents();
+        {
+          provide: SharedService,
+          useValue: { getSelectedType: () => 'scrum' },
+        },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

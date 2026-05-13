@@ -58,18 +58,6 @@ export class SlingshotComponent implements OnInit, OnDestroy {
     },
   ];
 
-  kpiWidgets = [
-    {
-      id: 1,
-      title: 'New Cycle Time',
-      data: [
-        { label: 'Current Sprint', value: '45 SP', color: '#6366f1' },
-        { label: 'Average Velocity', value: '42 SP', color: '#10b981' },
-        { label: 'Target', value: '50 SP', color: '#f59e0b' },
-      ],
-    },
-  ];
-
   bottomTilesData = [
     {
       category: 'Top 4 Risks this Quarter',
@@ -127,6 +115,11 @@ export class SlingshotComponent implements OnInit, OnDestroy {
       }),
     );
 
+    this.dashConfigData = this.sharedService.getDashConfigData();
+    if (this.dashConfigData) {
+      this.updateDynamicKpis();
+    }
+
     this.subscriptions.push(
       this.sharedService.globalDashConfigData.subscribe((globalConfig) => {
         this.dashConfigData = globalConfig;
@@ -167,11 +160,22 @@ export class SlingshotComponent implements OnInit, OnDestroy {
         board.boardName?.toLowerCase() === this.selectedTab?.toLowerCase(),
     );
 
-    if (currentBoard && currentBoard.kpis) {
+    if (currentBoard) {
       this.dynamicKpis = currentBoard.kpis.filter((kpi) => kpi.shown);
+      this.dynamicKpis.forEach((kpi) => {
+        this.reloadKPI(kpi);
+      });
     } else {
       this.dynamicKpis = [];
     }
+  }
+
+  reloadKPI(kpi) {
+    this.kpiLoader.add(kpi.kpiId);
+    // This is a simplified version of data loading.
+    // In a real scenario, you'd call specific grouping methods like in ExecutiveV2
+    // For now, we'll at least show the loader and prepare for data.
+    // If the project has a specific service for slingshot data, it should be called here.
   }
 
   onProjectChange(event: any): void {
