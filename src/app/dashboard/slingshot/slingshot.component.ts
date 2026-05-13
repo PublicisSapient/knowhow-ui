@@ -20,6 +20,7 @@ export class SlingshotComponent implements OnInit, OnDestroy {
   kpiChartData = {};
   trendBoxColorObj = {};
   showChart = 'chart';
+  chartColorList: string[] = [];
 
   selectedProject: any = null;
   selectedSprint: any = null;
@@ -132,6 +133,8 @@ export class SlingshotComponent implements OnInit, OnDestroy {
         if (sharedobject?.filterData?.length) {
           this.filterData = sharedobject.filterData;
           this.filterApplyData = sharedobject.filterApplyData;
+          // Re-trigger KPI data loading now that we have filter context
+          this.updateDynamicKpis();
         }
       }),
     );
@@ -140,6 +143,9 @@ export class SlingshotComponent implements OnInit, OnDestroy {
       this.sharedService.mapColorToProject.subscribe((colorObj) => {
         this.colorObj = colorObj;
         this.trendBoxColorObj = { ...colorObj };
+        this.chartColorList = Object.values(colorObj).map(
+          (item: any) => item.color || item,
+        );
       }),
     );
   }
@@ -171,11 +177,54 @@ export class SlingshotComponent implements OnInit, OnDestroy {
   }
 
   reloadKPI(kpi) {
-    this.kpiLoader.add(kpi.kpiId);
-    // This is a simplified version of data loading.
-    // In a real scenario, you'd call specific grouping methods like in ExecutiveV2
-    // For now, we'll at least show the loader and prepare for data.
-    // If the project has a specific service for slingshot data, it should be called here.
+    const kpiId = kpi.kpiId;
+    const kpiDetail = kpi.kpiDetail;
+
+    // Don't attempt API call if filter data is not yet available
+    if (
+      !kpiDetail ||
+      !this.filterApplyData?.ids?.length ||
+      !this.filterData?.length
+    ) {
+      return;
+    }
+
+    this.kpiLoader.add(kpiId);
+
+    const postData = this.helperService.groupKpiFromMaster(
+      kpiDetail.kpiSource,
+      kpiDetail.kanban,
+      this.dynamicKpis,
+      this.filterApplyData,
+      this.filterData,
+      [kpiId],
+      kpiDetail.groupId,
+      this.selectedTab,
+    );
+
+    this.httpService
+      .postKpi(postData, kpiDetail.kpiSource?.toLowerCase())
+      .subscribe(
+        (response) => {
+          this.kpiLoader.delete(kpiId);
+          if (response && response.length > 0) {
+            const kpiData = response.find((d) => d.kpiId === kpiId);
+            if (kpiData) {
+              this.kpiChartData[kpiId] =
+                kpiData.trendValueList || kpiData.value;
+              this.kpiStatusCodeArr[kpiId] = '200';
+            } else {
+              this.kpiStatusCodeArr[kpiId] = '201'; // No data
+            }
+          } else {
+            this.kpiStatusCodeArr[kpiId] = '201';
+          }
+        },
+        (error) => {
+          this.kpiLoader.delete(kpiId);
+          this.kpiStatusCodeArr[kpiId] = '500';
+        },
+      );
   }
 
   onProjectChange(event: any): void {

@@ -129,7 +129,11 @@ export class StackedGroupBarChartComponent
         );
         return;
       }
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+    } else if (
+      this.kpiId === 'kpi196' ||
+      this.kpiId === 'kpi197' ||
+      this.kpiId === 'kpi202'
+    ) {
       if (!this.data || this.data.length === 0) {
         console.warn(
           `KPI ${this.kpiId}: No data available, skipping chart creation`,
@@ -203,6 +207,43 @@ export class StackedGroupBarChartComponent
           sprintGroups[sprintKey].push(data);
         });
       });
+    } else if (this.kpiId === 'kpi202') {
+      this.yAxisLabel = '';
+      // kpi202 uses trendValueList entries with hoverValue like kpi196/197
+      // Collect all dynamic keys from hoverValue across all data
+      const kpi202Keys = new Set<string>();
+      this.data?.forEach((elem: any) => {
+        elem.value?.forEach((val: any) => {
+          if (val?.hoverValue) {
+            Object.keys(val.hoverValue).forEach((k) => kpi202Keys.add(k));
+          }
+        });
+      });
+      const kpi202KeysArr = Array.from(kpi202Keys);
+
+      this.data?.forEach((elem: any) => {
+        elem.value?.forEach((val: any, index: number) => {
+          if (val == null) {
+            return;
+          }
+          const sprintKey = `${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+          let temp = 0;
+          const obj: any = {};
+          for (const key of kpi202KeysArr) {
+            const hv = val.hoverValue?.[key];
+            const v = typeof hv === 'number' ? hv : hv?.value ?? 0;
+            obj[key] = v;
+            temp += v;
+          }
+          if (temp > chartYRange) chartYRange = temp;
+          sprintGroups[sprintKey].push({ project: elem.data, ...obj });
+        });
+      });
+
+      // Override the stack keys for kpi202 to use collected hover keys
+      // Store them for use below
+      (this as any)._kpi202Keys = kpi202KeysArr;
     }
 
     const sprints = Object.keys(sprintGroups);
@@ -314,16 +355,24 @@ export class StackedGroupBarChartComponent
       this.defectsBreachedSLAs.forEach((project: any, index: number) => {
         projectColors.set(project.data, this.color[index]);
       });
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+    } else if (
+      this.kpiId === 'kpi196' ||
+      this.kpiId === 'kpi197' ||
+      this.kpiId === 'kpi202'
+    ) {
       this.data.forEach((project: any, index: number) => {
         projectColors.set(project.data, this.color[index]);
       });
     }
 
     sprints.forEach((sprint) => {
-      const stack = d3
-        .stack()
-        .keys(this.kpiId === 'kpi195' ? severityKeys : this.testExecutionKeys);
+      const stackKeys =
+        this.kpiId === 'kpi195'
+          ? severityKeys
+          : this.kpiId === 'kpi202'
+          ? (this as any)._kpi202Keys || this.testExecutionKeys
+          : this.testExecutionKeys;
+      const stack = d3.stack().keys(stackKeys);
       const stackedData = stack(sprintGroups[sprint]);
       const bars = svg
         .append('g')
@@ -348,14 +397,12 @@ export class StackedGroupBarChartComponent
           const severityIndex =
             this.kpiId === 'kpi195'
               ? severityKeys.indexOf(severityKey)
-              : this.testExecutionKeys.indexOf(severityKey);
+              : stackKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
           return this.generateShade(
             baseColor,
             severityIndex,
-            this.kpiId === 'kpi195'
-              ? severityKeys.length
-              : this.testExecutionKeys.length,
+            this.kpiId === 'kpi195' ? severityKeys.length : stackKeys.length,
           );
         })
         .on('mouseover', (event, d: any) => {

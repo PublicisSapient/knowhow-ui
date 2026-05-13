@@ -26,7 +26,9 @@
             [kpiData]="kpi"
             [selectedTab]="selectedTab"
             [loader]="kpiLoader.has(kpi.kpiId)"
+            [immediateLoader]="kpi.kpiId !== 'kpi202' && kpi?.kpiDetail?.chartType !== 'stacked-bar-chart'"
             [trendData]="kpiTrendsObj[kpi.kpiId]"
+            [trendValueList]="kpiChartData[kpi.kpiId]"
             [kpiDataStatusCode]="kpiStatusCodeArr[kpi.kpiId]"
             [kpiChartData]="kpiChartData[kpi.kpiId]"
             [showChartView]="showChart"
@@ -34,6 +36,29 @@
             [kpiTitle]="kpi?.kpiName"
             [filterApplyData]="filterApplyData"
             [colors]="colorObj">
+            <ng-container [ngSwitch]="kpi?.kpiDetail?.chartType">
+              <ng-container *ngSwitchCase="'stacked-bar-chart'">
+                <app-stacked-group-bar-chart
+                  [data]="kpiChartData[kpi?.kpiId]"
+                  [kpiId]="kpi?.kpiId"
+                  [xCaption]="filterApplyData.selectedMap?.['date']?.[0] || kpi?.kpiDetail?.xaxisLabel"
+                  [color]="chartColorList">
+                </app-stacked-group-bar-chart>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <app-multiline-v2
+                  [data]="kpiChartData[kpi?.kpiId]"
+                  [kpiId]="kpi?.kpiId"
+                  [name]="kpi?.kpiName"
+                  [xCaption]="filterApplyData.selectedMap?.['date']?.[0] || kpi?.kpiDetail?.xaxisLabel"
+                  [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                  [color]="chartColorList"
+                  [selectedtype]="selectedType"
+                  [viewType]="showChart"
+                  [board]="selectedTab">
+                </app-multiline-v2>
+              </ng-container>
+            </ng-container>
           </app-kpi-card-v2>
         </div>
       }

@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { SlingshotComponent } from './slingshot.component';
-
-// PrimeNG imports
-import { ToastModule } from 'primeng/toast';
-import { DropdownModule } from 'primeng/dropdown';
+import { KpiCardV2Component } from '../../dashboardv2/kpi-card-v2/kpi-card-v2.component';
+import { SharedModuleModule } from '../../shared-module/shared-module.module';
 
 const routes: Routes = [
   {
@@ -22,6 +19,8 @@ const routes: Routes = [
     FormsModule,
     ToastModule,
     DropdownModule,
+    KpiCardV2Component,
+    SharedModuleModule,
     RouterModule.forChild(routes),
   ],
   exports: [SlingshotComponent],
