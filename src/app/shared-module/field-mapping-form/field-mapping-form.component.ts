@@ -564,23 +564,22 @@ export class FieldMappingFormComponent implements OnInit {
       );
       if (triggerField) {
         const mappingValue = {};
-        const dynamicIndices = [];
+        let dynamicFieldChanged = false;
 
-        finalList.forEach((item, index) => {
-          if (item.fieldName.startsWith('jiraStatusFor')) {
-            const config = this.formConfig['WorkFlow Status Mapping'].find(
-              (c) => c.fieldName === item.fieldName,
-            );
-            if (config && config.originalGroupName) {
-              mappingValue[config.originalGroupName] = item.originalValue;
-            }
-            dynamicIndices.push(index);
+        // Build mappingValue from ALL dynamic fields currently in the form
+        this.formConfig['WorkFlow Status Mapping']?.forEach((config) => {
+          if (config.isDynamic) {
+            mappingValue[config.originalGroupName] =
+              this.form.value[config.fieldName];
           }
         });
 
-        // Remove dynamic fields from finalList
-        for (let i = dynamicIndices.length - 1; i >= 0; i--) {
-          finalList.splice(dynamicIndices[i], 1);
+        // Remove dynamic fields from finalList so they aren't sent directly
+        for (let i = finalList.length - 1; i >= 0; i--) {
+          if (finalList[i].fieldName.startsWith('jiraStatusFor')) {
+            dynamicFieldChanged = true;
+            finalList.splice(i, 1);
+          }
         }
 
         // Update or Add the trigger field in finalList
@@ -589,15 +588,13 @@ export class FieldMappingFormComponent implements OnInit {
         );
         if (triggerIndex !== -1) {
           finalList[triggerIndex].originalValue = mappingValue;
-        } else {
+        } else if (dynamicFieldChanged) {
           // Even if trigger field didn't change (groups list same), we might need to save mapping
           // So we add it if any dynamic field was changed
-          if (Object.keys(mappingValue).length > 0) {
-            finalList.push({
-              fieldName: triggerField.fieldName,
-              originalValue: mappingValue,
-            });
-          }
+          finalList.push({
+            fieldName: triggerField.fieldName,
+            originalValue: mappingValue,
+          });
         }
       }
     }

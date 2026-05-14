@@ -420,10 +420,20 @@ export class StackedGroupBarChartComponent
       .attr('stroke', '#E0E0E0');
     svg.select('.grid').select('.domain').remove();
 
+    const defaultColors = [
+      '#3498db',
+      '#2ecc71',
+      '#e74c3c',
+      '#f39c12',
+      '#9b59b6',
+      '#34495e',
+    ];
+    const safeColors = this.color?.length ? this.color : defaultColors;
+
     const projectColors = new Map<string, string>();
     if (this.kpiId === 'kpi195') {
       this.defectsBreachedSLAs.forEach((project: any, index: number) => {
-        projectColors.set(project.data, this.color[index]);
+        projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
     } else if (
       this.kpiId === 'kpi196' ||
@@ -431,7 +441,7 @@ export class StackedGroupBarChartComponent
       this.kpiId === 'kpi202'
     ) {
       this.data.forEach((project: any, index: number) => {
-        projectColors.set(project.data, this.color[index]);
+        projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
     }
 
