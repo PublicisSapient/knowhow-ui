@@ -3078,6 +3078,53 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createAllKpiArray(data) {
     for (const key in data) {
+      console.log('data key', data[key]);
+      if (data[key]?.kpiId === 'kpi202') {
+        console.log('inside kpi202');
+        // data[key].trendValueList = [
+        //   {
+        //     filter1: 'Overall',
+        //     filter2: 'Overall',
+        //     value: [
+        //       {
+        //         data: 'Sprint 1',
+        //         value: 15,
+        //         hoverValue: { Open: 5, 'In Progress': 5, Closed: 5 },
+        //         sSprintName: 'Sprint 1',
+        //         date: 'Sprint 1',
+        //       },
+        //       {
+        //         data: 'Sprint 2',
+        //         value: 20,
+        //         hoverValue: { Open: 10, 'In Progress': 5, Closed: 5 },
+        //         sSprintName: 'Sprint 2',
+        //         date: 'Sprint 2',
+        //       },
+        //       {
+        //         data: 'Sprint 3',
+        //         value: 12,
+        //         hoverValue: { Open: 2, 'In Progress': 5, Closed: 5 },
+        //         sSprintName: 'Sprint 3',
+        //         date: 'Sprint 3',
+        //       },
+        //       {
+        //         data: 'Sprint 4',
+        //         value: 18,
+        //         hoverValue: { Open: 6, 'In Progress': 4, Closed: 8 },
+        //         sSprintName: 'Sprint 4',
+        //         date: 'Sprint 4',
+        //       },
+        //       {
+        //         data: 'Sprint 5',
+        //         value: 25,
+        //         hoverValue: { Open: 5, 'In Progress': 10, Closed: 10 },
+        //         sSprintName: 'Sprint 5',
+        //         date: 'Sprint 5',
+        //       },
+        //     ],
+        //   },
+        // ];
+      }
       /** Creating recomm data */
       const kpiId = data[key]?.kpiId || key;
       this.kpiRecommData[kpiId] = data[key]?.recommendationActionPlan || {};
