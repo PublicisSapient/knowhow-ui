@@ -85,56 +85,117 @@ export class StackedGroupBarChartComponent
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
     } else if (this.kpiId === 'kpi202') {
-      // OVERWRITE with mock data for KPI202
-      this.data = [
-        {
-          data: 'KnowHOW',
-          value: [
-            {
-              data: 'Sprint 1',
-              value: 15,
-              hoverValue: { Open: 5, 'In Progress': 5, Closed: 5 },
-              sSprintName: 'Sprint 1',
-              date: 'Sprint 1',
-            },
-            {
-              data: 'Sprint 2',
-              value: 20,
-              hoverValue: { Open: 10, 'In Progress': 5, Closed: 5 },
-              sSprintName: 'Sprint 2',
-              date: 'Sprint 2',
-            },
-            {
-              data: 'Sprint 3',
-              value: 12,
-              hoverValue: { Open: 2, 'In Progress': 5, Closed: 5 },
-              sSprintName: 'Sprint 3',
-              date: 'Sprint 3',
-            },
-            {
-              data: 'Sprint 4',
-              value: 18,
-              hoverValue: { Open: 6, 'In Progress': 4, Closed: 8 },
-              sSprintName: 'Sprint 4',
-              date: 'Sprint 4',
-            },
-            {
-              data: 'Sprint 5',
-              value: 25,
-              hoverValue: { Open: 5, 'In Progress': 10, Closed: 10 },
-              sSprintName: 'Sprint 5',
-              date: 'Sprint 5',
-            },
-          ],
-        },
-      ];
+      // console.log('data ', this.data);
+      // // OVERWRITE with mock data for KPI202
+      // this.data = [
+      //   {
+      //     data: 'KnowHOW',
+      //     value: [
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-44086',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '5731.616666666667',
+      //             value: 5731.616666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-47411',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '3712.766666666667',
+      //             value: 3712.766666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-47528',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '0.0',
+      //             value: 0,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '3621.516666666667',
+      //             value: 3621.516666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48152',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '38.63333333333333',
+      //             value: 38.63333333333333,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '161.68333333333334',
+      //             value: 161.68333333333334,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48279',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '0.016666666666666666',
+      //             value: 0.016666666666666666,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '3354.05',
+      //             value: 3354.05,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48363',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '4227.583333333333',
+      //             value: 4227.583333333333,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //     ],
+      //   },
+      // ];
 
       // Dynamically extract filter options from this.data
       const kpi202Keys = new Set<string>();
       this.data?.forEach((elem: any) => {
         elem.value?.forEach((val: any) => {
-          if (val?.hoverValue) {
-            Object.keys(val.hoverValue).forEach((k) => kpi202Keys.add(k));
+          if (val?.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) kpi202Keys.add(dv.name);
+            });
           }
         });
       });
@@ -278,14 +339,17 @@ export class StackedGroupBarChartComponent
         });
       });
     } else if (this.kpiId === 'kpi202') {
-      this.yAxisLabel = '';
-      // kpi202 uses trendValueList entries with hoverValue like kpi196/197
-      // Collect all dynamic keys from hoverValue across all data
+      this.yAxisLabel = 'Time (Hours)';
+      this.xCaption = 'Story ID';
+      // kpi202 uses trendValueList entries with dataValue
+      // Collect all dynamic keys from dataValue across all data
       const kpi202Keys = new Set<string>();
       this.data?.forEach((elem: any) => {
         elem.value?.forEach((val: any) => {
-          if (val?.hoverValue) {
-            Object.keys(val.hoverValue).forEach((k) => kpi202Keys.add(k));
+          if (val?.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) kpi202Keys.add(dv.name);
+            });
           }
         });
       });
@@ -296,22 +360,32 @@ export class StackedGroupBarChartComponent
           if (val == null) {
             return;
           }
-          const sprintKey = `${index + 1}`;
+          const sprintKey = val.subFilter || `Story ${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
           let temp = 0;
           const obj: any = {};
+
+          // Initialize to 0
           for (const key of kpi202KeysArr) {
-            const hv = val.hoverValue?.[key];
-            const v = typeof hv === 'number' ? hv : hv?.value ?? 0;
-            obj[key] = v;
-            temp += v;
+            obj[key] = 0;
           }
+
+          if (val.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) {
+                const v = Number(dv.value) || 0;
+                obj[dv.name] = v;
+                temp += v;
+              }
+            });
+          }
+
           if (temp > chartYRange) chartYRange = temp;
           sprintGroups[sprintKey].push({ project: elem.data, ...obj });
         });
       });
 
-      // Override the stack keys for kpi202 to use collected hover keys
+      // Override the stack keys for kpi202 to use collected keys
       // Store them for use below
       (this as any)._kpi202Keys = kpi202KeysArr;
     }
@@ -323,29 +397,110 @@ export class StackedGroupBarChartComponent
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
-    const margin = { top: 30, right: 30, bottom: 60, left: 40 };
+    const margin = { top: 30, right: 30, bottom: 60, left: 50 };
+
+    const containerNode = this.chartContainer.nativeElement;
+
+    // Define Stack Keys early so we can build the legend
+    const stackKeys =
+      this.kpiId === 'kpi195'
+        ? severityKeys
+        : this.kpiId === 'kpi202'
+        ? (this as any)._kpi202Keys || this.testExecutionKeys
+        : this.testExecutionKeys;
+
+    const defaultColors = [
+      '#3498db',
+      '#2ecc71',
+      '#e74c3c',
+      '#f39c12',
+      '#9b59b6',
+      '#34495e',
+    ];
+
+    // For KPI202, ignore this.color since the parent passes Project colors,
+    // but KPI202 needs distinct colors for its Stacks.
+    const safeColors =
+      this.kpiId !== 'kpi202' && this.color?.length
+        ? this.color
+        : defaultColors;
+
+    let legendHeight = 0;
+    // Add Color Legend specifically for KPI202
+    if (this.kpiId === 'kpi202' && stackKeys?.length) {
+      const colorLegend = d3
+        .select(containerNode)
+        .append('div')
+        .style('display', 'flex')
+        .style('flex-wrap', 'wrap')
+        .style('gap', '15px')
+        .style('margin-bottom', '10px')
+        .style('justify-content', 'center')
+        .style('padding-top', '5px');
+
+      stackKeys.forEach((key: string, i: number) => {
+        const item = colorLegend
+          .append('div')
+          .style('display', 'flex')
+          .style('align-items', 'center')
+          .style('font-size', '12px')
+          .style('color', '#333')
+          .style('font-weight', '500');
+
+        item
+          .append('span')
+          .style('display', 'inline-block')
+          .style('width', '14px')
+          .style('height', '14px')
+          .style('border-radius', '3px')
+          .style('margin-right', '6px')
+          .style('background-color', safeColors[i % safeColors.length]);
+
+        item.append('span').text(key);
+      });
+
+      legendHeight = (colorLegend.node() as HTMLElement).offsetHeight + 15; // include margins
+    }
 
     //  Get container size dynamically
-    const containerWidth = this.chartContainer.nativeElement.offsetWidth || 700;
-    const containerHeight =
-      this.chartContainer.nativeElement.offsetHeight || 400;
+    const containerWidth = containerNode.offsetWidth || 700;
+    // Subtract legendHeight to leave room for SVG without overflowing container
+    const containerHeight = (containerNode.offsetHeight || 400) - legendHeight;
 
-    //  Increase width factor for <g> drawing space
-    const extraWidthFactor = 1.2; // <-- adjust this multiplier (1.2 = +20%)
+    const minItemsForScroll = 6;
+    let extraWidthFactor = 1.2;
+    let useScroll = false;
+
+    // Enable native horizontal scroll specifically for KPIs where requested
+    if (this.kpiId === 'kpi202' && sprints.length > minItemsForScroll) {
+      extraWidthFactor = sprints.length / minItemsForScroll;
+      useScroll = true;
+    }
+
     const width =
       containerWidth * extraWidthFactor - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.bottom;
 
-    const svg = d3
-      .select(this.chartContainer.nativeElement)
+    d3.select(containerNode)
+      .style('overflow-x', useScroll ? 'auto' : 'hidden')
+      .style('overflow-y', 'hidden');
+
+    const svgRoot = d3
+      .select(containerNode)
       .append('svg')
-      .attr('width', '100%')
-      .attr('height', '100%')
-      .attr(
-        'viewBox',
-        `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
-      ) //  scaled
-      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('width', useScroll ? containerWidth * extraWidthFactor : '100%')
+      .attr('height', useScroll ? containerHeight : '100%');
+
+    if (!useScroll) {
+      svgRoot
+        .attr(
+          'viewBox',
+          `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
+        )
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+    }
+
+    const svg = svgRoot
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -420,16 +575,6 @@ export class StackedGroupBarChartComponent
       .attr('stroke', '#E0E0E0');
     svg.select('.grid').select('.domain').remove();
 
-    const defaultColors = [
-      '#3498db',
-      '#2ecc71',
-      '#e74c3c',
-      '#f39c12',
-      '#9b59b6',
-      '#34495e',
-    ];
-    const safeColors = this.color?.length ? this.color : defaultColors;
-
     const projectColors = new Map<string, string>();
     if (this.kpiId === 'kpi195') {
       this.defectsBreachedSLAs.forEach((project: any, index: number) => {
@@ -474,6 +619,10 @@ export class StackedGroupBarChartComponent
         .attr('fill', (d: any, i: number, nodes: any[]) => {
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
+          if (this.kpiId === 'kpi202') {
+            const stackIndex = stackKeys.indexOf(severityKey);
+            return safeColors[stackIndex % safeColors.length];
+          }
           const severityIndex =
             this.kpiId === 'kpi195'
               ? severityKeys.indexOf(severityKey)
@@ -511,9 +660,9 @@ export class StackedGroupBarChartComponent
                   : this.kpiId === 'kpi202'
                   ? `
                 <div><strong>${severityKey}:</strong> ${
-                      typeof originalData.hoverValue[severityKey] === 'number'
-                        ? originalData.hoverValue[severityKey]
-                        : originalData.hoverValue[severityKey]?.value ?? 0
+                      originalData?.dataValue?.find(
+                        (dv: any) => dv.name === severityKey,
+                      )?.data || 0
                     }</div>
               `
                   : `
@@ -605,7 +754,7 @@ export class StackedGroupBarChartComponent
 
     svg
       .append('text')
-      .attr('x', width / 2)
+      .attr('x', (containerWidth - margin.left - margin.right) / 2)
       .attr('y', height + 40)
       .attr('text-anchor', 'middle')
       .text(this.xCaption)
@@ -862,8 +1011,15 @@ export class StackedGroupBarChartComponent
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
-      if (projectData?.value && projectData.value.length > sprintNumber) {
-        return projectData.value[sprintNumber];
+      if (projectData?.value) {
+        if (this.kpiId === 'kpi202') {
+          return (
+            projectData.value.find((v: any) => v.subFilter === sprintName) ||
+            null
+          );
+        } else if (projectData.value.length > sprintNumber) {
+          return projectData.value[sprintNumber];
+        }
       }
     }
 
@@ -886,13 +1042,13 @@ export class StackedGroupBarChartComponent
       this.data.forEach((elem: any) => {
         elem.value?.forEach((val: any, index: number) => {
           if (val == null) return;
-          const sprintKey = `${index + 1}`;
+          const sprintKey = val.subFilter || `Story ${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
           const obj: any = { project: elem.data };
           let hasAny = false;
           severitiesToUse.forEach((key) => {
-            const hv = val.hoverValue?.[key];
-            const v = typeof hv === 'number' ? hv : hv?.value ?? 0;
+            const dv = val.dataValue?.find((d: any) => d.name === key);
+            const v = dv ? Number(dv.value) || 0 : 0;
             obj[key] = v;
             if (v) hasAny = true;
           });
