@@ -275,8 +275,21 @@ export class FieldMappingFormComponent implements OnInit {
           fieldMapping?.originalValue === false)) ||
       (!isNaN(fieldMapping?.originalValue) && fieldMapping?.originalValue >= 0)
     ) {
+      let initialVal = fieldMapping.originalValue;
+
+      // Extract keys for dynamic "Workflow groups" trigger field
+      // Since originalValue is an object but chips component expects string array
+      if (
+        config.fieldLabel === 'Workfow groups' &&
+        initialVal &&
+        typeof initialVal === 'object' &&
+        !Array.isArray(initialVal)
+      ) {
+        initialVal = Object.keys(initialVal);
+      }
+
       return new FormControl(
-        fieldMapping.originalValue,
+        initialVal,
         config.mandatory ? Validators.required : [],
       );
     } else {
