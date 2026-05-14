@@ -397,7 +397,7 @@ export class StackedGroupBarChartComponent
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
-    const margin = { top: 30, right: 30, bottom: 60, left: 50 };
+    const margin = { top: 30, right: 30, bottom: 30, left: 50 }; // Reduced bottom margin since xCaption is now an HTML div
 
     const containerNode = this.chartContainer.nativeElement;
 
@@ -464,10 +464,12 @@ export class StackedGroupBarChartComponent
 
     //  Get container size dynamically
     const containerWidth = containerNode.offsetWidth || 700;
-    // Subtract legendHeight to leave room for SVG without overflowing container
-    const containerHeight = (containerNode.offsetHeight || 400) - legendHeight;
+    // Subtract legendHeight AND space for the HTML X-axis label (30px)
+    const containerHeight =
+      (containerNode.offsetHeight || 400) - legendHeight - 30;
 
-    const minItemsForScroll = 6;
+    // Use 12 to naturally make the bars thinner and points closer, fitting more data per scroll view
+    const minItemsForScroll = 12;
     let extraWidthFactor = 1.2;
     let useScroll = false;
 
@@ -482,27 +484,58 @@ export class StackedGroupBarChartComponent
     const height = containerHeight - margin.top - margin.bottom;
 
     d3.select(containerNode)
+      .style('position', 'relative')
+      .style('overflow-x', 'hidden')
+      .style('overflow-y', 'hidden');
+
+    const chartWrapper = d3
+      .select(containerNode)
+      .append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'row')
+      .style('width', '100%')
+      .style('height', containerHeight + 'px');
+
+    // 1. Fixed SVG for Y-axis (sticky on the left)
+    const fixedYAxisContainer = chartWrapper
+      .append('div')
+      .style('position', 'sticky')
+      .style('left', 0)
+      .style('z-index', 2)
+      .style('background', '#fff');
+
+    const fixedSvg = fixedYAxisContainer
+      .append('svg')
+      .attr('width', margin.left)
+      .attr('height', containerHeight);
+
+    const fixedG = fixedSvg
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // 2. Scrollable container for the Chart
+    const scrollContainer = chartWrapper
+      .append('div')
+      .style('flex', 1)
       .style('overflow-x', useScroll ? 'auto' : 'hidden')
       .style('overflow-y', 'hidden');
 
-    const svgRoot = d3
-      .select(containerNode)
+    const svgRoot = scrollContainer
       .append('svg')
-      .attr('width', useScroll ? containerWidth * extraWidthFactor : '100%')
+      .attr('width', useScroll ? width + margin.right : '100%')
       .attr('height', useScroll ? containerHeight : '100%');
 
     if (!useScroll) {
       svgRoot
-        .attr(
-          'viewBox',
-          `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
-        )
+        .attr('viewBox', `0 0 ${width + margin.right} ${containerHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
     }
 
     const svg = svgRoot
       .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr('transform', `translate(0,${margin.top})`);
+
+    (this as any)._fixedG = fixedG;
 
     // --- Scales ---
     const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
@@ -752,17 +785,19 @@ export class StackedGroupBarChartComponent
     // -- Fallback, incase this.xAxisLabel is also empty/undefined
     this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
 
-    svg
-      .append('text')
-      .attr('x', (containerWidth - margin.left - margin.right) / 2)
-      .attr('y', height + 40)
-      .attr('text-anchor', 'middle')
-      .text(this.xCaption)
+    // Append X-axis label as an HTML div below the chart wrapper so it's always centered and visible
+    d3.select(containerNode)
+      .append('div')
+      .style('text-align', 'center')
       .style('font-size', '16px')
-      .style('fill', '#49535e');
+      .style('color', '#49535e')
+      .style('margin-top', '10px')
+      .text(this.xCaption);
 
     // --- Y Axis ---
-    svg
+    const targetG = (this as any)._fixedG || svg;
+
+    targetG
       .append('g')
       .call(d3.axisLeft(y).ticks(6).tickSize(0))
       .call((g) => {
@@ -775,11 +810,12 @@ export class StackedGroupBarChartComponent
           .attr('stroke', '#EDEFF2')
           .attr('stroke-width', 1);
       });
-    svg
+
+    targetG
       .append('text')
       .attr('transform', `rotate(-90)`)
       .attr('x', -height / 2)
-      .attr('y', -margin.left + 15)
+      .attr('y', -margin.left + 20)
       .attr('text-anchor', 'middle')
       .text(this.yAxisLabel)
       .style('font-size', '16px')

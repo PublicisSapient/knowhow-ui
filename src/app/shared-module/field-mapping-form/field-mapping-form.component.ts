@@ -141,8 +141,7 @@ export class FieldMappingFormComponent implements OnInit {
 
     groups.forEach((group, index) => {
       const dynamicFieldName = `jiraStatusFor${group.replace(/\s+/g, '')}`;
-      const capitalizedGroup =
-        group.charAt(0).toUpperCase() + group.slice(1).toLowerCase();
+      const capitalizedGroup = group;
       const dynamicField = {
         fieldName: dynamicFieldName,
         fieldLabel: `Status to identify ${capitalizedGroup}`,
