@@ -4726,6 +4726,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   ? event[key]
                   : [event[key]];
               } else {
+                // Ensure dropdown string values are always wrapped in an array so they iterate correctly in getChartData
+                event[key] = Array.isArray(event[key])
+                  ? event[key]
+                  : [event[key]];
                 this.kpiSelectedFilterObj[kpi?.kpiId] = event;
               }
             }

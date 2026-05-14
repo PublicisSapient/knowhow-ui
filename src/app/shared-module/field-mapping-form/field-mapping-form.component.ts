@@ -102,6 +102,14 @@ export class FieldMappingFormComponent implements OnInit {
     this.form.valueChanges.subscribe(() => {});
   }
 
+  getStaticFields(section: string) {
+    return this.formConfig[section]?.filter((f) => !f.isDynamic) || [];
+  }
+
+  getDynamicFields(section: string) {
+    return this.formConfig[section]?.filter((f) => f.isDynamic) || [];
+  }
+
   updateDynamicWorkflowFields(selectedGroups: string[] | string) {
     if (!this.formConfig || !this.formConfig['WorkFlow Status Mapping']) {
       return;
@@ -168,7 +176,29 @@ export class FieldMappingFormComponent implements OnInit {
             ?.originalValue || {};
         const initialValue = triggerValue[group] || [];
 
-        this.form.addControl(dynamicFieldName, new FormControl(initialValue));
+        const control = new FormControl(initialValue);
+        this.form.addControl(dynamicFieldName, control);
+
+        // Bug fix: if this control previously had chips and is now completely cleared, delete its group!
+        let previousLength = Array.isArray(initialValue)
+          ? initialValue.length
+          : 0;
+        control.valueChanges.subscribe((val) => {
+          const currentLength = Array.isArray(val) ? val.length : 0;
+          if (currentLength === 0 && previousLength > 0) {
+            // Delete this group from the trigger field to trigger removal of the dynamic row
+            if (triggerField) {
+              const triggerCtrl = this.form.get(triggerField.fieldName);
+              if (triggerCtrl) {
+                const currentGroups = triggerCtrl.value || [];
+                triggerCtrl.setValue(
+                  currentGroups.filter((g: string) => g !== group),
+                );
+              }
+            }
+          }
+          previousLength = currentLength;
+        });
 
         // Ensure it's in formData so it gets tracked
         if (!this.formData.find((d) => d.fieldName === dynamicFieldName)) {
