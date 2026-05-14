@@ -205,12 +205,20 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
           data['others']?.forEach((board) => {
             if (board?.filters) {
-              board.filters.primaryFilter.defaultLevel.labelName =
+              if (
                 levelDetails.filter(
                   (level) =>
-                    level.hierarchyLevelId ===
-                    board.filters.primaryFilter.defaultLevel.labelName,
-                )[0].hierarchyLevelName;
+                    level.hierarchyLevelId.toLowerCase() ===
+                    board.filters.primaryFilter.defaultLevel.labelName.toLowerCase(),
+                )[0]
+              ) {
+                board.filters.primaryFilter.defaultLevel.labelName =
+                  levelDetails.filter(
+                    (level) =>
+                      level.hierarchyLevelId.toLowerCase() ===
+                      board.filters.primaryFilter.defaultLevel.labelName.toLowerCase(),
+                  )[0].hierarchyLevelName;
+              }
               if (
                 board.filters.parentFilter &&
                 board.filters.parentFilter.labelName !== 'Organization Level'
@@ -219,14 +227,14 @@ export class NavNewComponent implements OnInit, OnDestroy {
                   (level) =>
                     level.hierarchyLevelId ===
                     board.filters.parentFilter.labelName.toLowerCase(),
-                )[0].hierarchyLevelName;
+                )[0]?.hierarchyLevelName;
               }
               if (board.filters.parentFilter?.emittedLevel) {
                 board.filters.parentFilter.emittedLevel = levelDetails.filter(
                   (level) =>
                     level.hierarchyLevelId ===
                     board.filters.parentFilter.emittedLevel,
-                )[0].hierarchyLevelName;
+                )[0]?.hierarchyLevelName;
               }
             }
           });

@@ -84,7 +84,107 @@ export class FieldMappingFormComponent implements OnInit {
     ).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
+    if (this.kpiId === 'kpi202') {
+      const triggerField = this.fieldMappingConfig.find(
+        (field) => field.fieldLabel === 'Workfow groups',
+      );
+      if (triggerField) {
+        this.updateDynamicWorkflowFields(
+          this.form.get(triggerField.fieldName).value,
+        );
+        this.form
+          .get(triggerField.fieldName)
+          .valueChanges.subscribe((selectedGroups) => {
+            this.updateDynamicWorkflowFields(selectedGroups);
+          });
+      }
+    }
     this.form.valueChanges.subscribe(() => {});
+  }
+
+  updateDynamicWorkflowFields(selectedGroups: string[] | string) {
+    if (!this.formConfig || !this.formConfig['WorkFlow Status Mapping']) {
+      return;
+    }
+
+    const groups = Array.isArray(selectedGroups)
+      ? selectedGroups
+      : typeof selectedGroups === 'object' && selectedGroups !== null
+      ? Object.keys(selectedGroups)
+      : selectedGroups
+      ? [selectedGroups]
+      : [];
+
+    // Remove existing dynamic fields from formConfig
+    this.formConfig['WorkFlow Status Mapping'] = this.formConfig[
+      'WorkFlow Status Mapping'
+    ].filter((field) => !field.isDynamic);
+
+    const currentDynamicFieldNames = groups.map(
+      (it) => `jiraStatusFor${it.replace(/\s+/g, '')}`,
+    );
+
+    // Sync formData: keep non-dynamic fields or current dynamic fields
+    this.formData = this.formData.filter((d) => {
+      if (!d.fieldName.startsWith('jiraStatusFor')) {
+        return true;
+      }
+      return currentDynamicFieldNames.includes(d.fieldName);
+    });
+
+    const maxDisplayOrder = Math.max(
+      ...this.formConfig['WorkFlow Status Mapping'].map(
+        (f) => f.fieldDisplayOrder || 0,
+      ),
+      0,
+    );
+
+    groups.forEach((group, index) => {
+      const dynamicFieldName = `jiraStatusFor${group.replace(/\s+/g, '')}`;
+      const capitalizedGroup =
+        group.charAt(0).toUpperCase() + group.slice(1).toLowerCase();
+      const dynamicField = {
+        fieldName: dynamicFieldName,
+        fieldLabel: `Status to identify ${capitalizedGroup}`,
+        fieldType: 'chips',
+        fieldCategory: 'workflow',
+        section: 'WorkFlow Status Mapping',
+        processorCommon: false,
+        isDynamic: true,
+        fieldDisplayOrder: maxDisplayOrder + index + 1,
+        originalGroupName: group, // Store for payload construction
+        tooltip: { definition: `Status mapping for ${group}` },
+      };
+
+      this.formConfig['WorkFlow Status Mapping'].push(dynamicField);
+
+      // Add to form group if not already present
+      if (!this.form.contains(dynamicFieldName)) {
+        // Try to find if we already have a value for this in the original trigger field value
+        const triggerField = this.fieldMappingConfig.find(
+          (f) => f.fieldLabel === 'Workfow groups',
+        );
+        const triggerValue =
+          this.formData.find((d) => d.fieldName === triggerField?.fieldName)
+            ?.originalValue || {};
+        const initialValue = triggerValue[group] || [];
+
+        this.form.addControl(dynamicFieldName, new FormControl(initialValue));
+
+        // Ensure it's in formData so it gets tracked
+        if (!this.formData.find((d) => d.fieldName === dynamicFieldName)) {
+          this.formData.push({
+            fieldName: dynamicFieldName,
+            originalValue: initialValue,
+          });
+        }
+      }
+    });
+
+    // Re-sort to ensure dynamic fields are at the bottom
+    this.formConfig['WorkFlow Status Mapping'].sort(
+      (a, b) => (a.fieldDisplayOrder || 0) - (b.fieldDisplayOrder || 0),
+    );
   }
 
   generateFieldMappingConfiguration() {
@@ -445,7 +545,52 @@ export class FieldMappingFormComponent implements OnInit {
       }
     });
 
+    if (this.kpiId === 'kpi202') {
+      const triggerField = this.fieldMappingConfig.find(
+        (f) => f.fieldLabel === 'Workfow groups',
+      );
+      if (triggerField) {
+        const mappingValue = {};
+        const dynamicIndices = [];
+
+        finalList.forEach((item, index) => {
+          if (item.fieldName.startsWith('jiraStatusFor')) {
+            const config = this.formConfig['WorkFlow Status Mapping'].find(
+              (c) => c.fieldName === item.fieldName,
+            );
+            if (config && config.originalGroupName) {
+              mappingValue[config.originalGroupName] = item.originalValue;
+            }
+            dynamicIndices.push(index);
+          }
+        });
+
+        // Remove dynamic fields from finalList
+        for (let i = dynamicIndices.length - 1; i >= 0; i--) {
+          finalList.splice(dynamicIndices[i], 1);
+        }
+
+        // Update or Add the trigger field in finalList
+        const triggerIndex = finalList.findIndex(
+          (f) => f.fieldName === triggerField.fieldName,
+        );
+        if (triggerIndex !== -1) {
+          finalList[triggerIndex].originalValue = mappingValue;
+        } else {
+          // Even if trigger field didn't change (groups list same), we might need to save mapping
+          // So we add it if any dynamic field was changed
+          if (Object.keys(mappingValue).length > 0) {
+            finalList.push({
+              fieldName: triggerField.fieldName,
+              originalValue: mappingValue,
+            });
+          }
+        }
+      }
+    }
+
     const checkForErr = this.checkedEmptyValue(finalList);
+
     if (checkForErr) {
       this.messenger.add({
         key: 'key1',
