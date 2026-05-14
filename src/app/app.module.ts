@@ -143,7 +143,6 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
 import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { HomeComponent } from './dashboard/home/home.component';
-import { SlingshotComponent } from './dashboard/slingshot/slingshot.component';
 import { HomeRecommCardComponent } from './component/home-recomm-card/home-recomm-card.component';
 import { NbaComponent } from './dashboard/home/nba/nba.component';
 import { RecommDetailsComponent } from './component/recomm-details/recomm-details.component';
@@ -207,7 +206,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     StickyHeaderV2Component,
     PebCalculatorComponent,
     HomeComponent,
-    SlingshotComponent,
     DynamicCurrencyPipe,
   ],
   imports: [
