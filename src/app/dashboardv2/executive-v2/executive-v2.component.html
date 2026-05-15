@@ -452,26 +452,26 @@
 
                     <div *ngIf="kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot'" class="p-col-6" id="kpi202_duplicate">
                       <app-kpi-card-v2 [selectedTab]="selectedTab"
-                        [kpiData]="{ kpiId: 'kpi202_duplicate', kpiName: 'Cycle Time Workflows', kpiDetail: { chartType: 'line', xaxisLabel: 'Workflows', yaxisLabel: 'Time (Days)' }, isEnabled: true, shown: true }" 
+                        [kpiData]="{ kpiId: 'kpi202_duplicate', kpiName: 'Cycle Time by Workflow', kpiDetail: { chartType: 'line', xaxisLabel: 'Workflows', yaxisLabel: 'Time (Days)' }, isEnabled: true, shown: true }" 
                         [loader]="kpiLoader.has('kpi202')"
                         [immediateLoader]="immediateLoader"
                         [kpiDataStatusCode]="kpiStatusCodeArr['kpi202_duplicate']" 
                         [trendValueList]="kpiChartData['kpi202_duplicate']"
                         [colors]="colorObj" 
                         [showChartView]="showChart"
-                        [kpiTitle]="'Cycle Time Workflows'" 
-                        [xAxisLabel]="'Workflows'" 
+                        [kpiTitle]="'Cycle Time by Workflow'" 
+                        [xAxisLabel]="'Workflow Group'" 
                         [yAxisLabel]="'Time (Days)'"
-                        [xCaption]="'Workflows'"
+                        [xCaption]="'Workflow Group'"
                         [showExport]="false"
                         [kpiRecommData]="kpiRecommData['kpi202']">
                         <ng-container *ngIf="!kpiLoader.has('kpi202')">
                           <ng-container *ngIf="kpiChartData['kpi202_duplicate']?.length > 0; else noDataAccess">
                             <app-multiline-v2
                               [data]="kpiChartData['kpi202_duplicate']"
-                              [xCaption]="'Workflows'"
+                              [xCaption]="'Workflow Group'"
                               [yCaption]="'Time (Days)'"
-                              [name]="'Cycle Time Workflows'"
+                              [name]="'Cycle Time by Workflow'"
                               [kpiId]="'kpi202_duplicate'"
                               [color]="chartColorList['kpi202']"
                               [selectedtype]="selectedtype"
