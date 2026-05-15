@@ -144,6 +144,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
+  durationFilterKpi202 = 'Past 6 Months';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -1444,6 +1445,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const kpi171 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi171');
       if (kpi171) {
         kpi171['filterDuration'] = this.appendFilterDuratioKpi171();
+      }
+      const kpi202 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi202');
+      if (kpi202) {
+        kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
@@ -4373,21 +4378,34 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if (kpiId === 'kpi171' && this.allKpiArray[idx]?.filters) {
+    if (
+      (kpiId === 'kpi171' || kpiId === 'kpi202') &&
+      this.allKpiArray[idx]?.filters
+    ) {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
       this.kpiSelectedFilterObj[kpiId] = {
         filter1: ['Past 6 Months'],
         filter2: null,
       };
-      this.durationFilter = this.durationFilter || 'Past 6 Months';
+      if (kpiId === 'kpi171') {
+        this.durationFilter = this.durationFilter || 'Past 6 Months';
+      } else {
+        this.durationFilterKpi202 =
+          this.durationFilterKpi202 || 'Past 6 Months';
+      }
     }
 
-    if (this.kpiDropdowns[kpiId]?.length > 1 && kpiId !== 'kpi171') {
+    if (
+      this.kpiDropdowns[kpiId]?.length > 1 &&
+      kpiId !== 'kpi171' &&
+      kpiId !== 'kpi202'
+    ) {
       this.kpiSelectedFilterObj[kpiId] = {};
       for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-        this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [
-          this.kpiDropdowns[kpiId][i].options[0],
-        ];
+        this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = this
+          .kpiDropdowns[kpiId][i]?.options?.length
+          ? [this.kpiDropdowns[kpiId][i].options[0]]
+          : [];
       }
     }
   }
@@ -4640,14 +4658,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleSelectedOptionForCard(event, kpi);
       }
     } else {
-      if (kpi.kpiId === 'kpi72' || kpi.kpiId === 'kpi171') {
+      if (
+        kpi.kpiId === 'kpi72' ||
+        kpi.kpiId === 'kpi171' ||
+        kpi.kpiId === 'kpi202'
+      ) {
         if (
           event.hasOwnProperty('filter1') ||
           event.hasOwnProperty('filter2')
         ) {
           // For kpi171, check if filter1 is nested and flatten it
           if (
-            kpi.kpiId === 'kpi171' &&
+            (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202') &&
             event.filter1 &&
             typeof event.filter1 === 'object' &&
             !Array.isArray(event.filter1)
@@ -4671,7 +4693,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             const outputObject = {};
             for (const key in event) {
               outputObject[key] =
-                kpi.kpiId === 'kpi171' ? event[key] : [event[key]];
+                kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202'
+                  ? Array.isArray(event[key])
+                    ? event[key]
+                    : [event[key]]
+                  : [event[key]];
             }
             event = outputObject;
           }
@@ -4682,9 +4708,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           typeof event === 'object'
         ) {
           for (const key in event) {
-            if (event[key]?.length == 0 && kpi.kpiId !== 'kpi171') {
+            if (
+              event[key]?.length == 0 &&
+              kpi.kpiId !== 'kpi171' &&
+              kpi.kpiId !== 'kpi202'
+            ) {
               delete event[key];
-            } else if (event[key]?.length == 0 && kpi.kpiId === 'kpi171') {
+            } else if (
+              event[key]?.length == 0 &&
+              (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202')
+            ) {
               event[key] = null;
             }
           }
@@ -4776,6 +4809,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       if (kpi?.kpiId === 'kpi171') {
         this.getkpi171Data(kpi?.kpiId);
+      } else if (kpi?.kpiId === 'kpi202') {
+        this.getkpi202Data(kpi?.kpiId);
       } else {
         this.getChartData(
           kpi?.kpiId,
@@ -5638,6 +5673,100 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       value: !isNaN(+durationFilter.split(' ')[1])
         ? +durationFilter.split(' ')[1]
         : 1,
+    };
+  }
+
+  getkpi202Data(kpiId) {
+    let durationChanged = false;
+    const duration = Array.isArray(this.durationFilterKpi202)
+      ? this.durationFilterKpi202[0]
+      : this.durationFilterKpi202;
+    if (
+      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
+      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== duration
+    ) {
+      durationChanged = true;
+      this.kpiChartData[kpiId] = [];
+      this.durationFilterKpi202 = JSON.parse(
+        JSON.stringify(this.kpiSelectedFilterObj[kpiId]['filter1'][0]),
+      );
+      this.kpiSelectedFilterObj['durationFilterKpi202'] =
+        this.durationFilterKpi202;
+      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+    }
+
+    if (durationChanged) {
+      this.kpiSelectedFilterObj[kpiId]['filter2'] = null;
+      const idx = this.ifKpiExist(kpiId);
+
+      const gID = this.allKpiArray[idx].groupId;
+      const kpi202Payload = this.updatedConfigGlobalData
+        ?.filter((kpiDetails) => kpiDetails.kpiDetail.groupId === gID)
+        .map((d) => d.kpiId);
+      const groupIdSet = new Set();
+      groupIdSet.add(gID);
+
+      groupIdSet.forEach((groupId) => {
+        if (groupId) {
+          this.kpiJira = this.helperService.groupKpiFromMaster(
+            'Jira',
+            false,
+            this.updatedConfigGlobalData,
+            this.filterApplyData,
+            this.filterData,
+            kpi202Payload,
+            groupId,
+            '',
+          );
+          const kpi202 = this.kpiJira.kpiList.filter(
+            (kpi) => kpi.kpiId === 'kpi202',
+          )[0];
+          if (kpi202) {
+            kpi202['filterDuration'] = this.appendFilterDurationKpi202();
+            this.kpiJira.kpiList = [kpi202];
+            this.kpiLoader.add('kpi202');
+
+            this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
+              this.setupSearchQuerySubscription();
+              const kpi202Data = data.find((kpi) => kpi.kpiId === kpiId);
+              if (idx !== -1) {
+                this.allKpiArray.splice(idx, 1);
+              }
+              this.allKpiArray.push(kpi202Data);
+              this.kpiDropdowns[kpiId] = Object.values(kpi202Data?.filters);
+              this.kpiSelectedFilterObj[kpiId]['filter2'] = this.kpiDropdowns[
+                kpiId
+              ][1]?.options?.length
+                ? [this.kpiDropdowns[kpiId][1]?.options[0]]
+                : [];
+              this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+              this.kpiLoader.delete('kpi202');
+            });
+          }
+        }
+      });
+    } else {
+      this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+    }
+  }
+
+  appendFilterDurationKpi202(): any {
+    this.durationFilterKpi202 =
+      this.service.getKpiSubFilterObj()?.['durationFilterKpi202'] ||
+      this.kpiSelectedFilterObj?.['kpi202']?.filter1 ||
+      'Past 6 Months';
+    const durationFilter = Array.isArray(this.durationFilterKpi202)
+      ? this.durationFilterKpi202[0]
+      : this.durationFilterKpi202;
+
+    const match = durationFilter ? String(durationFilter).match(/\d+/) : null;
+    const value = match ? parseInt(match[0], 10) : 1;
+
+    return {
+      duration: durationFilter?.toLowerCase().includes('week')
+        ? 'WEEKS'
+        : 'MONTHS',
+      value: value,
     };
   }
 
