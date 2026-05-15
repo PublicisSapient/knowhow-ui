@@ -72,7 +72,7 @@
                   <ng-container *ngIf="kpi?.kpiDetail?.chartType !== 'card'">
                     <div
                       *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
-                      class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}" [id]="kpi.kpiId">
+                      [ngClass]="(kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot') ? 'p-col-6' : getkpiwidth(kpi.kpiDetail?.kpiWidth)" [id]="kpi.kpiId">
                       <app-kpi-card-v2 [selectedTab]="selectedTab"
                         [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]" [trendBoxColorObj]="trendBoxColorObj"
                         [kpiData]="kpi" [loader]="kpiLoader.has(kpi?.kpiId)"
@@ -446,6 +446,42 @@
                       </app-kpi-card-v2>
 
                     </div>
+
+
+
+
+                    <div *ngIf="kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot'" class="p-col-6" id="kpi202_duplicate">
+                      <app-kpi-card-v2 [selectedTab]="selectedTab"
+                        [kpiData]="{ kpiId: 'kpi202_duplicate', kpiName: 'Cycle Time Workflows', kpiDetail: { chartType: 'line', xaxisLabel: 'Workflows', yaxisLabel: 'Time (Days)' }, isEnabled: true, shown: true }" 
+                        [loader]="kpiLoader.has('kpi202')"
+                        [immediateLoader]="immediateLoader"
+                        [kpiDataStatusCode]="kpiStatusCodeArr['kpi202_duplicate']" 
+                        [trendValueList]="kpiChartData['kpi202_duplicate']"
+                        [colors]="colorObj" 
+                        [showChartView]="showChart"
+                        [kpiTitle]="'Cycle Time Workflows'" 
+                        [xAxisLabel]="'Workflows'" 
+                        [yAxisLabel]="'Time (Days)'"
+                        [xCaption]="'Workflows'"
+                        [showExport]="false"
+                        [kpiRecommData]="kpiRecommData['kpi202']">
+                        <ng-container *ngIf="!kpiLoader.has('kpi202')">
+                          <ng-container *ngIf="kpiChartData['kpi202_duplicate']?.length > 0; else noDataAccess">
+                            <app-multiline-v2
+                              [data]="kpiChartData['kpi202_duplicate']"
+                              [xCaption]="'Workflows'"
+                              [yCaption]="'Time (Days)'"
+                              [name]="'Cycle Time Workflows'"
+                              [kpiId]="'kpi202_duplicate'"
+                              [color]="chartColorList['kpi202']"
+                              [selectedtype]="selectedtype"
+                              [viewType]="showChart"
+                              [board]="selectedTab">
+                            </app-multiline-v2>
+                          </ng-container>
+                        </ng-container>
+                      </app-kpi-card-v2>
+                    </div>
                   </ng-container>
                   <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId === 'kpi154'">
                     <app-daily-scrum-tab [assigneeList]="iterationKPIData['kpi154']?.trendValueList"
@@ -491,6 +527,8 @@
                 </ng-container>
               </ng-container>
             </div>
+
+
           </div>
         </div>
         <app-kpi-table *ngIf="showChart === 'table'" [kpiConfigData]="kpiConfigData" [cols]="kpiTableHeadingArr"

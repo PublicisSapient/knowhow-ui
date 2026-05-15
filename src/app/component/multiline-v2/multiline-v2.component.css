@@ -19,6 +19,7 @@
 #multiLineChart {
   text-align: center;
   position: relative;
+  padding-left: 15px;
 }
 
 #graphContainer {
@@ -174,8 +175,8 @@
 #xCaptionContainer {
   text-align: center;
   color: #49535e;
-  font-size: 12px;
-  margin-top: -40px;
+  font-size: 14px;
+  margin-top: -20px;
 }
 
 :host ::ng-deep .y-axis-grid .domain {

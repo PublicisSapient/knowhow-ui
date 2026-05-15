@@ -3091,6 +3091,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202DuplicateData.kpiId = 'kpi202_duplicate';
         data['kpi202_duplicate'] = kpi202DuplicateData;
       }
+      // kpi202_duplicate chart data is computed separately — skip normal processing
+      if (data[key]?.kpiId === 'kpi202_duplicate') {
+        continue;
+      }
       /** Creating recomm data */
       const kpiId = data[key]?.kpiId || key;
       this.kpiRecommData[kpiId] = data[key]?.recommendationActionPlan || {};
@@ -3139,6 +3143,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.allKpiArray?.length - 1,
           agType,
         );
+      }
+      // After kpi202 chart data is set, compute the aggregated line chart data for the duplicate
+      if (data[key]?.kpiId === 'kpi202') {
+        this.computeKpi202DuplicateChartData();
       }
     }
   }
@@ -5702,13 +5710,74 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 : [];
               this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
               this.kpiLoader.delete('kpi202');
+              // Recompute the aggregated line chart for the Cycle Time Workflows widget
+              this.computeKpi202DuplicateChartData();
             });
           }
         }
       });
     } else {
       this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
+      // Recompute the aggregated line chart for the Cycle Time Workflows widget
+      this.computeKpi202DuplicateChartData();
     }
+  }
+
+  /**
+   * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
+   * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
+   *
+   * Each data point on the line chart represents a workflow stage (e.g. DOR,
+   * Development, QA). Its Y-value is the sum of all matching dataValue entries
+   * across every story item in the currently filtered kpi202 data.
+   */
+  computeKpi202DuplicateChartData(): void {
+    const kpi202Data = this.kpiChartData['kpi202'];
+    if (!kpi202Data || !Array.isArray(kpi202Data) || kpi202Data.length === 0) {
+      this.kpiChartData['kpi202_duplicate'] = [];
+      return;
+    }
+    // Aggregate dataValue entries by workflow name
+    const aggregatedMap = new Map<string, number>();
+    kpi202Data.forEach((project: any) => {
+      (project?.value || []).forEach((item: any) => {
+        (item?.dataValue || []).forEach((dv: any) => {
+          if (dv?.name) {
+            aggregatedMap.set(
+              dv.name,
+              (aggregatedMap.get(dv.name) || 0) + (Number(dv.value) || 0),
+            );
+          }
+        });
+      });
+    });
+    // Build multiline-v2 compatible data structure
+    const defaultColors = [
+      '#3498db',
+      '#2ecc71',
+      '#e74c3c',
+      '#f39c12',
+      '#9b59b6',
+      '#34495e',
+    ];
+
+    const lineValues = Array.from(aggregatedMap.entries()).map(
+      ([name, total], index) => ({
+        sSprintName: name,
+        value: Math.round(total * 100) / 100,
+        hoverValue: {},
+        xOrder: name,
+        xAxisTick: name,
+        color: defaultColors[index % defaultColors.length],
+      }),
+    );
+    this.kpiChartData['kpi202_duplicate'] = [
+      {
+        data: 'Cycle Time Workflows',
+        value: lineValues,
+      },
+    ];
+    this.kpiStatusCodeArr['kpi202_duplicate'] = '200';
   }
 
   appendFilterDurationKpi202(): any {
