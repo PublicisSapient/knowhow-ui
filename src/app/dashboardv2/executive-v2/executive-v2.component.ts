@@ -145,7 +145,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   durationFilterKpi202 = 'Past 6 Months';
-  durationFilterKpi202Duplicate = 'Past 6 Months';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -278,33 +277,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData?.filter(
       (item) => item.shown,
     );
-
-    this.injectKpi202Duplicate();
-  }
-
-  private injectKpi202Duplicate() {
-    if (
-      this.selectedTab?.toLowerCase() === 'slingshot' &&
-      this.updatedConfigGlobalData
-    ) {
-      const kpi202Base = this.updatedConfigGlobalData.find(
-        (k) => k.kpiId === 'kpi202',
-      );
-      if (
-        kpi202Base &&
-        !this.updatedConfigGlobalData.find(
-          (k) => k.kpiId === 'kpi202_duplicate',
-        )
-      ) {
-        const kpi202Duplicate = JSON.parse(JSON.stringify(kpi202Base));
-        kpi202Duplicate.kpiId = 'kpi202_duplicate';
-        kpi202Duplicate.kpiName = 'Cycle Time Workflows';
-        kpi202Duplicate.kpiDetail.xaxisLabel = 'Workflows';
-        kpi202Duplicate.kpiDetail.yaxisLabel = 'Time (Days)';
-        kpi202Duplicate.kpiDetail.chartType = 'bar-chart';
-        this.updatedConfigGlobalData.push(kpi202Duplicate);
-      }
-    }
   }
 
   processKpiConfigData() {
@@ -348,7 +320,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiConfigData[element.kpiId] = false;
       }
     });
-    this.injectKpi202Duplicate();
   }
 
   private setupSearchQuerySubscription(): void {
@@ -1480,14 +1451,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
 
-      // Remove duplicate virtual KPI before sending to backend
-      const kpi202DuplicateIndex = postData.kpiList.findIndex(
-        (k) => k.kpiId === 'kpi202_duplicate',
-      );
-      if (kpi202DuplicateIndex !== -1) {
-        postData.kpiList.splice(kpi202DuplicateIndex, 1);
-      }
-
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -1531,14 +1494,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
               // creating array into object where key is kpi id
               const localVariable = this.helperService.createKpiWiseId(getData);
-
-              // Duplicate kpi202 data for the virtual widget
-              if (localVariable['kpi202']) {
-                localVariable['kpi202_duplicate'] = JSON.parse(
-                  JSON.stringify(localVariable['kpi202']),
-                );
-                localVariable['kpi202_duplicate'].kpiId = 'kpi202_duplicate';
-              }
 
               this.fillKPIResponseCode(localVariable);
               if (
@@ -4385,9 +4340,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (
-      (kpiId === 'kpi171' ||
-        kpiId === 'kpi202' ||
-        kpiId === 'kpi202_duplicate') &&
+      (kpiId === 'kpi171' || kpiId === 'kpi202') &&
       this.allKpiArray[idx]?.filters
     ) {
       this.kpiDropdowns[kpiId] = Object.values(this.allKpiArray[idx]?.filters);
@@ -4397,20 +4350,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       };
       if (kpiId === 'kpi171') {
         this.durationFilter = this.durationFilter || 'Past 6 Months';
-      } else if (kpiId === 'kpi202') {
+      } else {
         this.durationFilterKpi202 =
           this.durationFilterKpi202 || 'Past 6 Months';
-      } else {
-        this.durationFilterKpi202Duplicate =
-          this.durationFilterKpi202Duplicate || 'Past 6 Months';
       }
     }
 
     if (
       this.kpiDropdowns[kpiId]?.length > 1 &&
       kpiId !== 'kpi171' &&
-      kpiId !== 'kpi202' &&
-      kpiId !== 'kpi202_duplicate'
+      kpiId !== 'kpi202'
     ) {
       this.kpiSelectedFilterObj[kpiId] = {};
       for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
@@ -4823,8 +4772,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.getkpi171Data(kpi?.kpiId);
       } else if (kpi?.kpiId === 'kpi202') {
         this.getkpi202Data(kpi?.kpiId);
-      } else if (kpi?.kpiId === 'kpi202_duplicate') {
-        this.getkpi202DuplicateData(kpi?.kpiId);
       } else {
         this.getChartData(
           kpi?.kpiId,
@@ -5772,107 +5719,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const durationFilter = Array.isArray(this.durationFilterKpi202)
       ? this.durationFilterKpi202[0]
       : this.durationFilterKpi202;
-
-    const match = durationFilter ? String(durationFilter).match(/\d+/) : null;
-    const value = match ? parseInt(match[0], 10) : 1;
-
-    return {
-      duration: durationFilter?.toLowerCase().includes('week')
-        ? 'WEEKS'
-        : 'MONTHS',
-      value: value,
-    };
-  }
-
-  getkpi202DuplicateData(kpiId) {
-    let durationChanged = false;
-    const duration = Array.isArray(this.durationFilterKpi202Duplicate)
-      ? this.durationFilterKpi202Duplicate[0]
-      : this.durationFilterKpi202Duplicate;
-    if (
-      this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') &&
-      this.kpiSelectedFilterObj[kpiId]['filter1'][0] !== duration
-    ) {
-      durationChanged = true;
-      this.kpiChartData[kpiId] = [];
-      this.durationFilterKpi202Duplicate = JSON.parse(
-        JSON.stringify(this.kpiSelectedFilterObj[kpiId]['filter1'][0]),
-      );
-      this.kpiSelectedFilterObj['durationFilterKpi202Duplicate'] =
-        this.durationFilterKpi202Duplicate;
-      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-    }
-
-    if (durationChanged) {
-      this.kpiSelectedFilterObj[kpiId]['filter2'] = null;
-      const idx = this.ifKpiExist(kpiId);
-
-      const gID = this.allKpiArray[idx].groupId;
-      const kpi202Payload = this.updatedConfigGlobalData
-        ?.filter((kpiDetails) => kpiDetails.kpiDetail.groupId === gID)
-        .map((d) => (d.kpiId === 'kpi202_duplicate' ? 'kpi202' : d.kpiId));
-      const groupIdSet = new Set();
-      groupIdSet.add(gID);
-
-      groupIdSet.forEach((groupId) => {
-        if (groupId) {
-          this.kpiJira = this.helperService.groupKpiFromMaster(
-            'Jira',
-            false,
-            this.updatedConfigGlobalData,
-            this.filterApplyData,
-            this.filterData,
-            kpi202Payload,
-            groupId,
-            '',
-          );
-          const kpi202 = this.kpiJira.kpiList.filter(
-            (kpi) => kpi.kpiId === 'kpi202',
-          )[0];
-          if (kpi202) {
-            kpi202['filterDuration'] =
-              this.appendFilterDurationKpi202Duplicate();
-            this.kpiJira.kpiList = [kpi202];
-            this.kpiLoader.add('kpi202_duplicate');
-
-            this.httpService.postKpi(this.kpiJira, 'jira').subscribe((data) => {
-              this.setupSearchQuerySubscription();
-              const kpi202Data = data.find((kpi) => kpi.kpiId === 'kpi202');
-              if (idx !== -1) {
-                this.allKpiArray.splice(idx, 1);
-              }
-              const kpi202DuplicateData = JSON.parse(
-                JSON.stringify(kpi202Data),
-              );
-              kpi202DuplicateData.kpiId = 'kpi202_duplicate';
-              this.allKpiArray.push(kpi202DuplicateData);
-              this.kpiDropdowns[kpiId] = Object.values(
-                kpi202DuplicateData?.filters,
-              );
-              this.kpiSelectedFilterObj[kpiId]['filter2'] = this.kpiDropdowns[
-                kpiId
-              ][1]?.options?.length
-                ? [this.kpiDropdowns[kpiId][1]?.options[0]]
-                : [];
-              this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
-              this.kpiLoader.delete('kpi202_duplicate');
-            });
-          }
-        }
-      });
-    } else {
-      this.getChartData(kpiId, this.ifKpiExist(kpiId), '');
-    }
-  }
-
-  appendFilterDurationKpi202Duplicate(): any {
-    this.durationFilterKpi202Duplicate =
-      this.service.getKpiSubFilterObj()?.['durationFilterKpi202Duplicate'] ||
-      this.kpiSelectedFilterObj?.['kpi202_duplicate']?.filter1 ||
-      'Past 6 Months';
-    const durationFilter = Array.isArray(this.durationFilterKpi202Duplicate)
-      ? this.durationFilterKpi202Duplicate[0]
-      : this.durationFilterKpi202Duplicate;
 
     const match = durationFilter ? String(durationFilter).match(/\d+/) : null;
     const value = match ? parseInt(match[0], 10) : 1;
