@@ -789,9 +789,9 @@ export class StackedGroupBarChartComponent
     d3.select(containerNode)
       .append('div')
       .style('text-align', 'center')
-      .style('font-size', '16px')
+      .style('font-size', '14px')
       .style('color', '#49535e')
-      .style('margin-top', '10px')
+      .style('margin-top', '0px')
       .text(this.xCaption);
 
     // --- Y Axis ---
@@ -818,7 +818,7 @@ export class StackedGroupBarChartComponent
       .attr('y', -margin.left + 20)
       .attr('text-anchor', 'middle')
       .text(this.yAxisLabel)
-      .style('font-size', '16px')
+      .style('font-size', '14px')
       .style('fill', '#49535e');
 
     // --- Legend ---
