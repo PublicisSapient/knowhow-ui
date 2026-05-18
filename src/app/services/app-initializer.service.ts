@@ -24,7 +24,6 @@ import { HelperService } from './helper.service';
 import { HomeComponent } from '../dashboard/home/home.component';
 import { AnalysisContainerComponent } from '../dashboardv2/analysis-module/analysis-container/analysis-container.component';
 import { PebCalculatorComponent } from '../dashboard/peb-calculator/peb-calculator.component';
-import { SlingshotComponent } from '../dashboard/slingshot/slingshot.component';
 @Injectable({
   providedIn: 'root',
 })
@@ -73,14 +72,6 @@ export class AppInitializerService {
       canActivate: [AccessGuard],
       data: {
         feature: 'PEB',
-      },
-    },
-    {
-      path: 'slingshot',
-      component: SlingshotComponent,
-      pathMatch: 'full',
-      data: {
-        feature: 'Slingshot',
       },
     },
   ];

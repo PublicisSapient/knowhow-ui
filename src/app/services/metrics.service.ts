@@ -95,7 +95,9 @@ export class MetricsService implements OnDestroy {
   }
 
   private stripQueryParams(url: string): string {
-    if (!url) return 'unknown';
+    if (!url) {
+      return 'unknown';
+    }
     return url.split('?')[0].split('#')[0];
   }
 
@@ -386,19 +388,37 @@ export class MetricsService implements OnDestroy {
 
   // Helper methods for bucketing
   private getDurationBucket(seconds: number): string {
-    if (seconds < 30) return '0-30s';
-    if (seconds < 60) return '30-60s';
-    if (seconds < 300) return '1-5min';
-    if (seconds < 900) return '5-15min';
-    if (seconds < 1800) return '15-30min';
+    if (seconds < 30) {
+      return '0-30s';
+    }
+    if (seconds < 60) {
+      return '30-60s';
+    }
+    if (seconds < 300) {
+      return '1-5min';
+    }
+    if (seconds < 900) {
+      return '5-15min';
+    }
+    if (seconds < 1800) {
+      return '15-30min';
+    }
     return '30min+';
   }
 
   private getPagesBucket(pages: number): string {
-    if (pages === 1) return '1-page';
-    if (pages <= 3) return '2-3-pages';
-    if (pages <= 5) return '4-5-pages';
-    if (pages <= 10) return '6-10-pages';
+    if (pages === 1) {
+      return '1-page';
+    }
+    if (pages <= 3) {
+      return '2-3-pages';
+    }
+    if (pages <= 5) {
+      return '4-5-pages';
+    }
+    if (pages <= 10) {
+      return '6-10-pages';
+    }
     return '10+-pages';
   }
 
