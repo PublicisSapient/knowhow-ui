@@ -348,7 +348,9 @@ export class JiraConfigComponent implements OnInit {
     const repo = this.toolForm?.get('Repository')?.value?.toString().trim();
     const branches = this.toolForm?.get('branch')?.value;
 
-    if (!repo) return false;
+    if (!repo) {
+      return false;
+    }
 
     return (
       Array.isArray(branches) && branches.some((b) => b?.toString().trim())
