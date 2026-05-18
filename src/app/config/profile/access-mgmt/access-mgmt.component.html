@@ -44,9 +44,6 @@
           </div>
         </form>
       </div>
-      
-     
-
       <p-table #dt [value]="users" dataKey="emailAddress" [rows]="10" [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0"
         [globalFilterFields]="['username','emailAddress','role']" styleClass="p-datatable-striped p-datatable-gridlines"
@@ -191,7 +188,7 @@
                       <div *ngFor="let node of access.accessNodes">
                         <ng-container *ngFor="let item of node.accessItems">
 
-                          <div class="info-block" 
+                          <div class="info-block"
                             (mouseenter)="mouseEnter($event, item, node)" (mouseleave)="mouseLeave()" id="projectAccess">
                             {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
                             item.itemName.substring(0,24) + "..." : item.itemName }}
