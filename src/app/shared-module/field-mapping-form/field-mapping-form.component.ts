@@ -68,6 +68,9 @@ export class FieldMappingFormComponent implements OnInit {
   nestedFieldANDParent = {};
   @Input() nodeId = '';
 
+  readonly fieldMappingLabel: string = 'Workfow groups';
+  readonly workFlowStatusMappingSection: string = 'WorkFlow Status Mapping';
+
   @ViewChild('addValueDialog') addValueDialog!: Dialog;
 
   constructor(
@@ -86,7 +89,7 @@ export class FieldMappingFormComponent implements OnInit {
     this.generateFieldMappingConfiguration();
     if (this.kpiId === 'kpi202') {
       const triggerField = this.fieldMappingConfig.find(
-        (field) => field.fieldLabel === 'Workfow groups',
+        (field) => field.fieldLabel === this.fieldMappingLabel,
       );
       if (triggerField) {
         this.updateDynamicWorkflowFields(
@@ -111,7 +114,10 @@ export class FieldMappingFormComponent implements OnInit {
   }
 
   updateDynamicWorkflowFields(selectedGroups: string[] | string) {
-    if (!this.formConfig || !this.formConfig['WorkFlow Status Mapping']) {
+    if (
+      !this.formConfig ||
+      !this.formConfig[this.workFlowStatusMappingSection]
+    ) {
       return;
     }
 
@@ -124,8 +130,8 @@ export class FieldMappingFormComponent implements OnInit {
       : [];
 
     // Remove existing dynamic fields from formConfig
-    this.formConfig['WorkFlow Status Mapping'] = this.formConfig[
-      'WorkFlow Status Mapping'
+    this.formConfig[this.workFlowStatusMappingSection] = this.formConfig[
+      this.workFlowStatusMappingSection
     ].filter((field) => !field.isDynamic);
 
     const currentDynamicFieldNames = groups.map(
@@ -141,7 +147,7 @@ export class FieldMappingFormComponent implements OnInit {
     });
 
     const maxDisplayOrder = Math.max(
-      ...this.formConfig['WorkFlow Status Mapping'].map(
+      ...this.formConfig[this.workFlowStatusMappingSection].map(
         (f) => f.fieldDisplayOrder || 0,
       ),
       0,
@@ -155,7 +161,7 @@ export class FieldMappingFormComponent implements OnInit {
         fieldLabel: `Status to identify ${capitalizedGroup}`,
         fieldType: 'chips',
         fieldCategory: 'workflow',
-        section: 'WorkFlow Status Mapping',
+        section: this.workFlowStatusMappingSection,
         processorCommon: false,
         isDynamic: true,
         fieldDisplayOrder: maxDisplayOrder + index + 1,
@@ -163,13 +169,13 @@ export class FieldMappingFormComponent implements OnInit {
         tooltip: { definition: `Status mapping for ${group}` },
       };
 
-      this.formConfig['WorkFlow Status Mapping'].push(dynamicField);
+      this.formConfig[this.workFlowStatusMappingSection].push(dynamicField);
 
       // Add to form group if not already present
       if (!this.form.contains(dynamicFieldName)) {
         // Try to find if we already have a value for this in the original trigger field value
         const triggerField = this.fieldMappingConfig.find(
-          (f) => f.fieldLabel === 'Workfow groups',
+          (f) => f.fieldLabel === this.fieldMappingLabel,
         );
         const triggerValue =
           this.formData.find((d) => d.fieldName === triggerField?.fieldName)
@@ -229,7 +235,7 @@ export class FieldMappingFormComponent implements OnInit {
     });
 
     // Re-sort to ensure dynamic fields are at the bottom
-    this.formConfig['WorkFlow Status Mapping'].sort(
+    this.formConfig[this.workFlowStatusMappingSection].sort(
       (a, b) => (a.fieldDisplayOrder || 0) - (b.fieldDisplayOrder || 0),
     );
   }
@@ -249,7 +255,7 @@ export class FieldMappingFormComponent implements OnInit {
       'Custom Fields Mapping',
       'Issue Types Mapping',
       'Defects Mapping',
-      'WorkFlow Status Mapping',
+      this.workFlowStatusMappingSection,
       'Additional Filter Identifier',
       'Project Level Threshold',
     ];
@@ -326,7 +332,7 @@ export class FieldMappingFormComponent implements OnInit {
 
       // Extract keys for dynamic "Workflow groups" trigger field
       // Since originalValue has a nested structure but chips component expects string array
-      if (config.fieldLabel === 'Workfow groups' && initialVal) {
+      if (config.fieldLabel === this.fieldMappingLabel && initialVal) {
         if (Array.isArray(initialVal)) {
           if (
             initialVal.length > 0 &&
@@ -616,21 +622,23 @@ export class FieldMappingFormComponent implements OnInit {
 
     if (this.kpiId === 'kpi202') {
       const triggerField = this.fieldMappingConfig.find(
-        (f) => f.fieldLabel === 'Workfow groups',
+        (f) => f.fieldLabel === this.fieldMappingLabel,
       );
       if (triggerField) {
         const mappingValue = [];
         let dynamicFieldChanged = false;
 
         // Build mappingValue from ALL dynamic fields currently in the form
-        this.formConfig['WorkFlow Status Mapping']?.forEach((config) => {
-          if (config.isDynamic) {
-            mappingValue.push({
-              label: config.originalGroupName,
-              statuses: this.form.value[config.fieldName] || [],
-            });
-          }
-        });
+        this.formConfig[this.workFlowStatusMappingSection]?.forEach(
+          (config) => {
+            if (config.isDynamic) {
+              mappingValue.push({
+                label: config.originalGroupName,
+                statuses: this.form.value[config.fieldName] || [],
+              });
+            }
+          },
+        );
 
         // Remove dynamic fields from finalList so they aren't sent directly
         for (let i = finalList.length - 1; i >= 0; i--) {

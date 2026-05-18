@@ -69,7 +69,9 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   sendMessage() {
-    if (!this.userInput.trim()) return;
+    if (!this.userInput.trim()) {
+      return;
+    }
     this.metricsService.trackAiChatQuestion();
 
     const question = this.userInput;
@@ -117,7 +119,9 @@ export class ChatbotComponent implements AfterViewChecked {
 
   submitFeedback(messageIndex: number, isLiked: boolean) {
     const message = this.messages[messageIndex];
-    if (!message || !message.question) return;
+    if (!message || !message.question) {
+      return;
+    }
 
     message.feedbackGiven = isLiked ? 'like' : 'dislike';
 
@@ -180,7 +184,9 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   submitSupport() {
-    if (!this.isSupportFormValid()) return;
+    if (!this.isSupportFormValid()) {
+      return;
+    }
 
     this.chatService
       .submitSupport(
