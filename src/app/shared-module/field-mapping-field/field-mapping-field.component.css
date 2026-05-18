@@ -188,3 +188,42 @@ label.btn-import-label {
 :host::ng-deep .p-button-icon-only {
   background-color: #0b4bc8 !important;
 }
+
+/* Custom styles for draggable chips in p-chips */
+:host ::ng-deep .p-chips .p-chips-multiple-container .p-chips-token {
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  overflow: hidden;
+}
+
+:host
+  ::ng-deep
+  .p-chips
+  .p-chips-multiple-container
+  .p-chips-token
+  .p-chips-token-label {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100%;
+}
+
+.draggable-chip {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.draggable-chip:active {
+  cursor: grabbing;
+}
