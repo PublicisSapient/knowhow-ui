@@ -149,4 +149,55 @@ describe('FieldMappingFieldComponent', () => {
 
     expect(mockRouter.navigate).toHaveBeenCalledWith([testUrl]);
   });
+
+  it('should handle drag start', () => {
+    const mockEvent = {
+      dataTransfer: {
+        effectAllowed: '',
+        setData: jasmine.createSpy('setData'),
+      },
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.onDragStart(mockEvent, 'testItem');
+    expect(component.draggedItem).toEqual('testItem');
+    expect(mockEvent.dataTransfer.effectAllowed).toEqual('move');
+    expect(mockEvent.dataTransfer.setData).toHaveBeenCalledWith(
+      'text/plain',
+      'testItem',
+    );
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+  });
+
+  it('should handle drag over', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.onDragOver(mockEvent);
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+  });
+
+  it('should handle drag end', () => {
+    const mockEvent = {} as any;
+    component.draggedItem = 'testItem';
+    component.onDragEnd(mockEvent);
+    expect(component.draggedItem).toBeNull();
+  });
+
+  it('should handle drop and reorder value', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.value = ['A', 'C', 'B'];
+    component.draggedItem = 'B';
+    const spy = spyOn(component, 'setValue');
+    component.onDrop(mockEvent, 'C');
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(component.value).toEqual(['A', 'B', 'C']);
+    expect(spy).toHaveBeenCalled();
+    expect(component.draggedItem).toBeNull();
+  });
 });

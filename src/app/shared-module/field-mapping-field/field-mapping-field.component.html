@@ -55,8 +55,22 @@
         (onRemove)="setValue()"
         aria-label="Chips Input"
         role="listbox"
-        tabindex="0"
-      ></p-chips>
+        (dragover)="$event.preventDefault()"
+        (drop)="$event.preventDefault()"
+      >
+        <ng-template let-item pTemplate="chip">
+          <span
+            draggable="true"
+            (dragstart)="onDragStart($event, item)"
+            (dragover)="onDragOver($event)"
+            (dragend)="onDragEnd($event)"
+            (drop)="onDrop($event, item)"
+            class="draggable-chip"
+          >
+            {{ item }}
+          </span>
+        </ng-template>
+      </p-chips>
       <button
         type="button"
         pButton
