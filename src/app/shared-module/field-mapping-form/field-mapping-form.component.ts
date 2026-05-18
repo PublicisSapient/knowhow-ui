@@ -174,7 +174,25 @@ export class FieldMappingFormComponent implements OnInit {
         const triggerValue =
           this.formData.find((d) => d.fieldName === triggerField?.fieldName)
             ?.originalValue || {};
-        const initialValue = triggerValue[group] || [];
+        let initialValue = [];
+        if (Array.isArray(triggerValue)) {
+          if (
+            triggerValue.length > 0 &&
+            typeof triggerValue[0] === 'object' &&
+            triggerValue[0] !== null
+          ) {
+            if ('label' in triggerValue[0]) {
+              const matchedGroup = triggerValue.find(
+                (item: any) => item.label === group,
+              );
+              initialValue = matchedGroup ? matchedGroup.statuses : [];
+            } else {
+              initialValue = triggerValue[0][group] || [];
+            }
+          }
+        } else if (typeof triggerValue === 'object' && triggerValue !== null) {
+          initialValue = triggerValue[group] || [];
+        }
 
         const control = new FormControl(initialValue);
         this.form.addControl(dynamicFieldName, control);
@@ -307,14 +325,23 @@ export class FieldMappingFormComponent implements OnInit {
       let initialVal = fieldMapping.originalValue;
 
       // Extract keys for dynamic "Workflow groups" trigger field
-      // Since originalValue is an object but chips component expects string array
-      if (
-        config.fieldLabel === 'Workfow groups' &&
-        initialVal &&
-        typeof initialVal === 'object' &&
-        !Array.isArray(initialVal)
-      ) {
-        initialVal = Object.keys(initialVal);
+      // Since originalValue has a nested structure but chips component expects string array
+      if (config.fieldLabel === 'Workfow groups' && initialVal) {
+        if (Array.isArray(initialVal)) {
+          if (
+            initialVal.length > 0 &&
+            typeof initialVal[0] === 'object' &&
+            initialVal[0] !== null
+          ) {
+            if ('label' in initialVal[0]) {
+              initialVal = initialVal.map((item: any) => item.label);
+            } else {
+              initialVal = Object.keys(initialVal[0]);
+            }
+          }
+        } else if (typeof initialVal === 'object') {
+          initialVal = Object.keys(initialVal);
+        }
       }
 
       return new FormControl(
@@ -592,14 +619,16 @@ export class FieldMappingFormComponent implements OnInit {
         (f) => f.fieldLabel === 'Workfow groups',
       );
       if (triggerField) {
-        const mappingValue = {};
+        const mappingValue = [];
         let dynamicFieldChanged = false;
 
         // Build mappingValue from ALL dynamic fields currently in the form
         this.formConfig['WorkFlow Status Mapping']?.forEach((config) => {
           if (config.isDynamic) {
-            mappingValue[config.originalGroupName] =
-              this.form.value[config.fieldName];
+            mappingValue.push({
+              label: config.originalGroupName,
+              statuses: this.form.value[config.fieldName] || [],
+            });
           }
         });
 
