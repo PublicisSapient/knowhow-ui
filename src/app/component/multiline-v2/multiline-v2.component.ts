@@ -690,11 +690,11 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', 'y axis')
         .call(yAxis)
         .append('text')
-        .attr('x', -60)
+        .attr('x', -50)
         .attr('y', -30)
         .attr('transform', 'rotate(-90)')
         .attr('fill', '#49535E')
-        .attr('font-size', '12px')
+        .attr('font-size', '14px')
         .style('margin-left', '-25px');
 
       // adding yaxis caption
@@ -862,9 +862,61 @@ export class MultilineV2Component implements OnChanges {
           });
       }
 
+      /* Add bars for specific KPI */
+      if (this.kpiId === 'kpi202_duplicate') {
+        const bars = svgX
+          .append('g')
+          .attr('class', 'bars')
+          .attr('transform', `translate(0, 0)`);
+
+        bars
+          .selectAll('.bar')
+          .data(data[0].value)
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', (d, i) => getXCoordinate(d, i) + xScale.bandwidth() * 0.25)
+          .attr('y', (d) => yScale(d.value))
+          .attr('width', xScale.bandwidth() * 0.5)
+          .attr('height', (d) => Math.max(0, height - margin - yScale(d.value)))
+          .style('fill', (d, i) => d.color || (color && color[0]) || '#007bff')
+          .attr('rx', 4)
+          .attr('ry', 4)
+          .style('opacity', 0.85)
+          .on('mouseover', function (event, d) {
+            d3.select(this).style('opacity', 1);
+            div
+              .transition()
+              .duration(200)
+              .style('display', 'block')
+              .style('opacity', 0.9);
+
+            const unit = showUnit
+              ? unitAbbs[showUnit.toLowerCase()] || showUnit
+              : '';
+            const htmlString = `
+              <div class="tooltip-header" style="font-weight:bold; margin-bottom:5px;">${d.sSprintName}</div>
+              <div class="tooltip-body">Value: <span style="font-weight:bold;">${d.value}${unit}</span></div>
+            `;
+
+            div
+              .html(htmlString)
+              .style('left', event.pageX + 10 + 'px')
+              .style('top', event.pageY - 40 + 'px');
+          })
+          .on('mouseout', function () {
+            d3.select(this).style('opacity', 0.85);
+            div
+              .transition()
+              .duration(500)
+              .style('display', 'none')
+              .style('opacity', 0);
+          });
+      }
+
       const lineGroup = lines
         .selectAll('.line-group')
-        .data(data)
+        .data(this.kpiId === 'kpi202_duplicate' ? [] : data)
         .enter()
         .append('g')
         .attr('class', 'line-group')
@@ -946,93 +998,95 @@ export class MultilineV2Component implements OnChanges {
       });
 
       /* Add circles (data) on the line */
-      lines
-        .selectAll('circle-group')
-        .data(data)
-        .enter()
-        .append('g')
-        .attr('class', function (d, i) {
-          return 'circlegroup' + i;
-        })
-        .style('fill', (d, i) => color && color[i])
-        .style('stroke', (d, i) => color && color[i])
-        .selectAll('circle')
-        .data((d) => d.value.filter((v) => v != null))
-        .enter()
-        .append('g')
-        .attr('class', 'circle')
-        .on('mouseover', function (event, d) {
-          if (d?.isForecast) return;
-          const topValue = 80;
-          if (d.hoverValue) {
-            div
-              .transition()
-              .duration(200)
-              .style('display', 'block')
-              .style('position', 'fixed')
-              .style('opacity', 0.9);
-
-            const circle = event.target;
-            const { top: yPosition, left: xPosition } =
-              circle.getBoundingClientRect();
-
-            div
-              .html(
-                `${self.getFormatedDateBasedOnType(
-                  d.date || d.sSprintName,
-                  self.xCaption,
-                )}` +
-                  ' : ' +
-                  "<span class='toolTipValue'> " +
-                  `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
-                  '</span>',
-              )
-              .style('left', xPosition - 80 + 'px')
-              // .style('top', yScale(d.value) - topValue + 'px');
-              .style('top', yPosition + 20 + 'px');
-            for (const hoverData in d.hoverValue) {
+      if (this.kpiId !== 'kpi202_duplicate') {
+        lines
+          .selectAll('circle-group')
+          .data(data)
+          .enter()
+          .append('g')
+          .attr('class', function (d, i) {
+            return 'circlegroup' + i;
+          })
+          .style('fill', (d, i) => color && color[i])
+          .style('stroke', (d, i) => color && color[i])
+          .selectAll('circle')
+          .data((d) => d.value.filter((v) => v != null))
+          .enter()
+          .append('g')
+          .attr('class', 'circle')
+          .on('mouseover', function (event, d) {
+            if (d?.isForecast) return;
+            const topValue = 80;
+            if (d.hoverValue) {
               div
-                .append('p')
+                .transition()
+                .duration(200)
+                .style('display', 'block')
+                .style('position', 'fixed')
+                .style('opacity', 0.9);
+
+              const circle = event.target;
+              const { top: yPosition, left: xPosition } =
+                circle.getBoundingClientRect();
+
+              div
                 .html(
-                  `${hoverData}` +
+                  `${self.getFormatedDateBasedOnType(
+                    d.date || d.sSprintName,
+                    self.xCaption,
+                  )}` +
                     ' : ' +
                     "<span class='toolTipValue'> " +
-                    `${d.hoverValue[hoverData]}` +
-                    ' </span>',
-                );
+                    `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                    '</span>',
+                )
+                .style('left', xPosition - 80 + 'px')
+                // .style('top', yScale(d.value) - topValue + 'px');
+                .style('top', yPosition + 20 + 'px');
+              for (const hoverData in d.hoverValue) {
+                div
+                  .append('p')
+                  .html(
+                    `${hoverData}` +
+                      ' : ' +
+                      "<span class='toolTipValue'> " +
+                      `${d.hoverValue[hoverData]}` +
+                      ' </span>',
+                  );
+              }
             }
-          }
-        })
-        .on('mouseout', function (d) {
-          if (d?.isForecast) return;
-          div
-            .transition()
-            .duration(500)
-            .style('display', 'none')
-            .style('opacity', 0);
-        })
-        .append('circle')
-        .attr('cx', function (d, i) {
-          return getXCoordinate(d, i);
-        })
-        .attr('cy', (d) => yScale(d.value))
-        .attr('r', circleRadius)
-        .style('stroke-width', 1)
-        .style('opacity', circleOpacity)
-        .on('mouseover', function (d) {
-          if (d?.isForecast) return;
-          d3.select(this)
-            .transition()
-            .duration(duration)
-            .attr('r', circleRadiusHover);
-        })
-        .on('mouseout', function (d) {
-          if (d?.isForecast) return;
-          d3.select(this)
-            .transition()
-            .duration(duration)
-            .attr('r', circleRadius);
-        });
+          })
+          .on('mouseout', function (d) {
+            if (d?.isForecast) return;
+            div
+              .transition()
+              .duration(500)
+              .style('display', 'none')
+              .style('opacity', 0);
+          })
+          .append('circle')
+          .attr('cx', function (d, i) {
+            return getXCoordinate(d, i);
+          })
+          .attr('cy', (d) => yScale(d.value))
+          .attr('r', circleRadius)
+          .style('stroke-width', 1)
+          .style('opacity', circleOpacity)
+          .on('mouseover', function (d) {
+            if (d?.isForecast) return;
+            d3.select(this)
+              .transition()
+              .duration(duration)
+              .attr('r', circleRadiusHover);
+          })
+          .on('mouseout', function (d) {
+            if (d?.isForecast) return;
+            d3.select(this)
+              .transition()
+              .duration(duration)
+              .attr('r', circleRadius);
+          });
+      }
 
       // used to allign data on x axis ticks
       svgX

@@ -40,6 +40,7 @@ import { ParentFilterComponent } from './parent-filter/parent-filter.component';
 import { PrimaryFilterComponent } from './primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './additional-filter/additional-filter.component';
 import { ChatbotComponent } from 'src/app/dashboard/chatbot/chatbot.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-filter-new',
@@ -160,6 +161,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private analytics: AnalyticsService,
     private featureFlagsService: FeatureFlagsService,
+    private router: Router,
   ) {}
 
   async ngOnInit() {
@@ -189,7 +191,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
           this.setDateFilter();
-          this.filterDataArr = {};
+          if (this.previousSelectedType !== this.selectedType) {
+            this.filterDataArr = {};
+            this.previousSelectedType = this.selectedType;
+          }
           this.setHierarchyLevels();
         }, 0);
       }),
@@ -215,12 +220,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         }
         this.service.setSelectedDateFilter(this.selectedDayType);
 
-        // To DO
-        if (Object.keys(this.boardData)?.length) {
+        this.boardData = this.service.getDashConfigData();
+        if (this.boardData && Object.keys(this.boardData)?.length) {
           this.processBoardData(this.boardData);
-        } else {
-          this.setHierarchyLevels();
         }
+        this.setHierarchyLevels();
         // }, 0);
       }),
 
@@ -405,13 +409,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   processBoardData(boardData) {
     this.boardData = boardData;
-    this.selectedBoard = boardData[
-      this.selectedType ? this.selectedType : 'scrum'
-    ].filter(
-      (board) =>
-        board.boardSlug.toLowerCase() === this.selectedTab?.toLowerCase(),
-    )[0];
-    if (!this.selectedBoard) {
+    const currentType = this.selectedType ? this.selectedType : 'scrum';
+    if (boardData && boardData[currentType]) {
+      this.selectedBoard = boardData[currentType].filter(
+        (board) =>
+          board.boardSlug.toLowerCase() === this.selectedTab?.toLowerCase(),
+      )[0];
+    }
+
+    if (!this.selectedBoard && boardData && boardData['others']) {
       this.selectedBoard = boardData['others']?.filter(
         (board) =>
           board.boardSlug.toLowerCase() === this.selectedTab?.toLowerCase(),
@@ -464,6 +470,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.primaryFilterConfig = {
           ...this.selectedBoard.filters.primaryFilter,
         };
+      } else {
+        this.selectedLevel = 'Project';
+        this.primaryFilterConfig = {
+          ...this.selectedBoard.filters.primaryFilter,
+        };
       }
 
       if (this.selectedBoard.filters.additionalFilters) {
@@ -472,9 +483,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         ];
       } else {
         this.additionalFilterConfig = null;
-        this.service.setBackupOfFilterSelectionState({
-          additional_level: null,
-        });
+        const backupOfUrlFilters = this.service.getBackupOfUrlFilters();
+        const hasAdditionalLevelInUrl =
+          backupOfUrlFilters &&
+          JSON.parse(backupOfUrlFilters)?.additional_level;
+        const isDeveloperObj =
+          this.selectedTab?.toLowerCase() === 'developer' ||
+          this.router.url.toLowerCase().includes('developer');
+        if (!isDeveloperObj) {
+          this.service.setBackupOfFilterSelectionState({
+            additional_level: null,
+          });
+        }
       }
       this.cdr.detectChanges();
     }
@@ -958,7 +978,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           );
         }
 
-        delete stateFilters['additional_level'];
+        const isDeveloperTab =
+          this.selectedTab?.toLowerCase() === 'developer' ||
+          this.router.url.toLowerCase().includes('developer');
+        if (!isDeveloperTab) {
+          delete stateFilters['additional_level'];
+        }
         if (this.filterApplyData['selectedMap']) {
           this.filterApplyData['selectedMap']['Project'] = stateFilters[
             'primary_level'

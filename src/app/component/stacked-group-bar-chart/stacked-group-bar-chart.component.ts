@@ -84,6 +84,136 @@ export class StackedGroupBarChartComponent
   ngOnChanges(changes: SimpleChanges): void {
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
+    } else if (this.kpiId === 'kpi202') {
+      // console.log('data ', this.data);
+      // // OVERWRITE with mock data for KPI202
+      // this.data = [
+      //   {
+      //     data: 'KnowHOW',
+      //     value: [
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-44086',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '5731.616666666667',
+      //             value: 5731.616666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-47411',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '3712.766666666667',
+      //             value: 3712.766666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-47528',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '0.0',
+      //             value: 0,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '3621.516666666667',
+      //             value: 3621.516666666667,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48152',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '38.63333333333333',
+      //             value: 38.63333333333333,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '161.68333333333334',
+      //             value: 161.68333333333334,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48279',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'QA',
+      //             data: '0.016666666666666666',
+      //             value: 0.016666666666666666,
+      //           },
+      //           {
+      //             name: 'DOR',
+      //             data: '3354.05',
+      //             value: 3354.05,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //       {
+      //         hoverValue: {},
+      //         subFilter: 'DTS-48363',
+      //         kpiGroup: 'Past 6 Months#Bug',
+      //         dataValue: [
+      //           {
+      //             name: 'DOR',
+      //             data: '4227.583333333333',
+      //             value: 4227.583333333333,
+      //           },
+      //         ],
+      //         sprojectName: 'KnowHOW',
+      //       },
+      //     ],
+      //   },
+      // ];
+
+      // Dynamically extract filter options from this.data
+      const kpi202Keys = new Set<string>();
+      this.data?.forEach((elem: any) => {
+        elem.value?.forEach((val: any) => {
+          if (val?.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) kpi202Keys.add(dv.name);
+            });
+          }
+        });
+      });
+      const kpi202KeysArr = Array.from(kpi202Keys);
+      // If no keys found, show a placeholder filter
+      if (kpi202KeysArr.length === 0) {
+        this.filter = [
+          { option: 'No Data', value: 'no_data', selected: false },
+        ];
+        this.activeSeverityKeys = [];
+      } else {
+        this.filter = kpi202KeysArr.map((key) => ({
+          option: key,
+          value: key,
+          selected: true,
+        }));
+        this.activeSeverityKeys = [...kpi202KeysArr];
+      }
     }
     if (
       this.selectedtype?.toLowerCase() === 'kanban' ||
@@ -121,6 +251,7 @@ export class StackedGroupBarChartComponent
   }
 
   private createChart(): void {
+    console.log(this.kpiId, this.data);
     // Early return if no data is available
     if (this.kpiId === 'kpi195') {
       if (!this.defectsBreachedSLAs || this.defectsBreachedSLAs.length === 0) {
@@ -129,7 +260,11 @@ export class StackedGroupBarChartComponent
         );
         return;
       }
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+    } else if (
+      this.kpiId === 'kpi196' ||
+      this.kpiId === 'kpi197' ||
+      this.kpiId === 'kpi202'
+    ) {
       if (!this.data || this.data.length === 0) {
         console.warn(
           `KPI ${this.kpiId}: No data available, skipping chart creation`,
@@ -203,6 +338,56 @@ export class StackedGroupBarChartComponent
           sprintGroups[sprintKey].push(data);
         });
       });
+    } else if (this.kpiId === 'kpi202') {
+      this.yAxisLabel = 'Time (Days)';
+      this.xCaption = 'Story ID';
+      // kpi202 uses trendValueList entries with dataValue
+      // Collect all dynamic keys from dataValue across all data
+      const kpi202Keys = new Set<string>();
+      this.data?.forEach((elem: any) => {
+        elem.value?.forEach((val: any) => {
+          if (val?.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) kpi202Keys.add(dv.name);
+            });
+          }
+        });
+      });
+      const kpi202KeysArr = Array.from(kpi202Keys);
+
+      this.data?.forEach((elem: any) => {
+        elem.value?.forEach((val: any, index: number) => {
+          if (val == null) {
+            return;
+          }
+          const sprintKey = val.subFilter || `Story ${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+          let temp = 0;
+          const obj: any = {};
+
+          // Initialize to 0
+          for (const key of kpi202KeysArr) {
+            obj[key] = 0;
+          }
+
+          if (val.dataValue && Array.isArray(val.dataValue)) {
+            val.dataValue.forEach((dv: any) => {
+              if (dv.name) {
+                const v = Number(dv.value) || 0;
+                obj[dv.name] = v;
+                temp += v;
+              }
+            });
+          }
+
+          if (temp > chartYRange) chartYRange = temp;
+          sprintGroups[sprintKey].push({ project: elem.data, ...obj });
+        });
+      });
+
+      // Override the stack keys for kpi202 to use collected keys
+      // Store them for use below
+      (this as any)._kpi202Keys = kpi202KeysArr;
     }
 
     const sprints = Object.keys(sprintGroups);
@@ -212,31 +397,145 @@ export class StackedGroupBarChartComponent
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
-    const margin = { top: 30, right: 30, bottom: 60, left: 40 };
+    const margin = { top: 30, right: 30, bottom: 30, left: 50 }; // Reduced bottom margin since xCaption is now an HTML div
+
+    const containerNode = this.chartContainer.nativeElement;
+
+    // Define Stack Keys early so we can build the legend
+    const stackKeys =
+      this.kpiId === 'kpi195'
+        ? severityKeys
+        : this.kpiId === 'kpi202'
+        ? (this as any)._kpi202Keys || this.testExecutionKeys
+        : this.testExecutionKeys;
+
+    const defaultColors = [
+      '#3498db',
+      '#2ecc71',
+      '#e74c3c',
+      '#f39c12',
+      '#9b59b6',
+      '#34495e',
+    ];
+
+    // For KPI202, ignore this.color since the parent passes Project colors,
+    // but KPI202 needs distinct colors for its Stacks.
+    const safeColors =
+      this.kpiId !== 'kpi202' && this.color?.length
+        ? this.color
+        : defaultColors;
+
+    let legendHeight = 0;
+    // Add Color Legend specifically for KPI202
+    if (this.kpiId === 'kpi202' && stackKeys?.length) {
+      const colorLegend = d3
+        .select(containerNode)
+        .append('div')
+        .style('display', 'flex')
+        .style('flex-wrap', 'wrap')
+        .style('gap', '15px')
+        .style('margin-bottom', '10px')
+        .style('justify-content', 'center')
+        .style('padding-top', '5px');
+
+      stackKeys.forEach((key: string, i: number) => {
+        const item = colorLegend
+          .append('div')
+          .style('display', 'flex')
+          .style('align-items', 'center')
+          .style('font-size', '12px')
+          .style('color', '#333')
+          .style('font-weight', '500');
+
+        item
+          .append('span')
+          .style('display', 'inline-block')
+          .style('width', '14px')
+          .style('height', '14px')
+          .style('border-radius', '3px')
+          .style('margin-right', '6px')
+          .style('background-color', safeColors[i % safeColors.length]);
+
+        item.append('span').text(key);
+      });
+
+      legendHeight = (colorLegend.node() as HTMLElement).offsetHeight + 15; // include margins
+    }
 
     //  Get container size dynamically
-    const containerWidth = this.chartContainer.nativeElement.offsetWidth || 700;
+    const containerWidth = containerNode.offsetWidth || 700;
+    // Subtract legendHeight AND space for the HTML X-axis label (30px)
     const containerHeight =
-      this.chartContainer.nativeElement.offsetHeight || 400;
+      (containerNode.offsetHeight || 400) - legendHeight - 30;
 
-    //  Increase width factor for <g> drawing space
-    const extraWidthFactor = 1.2; // <-- adjust this multiplier (1.2 = +20%)
+    // Use 12 to naturally make the bars thinner and points closer, fitting more data per scroll view
+    const minItemsForScroll = 12;
+    let extraWidthFactor = 1.2;
+    let useScroll = false;
+
+    // Enable native horizontal scroll specifically for KPIs where requested
+    if (this.kpiId === 'kpi202' && sprints.length > minItemsForScroll) {
+      extraWidthFactor = sprints.length / minItemsForScroll;
+      useScroll = true;
+    }
+
     const width =
       containerWidth * extraWidthFactor - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.bottom;
 
-    const svg = d3
-      .select(this.chartContainer.nativeElement)
+    d3.select(containerNode)
+      .style('position', 'relative')
+      .style('overflow-x', 'hidden')
+      .style('overflow-y', 'hidden');
+
+    const chartWrapper = d3
+      .select(containerNode)
+      .append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'row')
+      .style('width', '100%')
+      .style('height', containerHeight + 'px');
+
+    // 1. Fixed SVG for Y-axis (sticky on the left)
+    const fixedYAxisContainer = chartWrapper
+      .append('div')
+      .style('position', 'sticky')
+      .style('left', 0)
+      .style('z-index', 2)
+      .style('background', '#fff');
+
+    const fixedSvg = fixedYAxisContainer
       .append('svg')
-      .attr('width', '100%')
-      .attr('height', '100%')
-      .attr(
-        'viewBox',
-        `0 0 ${containerWidth * extraWidthFactor} ${containerHeight}`,
-      ) //  scaled
-      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('width', margin.left)
+      .attr('height', containerHeight);
+
+    const fixedG = fixedSvg
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // 2. Scrollable container for the Chart
+    const scrollContainer = chartWrapper
+      .append('div')
+      .style('flex', 1)
+      .style('overflow-x', useScroll ? 'auto' : 'hidden')
+      .style('overflow-y', 'hidden');
+
+    const svgRoot = scrollContainer
+      .append('svg')
+      .attr('width', useScroll ? width + margin.right : '100%')
+      .attr('height', useScroll ? containerHeight : '100%');
+
+    if (!useScroll) {
+      svgRoot
+        .attr('viewBox', `0 0 ${width + margin.right} ${containerHeight}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+    }
+
+    const svg = svgRoot
+      .append('g')
+      .attr('transform', `translate(0,${margin.top})`);
+
+    (this as any)._fixedG = fixedG;
 
     // --- Scales ---
     const x0 = d3.scaleBand().domain(sprints).range([0, width]).padding(0.1);
@@ -312,18 +611,26 @@ export class StackedGroupBarChartComponent
     const projectColors = new Map<string, string>();
     if (this.kpiId === 'kpi195') {
       this.defectsBreachedSLAs.forEach((project: any, index: number) => {
-        projectColors.set(project.data, this.color[index]);
+        projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
-    } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
+    } else if (
+      this.kpiId === 'kpi196' ||
+      this.kpiId === 'kpi197' ||
+      this.kpiId === 'kpi202'
+    ) {
       this.data.forEach((project: any, index: number) => {
-        projectColors.set(project.data, this.color[index]);
+        projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
     }
 
     sprints.forEach((sprint) => {
-      const stack = d3
-        .stack()
-        .keys(this.kpiId === 'kpi195' ? severityKeys : this.testExecutionKeys);
+      const stackKeys =
+        this.kpiId === 'kpi195'
+          ? severityKeys
+          : this.kpiId === 'kpi202'
+          ? (this as any)._kpi202Keys || this.testExecutionKeys
+          : this.testExecutionKeys;
+      const stack = d3.stack().keys(stackKeys);
       const stackedData = stack(sprintGroups[sprint]);
       const bars = svg
         .append('g')
@@ -345,17 +652,19 @@ export class StackedGroupBarChartComponent
         .attr('fill', (d: any, i: number, nodes: any[]) => {
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
+          if (this.kpiId === 'kpi202') {
+            const stackIndex = stackKeys.indexOf(severityKey);
+            return safeColors[stackIndex % safeColors.length];
+          }
           const severityIndex =
             this.kpiId === 'kpi195'
               ? severityKeys.indexOf(severityKey)
-              : this.testExecutionKeys.indexOf(severityKey);
+              : stackKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
           return this.generateShade(
             baseColor,
             severityIndex,
-            this.kpiId === 'kpi195'
-              ? severityKeys.length
-              : this.testExecutionKeys.length,
+            this.kpiId === 'kpi195' ? severityKeys.length : stackKeys.length,
           );
         })
         .on('mouseover', (event, d: any) => {
@@ -380,6 +689,14 @@ export class StackedGroupBarChartComponent
                 <div><strong>${severityKey.toUpperCase()} Breached:</strong> ${
                       originalData.hoverValue.breachedPercentage
                     }%</div>
+              `
+                  : this.kpiId === 'kpi202'
+                  ? `
+                <div><strong>${severityKey}:</strong> ${
+                      originalData?.dataValue?.find(
+                        (dv: any) => dv.name === severityKey,
+                      )?.data || 0
+                    }</div>
               `
                   : `
                 <div><strong>Average execution time:</strong> ${originalData.hoverValue[
@@ -468,17 +785,19 @@ export class StackedGroupBarChartComponent
     // -- Fallback, incase this.xAxisLabel is also empty/undefined
     this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
 
-    svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', height + 40)
-      .attr('text-anchor', 'middle')
-      .text(this.xCaption)
-      .style('font-size', '16px')
-      .style('fill', '#49535e');
+    // Append X-axis label as an HTML div below the chart wrapper so it's always centered and visible
+    d3.select(containerNode)
+      .append('div')
+      .style('text-align', 'center')
+      .style('font-size', '14px')
+      .style('color', '#49535e')
+      .style('margin-top', '0px')
+      .text(this.xCaption);
 
     // --- Y Axis ---
-    svg
+    const targetG = (this as any)._fixedG || svg;
+
+    targetG
       .append('g')
       .call(d3.axisLeft(y).ticks(6).tickSize(0))
       .call((g) => {
@@ -491,14 +810,15 @@ export class StackedGroupBarChartComponent
           .attr('stroke', '#EDEFF2')
           .attr('stroke-width', 1);
       });
-    svg
+
+    targetG
       .append('text')
       .attr('transform', `rotate(-90)`)
       .attr('x', -height / 2)
-      .attr('y', -margin.left + 15)
+      .attr('y', -margin.left + 20)
       .attr('text-anchor', 'middle')
       .text(this.yAxisLabel)
-      .style('font-size', '16px')
+      .style('font-size', '14px')
       .style('fill', '#49535e');
 
     // --- Legend ---
@@ -518,42 +838,43 @@ export class StackedGroupBarChartComponent
     const sprintMap = new Map();
     let sprintCounter = 1;
 
-    if (data) {
+    if (data && Array.isArray(data)) {
       data.forEach((project) => {
-        const projectName = project.data.trim();
-        project.value.forEach((entry, index) => {
-          const dateRange = entry.date?.trim() || `Sprint ${index + 1}`;
-          const sprintLabel =
-            entry.sSprintName?.trim() ||
-            entry.sprintNames?.[0]?.trim() ||
-            dateRange;
-          const sprintKey = index; // assuming index-based alignment
+        const projectName = project?.data?.trim() || 'Unknown Project';
+        if (project?.value && Array.isArray(project.value)) {
+          project.value.forEach((entry, index) => {
+            const dateRange = entry?.date?.trim() || `Sprint ${index + 1}`;
+            const sprintLabel =
+              entry?.sSprintName?.trim() ||
+              entry?.sprintNames?.[0]?.trim() ||
+              dateRange;
+            const sprintKey = index; // assuming index-based alignment
 
-          if (!sprintMap.has(sprintKey)) {
-            sprintMap.set(sprintKey, {
-              sprintNumber: sprintCounter++,
-              projects: {},
-              sprints: [],
-            });
-          }
+            if (!sprintMap.has(sprintKey)) {
+              sprintMap.set(sprintKey, {
+                sprintNumber: sprintCounter++,
+                projects: {},
+                sprints: [],
+              });
+            }
 
-          const sprintEntry = sprintMap.get(sprintKey);
-          const sprintData = sprintEntry.projects;
+            const sprintEntry = sprintMap.get(sprintKey);
+            const sprintData = sprintEntry.projects;
 
-          // Add date range to x-axis labels if not already present
-          if (sprintLabel && !sprintEntry.sprints.includes(sprintLabel)) {
-            sprintEntry.sprints.push(sprintLabel);
-          }
+            // Add date range to x-axis labels if not already present
+            if (sprintLabel && !sprintEntry.sprints.includes(sprintLabel)) {
+              sprintEntry.sprints.push(sprintLabel);
+            }
 
-          // Assign hoverValue data (use empty object if missing)
-          sprintData[projectName] = Object.keys(entry.hoverValue || {}).reduce(
-            (acc, key) => {
+            // Assign hoverValue data (use empty object if missing)
+            sprintData[projectName] = Object.keys(
+              entry.hoverValue || {},
+            ).reduce((acc, key) => {
               acc[key] = entry.hoverValue[key] || 0;
               return acc;
-            },
-            {},
-          );
-        });
+            }, {});
+          });
+        }
       });
     }
     return Array.from(sprintMap.values());
@@ -726,8 +1047,15 @@ export class StackedGroupBarChartComponent
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
-      if (projectData?.value && projectData.value.length > sprintNumber) {
-        return projectData.value[sprintNumber];
+      if (projectData?.value) {
+        if (this.kpiId === 'kpi202') {
+          return (
+            projectData.value.find((v: any) => v.subFilter === sprintName) ||
+            null
+          );
+        } else if (projectData.value.length > sprintNumber) {
+          return projectData.value[sprintNumber];
+        }
       }
     }
 
@@ -735,6 +1063,41 @@ export class StackedGroupBarChartComponent
   }
 
   private updateDataAndChart(): void {
+    if (this.kpiId === 'kpi202') {
+      // Build filtered data for kpi202
+      if (!this.data) {
+        this.filteredData = {};
+        if (this.isInitialized) this.createChart();
+        return;
+      }
+      const sprintGroups: { [key: string]: any[] } = {};
+      const severitiesToUse =
+        this.activeSeverityKeys && this.activeSeverityKeys.length
+          ? this.activeSeverityKeys
+          : [];
+      this.data.forEach((elem: any) => {
+        elem.value?.forEach((val: any, index: number) => {
+          if (val == null) return;
+          const sprintKey = val.subFilter || `Story ${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+          const obj: any = { project: elem.data };
+          let hasAny = false;
+          severitiesToUse.forEach((key) => {
+            const dv = val.dataValue?.find((d: any) => d.name === key);
+            const v = dv ? Number(dv.value) || 0 : 0;
+            obj[key] = v;
+            if (v) hasAny = true;
+          });
+          // Only push if at least one selected key has data
+          if (hasAny) sprintGroups[sprintKey].push(obj);
+        });
+      });
+      this.filteredData = sprintGroups;
+      if (this.isInitialized) this.createChart();
+      return;
+    }
+
+    // Default: kpi195 logic
     if (!this.defectsBreachedSLAs) {
       console.warn('No KPI data available');
       return;

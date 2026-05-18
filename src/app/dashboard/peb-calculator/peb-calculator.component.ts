@@ -372,7 +372,9 @@ export class PebCalculatorComponent implements OnInit, OnDestroy {
       .map((forecast: any) => {
         const value = Number(forecast?.value);
 
-        if (!Number.isFinite(value)) return null;
+        if (!Number.isFinite(value)) {
+          return null;
+        }
 
         return {
           kpiGroup: forecast?.category ?? metrics[0],
