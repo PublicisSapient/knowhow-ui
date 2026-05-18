@@ -3640,7 +3640,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         const filterKey = this.kpiSelectedFilterObj[kpiId]?.['filter1']
           ? 'filter1'
           : 'filter2';
-        let preAggregatedValues = [];
+        const preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
           const filteredItems = trendValueList['value']?.filter(
             (x) => x['filter1'] == filters[i] || x['filter2'] == filters[i],
