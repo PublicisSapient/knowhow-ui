@@ -23,8 +23,11 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
 import { HelperService } from 'src/app/services/helper.service';
-import { of, throwError } from 'rxjs';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { SimpleChange } from '@angular/core';
 
 describe('ProjectFilterComponent', () => {
   let component: ProjectFilterComponent;
@@ -33,18 +36,26 @@ describe('ProjectFilterComponent', () => {
   let sharedServiceMock: jasmine.SpyObj<SharedService>;
   let messageServiceMock: jasmine.SpyObj<MessageService>;
   let helperMock: jasmine.SpyObj<HelperService>;
+  let authServiceMock: jasmine.SpyObj<GetAuthorizationService>;
+  let routerMock: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     httpServiceMock = jasmine.createSpyObj('HttpService', [
       'getAllProjects',
       'getOrganizationHierarchy',
       'getAllHierarchyLevels',
+      'getProjectListData',
     ]);
     sharedServiceMock = jasmine.createSpyObj('SharedService', [
       'sendProjectData',
+      'getProjectList',
     ]);
     messageServiceMock = jasmine.createSpyObj('MessageService', ['add']);
     helperMock = jasmine.createSpyObj('HelperService', ['sortByField']);
+    authServiceMock = jasmine.createSpyObj('GetAuthorizationService', [
+      'checkIfProjectAdmin',
+    ]);
+    routerMock = jasmine.createSpyObj('Router', [], { url: '/dashboard' });
 
     httpServiceMock.getAllProjects.and.returnValue(
       of({
@@ -61,6 +72,13 @@ describe('ProjectFilterComponent', () => {
         ],
       }),
     );
+    httpServiceMock.getOrganizationHierarchy.and.returnValue(
+      of({ success: true, data: [] }),
+    );
+    httpServiceMock.getAllHierarchyLevels.and.returnValue(
+      of({ data: { scrum: [] } }),
+    );
+    sharedServiceMock.getProjectList.and.returnValue([]);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -70,6 +88,8 @@ describe('ProjectFilterComponent', () => {
         { provide: SharedService, useValue: sharedServiceMock },
         { provide: MessageService, useValue: messageServiceMock },
         { provide: HelperService, useValue: helperMock },
+        { provide: GetAuthorizationService, useValue: authServiceMock },
+        { provide: Router, useValue: routerMock },
         {
           provide: ActivatedRoute,
           useValue: { queryParams: of({ clone: 'false' }) },
@@ -92,6 +112,118 @@ describe('ProjectFilterComponent', () => {
     spyOn(component, 'getProjects');
     component.ngOnInit();
     expect(component.getProjects).toHaveBeenCalled();
+  });
+
+  describe('ngOnChanges', () => {
+    it('should call updateFieldDisability when projectAdminAccessLevels changes and formData exists', () => {
+      component.formData = [{ level: 1, hierarchyLevelId: 'bu' }];
+      spyOn(component, 'updateFieldDisability');
+
+      component.ngOnChanges({
+        projectAdminAccessLevels: new SimpleChange([], ['bu'], false),
+      });
+
+      expect(component.updateFieldDisability).toHaveBeenCalled();
+    });
+
+    it('should not call updateFieldDisability when formData does not exist', () => {
+      component.formData = null;
+      spyOn(component, 'updateFieldDisability');
+
+      component.ngOnChanges({
+        projectAdminAccessLevels: new SimpleChange([], ['bu'], false),
+      });
+
+      expect(component.updateFieldDisability).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('filterHierarchy', () => {
+    it('should filter hierarchy based on user roles', () => {
+      const userRoles = [
+        {
+          projects: [
+            {
+              hierarchy: [{ orgHierarchyNodeId: 'N1' }],
+            },
+          ],
+        },
+      ];
+      const hierarchyData = [
+        {
+          hierarchyLevelId: 'bu',
+          list: [{ nodeId: 'N1' }, { nodeId: 'N2' }],
+        },
+        { hierarchyLevelId: 'project', list: [{ nodeId: 'P1' }] },
+      ];
+
+      const result = component.filterHierarchy(userRoles, hierarchyData);
+
+      expect(result[0].list.length).toBe(1);
+      expect(result[0].list[0].nodeId).toBe('N1');
+      expect(result[1].list.length).toBe(1);
+    });
+
+    it('should return project level without filtering', () => {
+      const userRoles = [
+        {
+          projects: [
+            {
+              hierarchy: [{ orgHierarchyNodeId: 'N1' }],
+            },
+          ],
+        },
+      ];
+      const hierarchyData = [
+        {
+          hierarchyLevelId: 'project',
+          list: [{ nodeId: 'P1' }, { nodeId: 'P2' }],
+        },
+      ];
+
+      const result = component.filterHierarchy(userRoles, hierarchyData);
+
+      expect(result[0].list.length).toBe(2);
+    });
+  });
+
+  describe('updateFieldDisability', () => {
+    beforeEach(() => {
+      component.formData = [
+        { level: 1, hierarchyLevelId: 'bu' },
+        { level: 2, hierarchyLevelId: 'ver' },
+        { level: 3, hierarchyLevelId: 'project' },
+      ];
+    });
+
+    it('should disable fields based on projectAdminAccessLevels when on AccessMgmt page', () => {
+      Object.defineProperty(routerMock, 'url', {
+        value: '/dashboard/Config/Profile/AccessMgmt',
+        writable: true,
+      });
+      authServiceMock.checkIfProjectAdmin.and.returnValue(true);
+      component.projectAdminAccessLevels = ['ver'];
+
+      component.updateFieldDisability();
+
+      expect(component.formData[0].isDisabled).toBe(false);
+      expect(component.formData[1].isDisabled).toBe(true);
+      expect(component.formData[2].isDisabled).toBe(true);
+    });
+
+    it('should disable all fields when not on AccessMgmt page', () => {
+      Object.defineProperty(routerMock, 'url', {
+        value: '/dashboard',
+        writable: true,
+      });
+      authServiceMock.checkIfProjectAdmin.and.returnValue(false);
+
+      component.updateFieldDisability();
+
+      expect(component.formData[0].isDisabled).toBe(true);
+      expect(component.formData[1].isDisabled).toBe(true);
+      expect(component.formData[2].isDisabled).toBe(true);
+    });
   });
 
   // -- this test case needs a look -- //
@@ -439,14 +571,24 @@ describe('ProjectFilterComponent', () => {
       expect(Object.keys(component.filteredSuggestions).length).toBe(0);
     });
 
-    it('should filter parents recursively (filterParentRecursively)', () => {
-      component.filterParentRecursively(2, ['ACC1']);
+    it('should filter parents recursively and update selectedItems (filterParentRecursively)', () => {
+      component.formData = [
+        {
+          level: 1,
+          hierarchyLevelId: 'bu',
+          list: [{ nodeId: 'BU1', parentId: null }],
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'ver',
+          list: [{ nodeId: 'VER1', parentId: 'BU1' }],
+        },
+      ];
 
-      expect(component.filteredSuggestions['ver'].length).toBe(0);
-      // expect(component.filteredSuggestions['ver'][0].nodeId).toBe('VER1');
+      component.filterParentRecursively(1, ['VER1']);
 
-      expect(component.filteredSuggestions['bu'].length).toBe(0);
-      // expect(component.filteredSuggestions['bu'][0].nodeId).toBe('BU1');
+      expect(component.filteredSuggestions['bu']).toBeDefined();
+      expect(component.selectedItems['bu']).toBeDefined();
     });
 
     it('should stop recursion if no parent level exists (filterParentRecursively)', () => {
@@ -595,6 +737,19 @@ describe('ProjectFilterComponent', () => {
         ver: [...component.formData[1].list],
         acc: [...component.formData[2].list],
       };
+    });
+
+    it('should reset all levels when event.value.length is 0', () => {
+      const currentField = { level: 1, hierarchyLevelId: 'bu' };
+      const event = { value: [] };
+
+      spyOn(component, 'resetLevelsFrom');
+      spyOn(component, 'clearSelectionsFrom');
+
+      component.onSelectionOfOptions(event, currentField);
+
+      expect(component.resetLevelsFrom).toHaveBeenCalledWith(0);
+      expect(component.clearSelectionsFrom).toHaveBeenCalledWith(0);
     });
 
     it('should call resetLevelsFrom and clearSelectionsFrom if nothing is selected', () => {

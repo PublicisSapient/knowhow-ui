@@ -15,7 +15,13 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -32,7 +38,7 @@ import { Router } from '@angular/router';
   ],
 })
 export class FieldMappingFieldComponent implements ControlValueAccessor {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
@@ -40,6 +46,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   @Input() thresholdUnit;
   value;
   isDisabled = false;
+  draggedItem: any = null;
 
   onChange = (val) => {};
   onTouched = () => {};
@@ -118,5 +125,63 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   navigate(url) {
     this.router.navigate([url]);
+  }
+
+  onDragStart(event: DragEvent, item: any) {
+    console.log('[Chips DnD] Drag Start:', item);
+    this.draggedItem = item;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', item);
+    }
+    event.stopPropagation();
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDragEnd(event: DragEvent) {
+    console.log('[Chips DnD] Drag End');
+    this.draggedItem = null;
+  }
+
+  onDrop(event: DragEvent, targetItem: any) {
+    console.log(
+      '[Chips DnD] Drop target:',
+      targetItem,
+      'Dragged item:',
+      this.draggedItem,
+    );
+    event.preventDefault();
+    event.stopPropagation();
+    if (
+      this.draggedItem &&
+      this.draggedItem !== targetItem &&
+      Array.isArray(this.value)
+    ) {
+      const fromIndex = this.value.indexOf(this.draggedItem);
+      const toIndex = this.value.indexOf(targetItem);
+      console.log(
+        '[Chips DnD] Indices - fromIndex:',
+        fromIndex,
+        'toIndex:',
+        toIndex,
+      );
+
+      if (fromIndex !== -1 && toIndex !== -1) {
+        // Move item in array with a new reference so PrimeNG and Angular trigger change detection
+        const newValue = [...this.value];
+        newValue.splice(fromIndex, 1);
+        newValue.splice(toIndex, 0, this.draggedItem);
+        this.value = newValue;
+        console.log('[Chips DnD] New Value array:', this.value);
+        // Trigger onChange/form value updates
+        this.setValue();
+        this.cdr.detectChanges();
+      }
+    }
+    this.draggedItem = null;
   }
 }

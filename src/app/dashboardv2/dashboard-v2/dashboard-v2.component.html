@@ -21,11 +21,11 @@
 <div class="main-container">
 
   <app-nav-new
-    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Analysis') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"
+    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Analysis') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help' && router.url !== '/dashboard/unauthorized-access')"
     #kpiSearchQuery>
   </app-nav-new>
   <app-filter-new
-    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Report') && !router.url.split('/').includes('Analysis') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"
+    *ngIf="(selectedTab && !router.url.split('/').includes('Config') && !router.url.split('/').includes('Report') && !router.url.split('/').includes('Analysis') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help' && router.url !== '/dashboard/unauthorized-access')"
     (onKPISearch)="receiveKPISearchQuery($event)">
   </app-filter-new>
   <app-sticky-header class="header nav-filter-container"

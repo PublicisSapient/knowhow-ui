@@ -543,3 +543,21 @@
     padding: 0.5rem;
   }
 }
+
+.trend-table-container {
+  display: flex;
+  justify-content: left;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.indicator {
+  display: inline-block;
+  border-radius: 50%;
+  height: 11px;
+  width: 11px;
+}
+
+.header-table {
+  font-weight: bold;
+}
