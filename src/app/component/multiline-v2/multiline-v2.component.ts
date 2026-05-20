@@ -864,24 +864,36 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add bars for specific KPI */
       if (this.kpiId === 'kpi202_duplicate') {
+        const barWidth = Math.min(80, xScale.bandwidth() * 0.4);
         const bars = svgX
           .append('g')
           .attr('class', 'bars')
           .attr('transform', `translate(0, 0)`);
 
+        const r = 0; // top corner radius — adjust this value to control roundedness
         bars
           .selectAll('.bar')
           .data(data[0].value)
           .enter()
-          .append('rect')
+          .append('path')
           .attr('class', 'bar')
-          .attr('x', (d, i) => getXCoordinate(d, i) + xScale.bandwidth() * 0.25)
-          .attr('y', (d) => yScale(d.value))
-          .attr('width', xScale.bandwidth() * 0.5)
-          .attr('height', (d) => Math.max(0, height - margin - yScale(d.value)))
+          .attr('d', (d, i) => {
+            const x = getXCoordinate(d, i) + xScale.bandwidth() / 2 - barWidth / 2;
+            const y = yScale(d.value);
+            const w = barWidth;
+            const h = Math.max(0, height - margin - y);
+            if (h === 0) return '';
+            const cr = Math.min(r, w / 2, h); // clamp radius so it never exceeds bar dimensions
+            // Path: bottom-left → bottom-right (square) → top-right (rounded) → top-left (rounded)
+            return `M ${x} ${y + h}
+                    L ${x + w} ${y + h}
+                    L ${x + w} ${y + cr}
+                    Q ${x + w} ${y} ${x + w - cr} ${y}
+                    L ${x + cr} ${y}
+                    Q ${x} ${y} ${x} ${y + cr}
+                    Z`;
+          })
           .style('fill', (d, i) => d.color || (color && color[0]) || '#007bff')
-          .attr('rx', 4)
-          .attr('ry', 4)
           .style('opacity', 0.85)
           .on('mouseover', function (event, d) {
             d3.select(this).style('opacity', 1);

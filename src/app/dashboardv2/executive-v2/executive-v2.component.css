@@ -211,3 +211,11 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+#kpi202 ::ng-deep .sprint-legend-container {
+  display: none !important;
+}
+
+#kpi202 ::ng-deep .kpi-card-footer {
+  display: none !important;
+}

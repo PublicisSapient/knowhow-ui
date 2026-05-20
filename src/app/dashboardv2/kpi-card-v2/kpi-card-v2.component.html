@@ -253,7 +253,7 @@
     </div>
     <div class="kpi-card-footer p-pr-5 p-pl-5"
       [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) || (kpiData?.kpiId === 'kpi182') || (kpiData?.kpiId === 'kpi162') || (kpiData?.kpiId === 'kpi201'))}">
-      
+
       <!-- Static Trend Indicator for Duplicate KPI -->
       <div *ngIf="kpiData?.kpiId === 'kpi202_duplicate'" class="trend-table-container">
         <table class="header-table" style="margin-right: 20px; border-collapse: separate; border-spacing: 0 5px;">

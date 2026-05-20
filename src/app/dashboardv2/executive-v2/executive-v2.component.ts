@@ -145,6 +145,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   durationFilterKpi202 = 'Past 6 Months';
+  kpi202ViewOptions = ['By Input ID', 'By Workflow'];
+  kpi202SelectedView = 'By Workflow';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
