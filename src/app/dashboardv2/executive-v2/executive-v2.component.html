@@ -324,7 +324,7 @@
 
                                   <ng-container *ngSwitchCase="'stacked-bar-chart'">
                                     <ng-container *ngIf="kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot'; else defaultStackedBarChart">
-                                      <div class="p-d-flex p-jc-end p-mb-3 kpi-select-button-container" style="margin-top: -10px;">
+                                      <div class="p-d-flex p-jc-end p-my-4 kpi-select-button-container">
                                         <p-selectButton [options]="kpi202ViewOptions" [(ngModel)]="kpi202SelectedView"></p-selectButton>
                                       </div>
 
