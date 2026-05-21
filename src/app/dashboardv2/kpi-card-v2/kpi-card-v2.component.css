@@ -134,6 +134,10 @@
   height: 50px;
 }
 
+:host ::ng-deep #kpi202 .kpi-filter {
+  justify-content: right;
+}
+
 ::ng-deep .kpi-filter .ng-placeholder {
   top: 5px;
 }

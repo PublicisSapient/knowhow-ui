@@ -179,6 +179,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() selectedBoard: string = 'dashboard';
   @Input() kpiRecommData = {};
   isAIRecommEnabled = signal<boolean>(false);
+  @Input() id: string;
 
   constructor(
     public service: SharedService,
@@ -347,7 +348,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         disabled:
           this.selectedTab === 'release' ||
           this.selectedTab === 'backlog' ||
-          this.kpiData?.kpiId === 'kpi171',
+          this.kpiData?.kpiId === 'kpi171' ||
+          this.kpiData?.kpiId === 'kpi202',
       },
       {
         label: 'Explore',
@@ -355,7 +357,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled: !this.kpiData?.kpiDetail?.chartType,
+        disabled:
+          !this.kpiData?.kpiDetail?.chartType ||
+          this.kpiData?.kpiId === 'kpi202',
       },
       {
         label: 'Comments',
@@ -364,6 +368,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.showComments = true;
           this.openCommentModal();
         },
+        disabled: this.kpiData?.kpiId === 'kpi202',
       },
     ];
   }
@@ -470,6 +475,24 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             this.addToReportAction($event);
           },
           disabled: false,
+        });
+      }
+
+      // TODO: Disabled for KPI202 until it's stable
+      if (
+        this.selectedTab === 'slingshot' &&
+        this.kpiData?.kpiId === 'kpi202'
+      ) {
+        this.menuItems = this.menuItems.filter(
+          (item) => item.label !== 'Include in Report',
+        );
+        this.menuItems.push({
+          label: 'Include in Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction($event);
+          },
+          disabled: true,
         });
       }
     }

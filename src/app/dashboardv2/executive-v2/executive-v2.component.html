@@ -73,7 +73,7 @@
                     <div
                       *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
                       [ngClass]="getkpiwidth(kpi.kpiDetail?.kpiWidth)" [id]="kpi.kpiId">
-                      <app-kpi-card-v2 [selectedTab]="selectedTab"
+                      <app-kpi-card-v2 [selectedTab]="selectedTab" [id]="kpi.kpiId"
                         [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]" [trendBoxColorObj]="trendBoxColorObj"
                         [kpiData]="kpi" [loader]="kpiLoader.has(kpi?.kpiId)"
                         [trendData]="kpi?.kpiId !== 'kpi171' ? kpiTrendsObj[kpi?.kpiId] : kpiChartData[kpi?.kpiId]?.data"
@@ -324,11 +324,15 @@
 
                                   <ng-container *ngSwitchCase="'stacked-bar-chart'">
                                     <ng-container *ngIf="kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot'; else defaultStackedBarChart">
-                                      <div class="p-d-flex p-jc-end p-my-4 kpi-select-button-container">
-                                        <p-selectButton [options]="kpi202ViewOptions" [(ngModel)]="kpi202SelectedView"></p-selectButton>
+                                      <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                        <p-selectButton [options]="kpi202ViewOptions" [ngModel]="kpi202SelectedView" (onChange)="onKpi202ViewChange($event.value)"></p-selectButton>
                                       </div>
 
-                                      <ng-container *ngIf="kpi202SelectedView === 'By Status'">
+                                      <ng-container *ngIf="kpi202Switching">
+                                        <p-skeleton width="100%" height="200px" borderRadius="6px"></p-skeleton>
+                                      </ng-container>
+
+                                      <ng-container *ngIf="!kpi202Switching && kpi202SelectedView === 'By Status'">
                                         <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                           [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                           [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
@@ -337,7 +341,7 @@
                                           [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                       </ng-container>
 
-                                      <ng-container *ngIf="kpi202SelectedView === 'By Workflow Group'">
+                                      <ng-container *ngIf="!kpi202Switching && kpi202SelectedView === 'By Workflow Group'">
                                         <ng-container *ngIf="kpiChartData['kpi202_duplicate']?.length > 0; else noDataAccess">
                                           <app-multiline-v2
                                             [data]="kpiChartData['kpi202_duplicate']"
