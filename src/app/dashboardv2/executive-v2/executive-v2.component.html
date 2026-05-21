@@ -328,7 +328,7 @@
                                         <p-selectButton [options]="kpi202ViewOptions" [(ngModel)]="kpi202SelectedView"></p-selectButton>
                                       </div>
 
-                                      <ng-container *ngIf="kpi202SelectedView === 'By Input ID'">
+                                      <ng-container *ngIf="kpi202SelectedView === 'By Status'">
                                         <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                           [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                           [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
@@ -337,7 +337,7 @@
                                           [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                       </ng-container>
 
-                                      <ng-container *ngIf="kpi202SelectedView === 'By Workflow'">
+                                      <ng-container *ngIf="kpi202SelectedView === 'By Workflow Group'">
                                         <ng-container *ngIf="kpiChartData['kpi202_duplicate']?.length > 0; else noDataAccess">
                                           <app-multiline-v2
                                             [data]="kpiChartData['kpi202_duplicate']"

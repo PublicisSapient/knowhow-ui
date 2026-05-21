@@ -145,8 +145,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   durationFilterKpi202 = 'Past 6 Months';
-  kpi202ViewOptions = ['By Input ID', 'By Workflow'];
-  kpi202SelectedView = 'By Workflow';
+  kpi202ViewOptions = ['By Status', 'By Workflow Group'];
+  kpi202SelectedView = 'By Workflow Group';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -5739,16 +5739,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData['kpi202_duplicate'] = [];
       return;
     }
+    const filter2Arr = this.kpiSelectedFilterObj?.['kpi202']?.filter2;
+    const filterTypeLabel =
+      filter2Arr && filter2Arr.length > 0 ? filter2Arr[0] : 'Item';
+
     // Aggregate dataValue entries by workflow name
-    const aggregatedMap = new Map<string, number>();
+    const aggregatedMap = new Map<
+      string,
+      { total: number; count: number; filterType: string }
+    >();
     kpi202Data.forEach((project: any) => {
       (project?.value || []).forEach((item: any) => {
         (item?.dataValue || []).forEach((dv: any) => {
           if (dv?.name) {
-            aggregatedMap.set(
-              dv.name,
-              (aggregatedMap.get(dv.name) || 0) + (Number(dv.value) || 0),
-            );
+            const current = aggregatedMap.get(dv.name) || {
+              total: 0,
+              count: 0,
+              filterType: filterTypeLabel,
+            };
+            aggregatedMap.set(dv.name, {
+              total: current.total + (Number(dv.value) || 0),
+              count: current.count + 1,
+              filterType: filterTypeLabel,
+            });
           }
         });
       });
@@ -5764,9 +5777,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ];
 
     const lineValues = Array.from(aggregatedMap.entries()).map(
-      ([name, total], index) => ({
+      ([name, data], index) => ({
         sSprintName: name,
-        value: Math.round(total * 100) / 100,
+        value: Math.round(data.total * 100) / 100,
+        count: data.count,
+        filterType: data.filterType,
         hoverValue: {},
         xOrder: name,
         xAxisTick: name,

@@ -403,7 +403,13 @@ export class MultilineV2Component implements OnChanges {
       const tempwidth =
         d3.select(this.elem).select('#graphContainer').node().offsetWidth ||
         window.innerWidth;
+
       width = tempwidth - 40;
+      // if (kpiId === 'kpi202_duplicate' && data[0]?.value?.length) {
+      //   // Limit the overall width so that bars and x-axis points are closer to each other
+      //   width = Math.min(width, data[0].value.length * 120);
+      // }
+
       let maxXValueCount = 0;
       let maxObjectNo = 0;
       // used to find object whose value is max on x axis
@@ -591,11 +597,20 @@ export class MultilineV2Component implements OnChanges {
             'top',
             (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
           )
-          .text(
-            (d) =>
-              Math.round(d.value * 100) / 100 +
-              ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`,
-          )
+          .text((d) => {
+            const val = Math.round(d.value * 100) / 100;
+            if (kpiId === 'kpi202_duplicate' && d.count != null) {
+              let ft = d.filterType || 'Item';
+              if (d.count > 1) {
+                if (ft.toLowerCase() === 'story') ft = 'Stories';
+                else if (!ft.endsWith('s')) ft += 's';
+              }
+              return `${val} (${d.count} ${ft})`;
+            }
+            return `${val}${
+              showUnit ? ' ' + unitAbbs[showUnit?.toLowerCase()] : ''
+            }`;
+          })
           .transition()
           .duration(500)
           .style('display', 'block')
@@ -864,7 +879,7 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add bars for specific KPI */
       if (this.kpiId === 'kpi202_duplicate') {
-        const barWidth = Math.min(80, xScale.bandwidth() * 0.4);
+        const barWidth = Math.min(60, xScale.bandwidth() * 0.4);
         const bars = svgX
           .append('g')
           .attr('class', 'bars')
@@ -878,7 +893,8 @@ export class MultilineV2Component implements OnChanges {
           .append('path')
           .attr('class', 'bar')
           .attr('d', (d, i) => {
-            const x = getXCoordinate(d, i) + xScale.bandwidth() / 2 - barWidth / 2;
+            const x =
+              getXCoordinate(d, i) + xScale.bandwidth() / 2 - barWidth / 2;
             const y = yScale(d.value);
             const w = barWidth;
             const h = Math.max(0, height - margin - y);
@@ -903,12 +919,15 @@ export class MultilineV2Component implements OnChanges {
               .style('display', 'block')
               .style('opacity', 0.9);
 
-            const unit = showUnit
-              ? unitAbbs[showUnit.toLowerCase()] || showUnit
-              : '';
+            let ft = d.filterType || 'Item';
+            if (d.count > 1) {
+              if (ft.toLowerCase() === 'story') ft = 'Stories';
+              else if (!ft.endsWith('s')) ft += 's';
+            }
+            const countLabel = d.count != null ? ` (${d.count} ${ft})` : '';
             const htmlString = `
               <div class="tooltip-header" style="font-weight:bold; margin-bottom:5px;">${d.sSprintName}</div>
-              <div class="tooltip-body">Value: <span style="font-weight:bold;">${d.value}${unit}</span></div>
+              <div class="tooltip-body"><span style="font-weight:bold;">${d.value}${countLabel}</span></div>
             `;
 
             div

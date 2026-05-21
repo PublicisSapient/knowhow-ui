@@ -85,109 +85,6 @@ export class StackedGroupBarChartComponent
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
     } else if (this.kpiId === 'kpi202') {
-      // console.log('data ', this.data);
-      // // OVERWRITE with mock data for KPI202
-      // this.data = [
-      //   {
-      //     data: 'KnowHOW',
-      //     value: [
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-44086',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '5731.616666666667',
-      //             value: 5731.616666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-47411',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '3712.766666666667',
-      //             value: 3712.766666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-47528',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '0.0',
-      //             value: 0,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '3621.516666666667',
-      //             value: 3621.516666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48152',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '38.63333333333333',
-      //             value: 38.63333333333333,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '161.68333333333334',
-      //             value: 161.68333333333334,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48279',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '0.016666666666666666',
-      //             value: 0.016666666666666666,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '3354.05',
-      //             value: 3354.05,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48363',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '4227.583333333333',
-      //             value: 4227.583333333333,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //     ],
-      //   },
-      // ];
-
       // Dynamically extract filter options from this.data
       const kpi202Keys = new Set<string>();
       this.data?.forEach((elem: any) => {
@@ -416,6 +313,12 @@ export class StackedGroupBarChartComponent
       '#f39c12',
       '#9b59b6',
       '#34495e',
+      '#00CEC9',
+      '#6D214F',
+      '#E84393',
+      '#30336B',
+      '#FCD116',
+      '#4A235A',
     ];
 
     // For KPI202, ignore this.color since the parent passes Project colors,
