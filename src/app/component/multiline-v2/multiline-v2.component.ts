@@ -178,6 +178,14 @@ export class MultilineV2Component implements OnChanges {
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
 
+      // Skip rendering the sprint-legend-container for kpi202/kpi202_duplicate in reports
+      if (
+        this.source === 'fromReport' &&
+        (this.kpiId === 'kpi202' || this.kpiId === 'kpi202_duplicate')
+      ) {
+        return;
+      }
+
       const container = body
         .insert('div') // Insert at top of body
         .attr('class', 'sprint-legend-container')

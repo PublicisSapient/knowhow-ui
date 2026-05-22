@@ -48,6 +48,7 @@ export class StackedGroupBarChartComponent
   @Input() thresholdValue: number;
   @Input() source = '';
   @Input() selectedtype: string;
+  @Input() selectedTab: string;
   @Input() xAxisLabel: string;
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
@@ -112,9 +113,15 @@ export class StackedGroupBarChartComponent
         this.activeSeverityKeys = [...kpi202KeysArr];
       }
     }
+    // Prefer explicit selectedTab input (e.g., when rendering from report),
+    // otherwise fall back to the global selected tab from the shared service.
+    const activeTab = this.selectedTab
+      ? this.selectedTab.toLowerCase()
+      : this.service.getSelectedTab()?.toLowerCase();
+
     if (
       this.selectedtype?.toLowerCase() === 'kanban' ||
-      this.service.getSelectedTab()?.toLowerCase() === 'developer'
+      activeTab === 'developer'
     ) {
       this.xCaption = this.service.getSelectedDateFilter();
     }
@@ -806,6 +813,14 @@ export class StackedGroupBarChartComponent
     const body = d3.select(this.elem);
     // 🧹 Clean up any existing legend container
     body.selectAll('.sprint-legend-container').remove();
+
+    // Skip rendering the sprint-legend-container for kpi202/kpi202_duplicate in reports
+    if (
+      this.source === 'fromReport' &&
+      (this.kpiId === 'kpi202' || this.kpiId === 'kpi202_duplicate')
+    ) {
+      return;
+    }
 
     const container = body
       .insert('div') // Insert at top of body

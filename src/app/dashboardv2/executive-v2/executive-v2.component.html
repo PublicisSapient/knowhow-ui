@@ -97,7 +97,9 @@
                         [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' || selectedTab === 'backlog' || selectedTab === 'developer' ? hieararchy : null"
                         [xAxisLabel]="kpi?.kpiDetail?.xaxisLabel" [yAxisLabel]="kpi?.kpiDetail?.yaxisLabel"
                         [xCaption]="this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                        [kpiTitle]="kpi?.kpiName" [kpiRecommData]= kpiRecommData[kpi?.kpiId]>
+                        [kpiTitle]="kpi?.kpiName" [kpiRecommData]= kpiRecommData[kpi?.kpiId]
+                        [kpi202DuplicateChartData]="kpi?.kpiId === 'kpi202' ? kpiChartData['kpi202_duplicate'] : null"
+                        [kpi202SelectedView]="kpi?.kpiId === 'kpi202' ? kpi202SelectedView : null">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
                             <div [ngSwitch]="kpi?.kpiDetail?.chartType">

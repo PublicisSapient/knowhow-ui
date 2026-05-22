@@ -6,7 +6,10 @@
     <div class="p-d-flex p-jc-between p-ai-center">
       <div class="p-d-flex p-ai-center">
         <div>
-          <h4 class="p-my-0">{{ kpiData?.kpiName }}</h4>
+            <h4 class="p-my-0">{{ kpiData?.kpiName }}</h4>
+            <div *ngIf="selectedTab" class="kpi-tab-label p-mt-1">
+              <small>{{ selectedTab | titlecase }}</small>
+            </div>
         </div>
       </div>
     </div>
@@ -20,11 +23,17 @@
         selectedTab !== 'developer' &&
         chartType !== 'chartWithFilter'
       ">
+      <div
+        *ngIf="kpiData?.kpiId === 'kpi202' || kpiData?.kpiId === 'kpi202_duplicate'"
+        class="p-mt-1 p-pl-5">
+        <strong>View:</strong> {{ kpiData?.kpi202SelectedView }}
+      </div>
       <ul>
         <li *ngFor="let filter of kpiFilters; let i = index">
           <span>{{ filter }}</span>
         </li>
       </ul>
+
     </div>
 
     <div
@@ -68,22 +77,40 @@
           <!-- <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
                         [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart> -->
                         <ng-container *ngSwitchCase="'stacked-bar-chart'">
-            <app-stacked-group-bar-chart
-              *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197' || kpiData.kpiId === 'kpi202'; else standardStackedBar"
-              [defectsBreachedSLAs]="defectsBreachedSLAs"
-              [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
-              [data]="currentChartData"
-              [kpiId]="kpiData.kpiId"
-              [thresholdValue]="kpiData?.kpiThresholdObj"
-              [color]="colors"
-              [source]="fromReport"></app-stacked-group-bar-chart>
-            <ng-template #standardStackedBar>
-              <app-stacked-bar-chart
-                [data]="currentChartData"
-                [width]="chartWidth"
-                [height]="chartHeight"></app-stacked-bar-chart>
-            </ng-template>
-          </ng-container>
+                          <ng-container *ngIf="isMultiTabArray(currentChartData); else singleStacked">
+                            <ng-container *ngFor="let item of currentChartData">
+                              <div class="report-multi-tab-title p-mb-2"><strong>{{ item.tabName }}</strong></div>
+                              <app-stacked-group-bar-chart
+                                *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197' || kpiData.kpiId === 'kpi202'; else standardStackedBar"
+                                [defectsBreachedSLAs]="defectsBreachedSLAs"
+                                [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
+                                [data]="item.chartData"
+                                [kpiId]="kpiData.kpiId"
+                                [thresholdValue]="kpiData?.kpiThresholdObj"
+                                [color]="colors"
+                                [source]="fromReport"
+                                [selectedTab]="item.tabName"></app-stacked-group-bar-chart>
+                            </ng-container>
+                          </ng-container>
+                          <ng-template #singleStacked>
+                            <app-stacked-group-bar-chart
+                              *ngIf="kpiData.kpiId === 'kpi195' || kpiData.kpiId === 'kpi196' || kpiData.kpiId === 'kpi197' || kpiData.kpiId === 'kpi202'; else standardStackedBar"
+                              [defectsBreachedSLAs]="defectsBreachedSLAs"
+                              [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
+                              [data]="currentChartData"
+                              [kpiId]="kpiData.kpiId"
+                              [thresholdValue]="kpiData?.kpiThresholdObj"
+                              [color]="colors"
+                              [source]="fromReport"
+                              [selectedTab]="selectedTab"></app-stacked-group-bar-chart>
+                            <ng-template #standardStackedBar>
+                              <app-stacked-bar-chart
+                                [data]="currentChartData"
+                                [width]="chartWidth"
+                                [height]="chartHeight"></app-stacked-bar-chart>
+                            </ng-template>
+                          </ng-template>
+                        </ng-container>
           <ng-container *ngSwitchCase="'scatter'">
             <app-scatter-plot-chart
               [thresholdValue]="kpiData?.kpiThresholdObj"
@@ -430,8 +457,9 @@
 
   <div
     *ngIf="
-      kpiData?.chartType === 'stacked-bar-chart' ||
-      kpiData?.chartType === 'stacked-bar'
+      (kpiData?.chartType === 'stacked-bar-chart' ||
+      kpiData?.chartType === 'stacked-bar') &&
+      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
     "
     class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
     <ul class="legend">
@@ -447,9 +475,10 @@
   </div>
   <div
     *ngIf="
-      kpiData?.chartType === 'line' ||
+      (kpiData?.chartType === 'line' ||
       kpiData?.chartType === 'multipleline' ||
-      kpiData?.chartType === 'grouped_column_plus_line'
+      kpiData?.chartType === 'grouped_column_plus_line') &&
+      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
     "
     class="kpi-card-footer p-p-3">
     <app-trend-indicator-v2 [trendData]="kpiTrendsObj" [colorObj]="trendColors">
@@ -461,8 +490,9 @@
   </div>
   <div
     *ngIf="
-      kpiData?.chartType === 'stacked-bar-chart' ||
-      kpiData?.chartType === 'stacked-bar'
+      (kpiData?.chartType === 'stacked-bar-chart' ||
+      kpiData?.chartType === 'stacked-bar') &&
+      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
     "
     class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
     <ul class="legend">

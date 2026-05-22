@@ -180,6 +180,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpiRecommData = {};
   isAIRecommEnabled = signal<boolean>(false);
   @Input() id: string;
+  /** kpi202-specific: chart data for the "By Workflow Group" (multiline) view */
+  @Input() kpi202DuplicateChartData: any;
+  /** kpi202-specific: currently selected view ('By Status' | 'By Workflow Group') */
+  @Input() kpi202SelectedView: string;
 
   constructor(
     public service: SharedService,
@@ -357,7 +361,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled: !this.kpiData?.kpiDetail?.chartType,
+        disabled:
+          !this.kpiData?.kpiDetail?.chartType ||
+          this.kpiData?.kpiId === 'kpi204',
       },
       {
         label: 'Comments',
@@ -477,22 +483,22 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
 
       // TODO: Disabled for KPI202 until it's stable
-      if (
-        this.selectedTab === 'slingshot' &&
-        this.kpiData?.kpiId === 'kpi202'
-      ) {
-        this.menuItems = this.menuItems.filter(
-          (item) => item.label !== 'Include in Report',
-        );
-        this.menuItems.push({
-          label: 'Include in Report',
-          icon: 'pi pi-briefcase',
-          command: ($event) => {
-            this.addToReportAction($event);
-          },
-          disabled: true,
-        });
-      }
+      // if (
+      //   this.selectedTab === 'slingshot' &&
+      //   this.kpiData?.kpiId === 'kpi202'
+      // ) {
+      //   this.menuItems = this.menuItems.filter(
+      //     (item) => item.label !== 'Include in Report',
+      //   );
+      //   this.menuItems.push({
+      //     label: 'Include in Report',
+      //     icon: 'pi pi-briefcase',
+      //     command: ($event) => {
+      //       this.addToReportAction($event);
+      //     },
+      //     disabled: true,
+      //   });
+      // }
     }
     // }
 
@@ -1354,11 +1360,35 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     metaDataObj['releaseEndDate'] = this.releaseEndDate;
     metaDataObj['copyCardData'] = this.copyCardData;
 
+    // Prepare chartData for report. For KPIs with multiple tab views (e.g., kpi202),
+    // capture the currently selected view's data and chart type so the report renders
+    // the correct chart (stacked bar for "By Status", multiline for "By Workflow Group").
+    let chartDataForReport: any = this.currentChartData?.chartData
+      ? this.currentChartData?.chartData
+      : this.kpiChartData;
+
+    if (this.kpiData?.kpiId === 'kpi202') {
+      const selectedView = this.kpi202SelectedView || 'By Status';
+      metaDataObj['kpi202SelectedView'] = selectedView;
+
+      if (selectedView === 'By Workflow Group') {
+        // Use the multiline (duplicate) chart data and override chartType for the report renderer
+        chartDataForReport = this.kpi202DuplicateChartData || [];
+        metaDataObj.chartType = 'line';
+        // multiline-v2 has kpi202_duplicate-specific rendering logic; pass the correct kpiId
+        metaDataObj.kpiId = 'kpi202_duplicate';
+      } else {
+        // "By Status" — use the stacked bar chart data (default kpiChartData)
+        chartDataForReport = this.currentChartData?.chartData
+          ? this.currentChartData.chartData
+          : this.kpiChartData;
+        // chartType stays 'stacked-bar-chart' as set from kpiDetail
+      }
+    }
+
     this.reportObj = {
       id: this.kpiData.kpiId,
-      chartData: this.currentChartData?.chartData
-        ? this.currentChartData?.chartData
-        : this.kpiChartData,
+      chartData: chartDataForReport,
       metadata: metaDataObj,
     };
 
