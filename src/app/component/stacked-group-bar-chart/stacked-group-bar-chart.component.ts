@@ -294,7 +294,12 @@ export class StackedGroupBarChartComponent
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
-    const margin = { top: 30, right: 30, bottom: 30, left: 50 }; // Reduced bottom margin since xCaption is now an HTML div
+    const margin = {
+      top: 30,
+      right: 30,
+      bottom: this.kpiId === 'kpi202' ? 75 : 30,
+      left: 50,
+    }; // Increased bottom margin for kpi202 rotated x-axis labels
 
     const containerNode = this.chartContainer.nativeElement;
 
@@ -389,7 +394,7 @@ export class StackedGroupBarChartComponent
     d3.select(containerNode)
       .style('position', 'relative')
       .style('overflow-x', 'hidden')
-      .style('overflow-y', 'hidden');
+      .style('overflow-y', this.kpiId === 'kpi202' ? 'visible' : 'hidden');
 
     const chartWrapper = d3
       .select(containerNode)
@@ -676,6 +681,14 @@ export class StackedGroupBarChartComponent
       .call(d3.axisBottom(x0).tickSize(0))
       .call((g) => {
         g.select('.domain').attr('stroke', '#EDEFF2');
+        if (this.kpiId === 'kpi202') {
+          g.selectAll('text')
+            .attr('text-anchor', 'end')
+            .attr('transform', 'rotate(-45)')
+            .attr('dx', '-0.5em')
+            .attr('dy', '0.25em')
+            .style('font-size', '11px');
+        }
         g.append('line')
           .attr('x1', 0)
           .attr('x2', width)
