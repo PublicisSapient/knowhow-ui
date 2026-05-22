@@ -4656,7 +4656,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (
         kpi.kpiId === 'kpi72' ||
         kpi.kpiId === 'kpi171' ||
-        kpi.kpiId === 'kpi202'
+        kpi.kpiId === 'kpi202' ||
+        kpi.kpiId === 'kpi204'
       ) {
         if (
           event.hasOwnProperty('filter1') ||
@@ -4664,7 +4665,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ) {
           // For kpi171, check if filter1 is nested and flatten it
           if (
-            (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202') &&
+            (kpi.kpiId === 'kpi171' ||
+              kpi.kpiId === 'kpi202' ||
+              kpi.kpiId === 'kpi204') &&
             event.filter1 &&
             typeof event.filter1 === 'object' &&
             !Array.isArray(event.filter1)
@@ -4711,7 +4714,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               delete event[key];
             } else if (
               event[key]?.length == 0 &&
-              (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202')
+              (kpi.kpiId === 'kpi171' ||
+                kpi.kpiId === 'kpi202' ||
+                kpi.kpiId === 'kpi204')
             ) {
               event[key] = null;
             }

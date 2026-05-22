@@ -357,9 +357,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled:
-          !this.kpiData?.kpiDetail?.chartType ||
-          this.kpiData?.kpiId === 'kpi202',
+        disabled: !this.kpiData?.kpiDetail?.chartType,
       },
       {
         label: 'Comments',
