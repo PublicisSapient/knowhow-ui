@@ -48,6 +48,7 @@ export class StackedGroupBarChartComponent
   @Input() thresholdValue: number;
   @Input() source = '';
   @Input() selectedtype: string;
+  @Input() selectedTab: string;
   @Input() xAxisLabel: string;
   @ViewChild('chartContainer', { static: true }) chartContainer!: ElementRef;
   elem: any;
@@ -85,109 +86,6 @@ export class StackedGroupBarChartComponent
     if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
       this.hasFilter = false;
     } else if (this.kpiId === 'kpi202') {
-      // console.log('data ', this.data);
-      // // OVERWRITE with mock data for KPI202
-      // this.data = [
-      //   {
-      //     data: 'KnowHOW',
-      //     value: [
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-44086',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '5731.616666666667',
-      //             value: 5731.616666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-47411',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '3712.766666666667',
-      //             value: 3712.766666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-47528',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '0.0',
-      //             value: 0,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '3621.516666666667',
-      //             value: 3621.516666666667,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48152',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '38.63333333333333',
-      //             value: 38.63333333333333,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '161.68333333333334',
-      //             value: 161.68333333333334,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48279',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'QA',
-      //             data: '0.016666666666666666',
-      //             value: 0.016666666666666666,
-      //           },
-      //           {
-      //             name: 'DOR',
-      //             data: '3354.05',
-      //             value: 3354.05,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //       {
-      //         hoverValue: {},
-      //         subFilter: 'DTS-48363',
-      //         kpiGroup: 'Past 6 Months#Bug',
-      //         dataValue: [
-      //           {
-      //             name: 'DOR',
-      //             data: '4227.583333333333',
-      //             value: 4227.583333333333,
-      //           },
-      //         ],
-      //         sprojectName: 'KnowHOW',
-      //       },
-      //     ],
-      //   },
-      // ];
-
       // Dynamically extract filter options from this.data
       const kpi202Keys = new Set<string>();
       this.data?.forEach((elem: any) => {
@@ -215,9 +113,15 @@ export class StackedGroupBarChartComponent
         this.activeSeverityKeys = [...kpi202KeysArr];
       }
     }
+    // Prefer explicit selectedTab input (e.g., when rendering from report),
+    // otherwise fall back to the global selected tab from the shared service.
+    const activeTab = this.selectedTab
+      ? this.selectedTab.toLowerCase()
+      : this.service.getSelectedTab()?.toLowerCase();
+
     if (
       this.selectedtype?.toLowerCase() === 'kanban' ||
-      this.service.getSelectedTab()?.toLowerCase() === 'developer'
+      activeTab === 'developer'
     ) {
       this.xCaption = this.service.getSelectedDateFilter();
     }
@@ -397,7 +301,12 @@ export class StackedGroupBarChartComponent
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
-    const margin = { top: 30, right: 30, bottom: 30, left: 50 }; // Reduced bottom margin since xCaption is now an HTML div
+    const margin = {
+      top: 30,
+      right: 30,
+      bottom: this.kpiId === 'kpi202' ? 75 : 30,
+      left: 50,
+    }; // Increased bottom margin for kpi202 rotated x-axis labels
 
     const containerNode = this.chartContainer.nativeElement;
 
@@ -416,6 +325,12 @@ export class StackedGroupBarChartComponent
       '#f39c12',
       '#9b59b6',
       '#34495e',
+      '#00CEC9',
+      '#6D214F',
+      '#E84393',
+      '#30336B',
+      '#FCD116',
+      '#4A235A',
     ];
 
     // For KPI202, ignore this.color since the parent passes Project colors,
@@ -486,7 +401,7 @@ export class StackedGroupBarChartComponent
     d3.select(containerNode)
       .style('position', 'relative')
       .style('overflow-x', 'hidden')
-      .style('overflow-y', 'hidden');
+      .style('overflow-y', this.kpiId === 'kpi202' ? 'visible' : 'hidden');
 
     const chartWrapper = d3
       .select(containerNode)
@@ -773,6 +688,14 @@ export class StackedGroupBarChartComponent
       .call(d3.axisBottom(x0).tickSize(0))
       .call((g) => {
         g.select('.domain').attr('stroke', '#EDEFF2');
+        if (this.kpiId === 'kpi202') {
+          g.selectAll('text')
+            .attr('text-anchor', 'end')
+            .attr('transform', 'rotate(-45)')
+            .attr('dx', '-0.5em')
+            .attr('dy', '0.25em')
+            .style('font-size', '11px');
+        }
         g.append('line')
           .attr('x1', 0)
           .attr('x2', width)
@@ -890,6 +813,14 @@ export class StackedGroupBarChartComponent
     const body = d3.select(this.elem);
     // 🧹 Clean up any existing legend container
     body.selectAll('.sprint-legend-container').remove();
+
+    // Skip rendering the sprint-legend-container for kpi202/kpi202_duplicate in reports
+    if (
+      this.source === 'fromReport' &&
+      (this.kpiId === 'kpi202' || this.kpiId === 'kpi202_duplicate')
+    ) {
+      return;
+    }
 
     const container = body
       .insert('div') // Insert at top of body

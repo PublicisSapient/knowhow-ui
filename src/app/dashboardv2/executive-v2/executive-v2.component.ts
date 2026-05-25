@@ -145,6 +145,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   durationFilterKpi202 = 'Past 6 Months';
+  kpi202ViewOptions = ['By Workflow Group', 'By Status'];
+  kpi202SelectedView = 'By Workflow Group';
+  kpi202Switching = false;
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -156,6 +159,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   nonUniqueNames: boolean;
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
+  kpi202WorkflowOrder: string[] = [];
+  private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
   @ViewChild('recommendationsComponent', { read: ElementRef })
@@ -255,6 +260,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
+    this.kpi202WorkflowOrderFetched = false;
+    this.kpi202WorkflowOrder = [];
   }
 
   setGlobalConfigData(globalConfig) {
@@ -806,6 +813,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.immediateLoader = true;
       this.sprintGoalData = [];
       this.kpiRecommData = {};
+      // Reset workflow order fetch flag and restore cached order for the new project
+      this.kpi202WorkflowOrderFetched = false;
+      const incomingProjectId =
+        $event.filterApplyData?.selectedMap?.project?.[0] ||
+        this.service.getSelectedTrends()?.[0]?.basicProjectConfigId;
+      if (incomingProjectId) {
+        const cacheKey = `kpi202_workflow_order_${incomingProjectId}`;
+        const cached = localStorage.getItem(cacheKey);
+        this.kpi202WorkflowOrder = cached ? JSON.parse(cached) : [];
+      } else {
+        this.kpi202WorkflowOrder = [];
+      }
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         this.kpiTableDataObj[key] = [];
@@ -3146,6 +3165,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       // After kpi202 chart data is set, compute the aggregated line chart data for the duplicate
       if (data[key]?.kpiId === 'kpi202') {
+        // Fetch and cache the saved workflow order from field mapping (once per project),
+        // then re-render. computeKpi202DuplicateChartData is also called immediately
+        // below so the chart renders right away with whatever order is already cached.
+        if (!this.kpi202WorkflowOrderFetched) {
+          this.kpi202WorkflowOrderFetched = true;
+          this.fetchAndCacheKpi202WorkflowOrder();
+        }
         this.computeKpi202DuplicateChartData();
       }
     }
@@ -4630,7 +4656,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (
         kpi.kpiId === 'kpi72' ||
         kpi.kpiId === 'kpi171' ||
-        kpi.kpiId === 'kpi202'
+        kpi.kpiId === 'kpi202' ||
+        kpi.kpiId === 'kpi204'
       ) {
         if (
           event.hasOwnProperty('filter1') ||
@@ -4638,7 +4665,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ) {
           // For kpi171, check if filter1 is nested and flatten it
           if (
-            (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202') &&
+            (kpi.kpiId === 'kpi171' ||
+              kpi.kpiId === 'kpi202' ||
+              kpi.kpiId === 'kpi204') &&
             event.filter1 &&
             typeof event.filter1 === 'object' &&
             !Array.isArray(event.filter1)
@@ -4685,7 +4714,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               delete event[key];
             } else if (
               event[key]?.length == 0 &&
-              (kpi.kpiId === 'kpi171' || kpi.kpiId === 'kpi202')
+              (kpi.kpiId === 'kpi171' ||
+                kpi.kpiId === 'kpi202' ||
+                kpi.kpiId === 'kpi204')
             ) {
               event[key] = null;
             }
@@ -5162,6 +5193,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const idx = this.ifKpiExist(event?.kpiDetail?.kpiId);
     if (idx !== -1) {
       this.allKpiArray.splice(idx, 1);
+    }
+    // When kpi202 is reloaded (e.g. after field mapping save), reset the workflow
+    // order fetch flag so the updated chip order is re-fetched and re-applied.
+    if (event?.kpiDetail?.kpiId === 'kpi202') {
+      this.kpi202WorkflowOrderFetched = false;
     }
     const currentKPIGroup = this.helperService.groupKpiFromMaster(
       event?.kpiDetail?.kpiSource,
@@ -5645,6 +5681,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     };
   }
 
+  onKpi202ViewChange(selectedView: string): void {
+    this.kpi202Switching = true;
+    // Yield one tick so Angular renders the skeleton before mounting the heavy chart
+    setTimeout(() => {
+      this.kpi202SelectedView = selectedView;
+      this.kpi202Switching = false;
+    }, 0);
+  }
+
   getkpi202Data(kpiId) {
     let durationChanged = false;
     const duration = Array.isArray(this.durationFilterKpi202)
@@ -5724,6 +5769,68 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
+   * Fetches the saved workflow group order from field mapping for kpi202
+   * and caches it in localStorage keyed by projectId.
+   * Called once per project selection when kpi202 data first arrives.
+   */
+  fetchAndCacheKpi202WorkflowOrder(): void {
+    const projectId =
+      this.service.getSelectedTrends()?.[0]?.basicProjectConfigId;
+    if (!projectId) return;
+
+    const cacheKey = `kpi202_workflow_order_${projectId}`;
+
+    // Restore from localStorage immediately so the chart can use it right away
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        this.kpi202WorkflowOrder = JSON.parse(cached);
+      } catch {
+        this.kpi202WorkflowOrder = [];
+      }
+    }
+
+    // Always re-fetch from backend to stay in sync with latest saved order
+    this.httpService
+      .getKPIFieldMappingConfig(`${projectId}/kpi202`)
+      .subscribe((configResp: any) => {
+        if (!configResp?.success) return;
+        const toolId = configResp.data?.projectToolConfigId;
+        if (!toolId) return;
+
+        this.httpService
+          .getFieldMappingsWithHistory(toolId, 'kpi202', {
+            releaseNodeId: null,
+          })
+          .subscribe((mappingResp: any) => {
+            if (!mappingResp?.success) return;
+            const responses: any[] =
+              mappingResp.data?.fieldMappingResponses || [];
+
+            // Find the field whose value is an array of { label, statuses } objects
+            // This is the workflow groups trigger field
+            const workflowField = responses.find(
+              (f: any) =>
+                Array.isArray(f.originalValue) &&
+                f.originalValue.length > 0 &&
+                f.originalValue[0]?.hasOwnProperty('label') &&
+                f.originalValue[0]?.hasOwnProperty('statuses'),
+            );
+
+            if (workflowField?.originalValue?.length) {
+              const order: string[] = workflowField.originalValue.map(
+                (entry: any) => entry.label,
+              );
+              this.kpi202WorkflowOrder = order;
+              localStorage.setItem(cacheKey, JSON.stringify(order));
+              // Re-render the chart with the correct order
+              this.computeKpi202DuplicateChartData();
+            }
+          });
+      });
+  }
+
+  /**
    * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
    * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
    *
@@ -5737,16 +5844,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData['kpi202_duplicate'] = [];
       return;
     }
+    const filter2Arr = this.kpiSelectedFilterObj?.['kpi202']?.filter2;
+    const filterTypeLabel =
+      filter2Arr && filter2Arr.length > 0 ? filter2Arr[0] : 'Item';
+
     // Aggregate dataValue entries by workflow name
-    const aggregatedMap = new Map<string, number>();
+    const aggregatedMap = new Map<
+      string,
+      { total: number; count: number; filterType: string }
+    >();
     kpi202Data.forEach((project: any) => {
       (project?.value || []).forEach((item: any) => {
         (item?.dataValue || []).forEach((dv: any) => {
           if (dv?.name) {
-            aggregatedMap.set(
-              dv.name,
-              (aggregatedMap.get(dv.name) || 0) + (Number(dv.value) || 0),
-            );
+            const current = aggregatedMap.get(dv.name) || {
+              total: 0,
+              count: 0,
+              filterType: filterTypeLabel,
+            };
+            aggregatedMap.set(dv.name, {
+              total: current.total + (Number(dv.value) || 0),
+              count: current.count + 1,
+              filterType: filterTypeLabel,
+            });
           }
         });
       });
@@ -5762,15 +5882,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ];
 
     const lineValues = Array.from(aggregatedMap.entries()).map(
-      ([name, total], index) => ({
+      ([name, data], index) => ({
         sSprintName: name,
-        value: Math.round(total * 100) / 100,
+        value: Math.round(data.total * 100) / 100,
+        count: data.count,
+        filterType: data.filterType,
         hoverValue: {},
         xOrder: name,
         xAxisTick: name,
         color: defaultColors[index % defaultColors.length],
       }),
     );
+
+    // Apply saved workflow order if available
+    if (this.kpi202WorkflowOrder?.length) {
+      lineValues.sort((a, b) => {
+        const ai = this.kpi202WorkflowOrder.indexOf(a.sSprintName);
+        const bi = this.kpi202WorkflowOrder.indexOf(b.sSprintName);
+        // Unknown names go to the end
+        const aIdx = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
+        const bIdx = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
+        return aIdx - bIdx;
+      });
+      // Re-assign colors after sorting so they stay consistent with position
+      lineValues.forEach((v, i) => {
+        v.color = defaultColors[i % defaultColors.length];
+      });
+    }
     this.kpiChartData['kpi202_duplicate'] = [
       {
         data: 'Cycle Time Workflows',

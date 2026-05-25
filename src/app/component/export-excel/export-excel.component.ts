@@ -177,6 +177,22 @@ export class ExportExcelComponent implements OnInit {
   }
 
   dataTransformatin(rawColumConfig, rawExcelData, chartType, kpiName) {
+    if (rawColumConfig && rawExcelData?.length) {
+      rawExcelData.forEach((row) => {
+        Object.keys(row).forEach((key) => {
+          const matchingColumn = rawColumConfig.find(
+            (col) =>
+              col.columnName.replace(/\s+/g, '').toLowerCase() ===
+              key.replace(/\s+/g, '').toLowerCase(),
+          );
+          if (matchingColumn && matchingColumn.columnName !== key) {
+            row[matchingColumn.columnName] = row[key];
+            delete row[key];
+          }
+        });
+      });
+    }
+
     rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.tableColumns = rawColumConfig;
 

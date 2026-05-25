@@ -178,6 +178,14 @@ export class MultilineV2Component implements OnChanges {
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
 
+      // Skip rendering the sprint-legend-container for kpi202/kpi202_duplicate in reports
+      if (
+        this.source === 'fromReport' &&
+        (this.kpiId === 'kpi202' || this.kpiId === 'kpi202_duplicate')
+      ) {
+        return;
+      }
+
       const container = body
         .insert('div') // Insert at top of body
         .attr('class', 'sprint-legend-container')
@@ -403,7 +411,13 @@ export class MultilineV2Component implements OnChanges {
       const tempwidth =
         d3.select(this.elem).select('#graphContainer').node().offsetWidth ||
         window.innerWidth;
+
       width = tempwidth - 40;
+      // if (kpiId === 'kpi202_duplicate' && data[0]?.value?.length) {
+      //   // Limit the overall width so that bars and x-axis points are closer to each other
+      //   width = Math.min(width, data[0].value.length * 120);
+      // }
+
       let maxXValueCount = 0;
       let maxObjectNo = 0;
       // used to find object whose value is max on x axis
@@ -591,11 +605,20 @@ export class MultilineV2Component implements OnChanges {
             'top',
             (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
           )
-          .text(
-            (d) =>
-              Math.round(d.value * 100) / 100 +
-              ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`,
-          )
+          .text((d) => {
+            const val = Math.round(d.value * 100) / 100;
+            if (kpiId === 'kpi202_duplicate' && d.count != null) {
+              let ft = d.filterType || 'Item';
+              if (d.count > 1) {
+                if (ft.toLowerCase() === 'story') ft = 'Stories';
+                else if (!ft.endsWith('s')) ft += 's';
+              }
+              return `${val} (${d.count} ${ft})`;
+            }
+            return `${val}${
+              showUnit ? ' ' + unitAbbs[showUnit?.toLowerCase()] : ''
+            }`;
+          })
           .transition()
           .duration(500)
           .style('display', 'block')
@@ -864,24 +887,37 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add bars for specific KPI */
       if (this.kpiId === 'kpi202_duplicate') {
+        const barWidth = Math.min(60, xScale.bandwidth() * 0.4);
         const bars = svgX
           .append('g')
           .attr('class', 'bars')
           .attr('transform', `translate(0, 0)`);
 
+        const r = 0; // top corner radius — adjust this value to control roundedness
         bars
           .selectAll('.bar')
           .data(data[0].value)
           .enter()
-          .append('rect')
+          .append('path')
           .attr('class', 'bar')
-          .attr('x', (d, i) => getXCoordinate(d, i) + xScale.bandwidth() * 0.25)
-          .attr('y', (d) => yScale(d.value))
-          .attr('width', xScale.bandwidth() * 0.5)
-          .attr('height', (d) => Math.max(0, height - margin - yScale(d.value)))
+          .attr('d', (d, i) => {
+            const x =
+              getXCoordinate(d, i) + xScale.bandwidth() / 2 - barWidth / 2;
+            const y = yScale(d.value);
+            const w = barWidth;
+            const h = Math.max(0, height - margin - y);
+            if (h === 0) return '';
+            const cr = Math.min(r, w / 2, h); // clamp radius so it never exceeds bar dimensions
+            // Path: bottom-left → bottom-right (square) → top-right (rounded) → top-left (rounded)
+            return `M ${x} ${y + h}
+                    L ${x + w} ${y + h}
+                    L ${x + w} ${y + cr}
+                    Q ${x + w} ${y} ${x + w - cr} ${y}
+                    L ${x + cr} ${y}
+                    Q ${x} ${y} ${x} ${y + cr}
+                    Z`;
+          })
           .style('fill', (d, i) => d.color || (color && color[0]) || '#007bff')
-          .attr('rx', 4)
-          .attr('ry', 4)
           .style('opacity', 0.85)
           .on('mouseover', function (event, d) {
             d3.select(this).style('opacity', 1);
@@ -891,12 +927,15 @@ export class MultilineV2Component implements OnChanges {
               .style('display', 'block')
               .style('opacity', 0.9);
 
-            const unit = showUnit
-              ? unitAbbs[showUnit.toLowerCase()] || showUnit
-              : '';
+            let ft = d.filterType || 'Item';
+            if (d.count > 1) {
+              if (ft.toLowerCase() === 'story') ft = 'Stories';
+              else if (!ft.endsWith('s')) ft += 's';
+            }
+            const countLabel = d.count != null ? ` (${d.count} ${ft})` : '';
             const htmlString = `
               <div class="tooltip-header" style="font-weight:bold; margin-bottom:5px;">${d.sSprintName}</div>
-              <div class="tooltip-body">Value: <span style="font-weight:bold;">${d.value}${unit}</span></div>
+              <div class="tooltip-body"><span style="font-weight:bold;">${d.value}${countLabel}</span></div>
             `;
 
             div
