@@ -122,7 +122,13 @@ describe('PebCalculatorComponent', () => {
     spyOn(localStorage, 'getItem').and.callFake((key: string) => {
       if (key === 'completeHierarchyData') {
         return JSON.stringify({
-          type1: [{ hierarchyLevelName: 'level1', hierarchyLevelId: 'id1', level: 'L1' }],
+          type1: [
+            {
+              hierarchyLevelName: 'level1',
+              hierarchyLevelId: 'id1',
+              level: 'L1',
+            },
+          ],
         });
       }
       if (key === 'selectedTrend') return 'trend1';
@@ -164,7 +170,9 @@ describe('PebCalculatorComponent', () => {
     // Manually invoke the same logic the subscription runs
     const path = '/dashboard/iteration';
     let selectedTab = decodeURIComponent(path);
-    selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+    selectedTab = selectedTab?.split('/')[2]
+      ? selectedTab?.split('/')[2]
+      : 'iteration';
     selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
     selectedTab = selectedTab.split('?statefilters=')[0];
 
@@ -191,7 +199,9 @@ describe('PebCalculatorComponent', () => {
     spyOn(component, 'getPebProjectPerformanceData');
     spyOn(component, 'getAiUasgestatsDetails');
 
-    (mockSharedService.passDataToDashboard as Subject<any>).next({ filters: {} });
+    (mockSharedService.passDataToDashboard as Subject<any>).next({
+      filters: {},
+    });
     tick();
 
     expect(component.getPEBData).toHaveBeenCalled();
@@ -221,7 +231,9 @@ describe('PebCalculatorComponent', () => {
     component.selectedType = 'scrum';
     component['pendingApiCalls'] = 1;
     component.isLoadingPebData = true;
-    spyOn(mockHttpService, 'getPebProductivityData').and.returnValue(of(productivityGain));
+    spyOn(mockHttpService, 'getPebProductivityData').and.returnValue(
+      of(productivityGain),
+    );
     spyOn(component, 'calculatePEB').and.callThrough();
 
     component.getPEBData();
@@ -268,14 +280,26 @@ describe('PebCalculatorComponent', () => {
 
   it('should populate performanceChartData and costSavingsChartData on success', fakeAsync(() => {
     const categoryScores = [
-      { temporalGroupingStartDate: '2024-01-01', overall: 10, speed: 5, quality: 3, efficiency: 2, productivity: 0 },
+      {
+        temporalGroupingStartDate: '2024-01-01',
+        overall: 10,
+        speed: 5,
+        quality: 3,
+        efficiency: 2,
+        productivity: 0,
+      },
     ];
     spyOn(mockHttpService, 'getPebProductivityDetailsData').and.returnValue(
       of({
         success: true,
         data: {
           categoryScores,
-          categoryVariations: { speed: 1, quality: 2, efficiency: 3, productivity: 4 },
+          categoryVariations: {
+            speed: 1,
+            quality: 2,
+            efficiency: 3,
+            productivity: 4,
+          },
           temporalGrouping: 'month',
           forecasts: [{ category: 'overall', value: 15 }],
         },
@@ -289,7 +313,12 @@ describe('PebCalculatorComponent', () => {
 
     expect(component.performanceChartData.length).toBeGreaterThan(0);
     expect(component.costSavingsChartData.length).toBeGreaterThan(0);
-    expect(component.categoryVariations).toEqual({ speed: 1, quality: 2, efficiency: 3, productivity: 4 });
+    expect(component.categoryVariations).toEqual({
+      speed: 1,
+      quality: 2,
+      efficiency: 3,
+      productivity: 4,
+    });
     expect(component.xAxisLabel).toBe('month');
     flush();
     discardPeriodicTasks();
@@ -297,7 +326,10 @@ describe('PebCalculatorComponent', () => {
 
   it('should set categoryVariations to null when API returns success but no categoryVariations', fakeAsync(() => {
     spyOn(mockHttpService, 'getPebProductivityDetailsData').and.returnValue(
-      of({ success: true, data: { categoryScores: [], temporalGrouping: 'week' } }),
+      of({
+        success: true,
+        data: { categoryScores: [], temporalGrouping: 'week' },
+      }),
     );
     component.selectedType = 'scrum';
     component['pendingApiCalls'] = 1;
@@ -388,25 +420,41 @@ describe('PebCalculatorComponent', () => {
   // ─── calculateMultipliedDetails ───────────────────────────────────────────
 
   it('should calculate correctly for "per year" duration', () => {
-    component.pebForm.patchValue({ devCountControl: 10, devCostControl: 1000, durationControl: 'per year' });
+    component.pebForm.patchValue({
+      devCountControl: 10,
+      devCostControl: 1000,
+      durationControl: 'per year',
+    });
     const result = component.calculateMultipliedDetails(50);
     expect(result).toBe(Math.round(10 * 1000 * (50 / 100) * 1));
   });
 
   it('should calculate correctly for "per month" duration', () => {
-    component.pebForm.patchValue({ devCountControl: 12, devCostControl: 1200, durationControl: 'per month' });
+    component.pebForm.patchValue({
+      devCountControl: 12,
+      devCostControl: 1200,
+      durationControl: 'per month',
+    });
     const result = component.calculateMultipliedDetails(100);
     expect(result).toBe(Math.round(12 * 1200 * (100 / 100) * (1 / 12)));
   });
 
   it('should calculate correctly for "per quarter" duration', () => {
-    component.pebForm.patchValue({ devCountControl: 8, devCostControl: 2000, durationControl: 'per quarter' });
+    component.pebForm.patchValue({
+      devCountControl: 8,
+      devCostControl: 2000,
+      durationControl: 'per quarter',
+    });
     const result = component.calculateMultipliedDetails(25);
     expect(result).toBe(Math.round(8 * 2000 * (25 / 100) * (1 / 4)));
   });
 
   it('should return 0 when value is 0', () => {
-    component.pebForm.patchValue({ devCountControl: 10, devCostControl: 1000, durationControl: 'per year' });
+    component.pebForm.patchValue({
+      devCountControl: 10,
+      devCostControl: 1000,
+      durationControl: 'per year',
+    });
     expect(component.calculateMultipliedDetails(0)).toBe(0);
   });
 
@@ -414,13 +462,29 @@ describe('PebCalculatorComponent', () => {
 
   describe('formatCategoryScoresForCumulativeChart', () => {
     const scores = [
-      { temporalGroupingStartDate: '2024-01-01', overall: 20, speed: 5, quality: 8, efficiency: 7, productivity: 0 },
-      { temporalGroupingStartDate: '2024-02-01', overall: 25, speed: 6, quality: 9, efficiency: 10, productivity: 0 },
+      {
+        temporalGroupingStartDate: '2024-01-01',
+        overall: 20,
+        speed: 5,
+        quality: 8,
+        efficiency: 7,
+        productivity: 0,
+      },
+      {
+        temporalGroupingStartDate: '2024-02-01',
+        overall: 25,
+        speed: 6,
+        quality: 9,
+        efficiency: 10,
+        productivity: 0,
+      },
     ];
 
     it('should return empty array for empty input', () => {
       expect(component.formatCategoryScoresForCumulativeChart([])).toEqual([]);
-      expect(component.formatCategoryScoresForCumulativeChart(null)).toEqual([]);
+      expect(component.formatCategoryScoresForCumulativeChart(null)).toEqual(
+        [],
+      );
     });
 
     it('should build dataGroup excluding overall and date keys by default', () => {
@@ -436,7 +500,10 @@ describe('PebCalculatorComponent', () => {
     });
 
     it('should include only overall when showOverall is true', () => {
-      const result = component.formatCategoryScoresForCumulativeChart(scores, true);
+      const result = component.formatCategoryScoresForCumulativeChart(
+        scores,
+        true,
+      );
       const firstEntry = result[0].dataGroup[0];
       expect(firstEntry.value.length).toBe(1);
       expect(firstEntry.value[0].kpiGroup).toBe('overall');
@@ -444,7 +511,11 @@ describe('PebCalculatorComponent', () => {
 
     it('should attach forecasts when provided and valid', () => {
       const forecasts = [{ category: 'overall', value: 30 }];
-      const result = component.formatCategoryScoresForCumulativeChart(scores, true, forecasts);
+      const result = component.formatCategoryScoresForCumulativeChart(
+        scores,
+        true,
+        forecasts,
+      );
       expect(result[0].forecasts).toBeDefined();
       expect(result[0].forecasts.length).toBe(1);
       expect(result[0].forecasts[0].isForecast).toBe(true);
@@ -452,20 +523,32 @@ describe('PebCalculatorComponent', () => {
 
     it('should filter out forecasts with non-finite values', () => {
       const forecasts = [
-        { category: 'overall', value: NaN },
+        { category: 'overall', value: Number.NaN },
         { category: 'overall', value: 10 },
       ];
-      const result = component.formatCategoryScoresForCumulativeChart(scores, true, forecasts);
+      const result = component.formatCategoryScoresForCumulativeChart(
+        scores,
+        true,
+        forecasts,
+      );
       expect(result[0].forecasts.length).toBe(1);
     });
 
     it('should not attach forecasts key when forecasts array is empty', () => {
-      const result = component.formatCategoryScoresForCumulativeChart(scores, true, []);
+      const result = component.formatCategoryScoresForCumulativeChart(
+        scores,
+        true,
+        [],
+      );
       expect(result[0].forecasts).toBeUndefined();
     });
 
     it('should handle undefined forecasts gracefully', () => {
-      const result = component.formatCategoryScoresForCumulativeChart(scores, true, undefined);
+      const result = component.formatCategoryScoresForCumulativeChart(
+        scores,
+        true,
+        undefined,
+      );
       expect(result[0].forecasts).toBeUndefined();
     });
 
@@ -509,7 +592,11 @@ describe('PebCalculatorComponent', () => {
   // ─── resetForm ────────────────────────────────────────────────────────────
 
   it('should reset form to appConfig defaults and call calculatePEB', () => {
-    component.pebForm.patchValue({ devCountControl: 100, devCostControl: 500000, durationControl: 'per month' });
+    component.pebForm.patchValue({
+      devCountControl: 100,
+      devCostControl: 500000,
+      durationControl: 'per month',
+    });
     spyOn(component, 'calculatePEB');
 
     component.resetForm();
@@ -536,17 +623,30 @@ describe('PebCalculatorComponent', () => {
   describe('Filter Methods', () => {
     beforeEach(() => {
       component.items = [
-        { organizationEntityName: 'Project A', categoryScores: { overall: 1000 } },
-        { organizationEntityName: 'Project B', categoryScores: { overall: 2000 } },
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project B',
+          categoryScores: { overall: 2000 },
+        },
       ];
     });
 
     it('should generate column filter data correctly', () => {
       component.generateColumnFilterData();
 
-      expect(component.tableColumnData['organizationEntityName'].length).toBe(2);
-      expect(component.tableColumnData['organizationEntityName'][0]).toEqual({ name: 'Project A', value: 'Project A' });
-      expect(component.tableColumnData['categoryScores.overall'].length).toBe(2);
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        2,
+      );
+      expect(component.tableColumnData['organizationEntityName'][0]).toEqual({
+        name: 'Project A',
+        value: 'Project A',
+      });
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        2,
+      );
       expect(component.tableColumnForm['organizationEntityName']).toEqual([]);
       expect(component.tableColumnForm['categoryScores.overall']).toEqual([]);
     });
@@ -560,12 +660,22 @@ describe('PebCalculatorComponent', () => {
 
     it('should deduplicate filter options for repeated values', () => {
       component.items = [
-        { organizationEntityName: 'Project A', categoryScores: { overall: 1000 } },
-        { organizationEntityName: 'Project A', categoryScores: { overall: 1000 } },
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
+        {
+          organizationEntityName: 'Project A',
+          categoryScores: { overall: 1000 },
+        },
       ];
       component.generateColumnFilterData();
-      expect(component.tableColumnData['organizationEntityName'].length).toBe(1);
-      expect(component.tableColumnData['categoryScores.overall'].length).toBe(1);
+      expect(component.tableColumnData['organizationEntityName'].length).toBe(
+        1,
+      );
+      expect(component.tableColumnData['categoryScores.overall'].length).toBe(
+        1,
+      );
     });
 
     it('should set filteredColumn on onFilterClick', () => {
@@ -591,7 +701,11 @@ describe('PebCalculatorComponent', () => {
   describe('scroll tracking', () => {
     it('should track scroll at 25% threshold', () => {
       spyOnProperty(window, 'scrollY', 'get').and.returnValue(250);
-      spyOnProperty(document.documentElement, 'scrollHeight', 'get').and.returnValue(1100);
+      spyOnProperty(
+        document.documentElement,
+        'scrollHeight',
+        'get',
+      ).and.returnValue(1100);
       spyOnProperty(window, 'innerHeight', 'get').and.returnValue(100);
 
       window.dispatchEvent(new Event('scroll'));
@@ -601,7 +715,11 @@ describe('PebCalculatorComponent', () => {
 
     it('should not track the same threshold twice', () => {
       spyOnProperty(window, 'scrollY', 'get').and.returnValue(500);
-      spyOnProperty(document.documentElement, 'scrollHeight', 'get').and.returnValue(1100);
+      spyOnProperty(
+        document.documentElement,
+        'scrollHeight',
+        'get',
+      ).and.returnValue(1100);
       spyOnProperty(window, 'innerHeight', 'get').and.returnValue(100);
 
       window.dispatchEvent(new Event('scroll'));
@@ -620,8 +738,12 @@ describe('PebCalculatorComponent', () => {
     it('should call trackPebActiveTime with elapsed seconds when time > 0', () => {
       component['pebStartTime'] = Date.now() - 5000;
       component.ngOnDestroy();
-      expect(mockMetricsService.trackPebActiveTime).toHaveBeenCalledWith(jasmine.any(Number));
-      const seconds = (mockMetricsService.trackPebActiveTime as jasmine.Spy).calls.mostRecent().args[0];
+      expect(mockMetricsService.trackPebActiveTime).toHaveBeenCalledWith(
+        jasmine.any(Number),
+      );
+      const seconds = (
+        mockMetricsService.trackPebActiveTime as jasmine.Spy
+      ).calls.mostRecent().args[0];
       expect(seconds).toBeGreaterThan(0);
     });
 
@@ -640,7 +762,9 @@ describe('PebCalculatorComponent', () => {
 
     it('should unsubscribe sub$ on destroy if it exists', fakeAsync(() => {
       component.selectedType = 'scrum';
-      spyOn(mockHttpService, 'getAiUsagaStatsDetails').and.returnValue(of({}) as any);
+      spyOn(mockHttpService, 'getAiUsagaStatsDetails').and.returnValue(
+        of({}) as any,
+      );
       component['pendingApiCalls'] = 1;
       component.getAiUasgestatsDetails('level1');
       tick();

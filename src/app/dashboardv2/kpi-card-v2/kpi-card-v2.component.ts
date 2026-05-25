@@ -341,7 +341,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.onOpenFieldMappingDialog();
         },
-        disabled: this.disableSettings,
+        disabled: this.disableSettings || this.kpiData?.kpiId === 'kpi204',
       },
       {
         label: 'List View',
