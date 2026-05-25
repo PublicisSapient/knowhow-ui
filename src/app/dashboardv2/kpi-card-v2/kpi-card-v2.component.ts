@@ -848,6 +848,34 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       .find((ptl) => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
+  /**
+   * Transforms data for kpi202 by converting objects with 'text' and 'hyperlink' properties
+   * into formatted strings like "text: hyperlink".
+   * @param exportData - The array of issue data to transform
+   * @returns The transformed data
+   */
+  transformKpi202DataForExcel(exportData: any[]): any[] {
+    return exportData.map((row) => {
+      const transformedRow = { ...row };
+      Object.keys(transformedRow).forEach((key) => {
+        const value = transformedRow[key];
+        // Check if value is an array of objects with 'text' and 'hyperlink' properties
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0].hasOwnProperty('text') &&
+          value[0].hasOwnProperty('hyperlink')
+        ) {
+          // Transform array of objects into formatted string
+          transformedRow[key] = value
+            .map((item) => `${item.text}: ${item.hyperlink}`)
+            .join('\n');
+        }
+      });
+      return transformedRow;
+    });
+  }
+
   exportToExcel(KpiId?: any) {
     if (!!this.cardData) {
       let exportData = this.cardData['issueData'];
@@ -857,6 +885,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             x['Issue Type'].includes('Dependency') ||
             x['Issue Type'].includes('Risk'),
         );
+      }
+      // Transform kpi202 data for proper Excel export formatting
+      if (this.kpiData?.kpiId === 'kpi202') {
+        exportData = this.transformKpi202DataForExcel(exportData);
       }
       this.service.kpiExcelSubject.next({
         markerInfo: this.cardData?.dataGroup?.markerInfo,

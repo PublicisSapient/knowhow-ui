@@ -2806,4 +2806,204 @@ describe('KpiCardV2Component', () => {
       expect(result.actionPlan.length).toBe(1);
     });
   });
+
+  describe('transformKpi202DataForExcel', () => {
+    it('should transform objects with text and hyperlink properties into formatted strings', () => {
+      const exportData = [
+        {
+          Status: [{ text: 'Intake', hyperlink: '6.7 Days' }],
+          Count: 10,
+        },
+      ];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result[0].Status).toBe('Intake: 6.7 Days');
+      expect(result[0].Count).toBe(10);
+    });
+
+    it('should handle multiple items in array with line breaks', () => {
+      const exportData = [
+        {
+          Status: [
+            { text: 'Intake', hyperlink: '6.7 Days' },
+            { text: 'Testing', hyperlink: '3.2 Days' },
+          ],
+          Count: 20,
+        },
+      ];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result[0].Status).toBe('Intake: 6.7 Days\nTesting: 3.2 Days');
+      expect(result[0].Count).toBe(20);
+    });
+
+    it('should not transform properties that do not have text and hyperlink structure', () => {
+      const exportData = [
+        {
+          Name: 'Test',
+          RegularArray: ['item1', 'item2'],
+          PlainValue: 'value',
+        },
+      ];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result[0].Name).toBe('Test');
+      expect(result[0].RegularArray).toEqual(['item1', 'item2']);
+      expect(result[0].PlainValue).toBe('value');
+    });
+
+    it('should handle mixed data with transformed and untransformed fields', () => {
+      const exportData = [
+        {
+          Status: [{ text: 'Intake', hyperlink: '6.7 Days' }],
+          Name: 'Project A',
+          Count: 5,
+        },
+      ];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result[0].Status).toBe('Intake: 6.7 Days');
+      expect(result[0].Name).toBe('Project A');
+      expect(result[0].Count).toBe(5);
+    });
+
+    it('should handle empty array in export data', () => {
+      const exportData: any[] = [];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should preserve original data structure for non-kpi202 data', () => {
+      const exportData = [
+        {
+          IssueType: 'Bug',
+          Priority: 'High',
+          Status: 'Open',
+        },
+      ];
+
+      const result = component.transformKpi202DataForExcel(exportData);
+
+      expect(result[0].IssueType).toBe('Bug');
+      expect(result[0].Priority).toBe('High');
+      expect(result[0].Status).toBe('Open');
+    });
+  });
+
+  describe('exportToExcel', () => {
+    it('should transform kpi202 data before exporting to Excel', () => {
+      component.kpiData = { kpiId: 'kpi202', kpiDetail: {} };
+      component.cardData = {
+        issueData: [
+          {
+            Status: [{ text: 'Intake', hyperlink: '6.7 Days' }],
+            Count: 10,
+          },
+        ],
+        modalHeads: ['Status', 'Count'],
+        dataGroup: { markerInfo: [] },
+      };
+
+      const transformSpy = spyOn(
+        component,
+        'transformKpi202DataForExcel'
+      ).and.callThrough();
+      const serviceEmitSpy = spyOn(
+        sharedService.kpiExcelSubject,
+        'next'
+      );
+
+      component.exportToExcel();
+
+      expect(transformSpy).toHaveBeenCalled();
+      expect(serviceEmitSpy).toHaveBeenCalled();
+    });
+
+    it('should not transform data for non-kpi202 KPIs', () => {
+      component.kpiData = { kpiId: 'kpi72', kpiDetail: {} };
+      component.cardData = {
+        issueData: [{ IssueType: 'Bug', Priority: 'High' }],
+        modalHeads: ['IssueType', 'Priority'],
+        dataGroup: { markerInfo: [] },
+      };
+
+      const transformSpy = spyOn(
+        component,
+        'transformKpi202DataForExcel'
+      );
+      const serviceEmitSpy = spyOn(
+        sharedService.kpiExcelSubject,
+        'next'
+      );
+
+      component.exportToExcel();
+
+      expect(transformSpy).not.toHaveBeenCalled();
+      expect(serviceEmitSpy).toHaveBeenCalled();
+    });
+
+    it('should emit downloadExcel event after processing', () => {
+      component.kpiData = { kpiId: 'kpi202', kpiDetail: {} };
+      component.cardData = {
+        issueData: [
+          {
+            Status: [{ text: 'Intake', hyperlink: '6.7 Days' }],
+          },
+        ],
+        modalHeads: ['Status'],
+        dataGroup: { markerInfo: [] },
+      };
+
+      const emitSpy = spyOn(component.downloadExcel, 'emit');
+
+      component.exportToExcel();
+
+      expect(emitSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('should handle kpi176 filter data correctly', () => {
+      component.kpiData = { kpiId: 'kpi176', kpiDetail: {} };
+      component.cardData = {
+        issueData: [
+          { 'Issue Type': 'Dependency', Status: 'Open' },
+          { 'Issue Type': 'Risk', Status: 'Closed' },
+          { 'Issue Type': 'Bug', Status: 'Open' },
+        ],
+        modalHeads: ['Issue Type', 'Status'],
+        dataGroup: { markerInfo: [] },
+      };
+
+      const serviceEmitSpy = spyOn(
+        sharedService.kpiExcelSubject,
+        'next'
+      );
+
+      component.exportToExcel('kpi176');
+
+      expect(serviceEmitSpy).toHaveBeenCalled();
+      const callArgs = serviceEmitSpy.calls.mostRecent().args[0] as any;
+      expect(callArgs.excelData.length).toBe(2); // Only Dependency and Risk
+    });
+
+    it('should not export if cardData is not available', () => {
+      component.cardData = null;
+
+      const serviceEmitSpy = spyOn(
+        sharedService.kpiExcelSubject,
+        'next'
+      );
+      const emitSpy = spyOn(component.downloadExcel, 'emit');
+
+      component.exportToExcel();
+
+      expect(serviceEmitSpy).not.toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledWith(true);
+    });
+  });
 });
