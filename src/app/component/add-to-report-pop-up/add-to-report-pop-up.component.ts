@@ -26,12 +26,73 @@ export class AddToReportPopUpComponent implements AfterViewInit {
   constructor(private service: SharedService) {}
 
   ngOnChanges() {
-    this.reportObj.metadata.trendColors = this.removeDuplicateKeys(
-      this.reportObj.metadata.trendColors,
-    );
+    // Guard against cases where reportObj or its metadata may not yet be initialized
+    if (
+      this.reportObj &&
+      this.reportObj.metadata &&
+      this.reportObj.metadata.trendColors &&
+      typeof this.reportObj.metadata.trendColors === 'object'
+    ) {
+      try {
+        this.reportObj.metadata.trendColors = this.removeDuplicateKeys(
+          this.reportObj.metadata.trendColors,
+        );
+      } catch (e) {
+        // If canonicalization fails for some reason, leave trendColors as-is
+        console.warn('Failed to dedupe trendColors for report preview', e);
+      }
+    }
   }
 
   ngAfterViewInit() {}
+
+  /**
+   * Returns a preview chart data object suitable for the report preview.
+   * For multi-tab KPIs (kpi202), returns the selected tab wrapped in an array.
+   * For single-tab KPIs, returns the chart data as-is.
+   */
+  get previewChart() {
+    try {
+      if (!this.reportObj || !this.reportObj.chartData) {
+        return null;
+      }
+
+      const chartData = this.reportObj.chartData;
+      const selectedTab = this.reportObj?.metadata?.selectedTab;
+
+      // If chartData is an array of tab entries (multi-tab KPI like kpi202),
+      // return the selected tab wrapped in an array for the template to render
+      if (Array.isArray(chartData)) {
+        if (selectedTab) {
+          const found = chartData.find((c) => {
+            if (!c) return false;
+            const name = (c.tabName || '').toString().toLowerCase();
+            return name === selectedTab.toString().toLowerCase();
+          });
+          if (found) {
+            // Return as array so template loops through and renders the single selected tab
+            return [found];
+          }
+        }
+        // fallback: return first entry as array
+        if (chartData[0]) {
+          return [chartData[0]];
+        }
+        return null;
+      }
+
+      // If chartData is a wrapper with chartData property (common shape), return that
+      if (chartData && chartData.chartData) {
+        return chartData.chartData;
+      }
+
+      // otherwise return as provided
+      return chartData;
+    } catch (e) {
+      console.warn('Error computing previewChart', e);
+      return null;
+    }
+  }
 
   objectValues(obj): any[] {
     // return this.helperService.getObjectKeys(obj)
