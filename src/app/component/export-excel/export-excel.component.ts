@@ -181,7 +181,9 @@ export class ExportExcelComponent implements OnInit {
       rawExcelData.forEach((row) => {
         Object.keys(row).forEach((key) => {
           const matchingColumn = rawColumConfig.find(
-            (col) => col.columnName.replace(/\s+/g, '').toLowerCase() === key.replace(/\s+/g, '').toLowerCase()
+            (col) =>
+              col.columnName.replace(/\s+/g, '').toLowerCase() ===
+              key.replace(/\s+/g, '').toLowerCase(),
           );
           if (matchingColumn && matchingColumn.columnName !== key) {
             row[matchingColumn.columnName] = row[key];
