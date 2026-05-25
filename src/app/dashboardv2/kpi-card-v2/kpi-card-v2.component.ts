@@ -855,7 +855,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @returns The transformed data
    */
   transformKpi202DataForExcel(exportData: any[]): any[] {
-    return exportData.map((row) => {
+    console.log('transformKpi202DataForExcel called with data:', exportData);
+    const result = exportData.map((row) => {
       const transformedRow = { ...row };
       Object.keys(transformedRow).forEach((key) => {
         const value = transformedRow[key];
@@ -866,14 +867,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           value[0].hasOwnProperty('text') &&
           value[0].hasOwnProperty('hyperlink')
         ) {
+          console.log(`Transforming field ${key}:`, value);
           // Transform array of objects into formatted string
           transformedRow[key] = value
             .map((item) => `${item.text}: ${item.hyperlink}`)
             .join('\n');
+          console.log(`After transform, field ${key}:`, transformedRow[key]);
         }
       });
       return transformedRow;
     });
+    console.log('Final transformed data:', result);
+    return result;
   }
 
   exportToExcel(KpiId?: any) {
@@ -888,9 +893,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       // Transform kpi202 data for proper Excel export formatting
       if (this.kpiData?.kpiId === 'kpi202') {
-        console.log('Original export data for KPI202:', exportData);
+        console.log('Original export data for KPI202:', JSON.stringify(exportData));
         exportData = this.transformKpi202DataForExcel(exportData);
+        console.log('Transformed export data:', JSON.stringify(exportData));
       }
+      console.log('Emitting kpiExcelSubject with data:', { excelData: exportData });
       this.service.kpiExcelSubject.next({
         markerInfo: this.cardData?.dataGroup?.markerInfo,
         columns: this.cardData['modalHeads'],
