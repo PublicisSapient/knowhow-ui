@@ -372,7 +372,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.showComments = true;
           this.openCommentModal();
         },
-        disabled: this.kpiData?.kpiId === 'kpi202',
+        ...(this.kpiData?.kpiId === 'kpi202' ? { disabled: true } : {}),
       },
     ];
   }
