@@ -161,7 +161,6 @@ describe('PebCalculatorComponent', () => {
     spyOn(mockSharedService, 'getSelectedTab').and.returnValue('');
     spyOn(mockSharedService, 'setSelectedBoard');
 
-
     // Manually invoke the same logic the subscription runs
     const path = '/dashboard/iteration';
     let selectedTab = decodeURIComponent(path);
@@ -182,6 +181,7 @@ describe('PebCalculatorComponent', () => {
     const tabFromService = mockSharedService.getSelectedTab();
     expect(tabFromService).toBe('slingshot');
     flush();
+
     discardPeriodicTasks();
   }));
 
