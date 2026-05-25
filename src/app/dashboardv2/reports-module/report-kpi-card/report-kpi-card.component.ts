@@ -43,6 +43,26 @@ export class ReportKpiCardComponent {
   constructor(private kpiHelperService: KpiHelperService) {}
 
   /**
+   * Checks if an object is an array.
+   */
+  isArray(obj: any): boolean {
+    return Array.isArray(obj);
+  }
+
+  /**
+   * Checks if the array is a multi-tab array (elements have tabName and chartData).
+   */
+  isMultiTabArray(arr: any): boolean {
+    return (
+      Array.isArray(arr) &&
+      arr.length > 0 &&
+      arr[0] &&
+      typeof arr[0].tabName === 'string' &&
+      arr[0].chartData !== undefined
+    );
+  }
+
+  /**
    * Responds to changes in input properties.
    * Sorts colors, sets KPI filters, and updates chart type based on changes.
    *

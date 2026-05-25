@@ -86,7 +86,13 @@
                 <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date') || column.toLowerCase().includes('month') || column.toLowerCase().includes('time') || column.toLowerCase().includes('day') || column.toLowerCase().includes('week'))?'date': 'other'))">
                   <ng-container *ngSwitchCase="'array'">
                     <ng-container *ngFor="let data of rowData[column]">
-                      <a *ngIf="data?.hasOwnProperty('hyperlink') else dataWithOutHyperlink" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data['text']}}">{{data['text']}}</a>
+                      <!-- If data is an object with a 'hyperlink' property -->
+                      <ng-container *ngIf="typeOf(data) && data?.hasOwnProperty('hyperlink'); else dataWithOutHyperlink">
+                        <!-- hyperlink is a real URL → render as a clickable link -->
+                        <a *ngIf="checkIsItHyperlink(data['hyperlink'])" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank" aria-label="Link to {{data['text']}}">{{data['text']}}</a>
+                        <!-- hyperlink is NOT a URL (e.g. GroupMap value like "0.0 Days") → render as plain text -->
+                        <span *ngIf="!checkIsItHyperlink(data['hyperlink'])" class="column-content-spacing">{{data['text']}}{{data['hyperlink'] ? ': ' + data['hyperlink'] : ''}}</span>
+                      </ng-container>
                       <ng-template #dataWithOutHyperlink>
                          <span *ngIf="!checkIsItHyperlink(data)">{{data}}</span>
                          <span><a [href]="data" *ngIf="checkIsItHyperlink(data)" class="text-blue column-content-spacing" rel="noopener" target="_blank"  aria-label="Link to {{data}}">{{getHyperlinkDefectId(data)}}</a></span>
@@ -97,7 +103,8 @@
                     </ng-container>
                   </ng-container>
                   <ng-container *ngSwitchCase="'hyperlink'">
-                    <a [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank" aria-label="Link to {{rowData[column]['text']}}">{{rowData[column]['text']}}</a>
+                    <a *ngIf="checkIsItHyperlink(rowData[column]['hyperlink'])" [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank" aria-label="Link to {{rowData[column]['text']}}">{{rowData[column]['text']}}</a>
+                    <span *ngIf="!checkIsItHyperlink(rowData[column]['hyperlink'])" class="column-content-spacing">{{rowData[column]['text']}}{{rowData[column]['hyperlink'] ? ': ' + rowData[column]['hyperlink'] : ''}}</span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'sprintRating'">
                     <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
