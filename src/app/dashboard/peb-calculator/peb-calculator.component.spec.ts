@@ -181,7 +181,6 @@ describe('PebCalculatorComponent', () => {
     const tabFromService = mockSharedService.getSelectedTab();
     expect(tabFromService).toBe('slingshot');
     flush();
-
     discardPeriodicTasks();
   }));
 
