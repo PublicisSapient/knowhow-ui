@@ -599,11 +599,11 @@ export class MultilineV2Component implements OnChanges {
             return cssClass;
           })
           .style('left', (d, i) => {
-            return getXCoordinate(d, i) + xScale.bandwidth() / 2 + 'px';
+            return getXCoordinate(d, i) + xScale.bandwidth() / 2.5 + 'px';
           })
           .style(
             'top',
-            (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
+            (d) => yScale(Math.round(d.value * 100) / 100) - 15 + 'px',
           )
           .text((d) => {
             const val = Math.round(d.value * 100) / 100;
