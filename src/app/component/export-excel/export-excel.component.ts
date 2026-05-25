@@ -101,6 +101,10 @@ export class ExportExcelComponent implements OnInit {
       .subscribe((getData) => {
         if (this.sharedService.selectedTab === 'iteration') {
           getData = { ...getData, ...this.exportExcelRawVariable };
+          // For kpi202, use the transformed excelData from kpi-card-v2 component
+          if (kpiId === 'kpi202' && this.exportExcelRawVariable?.excelData) {
+            getData['excelData'] = this.exportExcelRawVariable.excelData;
+          }
         }
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (
@@ -150,16 +154,30 @@ export class ExportExcelComponent implements OnInit {
       const obj = {};
       for (const key in colData) {
         if (this.typeOf(colData[key])) {
-          obj[key] = [];
-          for (const y in colData[key]) {
-            //added check if valid url
-            if (typeof colData[key] === 'object') {
-              obj[key] = Object.values(colData[key]);
-            } else {
-              if (colData[key][y].includes('http')) {
-                obj[key].push({ text: y, hyperlink: colData[key][y] });
+          // Handle kpi202: if array contains objects with text and hyperlink properties,
+          // format them as "text: hyperlink" instead of creating hyperlink objects
+          if (
+            kpiId === 'kpi202' &&
+            Array.isArray(colData[key]) &&
+            colData[key].length > 0 &&
+            colData[key][0].hasOwnProperty('text') &&
+            colData[key][0].hasOwnProperty('hyperlink')
+          ) {
+            obj[key] = colData[key]
+              .map((item) => `${item.text}: ${item.hyperlink}`)
+              .join('\n');
+          } else {
+            obj[key] = [];
+            for (const y in colData[key]) {
+              //added check if valid url
+              if (typeof colData[key] === 'object') {
+                obj[key] = Object.values(colData[key]);
               } else {
-                obj[key].push(colData[key][y]);
+                if (colData[key][y].includes('http')) {
+                  obj[key].push({ text: y, hyperlink: colData[key][y] });
+                } else {
+                  obj[key].push(colData[key][y]);
+                }
               }
             }
           }

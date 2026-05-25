@@ -888,6 +888,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       // Transform kpi202 data for proper Excel export formatting
       if (this.kpiData?.kpiId === 'kpi202') {
+        console.log('Original export data for KPI202:', exportData);
         exportData = this.transformKpi202DataForExcel(exportData);
       }
       this.service.kpiExcelSubject.next({
