@@ -1837,7 +1837,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
@@ -2473,7 +2474,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     if (trendValueList?.length) {
       // get backup KPI filters
@@ -2694,7 +2696,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     if (trendValueList?.length > 0) {
       const filterPropArr = Object.keys(trendValueList[0])?.filter((prop) =>

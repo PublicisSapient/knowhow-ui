@@ -350,7 +350,8 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
                                           [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                           [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                          [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
+                                          [color]="chartColorList[kpi?.kpiId]"
+                                          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"></app-stacked-group-bar-chart>
                                       </ng-container>
 
                                       <ng-container *ngIf="!kpi202Switching && kpi202SelectedView === 'By Workflow Group'">
@@ -364,6 +365,7 @@
                                             [color]="chartColorList['kpi202']"
                                             [selectedtype]="selectedtype"
                                             [viewType]="showChart"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                             [board]="selectedTab">
                                           </app-multiline-v2>
                                         </ng-container>

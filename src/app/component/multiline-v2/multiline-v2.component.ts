@@ -693,18 +693,8 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', 'x-axis')
         .attr('transform', `translate(0, ${height - margin})`)
         .call(xAxis)
-        .call((g) => {
-          if (this.kpiId === 'kpi202_duplicate') {
-            g.selectAll('.tick text')
-              .attr('text-anchor', 'end')
-              .attr('transform', 'rotate(-45)')
-              .attr('dx', '-0.5em')
-              .attr('dy', '0.25em')
-              .style('font-size', '11px');
-          } else {
-            g.selectAll('.tick text').call(this.wrap, xScale.bandwidth());
-          }
-        });
+        .selectAll('.tick text')
+        .call(this.wrap, xScale.bandwidth());
 
       const XCaption = XCaptionSVG.append('text')
         .attr('x', width / 2 - 24)
