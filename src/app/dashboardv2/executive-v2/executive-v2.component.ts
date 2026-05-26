@@ -160,6 +160,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
   kpi202WorkflowOrder: string[] = [];
+  dataTypeDropdownOptions = [
+    { name: 'Aggregated', code: 'AGT' },
+    { name: 'Average', code: 'AVG' },
+  ];
+  selectedDataTypeForWorkflowGroup = { name: 'Aggregated', code: 'AGT' };
   private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
@@ -5830,6 +5835,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
+  get kpi202YCaption(): string {
+    return this.selectedDataTypeForWorkflowGroup?.code === 'AVG'
+      ? 'Average Time (Days)'
+      : 'Time (Days)';
+  }
+
   /**
    * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
    * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
@@ -5881,17 +5892,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       '#34495e',
     ];
 
+    const useAverage =
+      this.selectedDataTypeForWorkflowGroup?.code === 'AVG' ||
+      this.selectedDataTypeForWorkflowGroup?.name?.toLowerCase() === 'average';
+
     const lineValues = Array.from(aggregatedMap.entries()).map(
-      ([name, data], index) => ({
-        sSprintName: name,
-        value: Math.round(data.total * 100) / 100,
-        count: data.count,
-        filterType: data.filterType,
-        hoverValue: {},
-        xOrder: name,
-        xAxisTick: name,
-        color: defaultColors[index % defaultColors.length],
-      }),
+      ([name, data], index) => {
+        const rawValue = useAverage
+          ? data.count > 0
+            ? data.total / data.count
+            : data.total
+          : data.total;
+
+        return {
+          sSprintName: name,
+          value: Math.round(rawValue * 100) / 100,
+          count: data.count,
+          totalDays: Math.round(data.total * 100) / 100,
+          filterType: data.filterType,
+          isAverage: useAverage,
+          hoverValue: {},
+          xOrder: name,
+          xAxisTick: name,
+          color: defaultColors[index % defaultColors.length],
+        };
+      },
     );
 
     // Apply saved workflow order if available
@@ -5969,5 +5994,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (item) => item.label === this.currentBranch,
       );
     }
+  }
+
+  onSelectedDataTypeChange(eventValue) {
+    this.selectedDataTypeForWorkflowGroup = eventValue;
+    this.computeKpi202DuplicateChartData();
   }
 }

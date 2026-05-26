@@ -613,7 +613,11 @@ export class MultilineV2Component implements OnChanges {
                 if (ft.toLowerCase() === 'story') ft = 'Stories';
                 else if (!ft.endsWith('s')) ft += 's';
               }
-              return `${val} (${d.count} ${ft})`;
+              const totalDays =
+                d.isAverage && d.totalDays != null
+                  ? `, ${d.totalDays} Days`
+                  : '';
+              return `${val} (${d.count} ${ft}${totalDays})`;
             }
             return `${val}${
               showUnit ? ' ' + unitAbbs[showUnit?.toLowerCase()] : ''
@@ -689,8 +693,18 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', 'x-axis')
         .attr('transform', `translate(0, ${height - margin})`)
         .call(xAxis)
-        .selectAll('.tick text')
-        .call(this.wrap, xScale.bandwidth());
+        .call((g) => {
+          if (this.kpiId === 'kpi202_duplicate') {
+            g.selectAll('.tick text')
+              .attr('text-anchor', 'end')
+              .attr('transform', 'rotate(-45)')
+              .attr('dx', '-0.5em')
+              .attr('dy', '0.25em')
+              .style('font-size', '11px');
+          } else {
+            g.selectAll('.tick text').call(this.wrap, xScale.bandwidth());
+          }
+        });
 
       const XCaption = XCaptionSVG.append('text')
         .attr('x', width / 2 - 24)
@@ -932,7 +946,12 @@ export class MultilineV2Component implements OnChanges {
               if (ft.toLowerCase() === 'story') ft = 'Stories';
               else if (!ft.endsWith('s')) ft += 's';
             }
-            const countLabel = d.count != null ? ` (${d.count} ${ft})` : '';
+            const countLabel =
+              d.count != null
+                ? ` (${d.totalDays != null ? d.totalDays + ' Days, ' : ''}${
+                    d.count
+                  } ${ft})`
+                : '';
             const htmlString = `
               <div class="tooltip-header" style="font-weight:bold; margin-bottom:5px;">${d.sSprintName}</div>
               <div class="tooltip-body"><span style="font-weight:bold;">${d.value}${countLabel}</span></div>
