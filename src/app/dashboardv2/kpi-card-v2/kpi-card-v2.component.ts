@@ -211,74 +211,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         if (!this.kpiData?.kpiDetail) {
           return;
         }
-        const kpiFilters = this.kpiSelectedFilterObj[this.kpiData?.kpiId] || {};
-        const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
-
-        if (
-          kpiFilters &&
-          typeof kpiFilters === 'object' &&
-          !Array.isArray(kpiFilters)
-        ) {
-          for (const key in kpiFilters) {
-            const currentFilterArray = kpiFilters[key];
-            let targetValue;
-            if (
-              Array.isArray(currentFilterArray) &&
-              currentFilterArray.includes('Overall')
-            ) {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                targetValue = currentFilterArray[0];
-              } else {
-                if (kpiFilterType === 'multiselectdropdown') {
-                  targetValue = [];
-                } else {
-                  const filterIdx = parseInt(key.replace('filter', '')) - 1;
-                  if (this.dropdownArr?.[filterIdx]?.options?.length) {
-                    targetValue = this.dropdownArr[filterIdx].options[0];
-                  }
-                }
-              }
-            } else {
-              if (this.kpiData?.kpiId === 'kpi72') {
-                targetValue = Array.isArray(currentFilterArray)
-                  ? currentFilterArray[0]
-                  : currentFilterArray;
-              } else {
-                targetValue = currentFilterArray;
-              }
-            }
-
-            if (
-              JSON.stringify(this.filterOptions[key]) !==
-              JSON.stringify(targetValue)
-            ) {
-              this.filterOptions[key] = targetValue;
-            }
-          }
-        } else if (Array.isArray(kpiFilters)) {
-          if (
-            JSON.stringify(this.filterOptions['filter1']) !==
-            JSON.stringify(kpiFilters)
-          ) {
-            this.filterOptions = { filter1: kpiFilters };
-          }
-        }
-
-        // Robust initialization: Ensure all keys from dropdownArr are present in filterOptions
-        // This must happen after processing state to catch missing keys when state is {}
-        this.dropdownArr?.forEach((filter, idx) => {
-          const key = 'filter' + (idx + 1);
-          if (
-            !this.filterOptions.hasOwnProperty(key) ||
-            (kpiFilters && !kpiFilters.hasOwnProperty(key))
-          ) {
-            if (kpiFilterType === 'multiselectdropdown') {
-              this.filterOptions[key] = [];
-            } else if (filter?.options?.length) {
-              this.filterOptions[key] = filter.options[0];
-            }
-          }
-        });
+        this.initializeFilterOptions();
 
         if (
           this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
@@ -307,6 +240,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
+        this.initializeFilterOptions();
         this.cdr.detectChanges();
       }),
     );
@@ -331,6 +265,70 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }),
     );
+  }
+
+  private initializeFilterOptions(): void {
+    if (!this.kpiData?.kpiDetail) {
+      return;
+    }
+
+    const kpiFilters = this.kpiSelectedFilterObj[this.kpiData.kpiId] || {};
+    const kpiFilterType = this.kpiData.kpiDetail.kpiFilter?.toLowerCase();
+
+    if (kpiFilters && typeof kpiFilters === 'object') {
+      if (Array.isArray(kpiFilters)) {
+        if (kpiFilterType === 'multiselectdropdown') {
+          this.filterOptions['filter1'] = [...kpiFilters];
+        } else {
+          this.filterOptions['filter1'] = kpiFilters.length
+            ? kpiFilters[0]
+            : null;
+        }
+      } else {
+        for (const key in kpiFilters) {
+          const currentFilterArray = kpiFilters[key];
+          let targetValue;
+
+          if (
+            Array.isArray(currentFilterArray) &&
+            currentFilterArray.includes('Overall')
+          ) {
+            if (this.kpiData?.kpiId === 'kpi72') {
+              targetValue = currentFilterArray[0];
+            } else if (kpiFilterType === 'multiselectdropdown') {
+              targetValue = [];
+            } else {
+              const filterIdx = parseInt(key.replace('filter', '')) - 1;
+              targetValue = this.dropdownArr?.[filterIdx]?.options?.[0];
+            }
+          } else if (this.kpiData?.kpiId === 'kpi72') {
+            targetValue = Array.isArray(currentFilterArray)
+              ? currentFilterArray[0]
+              : currentFilterArray;
+          } else {
+            targetValue = currentFilterArray;
+          }
+
+          if (targetValue !== undefined) {
+            this.filterOptions[key] = targetValue;
+          }
+        }
+      }
+    }
+
+    this.dropdownArr?.forEach((filter, idx) => {
+      const key = 'filter' + (idx + 1);
+      if (
+        !this.filterOptions.hasOwnProperty(key) ||
+        (kpiFilters && !kpiFilters.hasOwnProperty(key))
+      ) {
+        if (kpiFilterType === 'multiselectdropdown') {
+          this.filterOptions[key] = [];
+        } else if (filter?.options?.length) {
+          this.filterOptions[key] = filter.options[0];
+        }
+      }
+    });
   }
 
   async initializeMenu() {
@@ -427,6 +425,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.checkIfViewer ||
       !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
+
+    if (changes['dropdownArr'] && changes['dropdownArr'].currentValue?.length) {
+      this.initializeFilterOptions();
+    }
 
     /** assign 1st value to radio button by default */
     if (
@@ -848,6 +850,39 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       .find((ptl) => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
+  /**
+   * Transforms data for kpi202 by converting objects with 'text' and 'hyperlink' properties
+   * into formatted strings like "text: hyperlink".
+   * @param exportData - The array of issue data to transform
+   * @returns The transformed data
+   */
+  transformKpi202DataForExcel(exportData: any[]): any[] {
+    console.log('transformKpi202DataForExcel called with data:', exportData);
+    const result = exportData.map((row) => {
+      const transformedRow = { ...row };
+      Object.keys(transformedRow).forEach((key) => {
+        const value = transformedRow[key];
+        // Check if value is an array of objects with 'text' and 'hyperlink' properties
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0].hasOwnProperty('text') &&
+          value[0].hasOwnProperty('hyperlink')
+        ) {
+          console.log(`Transforming field ${key}:`, value);
+          // Transform array of objects into formatted string
+          transformedRow[key] = value
+            .map((item) => `${item.text}: ${item.hyperlink}`)
+            .join('\n');
+          console.log(`After transform, field ${key}:`, transformedRow[key]);
+        }
+      });
+      return transformedRow;
+    });
+    console.log('Final transformed data:', result);
+    return result;
+  }
+
   exportToExcel(KpiId?: any) {
     if (!!this.cardData) {
       let exportData = this.cardData['issueData'];
@@ -858,6 +893,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             x['Issue Type'].includes('Risk'),
         );
       }
+      // Transform kpi202 data for proper Excel export formatting
+      if (this.kpiData?.kpiId === 'kpi202') {
+        console.log(
+          'Original export data for KPI202:',
+          JSON.stringify(exportData),
+        );
+        exportData = this.transformKpi202DataForExcel(exportData);
+        console.log('Transformed export data:', JSON.stringify(exportData));
+      }
+      console.log('Emitting kpiExcelSubject with data:', {
+        excelData: exportData,
+      });
       this.service.kpiExcelSubject.next({
         markerInfo: this.cardData?.dataGroup?.markerInfo,
         columns: this.cardData['modalHeads'],

@@ -148,6 +148,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi202ViewOptions = ['By Workflow Group', 'By Status'];
   kpi202SelectedView = 'By Workflow Group';
   kpi202Switching = false;
+  kpi204ViewOptions = ['By Range', 'By Sprint'];
+  kpi204SelectedView = 'By Range';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -160,6 +162,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
   kpi202WorkflowOrder: string[] = [];
+  dataTypeDropdownOptions = [
+    { name: 'Aggregated', code: 'AGT' },
+    { name: 'Average', code: 'AVG' },
+  ];
+  selectedDataTypeForWorkflowGroup = { name: 'Aggregated', code: 'AGT' };
   private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
@@ -1456,6 +1463,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (bool) {
       this.service.setKPIPostData(postData);
     }
+
+    const kpi204 = postData?.kpiList?.find((kpi) => kpi.kpiId === 'kpi204');
+    if (kpi204) {
+      kpi204['kpiSprintSwitch'] = this.kpi204SelectedView === 'By Sprint';
+    }
+
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
@@ -1470,6 +1483,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
 
+      console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -1832,7 +1846,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
@@ -2468,7 +2483,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     if (trendValueList?.length) {
       // get backup KPI filters
@@ -2689,7 +2705,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue
       ? this.allKpiArray[idx]?.thresholdValue
-      : null;
+      : this.updatedConfigGlobalData?.find((kpi) => kpi?.kpiId === kpiId)
+          ?.kpiDetail?.thresholdValue ?? null;
 
     if (trendValueList?.length > 0) {
       const filterPropArr = Object.keys(trendValueList[0])?.filter((prop) =>
@@ -5690,6 +5707,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }, 0);
   }
 
+  onKpi204ViewChange(selectedView: string): void {
+    this.kpi204SelectedView = selectedView;
+    const idx = this.ifKpiExist('kpi204');
+    if (idx >= 0) {
+      const postData = this.helperService.groupKpiFromMaster(
+        'Jira',
+        false,
+        this.updatedConfigGlobalData,
+        this.filterApplyData,
+        this.filterData,
+        ['kpi204'],
+        '',
+        '',
+      );
+      this.postJiraKpi(postData, 'jira', true);
+    }
+  }
+
   getkpi202Data(kpiId) {
     let durationChanged = false;
     const duration = Array.isArray(this.durationFilterKpi202)
@@ -5830,6 +5865,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
+  get kpi202YCaption(): string {
+    return this.selectedDataTypeForWorkflowGroup?.code === 'AVG'
+      ? 'Average Time (Days)'
+      : 'Time (Days)';
+  }
+
   /**
    * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
    * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
@@ -5881,17 +5922,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       '#34495e',
     ];
 
+    const useAverage =
+      this.selectedDataTypeForWorkflowGroup?.code === 'AVG' ||
+      this.selectedDataTypeForWorkflowGroup?.name?.toLowerCase() === 'average';
+
     const lineValues = Array.from(aggregatedMap.entries()).map(
-      ([name, data], index) => ({
-        sSprintName: name,
-        value: Math.round(data.total * 100) / 100,
-        count: data.count,
-        filterType: data.filterType,
-        hoverValue: {},
-        xOrder: name,
-        xAxisTick: name,
-        color: defaultColors[index % defaultColors.length],
-      }),
+      ([name, data], index) => {
+        const rawValue = useAverage
+          ? data.count > 0
+            ? data.total / data.count
+            : data.total
+          : data.total;
+
+        return {
+          sSprintName: name,
+          value: Math.round(rawValue * 100) / 100,
+          count: data.count,
+          totalDays: Math.round(data.total * 100) / 100,
+          filterType: data.filterType,
+          isAverage: useAverage,
+          hoverValue: {},
+          xOrder: name,
+          xAxisTick: name,
+          color: defaultColors[index % defaultColors.length],
+        };
+      },
     );
 
     // Apply saved workflow order if available
@@ -5969,5 +6024,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (item) => item.label === this.currentBranch,
       );
     }
+  }
+
+  onSelectedDataTypeChange(eventValue) {
+    this.selectedDataTypeForWorkflowGroup = eventValue;
+    this.computeKpi202DuplicateChartData();
   }
 }
