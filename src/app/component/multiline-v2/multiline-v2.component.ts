@@ -327,6 +327,8 @@ export class MultilineV2Component implements OnChanges {
         .select('#horizontalSVG')
         .select('tooltip-container')
         .remove();
+      d3.select(this.elem).selectAll('.sprint-legend-container').remove();
+      this.counter = 0;
       let formatedData;
       // if (this.board !== 'backlog') {
       formatedData = this.data[0]?.value?.map((details) => {
@@ -599,11 +601,11 @@ export class MultilineV2Component implements OnChanges {
             return cssClass;
           })
           .style('left', (d, i) => {
-            return getXCoordinate(d, i) + xScale.bandwidth() / 2 + 'px';
+            return getXCoordinate(d, i) + xScale.bandwidth() / 2.5 + 'px';
           })
           .style(
             'top',
-            (d) => yScale(Math.round(d.value * 100) / 100) + 10 + 'px',
+            (d) => yScale(Math.round(d.value * 100) / 100) - 15 + 'px',
           )
           .text((d) => {
             const val = Math.round(d.value * 100) / 100;
@@ -613,7 +615,11 @@ export class MultilineV2Component implements OnChanges {
                 if (ft.toLowerCase() === 'story') ft = 'Stories';
                 else if (!ft.endsWith('s')) ft += 's';
               }
-              return `${val} (${d.count} ${ft})`;
+              const totalDays =
+                d.isAverage && d.totalDays != null
+                  ? `, ${d.totalDays} Days`
+                  : '';
+              return `${val} (${d.count} ${ft}${totalDays})`;
             }
             return `${val}${
               showUnit ? ' ' + unitAbbs[showUnit?.toLowerCase()] : ''
@@ -932,7 +938,12 @@ export class MultilineV2Component implements OnChanges {
               if (ft.toLowerCase() === 'story') ft = 'Stories';
               else if (!ft.endsWith('s')) ft += 's';
             }
-            const countLabel = d.count != null ? ` (${d.count} ${ft})` : '';
+            const countLabel =
+              d.count != null
+                ? ` (${d.totalDays != null ? d.totalDays + ' Days, ' : ''}${
+                    d.count
+                  } ${ft})`
+                : '';
             const htmlString = `
               <div class="tooltip-header" style="font-weight:bold; margin-bottom:5px;">${d.sSprintName}</div>
               <div class="tooltip-body"><span style="font-weight:bold;">${d.value}${countLabel}</span></div>
