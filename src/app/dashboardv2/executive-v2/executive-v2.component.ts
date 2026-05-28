@@ -5711,16 +5711,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpi204SelectedView = selectedView;
     const idx = this.ifKpiExist('kpi204');
     if (idx >= 0) {
-      // Dynamic x-axis label based on selection
-      const selectedXAxisLabel =
-        selectedView === 'By Range' ? 'Range' : 'Sprint';
-      const kpi204 = this.allKpiArray[idx];
-      if (kpi204) {
-        kpi204.kpiDetail = kpi204.kpiDetail || {};
-        kpi204.kpiDetail.xaxisLabel = selectedXAxisLabel;
-      }
-      // -----------------------------------------
-
       const postData = this.helperService.groupKpiFromMaster(
         'Jira',
         false,

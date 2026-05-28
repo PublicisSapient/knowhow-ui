@@ -140,7 +140,7 @@
 
                                       <app-multiline-v2 [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
-                                        [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                        [xCaption]="kpi.kpiId === 'kpi204' ? (ifKpiExist('kpi204') >= 0 ? allKpiArray[ifKpiExist('kpi204')]?.labelXAxis : '') : (this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel)"
                                         [yCaption]="kpi?.kpiDetail?.yaxisLabel" [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
                                         [color]="chartColorList[kpi?.kpiId]" [selectedtype]="selectedtype"
                                         [viewType]="showChart" [board]="selectedTab"

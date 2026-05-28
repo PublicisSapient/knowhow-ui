@@ -327,6 +327,8 @@ export class MultilineV2Component implements OnChanges {
         .select('#horizontalSVG')
         .select('tooltip-container')
         .remove();
+      d3.select(this.elem).selectAll('.sprint-legend-container').remove();
+      this.counter = 0;
       let formatedData;
       // if (this.board !== 'backlog') {
       formatedData = this.data[0]?.value?.map((details) => {
