@@ -462,7 +462,8 @@ export class StackedGroupBarChartComponent
     const threshold = Number(this.thresholdValue);
 
     const isThresholdValid =
-      this.kpiId === 'kpi195' && Number.isFinite(threshold);
+      (this.kpiId === 'kpi195' || this.kpiId === 'kpi202') &&
+      Number.isFinite(threshold);
 
     const range = this.kpiId === 'kpi196' ? 5 : 50;
     const maxLimit = this.kpiId === 'kpi196' ? 100 : 500;

@@ -27,7 +27,16 @@ import { HelperService } from './helper.service';
 export class ExcelService {
   constructor(private injector: Injector) {}
 
-  generateExcelModalData(kpiData) {
+  /**
+   * KPI IDs whose {text, hyperlink} cell values represent plain-text labels + values
+   * (not real URLs) and must be rendered as plain text in Excel.
+   */
+  private static readonly KPI_PLAIN_TEXT_HYPERLINK = new Set([
+    'kpi202',
+    'kpi202_duplicate',
+  ]);
+
+  generateExcelModalData(kpiData, kpiId?: string) {
     const headerNames = [];
     const excelData = [];
 
@@ -44,7 +53,22 @@ export class ExcelService {
             const appendedRowData = [];
             if (Array.isArray(data[key])) {
               for (const cellData of data[key]) {
-                appendedRowData.push(cellData);
+                // For kpi202/kpi202_duplicate, {text, hyperlink} objects carry plain
+                // label+value pairs (e.g. "Intake: 6.7 Days"), not real URLs.
+                // Render them as plain text to avoid ExcelJS creating hyperlink cells.
+                if (
+                  ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId) &&
+                  cellData !== null &&
+                  typeof cellData === 'object' &&
+                  cellData.hasOwnProperty('text') &&
+                  cellData.hasOwnProperty('hyperlink')
+                ) {
+                  appendedRowData.push(
+                    `${cellData.text}: ${cellData.hyperlink}`,
+                  );
+                } else {
+                  appendedRowData.push(cellData);
+                }
               }
             } else {
               for (const datakey in data[key]) {
@@ -61,10 +85,29 @@ export class ExcelService {
             if (appendedRowData.length === 0) {
               rowData[key] = '';
             } else if (appendedRowData.length === 1) {
-              rowData[key] = appendedRowData[0];
+              // For kpi202/kpi202_duplicate, a single {text, hyperlink} item is a
+              // plain label+value pair — write it as plain text, not a hyperlink cell.
+              const single = appendedRowData[0];
+              rowData[key] =
+                ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId) &&
+                single !== null &&
+                typeof single === 'object' &&
+                single.hasOwnProperty('text') &&
+                single.hasOwnProperty('hyperlink')
+                  ? `${single.text}: ${single.hyperlink}`
+                  : single;
             } else {
-              rowData['rowSpan'] = appendedRowData.length;
-              rowData[key] = appendedRowData;
+              // If all items are plain strings (no real hyperlinks), join them into
+              // a single newline-separated cell value to match the UI display.
+              const allPlainText = appendedRowData.every(
+                (item) => typeof item === 'string',
+              );
+              if (allPlainText) {
+                rowData[key] = appendedRowData.join('\n');
+              } else {
+                rowData['rowSpan'] = appendedRowData.length;
+                rowData[key] = appendedRowData;
+              }
             }
           }
         }
@@ -76,7 +119,8 @@ export class ExcelService {
     }
   }
 
-  generateExcel(kpiData, kpiName, xCaption) {
+  generateExcel(kpiData, kpiName, xCaption, kpiId?: string) {
+    console.log('kpiData ', kpiData);
     //UTC to local timezpone conversion
     const helper = this.injector.get(HelperService); // on demand creating the dependency
     kpiData.excelData.forEach((element) => {
@@ -134,9 +178,19 @@ export class ExcelService {
                 k < excelData[worksheet.getColumn(j + 1).key].length;
                 k++
               ) {
+                const cellValue = excelData[worksheet.getColumn(j + 1).key][k];
+                // For kpi202/kpi202_duplicate, {text, hyperlink} objects are plain
+                // label+value pairs — write as plain text, not a hyperlink cell.
                 worksheet.getCell(
                   worksheet.getColumn(j + 1).letter + (lastRow + 1 + k),
-                ).value = excelData[worksheet.getColumn(j + 1).key][k];
+                ).value =
+                  ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId) &&
+                  cellValue !== null &&
+                  typeof cellValue === 'object' &&
+                  cellValue.hasOwnProperty('text') &&
+                  cellValue.hasOwnProperty('hyperlink')
+                    ? `${cellValue.text}: ${cellValue.hyperlink}`
+                    : cellValue;
               }
             }
           }
