@@ -225,7 +225,10 @@ export class ExportExcelComponent implements OnInit {
       const re = {};
       re['excelData'] = rawExcelData;
       re['columns'] = rawColumConfig.map((con) => con.columnName);
-      this.kpiExcelData = this.excelService.generateExcelModalData(re, this.modalDetails['kpiId']);
+      this.kpiExcelData = this.excelService.generateExcelModalData(
+        re,
+        this.modalDetails['kpiId'],
+      );
     }
     this.formatDate();
     this.selectedColumns = rawColumConfig
@@ -251,7 +254,10 @@ export class ExportExcelComponent implements OnInit {
       return obj;
     });
     const allColumnList = [...kpiObj['columns']];
-    this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj, this.modalDetails['kpiId']);
+    this.kpiExcelData = this.excelService.generateExcelModalData(
+      kpiObj,
+      this.modalDetails['kpiId'],
+    );
     return allColumnList;
   }
 
@@ -298,7 +304,12 @@ export class ExportExcelComponent implements OnInit {
   }
 
   exportExcel(kpiName) {
-    this.excelService.generateExcel(this.kpiExcelData, kpiName, this.xCaption, this.modalDetails['kpiId']);
+    this.excelService.generateExcel(
+      this.kpiExcelData,
+      kpiName,
+      this.xCaption,
+      this.modalDetails['kpiId'],
+    );
   }
 
   clearModalDataOnClose() {
@@ -366,7 +377,7 @@ export class ExportExcelComponent implements OnInit {
     const tableData = {};
 
     if (exportMode === 'all') {
-      console.log('this.kpiExcelData ', this.kpiExcelData)
+      console.log('this.kpiExcelData ', this.kpiExcelData);
       this.excelService.generateExcel(
         this.kpiExcelData,
         this.modalDetails['header'],

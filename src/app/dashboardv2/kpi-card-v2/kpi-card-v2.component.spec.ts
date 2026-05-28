@@ -2912,12 +2912,9 @@ describe('KpiCardV2Component', () => {
 
       const transformSpy = spyOn(
         component,
-        'transformKpi202DataForExcel'
+        'transformKpi202DataForExcel',
       ).and.callThrough();
-      const serviceEmitSpy = spyOn(
-        sharedService.kpiExcelSubject,
-        'next'
-      );
+      const serviceEmitSpy = spyOn(sharedService.kpiExcelSubject, 'next');
 
       component.exportToExcel();
 
@@ -2933,14 +2930,8 @@ describe('KpiCardV2Component', () => {
         dataGroup: { markerInfo: [] },
       };
 
-      const transformSpy = spyOn(
-        component,
-        'transformKpi202DataForExcel'
-      );
-      const serviceEmitSpy = spyOn(
-        sharedService.kpiExcelSubject,
-        'next'
-      );
+      const transformSpy = spyOn(component, 'transformKpi202DataForExcel');
+      const serviceEmitSpy = spyOn(sharedService.kpiExcelSubject, 'next');
 
       component.exportToExcel();
 
@@ -2979,10 +2970,7 @@ describe('KpiCardV2Component', () => {
         dataGroup: { markerInfo: [] },
       };
 
-      const serviceEmitSpy = spyOn(
-        sharedService.kpiExcelSubject,
-        'next'
-      );
+      const serviceEmitSpy = spyOn(sharedService.kpiExcelSubject, 'next');
 
       component.exportToExcel('kpi176');
 
@@ -2994,10 +2982,7 @@ describe('KpiCardV2Component', () => {
     it('should not export if cardData is not available', () => {
       component.cardData = null;
 
-      const serviceEmitSpy = spyOn(
-        sharedService.kpiExcelSubject,
-        'next'
-      );
+      const serviceEmitSpy = spyOn(sharedService.kpiExcelSubject, 'next');
       const emitSpy = spyOn(component.downloadExcel, 'emit');
 
       component.exportToExcel();

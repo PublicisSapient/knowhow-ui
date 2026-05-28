@@ -63,7 +63,9 @@ export class ExcelService {
                   cellData.hasOwnProperty('text') &&
                   cellData.hasOwnProperty('hyperlink')
                 ) {
-                  appendedRowData.push(`${cellData.text}: ${cellData.hyperlink}`);
+                  appendedRowData.push(
+                    `${cellData.text}: ${cellData.hyperlink}`,
+                  );
                 } else {
                   appendedRowData.push(cellData);
                 }
@@ -118,7 +120,7 @@ export class ExcelService {
   }
 
   generateExcel(kpiData, kpiName, xCaption, kpiId?: string) {
-    console.log('kpiData ', kpiData)
+    console.log('kpiData ', kpiData);
     //UTC to local timezpone conversion
     const helper = this.injector.get(HelperService); // on demand creating the dependency
     kpiData.excelData.forEach((element) => {
