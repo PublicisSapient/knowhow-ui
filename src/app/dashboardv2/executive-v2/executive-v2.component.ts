@@ -148,6 +148,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi202ViewOptions = ['By Workflow Group', 'By Status'];
   kpi202SelectedView = 'By Workflow Group';
   kpi202Switching = false;
+  kpi204ViewOptions = ['By Range', 'By Sprint'];
+  kpi204SelectedView = 'By Range';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -1461,6 +1463,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (bool) {
       this.service.setKPIPostData(postData);
     }
+
+    const kpi204 = postData?.kpiList?.find((kpi) => kpi.kpiId === 'kpi204');
+    if (kpi204) {
+      kpi204['kpiSprintSwitch'] = this.kpi204SelectedView === 'By Sprint';
+    }
+
     if (
       this.selectedTab !== 'release' &&
       this.selectedTab !== 'backlog' &&
@@ -1475,6 +1483,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
 
+      console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -5696,6 +5705,34 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpi202SelectedView = selectedView;
       this.kpi202Switching = false;
     }, 0);
+  }
+
+  onKpi204ViewChange(selectedView: string): void {
+    this.kpi204SelectedView = selectedView;
+    const idx = this.ifKpiExist('kpi204');
+    if (idx >= 0) {
+      // Dynamic x-axis label based on selection
+      const selectedXAxisLabel =
+        selectedView === 'By Range' ? 'Range' : 'Sprint';
+      const kpi204 = this.allKpiArray[idx];
+      if (kpi204) {
+        kpi204.kpiDetail = kpi204.kpiDetail || {};
+        kpi204.kpiDetail.xaxisLabel = selectedXAxisLabel;
+      }
+      // -----------------------------------------
+
+      const postData = this.helperService.groupKpiFromMaster(
+        'Jira',
+        false,
+        this.updatedConfigGlobalData,
+        this.filterApplyData,
+        this.filterData,
+        ['kpi204'],
+        '',
+        '',
+      );
+      this.postJiraKpi(postData, 'jira', true);
+    }
   }
 
   getkpi202Data(kpiId) {

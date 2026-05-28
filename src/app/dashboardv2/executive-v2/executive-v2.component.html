@@ -129,6 +129,15 @@
 
                                   <ng-container *ngSwitchCase="'line'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
+
+                                      @if (kpi.kpiId === 'kpi204') {
+                                        <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                          <p-selectButton [options]="kpi204ViewOptions"
+                                            [ngModel]="kpi204SelectedView"
+                                            (onChange)="onKpi204ViewChange($event.value)"></p-selectButton>
+                                        </div>
+                                      }
+
                                       <app-multiline-v2 [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
@@ -325,7 +334,8 @@
                                   </ng-container>
 
                                   <ng-container *ngSwitchCase="'stacked-bar-chart'">
-                                    <ng-container *ngIf="kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot'; else defaultStackedBarChart">
+
+                                    @if (kpi.kpiId === 'kpi202' && selectedTab?.toLowerCase() === 'slingshot') {
                                       <div class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton [options]="kpi202ViewOptions" [ngModel]="kpi202SelectedView" (onChange)="onKpi202ViewChange($event.value)"></p-selectButton>
                                       </div>
@@ -340,21 +350,20 @@
                                         </div>
                                       }
 
-                                      <ng-container *ngIf="kpi202Switching">
+                                      @if (kpi202Switching) {
                                         <p-skeleton width="100%" height="200px" borderRadius="6px"></p-skeleton>
-                                      </ng-container>
+                                      }
 
-                                      <ng-container *ngIf="!kpi202Switching && kpi202SelectedView === 'By Status'">
+                                      @if (!kpi202Switching && kpi202SelectedView === 'By Status') {
                                         <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                           [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                           [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
                                           [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                           [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                           [color]="chartColorList[kpi?.kpiId]"
-                                          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"></app-stacked-group-bar-chart>
-                                      </ng-container>
-
-                                      <ng-container *ngIf="!kpi202Switching && kpi202SelectedView === 'By Workflow Group'">
+                                          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]">
+                                        </app-stacked-group-bar-chart>
+                                      } @else if (!kpi202Switching && kpi202SelectedView === 'By Workflow Group') {
                                         <ng-container *ngIf="kpiChartData['kpi202_duplicate']?.length > 0; else noDataAccess">
                                           <app-multiline-v2
                                             [data]="kpiChartData['kpi202_duplicate']"
@@ -369,17 +378,17 @@
                                             [board]="selectedTab">
                                           </app-multiline-v2>
                                         </ng-container>
-                                      </ng-container>
-                                    </ng-container>
-
-                                    <ng-template #defaultStackedBarChart>
+                                      }
+                                    } @else {
                                       <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                         [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                         [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                        [color]="chartColorList[kpi?.kpiId]"></app-stacked-group-bar-chart>
-                                    </ng-template>
+                                        [color]="chartColorList[kpi?.kpiId]">
+                                      </app-stacked-group-bar-chart>
+                                    }
+
                                   </ng-container>
 
                                   <app-multiline-v2 *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"

@@ -563,12 +563,14 @@
 }
 
 /* KPI202 specific styles */
-:host ::ng-deep #kpi202 .kpi-filter {
+:host ::ng-deep #kpi202 .kpi-filter,
+:host ::ng-deep #kpi204 .kpi-filter {
   justify-content: right;
 }
 
-:host ::ng-deep #kpi202 .p-dropdown.p-component {
-  width: 150px;
+:host ::ng-deep #kpi202 .p-dropdown.p-component,
+:host ::ng-deep #kpi204 .p-dropdown.p-component {
+  width: 175px;
   height: 32px;
 }
 
@@ -577,6 +579,12 @@
   #kpi202
   .p-dropdown.p-component
   .p-overlay-content
+  .p-dropdown-panel,
+:host
+  ::ng-deep
+  #kpi204
+  .p-dropdown.p-component
+  .p-overlay-content
   .p-dropdown-panel {
-  min-width: 175px !important;
+  min-width: 200px !important;
 }
