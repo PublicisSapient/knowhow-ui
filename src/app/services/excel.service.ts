@@ -73,10 +73,14 @@ export class ExcelService {
             } else {
               for (const datakey in data[key]) {
                 if (data[key][datakey]) {
-                  appendedRowData.push({
-                    text: datakey,
-                    hyperlink: data[key][datakey],
-                  });
+                  if (ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId)) {
+                    appendedRowData.push(`${datakey}: ${data[key][datakey]}`);
+                  } else {
+                    appendedRowData.push({
+                      text: datakey,
+                      hyperlink: data[key][datakey],
+                    });
+                  }
                 } else {
                   appendedRowData.push(datakey);
                 }
