@@ -359,9 +359,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled:
-          !this.kpiData?.kpiDetail?.chartType ||
-          this.kpiData?.kpiId === 'kpi204',
+        disabled: !this.kpiData?.kpiDetail?.chartType,
       },
       {
         label: 'Comments',
@@ -1354,7 +1352,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       filterApplyData: this.filterApplyData,
       kpiSelectedFilterObj: this.kpiSelectedFilterObj[this.kpiData?.kpiId],
       yAxis: this.yAxis,
-      xAxis: this.kpiData.kpiDetail.xaxisLabel,
+      xAxis:
+        this.kpiData.kpiId === 'kpi204'
+          ? this.xCaption
+          : this.kpiData.kpiDetail.xaxisLabel,
       chartColorList: this.chartColorList || {},
       kpiThresholdObj: this.kpiThresholdObj,
       capturedAt: formattedDate,
