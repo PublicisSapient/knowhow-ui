@@ -384,8 +384,8 @@ export class StackedGroupBarChartComponent
       (containerNode.offsetHeight || 400) - legendHeight - 30;
 
     // Use 12 to naturally make the bars thinner and points closer, fitting more data per scroll view
-    const minItemsForScroll = 12;
-    let extraWidthFactor = 1.2;
+    const minItemsForScroll = 25;
+    let extraWidthFactor = 1.3;
     let useScroll = false;
 
     // Enable native horizontal scroll specifically for KPIs where requested

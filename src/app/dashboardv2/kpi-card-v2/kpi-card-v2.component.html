@@ -471,7 +471,7 @@
       <app-add-to-report-pop-up [reportObj]="reportObj"
       [createNewReportTemplate]="createNewReportTemplate"
       [existingReportData]="existingReportData" [reportName]="reportName"
-      [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel"></app-add-to-report-pop-up>
+      [xAxisLabel]="kpiData?.kpiId === 'kpi204' ? xCaption : xAxisLabel" [yAxisLabel]="yAxisLabel"></app-add-to-report-pop-up>
     </div>
   </ng-template>
   <ng-template pTemplate="footer">
