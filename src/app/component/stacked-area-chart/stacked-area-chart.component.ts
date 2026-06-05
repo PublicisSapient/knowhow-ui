@@ -71,27 +71,53 @@ export class StackedAreaChartComponent
     if (this.data[0]) {
       keys = Object.keys(this.data[0]?.value);
     }
-    let yMax = 0;
-    const keyWiseYMax = {};
-    for (let i = 0; i < keys.length; i++) {
-      keyWiseYMax[keys[i]] = 0;
-    }
-    /** calculating yMax and extracting keys */
+    let maxVal = 0;
+    /** calculating maxVal (the maximum stacked value) and extracting keys */
     this.data.forEach((x) => {
       for (const item in x.value) {
         if (keys.indexOf(item) == -1) {
           keys.push(item);
-          keyWiseYMax[item] = 0;
-        }
-        if (keyWiseYMax[item] < x.value[item]) {
-          keyWiseYMax[item] = x.value[item];
         }
       }
+      let sum = 0;
+      if (x.value) {
+        for (const item in x.value) {
+          sum += x.value[item] || 0;
+        }
+      }
+      if (sum > maxVal) {
+        maxVal = sum;
+      }
     });
-    for (const key in keyWiseYMax) {
-      yMax += keyWiseYMax[key];
+
+    let yMax = 0;
+    if (maxVal === 0) {
+      yMax = 10;
+    } else {
+      const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
+      const normalized = maxVal / magnitude;
+      let niceNormalized = 10;
+      if (normalized <= 1.2) {
+        niceNormalized = 1.5;
+      } else if (normalized <= 1.5) {
+        niceNormalized = 2.0;
+      } else if (normalized <= 2.0) {
+        niceNormalized = 2.5;
+      } else if (normalized <= 2.5) {
+        niceNormalized = 3.0;
+      } else if (normalized <= 3.0) {
+        niceNormalized = 4.0;
+      } else if (normalized <= 4.0) {
+        niceNormalized = 5.0;
+      } else if (normalized <= 5.0) {
+        niceNormalized = 6.0;
+      } else if (normalized <= 6.0) {
+        niceNormalized = 8.0;
+      } else if (normalized <= 8.0) {
+        niceNormalized = 10.0;
+      }
+      yMax = niceNormalized * magnitude;
     }
-    yMax += 200;
 
     /**adding missing issues with value of 0 */
     const data = this.data.map((item) => {

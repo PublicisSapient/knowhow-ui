@@ -110,6 +110,35 @@ describe('StackedAreaChartComponent', () => {
       expect(paths.size()).toBeGreaterThan(0);
     });
 
+    it('should calculate yMax dynamically based on data values and round up to next suitable interval', () => {
+      component.data = [
+        {
+          date: '2024-01-01',
+          value: {
+            Issues: 70,
+            Bugs: 50,
+          },
+        },
+        {
+          date: '2024-01-02',
+          value: {
+            Issues: 70,
+            Bugs: 50,
+          },
+        },
+      ];
+      component.draw();
+      const paths = d3.select(component.elem).selectAll('path');
+      let foundExpectedCoordinate = false;
+      paths.each(function (this: any) {
+        const dAttr = d3.select(this).attr('d');
+        if (dAttr && dAttr.includes('45.6')) {
+          foundExpectedCoordinate = true;
+        }
+      });
+      expect(foundExpectedCoordinate).toBeTrue();
+    });
+
     it('should use unique clipPath ID', () => {
       component.draw();
       const clipPath = d3.select(component.elem).select('clipPath');
