@@ -167,6 +167,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     { name: 'Average', code: 'AVG' },
   ];
   selectedDataTypeForWorkflowGroup = { name: 'Aggregated', code: 'AGT' };
+  selectedDataTypeForCycleTimeTrend = { name: 'Aggregated', code: 'AGT' };
   private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
@@ -2138,6 +2139,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     } else {
       this.kpiChartData[kpiId] = [];
+    }
+
+    // kpi204-specific: If 'Average' selection is made, calculate and plot the average values
+    // using the values from the API response divided by the corresponding Issue Count.
+    if (kpiId === 'kpi204' && this.kpiChartData[kpiId]) {
+      const useAverage =
+        this.selectedDataTypeForCycleTimeTrend?.code === 'AVG' ||
+        this.selectedDataTypeForCycleTimeTrend?.name?.toLowerCase() ===
+          'average';
+      if (useAverage) {
+        this.kpiChartData[kpiId].forEach((projectData: any) => {
+          if (projectData?.value && Array.isArray(projectData.value)) {
+            projectData.value.forEach((point: any) => {
+              const issueCount =
+                point.hoverValue?.['Issue Count'] !== undefined
+                  ? point.hoverValue?.['Issue Count']
+                  : point.hoverValue?.['IssueCount'];
+              if (issueCount && issueCount > 0) {
+                const avg = Number(point.value) / issueCount;
+                const roundedAvg = Math.round(avg * 100) / 100;
+                point.value = roundedAvg;
+                point.data = String(roundedAvg);
+              }
+            });
+          }
+        });
+      }
     }
 
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
@@ -6034,8 +6062,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedDataTypeChange(eventValue) {
-    this.selectedDataTypeForWorkflowGroup = eventValue;
-    this.computeKpi202DuplicateChartData();
+  onSelectedDataTypeChange(eventValue, kpiId) {
+    if (kpiId === 'kpi202') {
+      this.selectedDataTypeForWorkflowGroup = eventValue;
+      this.computeKpi202DuplicateChartData();
+    } else if (kpiId === 'kpi204') {
+      // Set the selected data type for the kpi204 Cycle Time Trend dropdown
+      // and recalculate the chart data based on the latest API response.
+      this.selectedDataTypeForCycleTimeTrend = eventValue;
+      const idx = this.ifKpiExist(kpiId);
+      if (idx >= 0) {
+        this.getChartData(kpiId, idx, '');
+      }
+    }
   }
 }

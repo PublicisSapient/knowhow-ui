@@ -15709,4 +15709,69 @@ describe('ExecutiveV2Component', () => {
       ]);
     });
   });
+
+  describe('KPI 204 Average and View Selection', () => {
+    it('should calculate average for kpi204 in getChartData when average is selected', () => {
+      const kpiId = 'kpi204';
+      component.allKpiArray = [
+        {
+          kpiId,
+          trendValueList: [
+            {
+              filter1: 'Overall',
+              filter2: 'Bug',
+              value: [
+                {
+                  data: 'KnowHOW',
+                  value: [
+                    {
+                      data: '4406.9',
+                      sSprintID: '< 6 Months',
+                      sSprintName: '< 6 Months',
+                      hoverValue: { 'Issue Count': 276 },
+                      date: '< 6 Months',
+                      kpiGroup: 'Overall#Bug',
+                      value: 4406.9,
+                      sprojectName: 'KnowHOW',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
+      component.kpiSelectedFilterObj[kpiId] = {
+        filter1: ['Overall'],
+        filter2: ['Bug'],
+      };
+      component.selectedDataTypeForCycleTimeTrend = {
+        name: 'Average',
+        code: 'AVG',
+      };
+
+      component.getChartData(kpiId, 0, '');
+
+      // 4406.9 / 276 = 15.967... => rounds to 15.97
+      expect(component.kpiChartData[kpiId][0].value[0].value).toBe(15.97);
+      expect(component.kpiChartData[kpiId][0].value[0].data).toBe('15.97');
+    });
+
+    it('should trigger getChartData on onSelectedDataTypeChange for kpi204', () => {
+      const kpiId = 'kpi204';
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      spyOn(component, 'getChartData');
+
+      component.onSelectedDataTypeChange(
+        { name: 'Average', code: 'AVG' },
+        kpiId,
+      );
+
+      expect(component.selectedDataTypeForCycleTimeTrend).toEqual({
+        name: 'Average',
+        code: 'AVG',
+      });
+      expect(component.getChartData).toHaveBeenCalledWith(kpiId, 0, '');
+    });
+  });
 });
