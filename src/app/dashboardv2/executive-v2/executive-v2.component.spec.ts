@@ -15710,6 +15710,12 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
+  // Comment block for KPI 204 test cases:
+  // These tests verify that:
+  // 1. The average values for kpi204 are calculated correctly using (value / Issue Count)
+  //    and properly rounded to 2 decimal places when 'Average' is selected.
+  // 2. The dropdown selection event onSelectedDataTypeChange updates the component state
+  //    and calls getChartData to re-render the chart with correct metrics.
   describe('KPI 204 Average and View Selection', () => {
     it('should calculate average for kpi204 in getChartData when average is selected', () => {
       const kpiId = 'kpi204';
