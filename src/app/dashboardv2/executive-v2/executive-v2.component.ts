@@ -1484,6 +1484,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
+      const kpi148 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi148');
+      if (this.selectedTab === 'slingshot' && kpi148) {
+        this.postJiraKPIForBacklog(postData, source);
+        return;
+      }
+
       this.jiraKpiRequest = this.httpService
         .postKpi(postData, source)
         .subscribe(
@@ -1619,6 +1625,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForBacklog(postData, source) {
+    console.log('postData for Non-trend Jira KPI:', postData); // Debug log to check the postData being sent
+    console.log('selected tab for Non-trend Jira KPI:', this.selectedTab); // Debug log to check the postData being sent
     this.jiraKpiRequest = this.httpService
       .postKpiNonTrend(postData, source)
       .subscribe(
