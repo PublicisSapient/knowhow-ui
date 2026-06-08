@@ -136,6 +136,13 @@
                                             [ngModel]="kpi204SelectedView"
                                             (onChange)="onKpi204ViewChange($event.value)"></p-selectButton>
                                         </div>
+                                        <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                          <p-dropdown
+                                            [options]="dataTypeDropdownOptions"
+                                            [(ngModel)]="selectedDataTypeForCycleTimeTrend"
+                                            optionLabel="name"
+                                            (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                        </div>
                                       }
 
                                       <app-multiline-v2 [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -346,7 +353,7 @@
                                             [options]="dataTypeDropdownOptions"
                                             [(ngModel)]="selectedDataTypeForWorkflowGroup"
                                             optionLabel="name"
-                                            (onChange)="onSelectedDataTypeChange($event.value)" />
+                                            (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
                                         </div>
                                       }
 

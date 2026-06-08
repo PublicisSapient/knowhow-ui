@@ -75,9 +75,9 @@ export class AddToReportPopUpComponent implements AfterViewInit {
           }
         }
         // fallback: return first entry as array
-        if (chartData[0]) {
-          return [chartData[0]];
-        }
+        // if (chartData[0]) {
+        //   return [chartData[0]];
+        // }
         return null;
       }
 
