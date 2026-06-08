@@ -485,7 +485,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       // TODO: Disabled for KPI202 until it's stable
       // if (
       //   this.selectedTab === 'slingshot' &&
-      //   this.kpiData?.kpiId === 'kpi202'
+      //   this.kpiData?.kpiId === 'kpi148'
       // ) {
       //   this.menuItems = this.menuItems.filter(
       //     (item) => item.label !== 'Include in Report',

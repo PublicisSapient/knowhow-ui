@@ -1261,7 +1261,10 @@ export class GroupedColumnPlusLineChartV2Component
               const tick = d3.select(this);
               tick.attr(
                 'transform',
-                () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)',
+                () =>
+                  'translate(' +
+                  (x1(element.data) + barWidth / 2 - x0.bandwidth() / 2) +
+                  ',0)',
               );
             });
 
@@ -1271,7 +1274,10 @@ export class GroupedColumnPlusLineChartV2Component
               const tick = d3.select(this);
               tick.attr(
                 'transform',
-                () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)',
+                () =>
+                  'translate(' +
+                  (x1(element.data) + barWidth / 2 - x0.bandwidth() / 2) +
+                  ',0)',
               );
             });
         });
