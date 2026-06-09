@@ -168,6 +168,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ];
   selectedDataTypeForWorkflowGroup = { name: 'Aggregated', code: 'AGT' };
   selectedDataTypeForCycleTimeTrend = { name: 'Aggregated', code: 'AGT' };
+  // kpi205-specific: Tracks the selected Aggregated/Average dropdown option
+  // for the Flow Efficiency (kpi205) grouped-column-plus-line chart.
+  selectedDataTypeForFlowEfficiency = { name: 'Aggregated', code: 'AGT' };
   private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
@@ -1485,8 +1488,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
-      const kpi148 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi148');
-      if (this.selectedTab === 'slingshot' && kpi148) {
+      const kpi206 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi206');
+      if (this.selectedTab === 'slingshot' && kpi206) {
         this.postJiraKPIForBacklog(postData, source);
         return;
       }
@@ -2168,6 +2171,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
+    // kpi205-specific: After chart data is set (Aggregated bars + Average lineValue),
+    // compute the 'Average' line chart data so multiline-v2 can render it
+    // when the user switches the dropdown to 'Average'.
+    if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
+      this.computeKpi205LineChartData();
+    }
+
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       if (
         this.getChartType(kpiId) !== 'progressbar' &&
@@ -2643,7 +2653,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.colorObj &&
       Object.keys(this.colorObj)?.length > 0 &&
-      !['kpi161', 'kpi146', 'kpi148', 'kpi169'].includes(kpiId)
+      !['kpi161', 'kpi146', 'kpi148', 'kpi169', 'kpi206'].includes(kpiId)
     ) {
       this.kpiChartData[kpiId] = this.generateColorObj(
         kpiId,
@@ -4181,7 +4191,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
           this.kpiStatusCodeArr[kpi.kpiId] === '201' ||
           this.kpiStatusCodeArr[kpi.kpiId] === '203') &&
-        (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146')
+        (kpi.kpiId === 'kpi148' ||
+          kpi.kpiId === 'kpi146' ||
+          kpi.kpiId === 'kpi206')
       ) {
         if (this.kpiChartData[kpi.kpiId]?.length) {
           return true;
@@ -6074,6 +6086,39 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (idx >= 0) {
         this.getChartData(kpiId, idx, '');
       }
+    } else if (kpiId === 'kpi205') {
+      // kpi205-specific: Update the Flow Efficiency dropdown selection
+      // and recompute the line chart data for the Average view.
+      // No new API call is needed — line values are already in the existing response.
+      this.selectedDataTypeForFlowEfficiency = eventValue;
+      this.computeKpi205LineChartData();
     }
+  }
+
+  /**
+   * kpi205-specific: Computes the Average line chart data for kpi205 (Flow Efficiency).
+   *
+   * The API response contains both bar (value) and line (lineValue) data points.
+   * This method extracts `lineValue` from each data point and maps it to `value`
+   * so that app-multiline-v2 can render the Average view correctly.
+   *
+   * The result is stored in kpiChartData['kpi205_line'] to avoid mutating
+   * the raw aggregated data used by the bar chart.
+   */
+  computeKpi205LineChartData(): void {
+    const raw = this.kpiChartData['kpi205'];
+    if (!raw?.length) {
+      this.kpiChartData['kpi205_line'] = [];
+      return;
+    }
+    // Map lineValue → value for each data point so multiline-v2 can render it.
+    // lineValue holds the Average metric; value holds the Aggregated metric.
+    this.kpiChartData['kpi205_line'] = raw.map((project: any) => ({
+      ...project,
+      value: (project.value || []).map((point: any) => ({
+        ...point,
+        value: point.lineValue !== undefined ? point.lineValue : 0,
+      })),
+    }));
   }
 }

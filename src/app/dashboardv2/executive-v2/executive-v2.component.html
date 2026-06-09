@@ -99,7 +99,9 @@
                         [xCaption]="kpi.kpiId === 'kpi204' ? (ifKpiExist('kpi204') >= 0 ? allKpiArray[ifKpiExist('kpi204')]?.labelXAxis : '') : (this.filterApplyData?.selectedMap['date'] && this.filterApplyData?.selectedMap['date'][0] ? this.filterApplyData?.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel)"
                         [kpiTitle]="kpi?.kpiName" [kpiRecommData]= kpiRecommData[kpi?.kpiId]
                         [kpi202DuplicateChartData]="kpi?.kpiId === 'kpi202' ? kpiChartData['kpi202_duplicate'] : null"
-                        [kpi202SelectedView]="kpi?.kpiId === 'kpi202' ? kpi202SelectedView : null">
+                        [kpi202SelectedView]="kpi?.kpiId === 'kpi202' ? kpi202SelectedView : null"
+                        [kpi205LineChartData]="kpi?.kpiId === 'kpi205' ? kpiChartData['kpi205_line'] : null"
+                        [kpi205SelectedView]="kpi?.kpiId === 'kpi205' ? selectedDataTypeForFlowEfficiency?.code : null">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
                             <div [ngSwitch]="kpi?.kpiDetail?.chartType">
@@ -180,24 +182,63 @@
 
                                   <ng-container *ngSwitchCase="'grouped_column_plus_line'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
-                                      <app-grouped-column-plus-line-chart-v2 [data]="kpiChartData[kpi?.kpiId]"
-                                        [lineChart]="kpi?.kpiDetail?.lineChart"
-                                        [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                        [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                        [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
-                                        [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
-                                        [selectedtype]="selectedtype" [viewType]="showChart"
-                                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
-                                        [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG" [board]="selectedTab"
-                                        [kpiId]="kpi?.kpiId">
-                                      </app-grouped-column-plus-line-chart-v2>
+
+                                      <!-- kpi205-specific: Aggregated/Average dropdown for Flow Efficiency.
+                                           Aggregated shows bar chart only; Average shows line chart only. -->
+                                      @if (kpi.kpiId === 'kpi205') {
+                                        <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                          <p-dropdown
+                                            [options]="dataTypeDropdownOptions"
+                                            [(ngModel)]="selectedDataTypeForFlowEfficiency"
+                                            optionLabel="name"
+                                            (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                        </div>
+                                      }
+
+                                      <!-- For non-kpi205, always render; for kpi205 only render when Aggregated is selected.
+                                           lineChart is forced to false for kpi205 so only bars are shown. -->
+                                      @if (kpi.kpiId !== 'kpi205' || selectedDataTypeForFlowEfficiency?.code === 'AGT') {
+                                        <app-grouped-column-plus-line-chart-v2
+                                          [data]="kpiChartData[kpi?.kpiId]"
+                                          [lineChart]="kpi.kpiId === 'kpi205' ? false : kpi?.kpiDetail?.lineChart"
+                                          [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
+                                          [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
+                                          [selectedtype]="selectedtype" [viewType]="showChart"
+                                          [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                                          [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG" [board]="selectedTab"
+                                          [kpiId]="kpi?.kpiId">
+                                        </app-grouped-column-plus-line-chart-v2>
+                                      }
+
+                                      <!-- kpi205 Average: render the line chart using lineValue data
+                                           precomputed in kpiChartData['kpi205_line'] by computeKpi205LineChartData(). -->
+                                      @if (kpi.kpiId === 'kpi205' && selectedDataTypeForFlowEfficiency?.code === 'AVG') {
+                                        <app-multiline-v2
+                                          [data]="kpiChartData['kpi205_line']"
+                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                          [name]="kpi?.kpiName"
+                                          [kpiId]="kpi?.kpiId"
+                                          [color]="chartColorList[kpi?.kpiId]"
+                                          [selectedtype]="selectedtype"
+                                          [viewType]="showChart"
+                                          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                          [board]="selectedTab"
+                                          [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                                          [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+                                        </app-multiline-v2>
+                                      }
+
                                     </ng-container>
                                     <ng-container *ngIf="!checkIfZeroData(kpi)">
                                       <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                       </ng-container>
                                     </ng-container>
                                   </ng-container>
+
 
                                   <ng-container *ngSwitchCase="'scatter'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">

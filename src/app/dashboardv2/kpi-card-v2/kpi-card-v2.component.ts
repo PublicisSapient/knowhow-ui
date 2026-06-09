@@ -184,6 +184,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpi202DuplicateChartData: any;
   /** kpi202-specific: currently selected view ('By Status' | 'By Workflow Group') */
   @Input() kpi202SelectedView: string;
+  /** kpi205-specific: precomputed line chart data for the "Average" view */
+  @Input() kpi205LineChartData: any;
+  /** kpi205-specific: currently selected dropdown code ('AGT' | 'AVG') */
+  @Input() kpi205SelectedView: string;
 
   constructor(
     public service: SharedService,
@@ -1431,6 +1435,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           ? this.currentChartData.chartData
           : this.kpiChartData;
         // chartType stays 'stacked-bar-chart' as set from kpiDetail
+      }
+    }
+
+    // kpi205-specific: Preserve the selected Aggregated/Average mode in the report.
+    // If Average (AVG) is selected, switch chartType to 'line' and use the precomputed
+    // line chart data so report-kpi-card renders app-multiline-v2 (line only).
+    // If Aggregated (AGT), chartType stays 'grouped_column_plus_line' and the bar chart renders.
+    if (this.kpiData?.kpiId === 'kpi205') {
+      const selectedMode = this.kpi205SelectedView || 'AGT';
+      metaDataObj['kpi205SelectedView'] = selectedMode;
+
+      if (selectedMode === 'AVG') {
+        chartDataForReport = this.kpi205LineChartData || [];
+        metaDataObj.chartType = 'line';
+      } else {
+        // Aggregated — bar chart only (lineChart forced false in the KPI view)
+        chartDataForReport = this.kpiChartData;
       }
     }
 
