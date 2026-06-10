@@ -1489,7 +1489,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
       const kpi206 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi206');
-      if (this.selectedTab === 'slingshot' && kpi206) {
+      const kpi207 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi207');
+      if (this.selectedTab === 'slingshot' && (kpi206 || kpi207)) {
         this.postJiraKPIForBacklog(postData, source);
         return;
       }
