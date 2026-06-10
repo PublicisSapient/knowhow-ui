@@ -1487,10 +1487,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
 
-      console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
       const kpi206 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi206');
       const kpi207 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi207');
-      if (this.selectedTab === 'slingshot' && (kpi206 || kpi207)) {
+      // kpi206 and kpi207 use the non-trend endpoint regardless of tab,
+      // because their trendValueList is {date, value:{}} (not sprint-series),
+      // which is only returned by postKpiNonTrend
+      if (kpi206 || kpi207) {
         this.postJiraKPIForBacklog(postData, source);
         return;
       }
@@ -1630,8 +1632,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForBacklog(postData, source) {
-    console.log('postData for Non-trend Jira KPI:', postData); // Debug log to check the postData being sent
-    console.log('selected tab for Non-trend Jira KPI:', this.selectedTab); // Debug log to check the postData being sent
     this.jiraKpiRequest = this.httpService
       .postKpiNonTrend(postData, source)
       .subscribe(
@@ -2587,9 +2587,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               (x) => x['filter'] === valToCompare,
             );
           } else {
-            this.kpiChartData[kpiId] = trendValueList?.filter(
-              (x) => x['filter'] === valToCompare,
-            )[0]?.value;
+            this.kpiChartData[kpiId] =
+              trendValueList?.filter((x) => x['filter'] === valToCompare)[0]
+                ?.value ?? [];
           }
         }
       } else {
@@ -2598,9 +2598,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (x) => x['filter'] === 'Overall',
           );
         } else {
-          this.kpiChartData[kpiId] = trendValueList?.filter(
-            (x) => x['filter'] === 'Overall',
-          )[0]?.value;
+          // Prefer the 'Overall' entry; fall back to the first entry's value
+          // so kpi206 (stacked-area) always gets a non-undefined array
+          this.kpiChartData[kpiId] =
+            trendValueList?.find((x) => x['filter'] === 'Overall')?.value ??
+            trendValueList?.[0]?.value ??
+            [];
         }
       }
     } else if (
@@ -2654,7 +2657,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.colorObj &&
       Object.keys(this.colorObj)?.length > 0 &&
-      !['kpi161', 'kpi146', 'kpi148', 'kpi169', 'kpi206'].includes(kpiId)
+      !['kpi161', 'kpi146', 'kpi148', 'kpi169', 'kpi206', 'kpi207'].includes(
+        kpiId,
+      )
     ) {
       this.kpiChartData[kpiId] = this.generateColorObj(
         kpiId,
@@ -3168,7 +3173,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createAllKpiArray(data) {
     for (const key in data) {
-      console.log('data key', data[key]);
       if (data[key]?.kpiId === 'kpi202') {
         const kpi202DuplicateData = JSON.parse(JSON.stringify(data[key]));
         kpi202DuplicateData.kpiId = 'kpi202_duplicate';
@@ -4194,7 +4198,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiStatusCodeArr[kpi.kpiId] === '203') &&
         (kpi.kpiId === 'kpi148' ||
           kpi.kpiId === 'kpi146' ||
-          kpi.kpiId === 'kpi206')
+          kpi.kpiId === 'kpi206' ||
+          kpi.kpiId === 'kpi207')
       ) {
         if (this.kpiChartData[kpi.kpiId]?.length) {
           return true;
