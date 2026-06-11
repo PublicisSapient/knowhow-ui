@@ -178,6 +178,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
   hasBaseUrl = false;
+  kpi205AvgChartData: object = {};
 
   monthlyMetrics: MetricItem[] = [
     { label: 'Total PRs', value: 35, trend: 'neutral' },
@@ -6119,12 +6120,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     // Map lineValue → value for each data point so multiline-v2 can render it.
     // lineValue holds the Average metric; value holds the Aggregated metric.
+    // hoverValue is replaced with { 'Average Velocity': lineValue } so the
+    // multiline-v2 tooltip shows the correct label instead of the Aggregated keys.
     this.kpiChartData['kpi205_line'] = raw.map((project: any) => ({
       ...project,
-      value: (project.value || []).map((point: any) => ({
-        ...point,
-        value: point.lineValue !== undefined ? point.lineValue : 0,
-      })),
+      value: (project.value || []).map((point: any) => {
+        const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
+        return {
+          ...point,
+          value: avgVal,
+          hoverValue: { 'Average Velocity': avgVal },
+        };
+      }),
+    }));
+    const { forecasts, ...updatedKpiChartDataAvgKpi205 } =
+      this.kpiChartData['kpi205_line'][0];
+    const kpi205AvgChartData = [updatedKpiChartDataAvgKpi205];
+    this.kpi205AvgChartData = kpi205AvgChartData.map((item) => ({
+      ...item,
+      value: item.value.filter(
+        (valueItem) => valueItem.sSprintName !== 'Forecast',
+      ), // Exclude forecast points from the Average line chart
     }));
   }
 }

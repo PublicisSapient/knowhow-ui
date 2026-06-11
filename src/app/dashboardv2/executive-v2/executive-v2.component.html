@@ -217,7 +217,7 @@
                                            precomputed in kpiChartData['kpi205_line'] by computeKpi205LineChartData(). -->
                                       @if (kpi.kpiId === 'kpi205' && selectedDataTypeForFlowEfficiency?.code === 'AVG') {
                                         <app-multiline-v2
-                                          [data]="kpiChartData['kpi205_line']"
+                                          [data]="kpi205AvgChartData"
                                           [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                           [name]="kpi?.kpiName"
