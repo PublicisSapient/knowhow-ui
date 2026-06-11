@@ -228,7 +228,8 @@
                                           [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                           [board]="selectedTab"
                                           [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
-                                          [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+                                          [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
+                                          [unit]="kpi?.kpiDetail?.kpiUnit">
                                         </app-multiline-v2>
                                       }
 
@@ -423,7 +424,8 @@
                                             [selectedtype]="selectedtype"
                                             [viewType]="showChart"
                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                            [board]="selectedTab">
+                                            [board]="selectedTab"
+                                            [unit]="kpi?.kpiDetail?.kpiUnit">
                                           </app-multiline-v2>
                                         </ng-container>
                                       }

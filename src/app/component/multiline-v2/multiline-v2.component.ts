@@ -395,7 +395,8 @@ export class MultilineV2Component implements OnChanges {
       const kpiId = this.kpiId;
       const showPercent = false;
       const showWeek = false;
-      const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
+      const showUnit =
+        this.unit && this.unit?.toLowerCase() !== 'number' ? this.unit : '';
       const board = this.board;
       const sprintList = data[0]?.value
         ?.filter((details) => details != null)
@@ -1061,6 +1062,7 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add circles (data) on the line */
       if (this.kpiId !== 'kpi202_duplicate') {
+        console.log(this.kpiId);
         lines
           .selectAll('circle-group')
           .data(data)
@@ -1077,9 +1079,11 @@ export class MultilineV2Component implements OnChanges {
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', function (event, d) {
+            console.log('d ', d);
             if (d?.isForecast) return;
             const topValue = 80;
             if (d.hoverValue) {
+              console.log('if');
               div
                 .transition()
                 .duration(200)
@@ -1099,12 +1103,15 @@ export class MultilineV2Component implements OnChanges {
                   )}` +
                     ' : ' +
                     "<span class='toolTipValue'> " +
-                    `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                    `${Math.round(d.value * 100) / 100}${
+                      showUnit ? ' ' + showUnit : ''
+                    }` +
                     '</span>',
                 )
                 .style('left', xPosition - 80 + 'px')
                 // .style('top', yScale(d.value) - topValue + 'px');
                 .style('top', yPosition + 20 + 'px');
+              console.log('d.hoverValue ', d.hoverValue);
               for (const hoverData in d.hoverValue) {
                 div
                   .append('p')
@@ -1309,7 +1316,6 @@ export class MultilineV2Component implements OnChanges {
 
   getFormatedDateBasedOnType(date, xCaptionType) {
     const xCaption = xCaptionType?.toLowerCase();
-    console.log(xCaption);
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 

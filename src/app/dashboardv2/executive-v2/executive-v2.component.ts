@@ -6120,8 +6120,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     // Map lineValue → value for each data point so multiline-v2 can render it.
     // lineValue holds the Average metric; value holds the Aggregated metric.
-    // hoverValue is replaced with { 'Average Velocity': lineValue } so the
-    // multiline-v2 tooltip shows the correct label instead of the Aggregated keys.
+    // hoverValue is set to an empty object so the multiline-v2 tooltip shows only
+    // the sprint name + value header line, without redundant extra rows.
     this.kpiChartData['kpi205_line'] = raw.map((project: any) => ({
       ...project,
       value: (project.value || []).map((point: any) => {
@@ -6129,7 +6129,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         return {
           ...point,
           value: avgVal,
-          hoverValue: { 'Average Velocity': avgVal },
+          hoverValue: {},
         };
       }),
     }));
