@@ -100,13 +100,12 @@
     </div>
 
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
-      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
-         [ngClass]="{
+      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'" [ngClass]="{
     'hidden': selectedTab?.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
     'table-layout-fix': kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
   }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
-      <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
+      <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end kpi-filter-dropdown">
         <ng-container *ngFor="let filter of dropdownArr; let k = index; trackBy: trackByFilter">
           <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length"
                       [options]="filter?.options"
