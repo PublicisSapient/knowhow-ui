@@ -247,8 +247,8 @@
 }
 
 :host .kpi-menu-container {
-  position: absolute;
-  right: 20px;
+  position: relative;
+  display: inline-block;
 }
 
 .disable-setting-icon {
@@ -595,4 +595,13 @@
 :host ::ng-deep #kpi206 .stacked-area-chart,
 :host ::ng-deep #kpi207 .stacked-area-chart {
   margin-top: 70px;
+}
+
+.kpi-options {
+  display: block;
+}
+.kpi-expand-icon {
+  display: inline-block;
+  margin-right: 15px;
+  cursor: pointer;
 }
