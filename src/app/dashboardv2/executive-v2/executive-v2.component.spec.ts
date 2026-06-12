@@ -13499,7 +13499,9 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'createTrendsData');
     spyOn(helperService, 'applyAggregationLogic');
     component.getChartDataForBacklog('kpi124', 0, 'sum');
-    expect(component.kpiChartData['kpi124']).toBeUndefined();
+    // When the selected filter keys (f1, f2) don't match any trendValueList filter property,
+    // the method falls through to the else branch and initialises kpiChartData to an empty array.
+    expect(component.kpiChartData['kpi124']).toEqual([]);
   });
 
   it('should get chart data when have one filter', () => {
