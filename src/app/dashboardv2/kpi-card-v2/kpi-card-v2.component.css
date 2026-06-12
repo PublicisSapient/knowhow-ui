@@ -588,3 +588,11 @@
   .p-dropdown-panel {
   min-width: 200px !important;
 }
+
+:host ::ng-deep #kpi203 .multiline-chart {
+  margin-top: 40px;
+}
+:host ::ng-deep #kpi206 .stacked-area-chart,
+:host ::ng-deep #kpi207 .stacked-area-chart {
+  margin-top: 70px;
+}

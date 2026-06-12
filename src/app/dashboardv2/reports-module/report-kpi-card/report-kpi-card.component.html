@@ -264,9 +264,10 @@
 
           <ng-container *ngSwitchCase="'grouped_column_plus_line'">
             <ng-container>
+              <!-- kpi205 Aggregated: bar chart only (lineChart forced false, matching the KPI view behaviour) -->
               <app-grouped-column-plus-line-chart-v2
                 [data]="currentChartData"
-                [lineChart]="kpiData?.lineChart"
+                [lineChart]="kpiData?.kpiId === 'kpi205' ? false : kpiData?.lineChart"
                 [isXaxisGroup]="kpiData?.isXaxisGroup"
                 [unit]="kpiData?.kpiUnit"
                 [xCaption]="kpiData?.xaxisLabel"

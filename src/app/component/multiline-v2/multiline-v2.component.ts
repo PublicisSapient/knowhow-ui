@@ -122,11 +122,11 @@ export class MultilineV2Component implements OnChanges {
     }
   }
 
-  flattenData(data) {
+  flattenData(data: any[]) {
     const sprintMap = new Map();
     let sprintCounter = 1;
 
-    data.forEach((project) => {
+    data.forEach((project: { data: string; value: any[] }) => {
       const projectName = project.data.trim();
       project.value.forEach((sprint, index) => {
         if (sprint == null) {
@@ -167,13 +167,15 @@ export class MultilineV2Component implements OnChanges {
     return Array.from(sprintMap.values());
   }
 
-  renderSprintsLegend(data, xAxisCaption) {
+  renderSprintsLegend(data: any[], xAxisCaption: string) {
     this.counter++;
     if (this.counter === 1) {
-      const legendData = data.map((item) => ({
-        sprintNumber: item.sprintNumber,
-        sprintLabel: item.sprints.join(', '),
-      }));
+      const legendData = data.map(
+        (item: { sprintNumber: any; sprints: any[] }) => ({
+          sprintNumber: item.sprintNumber,
+          sprintLabel: item.sprints.join(', '),
+        }),
+      );
 
       // Select the body and insert the legend container at the top
       const body = d3.select(this.elem);
@@ -393,11 +395,20 @@ export class MultilineV2Component implements OnChanges {
       const kpiId = this.kpiId;
       const showPercent = false;
       const showWeek = false;
-      const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
+      const showUnit =
+        this.unit && this.unit?.toLowerCase() !== 'number' ? this.unit : '';
       const board = this.board;
       const sprintList = data[0]?.value
         ?.filter((details) => details != null)
         ?.map((details) => details.date || details?.sortSprint);
+      // When on slingshot tab and any sprint name is short, use sprint names
+      // as x-axis labels instead of numeric indices
+      const currentTab = this.service.getSelectedTab()?.toLowerCase();
+      const useSprintNameLabels =
+        currentTab === 'slingshot' &&
+        data[0]?.value
+          ?.filter((d) => d != null)
+          ?.some((d) => (d?.sSprintName ? d.sSprintName.length < 10 : false));
       const unitAbbs = {
         hours: 'Hrs',
         sp: 'SP',
@@ -479,32 +490,30 @@ export class MultilineV2Component implements OnChanges {
 
       let xScale;
 
+      // Build x domain values depending on configuration
+      let xDomainValues;
       if (kpiId === 'kpi997') {
-        xScale = d3
-          .scaleBand()
-          .domain([...sprintList])
-          .range([0, width])
-          .padding(0);
+        xDomainValues = [...sprintList];
       } else {
-        xScale = d3
-          .scaleBand()
-          .rangeRound([0, width])
-          .padding(0)
-          .domain(
-            data[maxObjectNo].value?.map(function (d, i) {
-              if (d == null) {
-                return i + 1;
-              }
-              let returnObj = '';
-              if (board == 'dora') {
-                returnObj = d.date;
-              } else {
-                returnObj = d.xOrder || i + 1;
-              }
-              return returnObj;
-            }),
-          );
+        xDomainValues = data[maxObjectNo].value?.map(function (d, i) {
+          if (d == null) {
+            return i + 1;
+          }
+          if (board == 'dora') {
+            return d.date;
+          }
+          if (useSprintNameLabels) {
+            return d.date || d.sSprintName || d.xOrder || i + 1;
+          }
+          return d.xOrder || i + 1;
+        });
       }
+
+      xScale = d3
+        .scaleBand()
+        .rangeRound([0, width])
+        .padding(0)
+        .domain(xDomainValues);
       const getXCoordinate = (point, index) => {
         if (point == null) {
           return xScale(index + 1);
@@ -513,6 +522,10 @@ export class MultilineV2Component implements OnChanges {
           return xScale(point.date);
         } else if (kpiId === 'kpi997') {
           return xScale(point.date || point.sortSprint);
+        } else if (useSprintNameLabels) {
+          return xScale(
+            point.date || point.sSprintName || point.xOrder || index + 1,
+          );
         } else {
           return xScale(point.xOrder || index + 1);
         }
@@ -1049,6 +1062,7 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add circles (data) on the line */
       if (this.kpiId !== 'kpi202_duplicate') {
+        console.log(this.kpiId);
         lines
           .selectAll('circle-group')
           .data(data)
@@ -1065,9 +1079,11 @@ export class MultilineV2Component implements OnChanges {
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', function (event, d) {
+            console.log('d ', d);
             if (d?.isForecast) return;
             const topValue = 80;
             if (d.hoverValue) {
+              console.log('if');
               div
                 .transition()
                 .duration(200)
@@ -1087,12 +1103,15 @@ export class MultilineV2Component implements OnChanges {
                   )}` +
                     ' : ' +
                     "<span class='toolTipValue'> " +
-                    `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                    `${Math.round(d.value * 100) / 100}${
+                      showUnit ? ' ' + showUnit : ''
+                    }` +
                     '</span>',
                 )
                 .style('left', xPosition - 80 + 'px')
                 // .style('top', yScale(d.value) - topValue + 'px');
                 .style('top', yPosition + 20 + 'px');
+              console.log('d.hoverValue ', d.hoverValue);
               for (const hoverData in d.hoverValue) {
                 div
                   .append('p')
@@ -1150,7 +1169,24 @@ export class MultilineV2Component implements OnChanges {
             !(viewType === 'large' && selectedProjectCount === 1)
           ) {
             const textElement = this.getElementsByTagName('text');
-            const point = data[0].value[dataObj - 1];
+            let point;
+            // When using sprint name labels the tick value is the label itself
+            if (useSprintNameLabels) {
+              point = data[0].value.find(
+                (p) =>
+                  (p && (p.date || p.sortSprint || p.sSprintName)) === dataObj,
+              );
+              if (!point) {
+                const idx = parseInt(dataObj, 10);
+                if (!isNaN(idx)) point = data[0].value[idx - 1];
+              }
+            } else {
+              const idx =
+                typeof dataObj === 'number'
+                  ? dataObj - 1
+                  : parseInt(dataObj, 10) - 1;
+              point = data[0].value[idx];
+            }
             const fallbackLabel = point?.xAxisTick || dataObj;
             textElement[0].textContent = point?.isForecast
               ? point?.xAxisTick || point?.xName || 'Forecast'
