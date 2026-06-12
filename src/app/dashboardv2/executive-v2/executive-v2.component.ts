@@ -168,6 +168,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ];
   selectedDataTypeForWorkflowGroup = { name: 'Aggregated', code: 'AGT' };
   selectedDataTypeForCycleTimeTrend = { name: 'Aggregated', code: 'AGT' };
+  // kpi205-specific: Tracks the selected Aggregated/Average dropdown option
+  // for the Flow Efficiency (kpi205) grouped-column-plus-line chart.
+  selectedDataTypeForFlowEfficiency = { name: 'Aggregated', code: 'AGT' };
   private kpi202WorkflowOrderFetched = false;
 
   private destroy$ = new Subject<void>();
@@ -175,6 +178,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   recommendationsComponent: ElementRef;
   floatingRecommendation: boolean = false;
   hasBaseUrl = false;
+  kpi205AvgChartData: object = {};
 
   monthlyMetrics: MetricItem[] = [
     { label: 'Total PRs', value: 35, trend: 'neutral' },
@@ -1484,9 +1488,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         kpi202['filterDuration'] = this.appendFilterDurationKpi202();
       }
 
-      console.log('postData for Jira KPI:', postData); // Debug log to check the postData being sent
-      const kpi148 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi148');
-      if (this.selectedTab === 'slingshot' && kpi148) {
+      const kpi206 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi206');
+      const kpi207 = postData.kpiList.find((kpi) => kpi.kpiId === 'kpi207');
+      // kpi206 and kpi207 use the non-trend endpoint regardless of tab,
+      // because their trendValueList is {date, value:{}} (not sprint-series),
+      // which is only returned by postKpiNonTrend
+      if (kpi206 || kpi207) {
         this.postJiraKPIForBacklog(postData, source);
         return;
       }
@@ -1626,8 +1633,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForBacklog(postData, source) {
-    console.log('postData for Non-trend Jira KPI:', postData); // Debug log to check the postData being sent
-    console.log('selected tab for Non-trend Jira KPI:', this.selectedTab); // Debug log to check the postData being sent
     this.jiraKpiRequest = this.httpService
       .postKpiNonTrend(postData, source)
       .subscribe(
@@ -2168,6 +2173,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
+    // kpi205-specific: After chart data is set (Aggregated bars + Average lineValue),
+    // compute the 'Average' line chart data so multiline-v2 can render it
+    // when the user switches the dropdown to 'Average'.
+    if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
+      this.computeKpi205LineChartData();
+    }
+
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       if (
         this.getChartType(kpiId) !== 'progressbar' &&
@@ -2576,9 +2588,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               (x) => x['filter'] === valToCompare,
             );
           } else {
-            this.kpiChartData[kpiId] = trendValueList?.filter(
-              (x) => x['filter'] === valToCompare,
-            )[0]?.value;
+            this.kpiChartData[kpiId] =
+              trendValueList?.filter((x) => x['filter'] === valToCompare)[0]
+                ?.value ?? [];
           }
         }
       } else {
@@ -2587,9 +2599,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (x) => x['filter'] === 'Overall',
           );
         } else {
-          this.kpiChartData[kpiId] = trendValueList?.filter(
-            (x) => x['filter'] === 'Overall',
-          )[0]?.value;
+          // Prefer the 'Overall' entry; fall back to the first entry's value
+          // so kpi206 (stacked-area) always gets a non-undefined array
+          this.kpiChartData[kpiId] =
+            trendValueList?.find((x) => x['filter'] === 'Overall')?.value ??
+            trendValueList?.[0]?.value ??
+            [];
         }
       }
     } else if (
@@ -2643,7 +2658,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (
       this.colorObj &&
       Object.keys(this.colorObj)?.length > 0 &&
-      !['kpi161', 'kpi146', 'kpi148', 'kpi169'].includes(kpiId)
+      !['kpi161', 'kpi146', 'kpi148', 'kpi169', 'kpi206', 'kpi207'].includes(
+        kpiId,
+      )
     ) {
       this.kpiChartData[kpiId] = this.generateColorObj(
         kpiId,
@@ -3157,7 +3174,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createAllKpiArray(data) {
     for (const key in data) {
-      console.log('data key', data[key]);
       if (data[key]?.kpiId === 'kpi202') {
         const kpi202DuplicateData = JSON.parse(JSON.stringify(data[key]));
         kpi202DuplicateData.kpiId = 'kpi202_duplicate';
@@ -4181,7 +4197,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
           this.kpiStatusCodeArr[kpi.kpiId] === '201' ||
           this.kpiStatusCodeArr[kpi.kpiId] === '203') &&
-        (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146')
+        (kpi.kpiId === 'kpi148' ||
+          kpi.kpiId === 'kpi146' ||
+          kpi.kpiId === 'kpi206' ||
+          kpi.kpiId === 'kpi207')
       ) {
         if (this.kpiChartData[kpi.kpiId]?.length) {
           return true;
@@ -6074,6 +6093,54 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (idx >= 0) {
         this.getChartData(kpiId, idx, '');
       }
+    } else if (kpiId === 'kpi205') {
+      // kpi205-specific: Update the Flow Efficiency dropdown selection
+      // and recompute the line chart data for the Average view.
+      // No new API call is needed — line values are already in the existing response.
+      this.selectedDataTypeForFlowEfficiency = eventValue;
+      this.computeKpi205LineChartData();
     }
+  }
+
+  /**
+   * kpi205-specific: Computes the Average line chart data for kpi205 (Flow Efficiency).
+   *
+   * The API response contains both bar (value) and line (lineValue) data points.
+   * This method extracts `lineValue` from each data point and maps it to `value`
+   * so that app-multiline-v2 can render the Average view correctly.
+   *
+   * The result is stored in kpiChartData['kpi205_line'] to avoid mutating
+   * the raw aggregated data used by the bar chart.
+   */
+  computeKpi205LineChartData(): void {
+    const raw = this.kpiChartData['kpi205'];
+    if (!raw?.length) {
+      this.kpiChartData['kpi205_line'] = [];
+      return;
+    }
+    // Map lineValue → value for each data point so multiline-v2 can render it.
+    // lineValue holds the Average metric; value holds the Aggregated metric.
+    // hoverValue is set to an empty object so the multiline-v2 tooltip shows only
+    // the sprint name + value header line, without redundant extra rows.
+    this.kpiChartData['kpi205_line'] = raw.map((project: any) => ({
+      ...project,
+      value: (project.value || []).map((point: any) => {
+        const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
+        return {
+          ...point,
+          value: avgVal,
+          hoverValue: {},
+        };
+      }),
+    }));
+    const { forecasts, ...updatedKpiChartDataAvgKpi205 } =
+      this.kpiChartData['kpi205_line'][0];
+    const kpi205AvgChartData = [updatedKpiChartDataAvgKpi205];
+    this.kpi205AvgChartData = kpi205AvgChartData.map((item) => ({
+      ...item,
+      value: item.value.filter(
+        (valueItem) => valueItem.sSprintName !== 'Forecast',
+      ), // Exclude forecast points from the Average line chart
+    }));
   }
 }

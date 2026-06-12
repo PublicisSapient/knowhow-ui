@@ -617,14 +617,9 @@ export class GroupedColumnPlusLineChartV2Component
       });
 
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+      // Scoped to this.elem to avoid cross-component handler collisions.
       if (this.lineChart === false) {
-        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
-          if (d?.value[0]?.hoverValue) {
-            const circle = event.target;
-            const { top: yPosition, left: xPosition } =
-              circle.getBoundingClientRect();
-          }
-        });
+        d3.select(this.elem).selectAll('.rounded-bar').on('mouseover', null);
       }
       // Define the div for the tooltip
       const div = d3
@@ -766,9 +761,11 @@ export class GroupedColumnPlusLineChartV2Component
         });
       } else {
         // Original bar rendering code for other KPIs
-        // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+        // Applying Bar tooltip for bar chart only. Bar tooltip is not required for bar+line chart.
+        // Scoped to this.elem so handlers don't bleed across chart instances.
         if (this.lineChart === false) {
-          d3.selectAll('.rounded-bar')
+          d3.select(this.elem)
+            .selectAll('.rounded-bar')
             .on('mouseover', function (event, d) {
               if (d?.value[0]?.hoverValue) {
                 const circle = event.target;
@@ -785,6 +782,11 @@ export class GroupedColumnPlusLineChartV2Component
                 let htmlString = '';
 
                 for (const key in d.value[0].hoverValue) {
+                  // For kpi205 Aggregated bars, skip "AverageVelocity" —
+                  // only "Velocity" (the Aggregated metric) should appear.
+                  if (kpiId === 'kpi205' && key === 'AverageVelocity') {
+                    continue;
+                  }
                   dataString += `<div class='toolTipValue p-d-flex p-align-center'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
                 }
 

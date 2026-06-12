@@ -13499,7 +13499,9 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'createTrendsData');
     spyOn(helperService, 'applyAggregationLogic');
     component.getChartDataForBacklog('kpi124', 0, 'sum');
-    expect(component.kpiChartData['kpi124']).toBeUndefined();
+    // When the selected filter keys (f1, f2) don't match any trendValueList filter property,
+    // the method falls through to the else branch and initialises kpiChartData to an empty array.
+    expect(component.kpiChartData['kpi124']).toEqual([]);
   });
 
   it('should get chart data when have one filter', () => {
@@ -15778,6 +15780,120 @@ describe('ExecutiveV2Component', () => {
         code: 'AVG',
       });
       expect(component.getChartData).toHaveBeenCalledWith(kpiId, 0, '');
+    });
+  });
+
+  /**
+   * kpi205 (Flow Efficiency) Aggregated/Average dropdown tests.
+   *
+   * Purpose: Verifies that computeKpi205LineChartData correctly extracts lineValue
+   * from the raw chart data into a separate 'kpi205_line' key for multiline-v2,
+   * and that onSelectedDataTypeChange updates the dropdown state and triggers
+   * re-computation without making a new API call.
+   */
+  describe('KPI 205 Aggregated/Average Dropdown', () => {
+    it('should extract lineValue into value for kpi205_line when computeKpi205LineChartData is called', () => {
+      // Arrange: set up raw kpi205 chart data with both value (Aggregated) and lineValue (Average)
+      component.kpiChartData['kpi205'] = [
+        {
+          data: 'ProjectA',
+          value: [
+            {
+              sSprintName: 'Sprint 1',
+              value: 100,
+              lineValue: 45.5,
+              hoverValue: { 'Story Points': 10 },
+            },
+            {
+              sSprintName: 'Sprint 2',
+              value: 200,
+              lineValue: 80.0,
+              hoverValue: { 'Story Points': 20 },
+            },
+          ],
+        },
+      ];
+
+      // Act
+      component.computeKpi205LineChartData();
+
+      // Assert: kpi205_line should have lineValue mapped to value
+      const lineData = component.kpiChartData['kpi205_line'];
+      expect(lineData).toBeTruthy();
+      expect(lineData.length).toBe(1);
+      expect(lineData[0].value[0].value).toBe(45.5);
+      expect(lineData[0].value[1].value).toBe(80.0);
+      // Aggregated data in the original kpi205 key must remain unchanged
+      expect(component.kpiChartData['kpi205'][0].value[0].value).toBe(100);
+      expect(component.kpiChartData['kpi205'][0].value[1].value).toBe(200);
+    });
+
+    it('should fall back to 0 when lineValue is undefined in computeKpi205LineChartData', () => {
+      // Arrange: a data point with no lineValue field
+      component.kpiChartData['kpi205'] = [
+        {
+          data: 'ProjectB',
+          value: [
+            {
+              sSprintName: 'Sprint 1',
+              value: 50,
+              // lineValue deliberately absent
+              hoverValue: {},
+            },
+          ],
+        },
+      ];
+
+      // Act
+      component.computeKpi205LineChartData();
+
+      // Assert: missing lineValue should be treated as 0
+      expect(component.kpiChartData['kpi205_line'][0].value[0].value).toBe(0);
+    });
+
+    it('should set kpi205_line to empty array when kpi205 data is empty', () => {
+      // Arrange: no data available yet
+      component.kpiChartData['kpi205'] = [];
+
+      // Act
+      component.computeKpi205LineChartData();
+
+      // Assert
+      expect(component.kpiChartData['kpi205_line']).toEqual([]);
+    });
+
+    it('should update selectedDataTypeForFlowEfficiency and call computeKpi205LineChartData on onSelectedDataTypeChange', () => {
+      // Arrange
+      spyOn(component, 'computeKpi205LineChartData');
+      const averageOption = { name: 'Average', code: 'AVG' };
+
+      // Act
+      component.onSelectedDataTypeChange(averageOption, 'kpi205');
+
+      // Assert: state updated and line data recomputed without a new API call
+      expect(component.selectedDataTypeForFlowEfficiency).toEqual(
+        averageOption,
+      );
+      expect(component.computeKpi205LineChartData).toHaveBeenCalled();
+    });
+
+    it('should reset selectedDataTypeForFlowEfficiency to Aggregated on onSelectedDataTypeChange', () => {
+      // Arrange: start in Average mode
+      component.selectedDataTypeForFlowEfficiency = {
+        name: 'Average',
+        code: 'AVG',
+      };
+      spyOn(component, 'computeKpi205LineChartData');
+      const aggregatedOption = { name: 'Aggregated', code: 'AGT' };
+
+      // Act
+      component.onSelectedDataTypeChange(aggregatedOption, 'kpi205');
+
+      // Assert
+      expect(component.selectedDataTypeForFlowEfficiency).toEqual(
+        aggregatedOption,
+      );
+      expect(component.computeKpi205LineChartData).toHaveBeenCalled();
     });
   });
 });
