@@ -100,13 +100,12 @@
     </div>
 
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
-      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
-         [ngClass]="{
+      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'" [ngClass]="{
     'hidden': selectedTab?.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)),
     'table-layout-fix': kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
   }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
-      <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
+      <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end kpi-filter-dropdown">
         <ng-container *ngFor="let filter of dropdownArr; let k = index; trackBy: trackByFilter">
           <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length"
                       [options]="filter?.options"
@@ -288,7 +287,7 @@
         [colorObj]="trendBoxColorObj">
       </app-trend-indicator-v2>
     </div>
-    <div class="ai-recommendation-section p-mx-3 p-my-3" *ngIf="!checkIfEmpty(kpiRecommData) && hasBaseUrl()"
+    <div class="ai-recommendation-section p-mx-3 p-my-3" *ngIf="!checkIfEmpty(kpiRecommData) && hasBaseUrl() && selectedTab !== 'slingshot'"
       [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
       <app-kpi-ai-recommendation-target *ngIf="checkIfDataPresent(kpiDataStatusCode)"
         [improvement]=""
