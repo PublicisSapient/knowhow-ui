@@ -357,7 +357,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.selectedTab === 'release' ||
           this.selectedTab === 'backlog' ||
           this.kpiData?.kpiId === 'kpi171' ||
-          this.kpiData?.kpiId === 'kpi202',
+          this.kpiData?.kpiId === 'kpi202' ||
+          this.kpiData?.kpiId === 'kpi206' ||
+          this.kpiData?.kpiId === 'kpi207',
       },
       {
         label: 'Explore',
