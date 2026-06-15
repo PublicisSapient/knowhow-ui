@@ -179,6 +179,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   floatingRecommendation: boolean = false;
   hasBaseUrl = false;
   kpi205AvgChartData: object = {};
+  kpiFullWidthFlags: { [kpiId: string]: boolean } = {};
 
   monthlyMetrics: MetricItem[] = [
     { label: 'Total PRs', value: 35, trend: 'neutral' },
@@ -5511,6 +5512,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     return retValue;
+  }
+
+  onKpiFullWidthToggle(isFullWidth: boolean, kpiId: string) {
+    this.kpiFullWidthFlags[kpiId] = isFullWidth;
   }
 
   checkKPIPresence(kpi) {
