@@ -116,6 +116,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   isSyncPassedOrFailed;
   @ViewChild('kpimenu') kpimenu: Menu;
   @Output() downloadExcel = new EventEmitter<boolean>();
+  @Output() fullWidthToggled = new EventEmitter<boolean>();
+  isExpandedToFullWidth = false; // Track the current expansion state
   metaDataTemplateCode: any;
   @Input() nodeId = '';
   loadingKPIConfig = false;
@@ -1979,5 +1981,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return dataEntry?.benchmarkPercentiles
       ? dataEntry?.benchmarkPercentiles
       : null;
+  }
+
+  expandToFullWidth(event: any) {
+    // Toggle the expansion state
+    this.isExpandedToFullWidth = !this.isExpandedToFullWidth;
+    console.log('Toggling full width to:', this.isExpandedToFullWidth);
+
+    // Emit the current state to parent component
+    this.fullWidthToggled.emit(this.isExpandedToFullWidth);
+
+    // Dispatch resize event to recalculate chart dimensions
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
   }
 }
