@@ -72,7 +72,7 @@
                   <ng-container *ngIf="kpi?.kpiDetail?.chartType !== 'card'">
                     <div
                       *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi189'"
-                      [ngClass]="getkpiwidth(kpi.kpiDetail?.kpiWidth)" [id]="kpi.kpiId">
+                      [ngClass]="kpiFullWidthFlags[kpi.kpiId] ? 'p-col-12' : getkpiwidth(kpi.kpiDetail?.kpiWidth)" [id]="kpi.kpiId">
                       <app-kpi-card-v2 [selectedTab]="selectedTab" [id]="kpi.kpiId"
                         [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]" [trendBoxColorObj]="trendBoxColorObj"
                         [kpiData]="kpi" [loader]="kpiLoader.has(kpi?.kpiId)"
@@ -101,7 +101,8 @@
                         [kpi202DuplicateChartData]="kpi?.kpiId === 'kpi202' ? kpiChartData['kpi202_duplicate'] : null"
                         [kpi202SelectedView]="kpi?.kpiId === 'kpi202' ? kpi202SelectedView : null"
                         [kpi205LineChartData]="kpi?.kpiId === 'kpi205' ? kpiChartData['kpi205_line'] : null"
-                        [kpi205SelectedView]="kpi?.kpiId === 'kpi205' ? selectedDataTypeForFlowEfficiency?.code : null">
+                        [kpi205SelectedView]="kpi?.kpiId === 'kpi205' ? selectedDataTypeForFlowEfficiency?.code : null"
+                        (fullWidthToggled)="onKpiFullWidthToggle($event, kpi.kpiId)">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
                             <div [ngSwitch]="kpi?.kpiDetail?.chartType">
