@@ -61,7 +61,12 @@ export class ExcelService {
                   cellData !== null &&
                   typeof cellData === 'object' &&
                   cellData.hasOwnProperty('text') &&
-                  cellData.hasOwnProperty('hyperlink')
+                  cellData.hasOwnProperty('hyperlink') &&
+                  !(
+                    typeof cellData.hyperlink === 'string' &&
+                    (cellData.hyperlink.startsWith('http://') ||
+                      cellData.hyperlink.startsWith('https://'))
+                  )
                 ) {
                   appendedRowData.push(
                     `${cellData.text}: ${cellData.hyperlink}`,
@@ -73,12 +78,21 @@ export class ExcelService {
             } else {
               for (const datakey in data[key]) {
                 if (data[key][datakey]) {
-                  if (ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId)) {
-                    appendedRowData.push(`${datakey}: ${data[key][datakey]}`);
+                  const cellValue = data[key][datakey];
+                  const isRealUrl =
+                    typeof cellValue === 'string' &&
+                    (cellValue.startsWith('http://') ||
+                      cellValue.startsWith('https://'));
+                  if (
+                    ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId) &&
+                    !isRealUrl
+                  ) {
+                    appendedRowData.push(`${datakey}: ${cellValue}`);
                   } else {
+                    // Real URL — always render as a clickable hyperlink
                     appendedRowData.push({
                       text: datakey,
-                      hyperlink: data[key][datakey],
+                      hyperlink: cellValue,
                     });
                   }
                 } else {
@@ -91,13 +105,22 @@ export class ExcelService {
             } else if (appendedRowData.length === 1) {
               // For kpi202/kpi202_duplicate, a single {text, hyperlink} item is a
               // plain label+value pair — write it as plain text, not a hyperlink cell.
+              // UNLESS the hyperlink is a real URL (e.g. Issue ID), keep it as a hyperlink.
               const single = appendedRowData[0];
+              const isRealUrl =
+                single !== null &&
+                typeof single === 'object' &&
+                single.hasOwnProperty('hyperlink') &&
+                typeof single.hyperlink === 'string' &&
+                (single.hyperlink.startsWith('http://') ||
+                  single.hyperlink.startsWith('https://'));
               rowData[key] =
                 ExcelService.KPI_PLAIN_TEXT_HYPERLINK.has(kpiId) &&
                 single !== null &&
                 typeof single === 'object' &&
                 single.hasOwnProperty('text') &&
-                single.hasOwnProperty('hyperlink')
+                single.hasOwnProperty('hyperlink') &&
+                !isRealUrl
                   ? `${single.text}: ${single.hyperlink}`
                   : single;
             } else {

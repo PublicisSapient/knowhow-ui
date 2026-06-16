@@ -875,8 +875,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           value[0].hasOwnProperty('text') &&
           value[0].hasOwnProperty('hyperlink')
         ) {
+          // If the hyperlink is a real URL, leave it as-is so the export component
+          // renders it as a clickable link (e.g. Issue ID column)
+          const firstHyperlink = value[0].hyperlink;
+          if (
+            firstHyperlink &&
+            (firstHyperlink.startsWith('http://') ||
+              firstHyperlink.startsWith('https://'))
+          ) {
+            return;
+          }
           console.log(`Transforming field ${key}:`, value);
-          // Transform array of objects into formatted string
+          // Non-URL hyperlink values (e.g. "6.7 Days") — render as "text: value" plain text
           transformedRow[key] = value
             .map((item) => `${item.text}: ${item.hyperlink}`)
             .join('\n');

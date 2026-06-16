@@ -1062,7 +1062,6 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add circles (data) on the line */
       if (this.kpiId !== 'kpi202_duplicate') {
-        console.log(this.kpiId);
         lines
           .selectAll('circle-group')
           .data(data)
@@ -1079,11 +1078,9 @@ export class MultilineV2Component implements OnChanges {
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', function (event, d) {
-            console.log('d ', d);
             if (d?.isForecast) return;
             const topValue = 80;
             if (d.hoverValue) {
-              console.log('if');
               div
                 .transition()
                 .duration(200)
@@ -1111,7 +1108,6 @@ export class MultilineV2Component implements OnChanges {
                 .style('left', xPosition - 80 + 'px')
                 // .style('top', yScale(d.value) - topValue + 'px');
                 .style('top', yPosition + 20 + 'px');
-              console.log('d.hoverValue ', d.hoverValue);
               for (const hoverData in d.hoverValue) {
                 div
                   .append('p')

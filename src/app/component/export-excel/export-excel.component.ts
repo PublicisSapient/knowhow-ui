@@ -161,8 +161,10 @@ export class ExportExcelComponent implements OnInit {
             Array.isArray(colData[key]) &&
             colData[key].length > 0 &&
             colData[key][0].hasOwnProperty('text') &&
-            colData[key][0].hasOwnProperty('hyperlink')
+            colData[key][0].hasOwnProperty('hyperlink') &&
+            !this.checkIsItHyperlink(colData[key][0].hyperlink)
           ) {
+            // Non-URL hyperlink values (e.g. "6.7 Days") — render as "text: value" plain text
             obj[key] = colData[key]
               .map((item) => `${item.text}: ${item.hyperlink}`)
               .join('\n');
@@ -182,8 +184,10 @@ export class ExportExcelComponent implements OnInit {
             }
           }
         } else if (key == 'Issue Id') {
-          obj['Issue Id'] = {};
-          obj['Issue Id'][colData[key]] = colData['Issue URL'];
+          obj['Issue Id'] = {
+            text: colData[key],
+            hyperlink: colData['Issue URL'],
+          };
         } else {
           obj[key] = colData[key];
         }
@@ -539,7 +543,7 @@ export class ExportExcelComponent implements OnInit {
     if (
       tableDataSet['tableValues'][0][columnName]?.hasOwnProperty('hyperlink')
     ) {
-      return Object.keys(tableDataSet['tableValues'][0][columnName])[0];
+      return 'text';
     } else {
       return columnName;
     }
