@@ -154,7 +154,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
-          if (err.status === 401 || err.status === 0) {
+          if (err.status === 401) {
             if (requestArea === 'internal') {
               if (environment?.['SSO_LOGIN']) {
                 this.httpService.setCurrentUserDetails({});
