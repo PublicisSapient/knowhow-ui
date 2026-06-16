@@ -154,6 +154,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
+          console.log('environment sso_login', environment?.['SSO_LOGIN']);
           if (err.status === 401) {
             if (requestArea === 'internal') {
               if (environment?.['SSO_LOGIN']) {
@@ -192,6 +193,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
+            console.log('environment.SSO_LOGIN ', environment.SSO_LOGIN);
             if (
               err?.status === 0 &&
               err?.statusText === 'Unknown Error' &&
