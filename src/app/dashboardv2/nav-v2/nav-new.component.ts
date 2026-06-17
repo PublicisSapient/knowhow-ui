@@ -5,8 +5,8 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { catchError, tap } from 'rxjs/operators';
-import { BehaviorSubject, of } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
@@ -30,6 +30,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   homeTabFlag = new BehaviorSubject(false);
   pebFlag = new BehaviorSubject(false);
+
+  private projectListSubject = new Subject<any[]>();
 
   constructor(
     public httpService: HttpService,
@@ -65,6 +67,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     this.sharedService.onTabSwitch.subscribe((data) => {
       this.selectedTab = data.selectedBoard;
+      console.log(
+        'Tab switch detected in NavNewComponent, selectedTab set to:',
+        this.selectedTab,
+      );
       this.activeItem = this.items?.filter(
         (x) => x['slug'] == this.selectedTab?.toLowerCase(),
       )[0];
@@ -100,6 +106,27 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.sharedService.onScrumKanbanSwitch.subscribe((type) => {
       this.selectedType = type.selectedType;
     });
+
+    const subscription = this.projectListSubject
+      .pipe(
+        switchMap((projectList) =>
+          this.httpService.getShowHideOnDashboardNewUI({
+            basicProjectConfigIds:
+              projectList?.length && projectList[0] ? projectList : [],
+          }),
+        ),
+        tap((response) => {
+          this.setBoards(response);
+        }),
+        catchError((error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: error.message,
+          });
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
   // unsubscribing all Kpi Request
@@ -120,35 +147,51 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   getBoardConfig(projectList) {
-    this.httpService
-      .getShowHideOnDashboardNewUI({
-        basicProjectConfigIds:
-          projectList?.length && projectList[0] ? projectList : [],
-      })
-      .pipe(
-        tap((response) => {
-          this.setBoards(response);
-        }),
-        catchError((error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: error.message,
-          });
-          return of();
-        }),
-      )
-      .subscribe();
+    this.projectListSubject.next(projectList);
+
+    // this.httpService
+    //   .getShowHideOnDashboardNewUI({
+    //     basicProjectConfigIds:
+    //       projectList?.length && projectList[0] ? projectList : [],
+    //   })
+    //   .pipe(
+    //     tap((response) => {
+    //       this.setBoards(response);
+    //     }),
+    //     catchError((error) => {
+    //       this.messageService.add({
+    //         severity: 'error',
+    //         summary: error.message,
+    //       });
+    //       return of();
+    //     }),
+    //   )
+    //   .subscribe();
   }
 
   setBoards(response) {
     if (response.success === true) {
       const data = response.data.userBoardConfigDTO;
+      console.log(
+        '🔍 INITIAL data from API:',
+        JSON.parse(JSON.stringify(data)),
+      );
+      console.log(
+        '🔍 Slingshot shown status:',
+        data[this.selectedType]
+          ?.find((b) => b.boardSlug === 'slingshot')
+          ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
+      );
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(
           localStorage.getItem('completeHierarchyData'),
         )[this.selectedType];
 
         if (levelDetails) {
+          console.log(
+            '🔍 BEFORE hierarchy mutations:',
+            JSON.parse(JSON.stringify(data)),
+          );
           data[this.selectedType]?.forEach((board) => {
             if (board?.filters) {
               if (
@@ -202,6 +245,16 @@ export class NavNewComponent implements OnInit, OnDestroy {
               }
             }
           });
+          console.log(
+            '🔍 AFTER hierarchy mutations:',
+            JSON.parse(JSON.stringify(data)),
+          );
+          console.log(
+            '🔍 Slingshot shown status:',
+            data[this.selectedType]
+              ?.find((b) => b.boardSlug === 'slingshot')
+              ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
+          );
 
           data['others']?.forEach((board) => {
             if (board?.filters) {
@@ -240,8 +293,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
           });
         }
         data['configDetails'] = response.data.configDetails;
+        console.log(
+          '🔍 BEFORE deepEqual check:',
+          JSON.parse(JSON.stringify(data)),
+        );
         if (!this.helperService.deepEqual(this.dashConfigData, data)) {
           this.dashConfigData = data;
+          console.log('data sent to shared service:', data);
           this.sharedService.setDashConfigData(data);
         }
 
@@ -251,18 +309,25 @@ export class NavNewComponent implements OnInit, OnDestroy {
             this.dashConfigData[this.selectedType].forEach((board) => {
               if (board.boardSlug === 'iteration') {
                 board.kpis = board.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
+                console.log('Filtered kpis for iteration board:', board.kpis);
               }
             });
           }
+          console.log('shallow copy ', [
+            ...this.dashConfigData[this.selectedType],
+            ...this.dashConfigData['others'],
+          ]);
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
           ]
-            .filter(
-              (board) =>
+            .filter((board) => {
+              console.log('Checking board:', board.kpis);
+              return (
                 board.kpis.some((kpi) => kpi.shown === true) &&
-                board.kpis.length > 0,
-            )
+                board.kpis.length > 0
+              );
+            })
             .map((obj) => {
               return {
                 label: obj['boardName'],
