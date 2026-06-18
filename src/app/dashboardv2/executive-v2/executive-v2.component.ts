@@ -6152,6 +6152,26 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
+   * kpi205-specific: Returns the correct x-axis caption label based on the selected
+   * time filter option (Weekly / Bi-Weekly / Monthly).
+   *
+   * Weekly   → 'Sprints'  (data points are sprint-based)
+   * Bi-Weekly → 'Bi-Weeks' (data points span two sprints / bi-weekly periods)
+   * Monthly  → 'Months'   (data points are monthly aggregates)
+   *
+   * Used by both the Aggregated bar chart and the Average line chart for kpi205.
+   */
+  get kpi205XCaption(): string {
+    const filter = (this.selectedFilterByTimeOption?.value || '').toLowerCase();
+    if (filter === 'monthly') {
+      return 'Months';
+    } else if (filter === 'bi-weekly') {
+      return 'Bi-Weeks';
+    }
+    return 'Weeks';
+  }
+
+  /**
    * kpi205-specific: Computes the Average line chart data for kpi205 (Flow Efficiency).
    *
    * The API response contains both bar (value) and line (lineValue) data points.

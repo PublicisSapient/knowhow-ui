@@ -215,7 +215,7 @@
                                           [lineChart]="kpi.kpiId === 'kpi205' ? false : kpi?.kpiDetail?.lineChart"
                                           [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup" [unit]="kpi?.kpiDetail?.kpiUnit"
                                           [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [xCaption]="kpi.kpiId === 'kpi205' ? kpi205XCaption : (this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel)"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
                                           [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
                                           [selectedtype]="selectedtype" [viewType]="showChart"
@@ -230,7 +230,7 @@
                                       @if (kpi.kpiId === 'kpi205' && selectedDataTypeForFlowEfficiency?.code === 'AVG') {
                                         <app-multiline-v2
                                           [data]="kpi205AvgChartData"
-                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [xCaption]="kpi205XCaption"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                           [name]="kpi?.kpiName"
                                           [kpiId]="kpi?.kpiId"

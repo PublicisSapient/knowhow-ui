@@ -147,8 +147,12 @@ export class MultilineV2Component implements OnChanges {
         const sprintData = sprintEntry.projects;
 
         // Add sprint name if not already present
+        // Read x-axis label — try sSprintName first, then sSprintId (used by Bi-Weekly),
+        // then fall back to the date field (used by Monthly).
         const xAxisName =
-          xAxisLabelName.sSprintName?.trim() || xAxisLabelName.date?.trim();
+          xAxisLabelName.sSprintName?.trim() ||
+          xAxisLabelName.sSprintId?.trim() ||
+          xAxisLabelName.date?.trim();
         if (xAxisName && !sprintEntry.sprints.includes(xAxisName)) {
           sprintEntry.sprints.push(xAxisName);
         }
