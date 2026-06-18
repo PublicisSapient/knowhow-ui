@@ -440,7 +440,7 @@ export class ExcelService {
           for (const dataChildName in dataName) {
             for (let i = 0; i < max; i++) {
               if (
-                dataName[dataChildName][i] === undefined &&
+                dataName[dataChildName][i] === undefined ||
                 dataName[dataChildName][i] !== null
               ) {
                 dataName[dataChildName].push('');

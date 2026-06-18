@@ -483,7 +483,7 @@ export class GroupedColumnPlusLineChartV2Component
         .style('pointer-events', 'none')
         .style('opacity', 0);
 
-      if (benchmarkValue !== null) {
+      /* if (benchmarkValue !== null) {
         svgX
           .append('svg:line')
           .attr('x1', 0)
@@ -518,7 +518,7 @@ export class GroupedColumnPlusLineChartV2Component
           .style('font-size', '12px')
           .text(Math.round(benchmarkValue * 100) / 100)
           .attr('class', 'benchmark-label');
-      }
+      } */
 
       const xAxisGrid = d3
         .axisBottom(x0)

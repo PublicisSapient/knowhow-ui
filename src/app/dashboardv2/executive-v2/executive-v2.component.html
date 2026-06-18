@@ -189,11 +189,21 @@
                                            Aggregated shows bar chart only; Average shows line chart only. -->
                                       @if (kpi.kpiId === 'kpi205') {
                                         <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                          @if(false) {
+                                            <p-dropdown
+                                              [options]="dataTypeDropdownOptions"
+                                              [(ngModel)]="selectedDataTypeForFlowEfficiency"
+                                              optionLabel="name"
+                                              (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                          }
+
                                           <p-dropdown
-                                            [options]="dataTypeDropdownOptions"
-                                            [(ngModel)]="selectedDataTypeForFlowEfficiency"
+                                            [options]="filterByTimeOptions"
+                                            [(ngModel)]="selectedFilterByTimeOption"
                                             optionLabel="name"
-                                            (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                            (onChange)="onSelectFilterTimeOption($event.value)"
+                                            placeholder="Select Time Filter"
+                                            [style]="{'width': '200px'}" />
                                         </div>
                                       }
 
