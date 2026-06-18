@@ -206,6 +206,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    // Removed premature console log - trendValueList may not be loaded yet at this point
+    // Data will be available after async operations complete
     this.chartType = this.kpiData.kpiDetail?.chartType;
     this.getAIRecommFlag();
     this.subscriptions.push(
@@ -359,7 +361,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.kpiData?.kpiId === 'kpi171' ||
           this.kpiData?.kpiId === 'kpi202' ||
           this.kpiData?.kpiId === 'kpi206' ||
-          this.kpiData?.kpiId === 'kpi207',
+          this.kpiData?.kpiId === 'kpi207' ||
+          this.kpiData?.kpiId === 'kpi208',
       },
       {
         label: 'Explore',
@@ -967,6 +970,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.kpiData?.kpiId === 'kpi153' ||
         this.kpiData?.kpiId === 'kpi35')
     ) {
+      console.log(
+        'kpiId ',
+        this.kpiData?.kpiId,
+        ' trendValueList ',
+        this.trendValueList?.length,
+      );
       if (
         this.trendValueList?.length &&
         this.trendValueList[0]?.value?.length > 0
