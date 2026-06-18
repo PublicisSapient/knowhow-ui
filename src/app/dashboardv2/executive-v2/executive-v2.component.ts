@@ -209,6 +209,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   isAskMeEnabled = false;
 
+  // KPI205 time-based filter
+  filterByTimeOptions: any[] = [];
+  selectedFilterByTimeOption: any = null;
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -2182,6 +2186,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // compute the 'Average' line chart data so multiline-v2 can render it
     // when the user switches the dropdown to 'Average'.
     if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
+      // Populate filter options if not already done
+      if (this.filterByTimeOptions.length === 0 && trendValueList?.length) {
+        this.filterByTimeOptions = trendValueList.map((item) => ({
+          name: item.filter,
+          value: item.filter,
+        }));
+
+        // Set default selection to first option
+        if (
+          this.filterByTimeOptions.length > 0 &&
+          !this.selectedFilterByTimeOption
+        ) {
+          this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+
+          // Filter data based on default selection
+          const defaultData = trendValueList.find(
+            (item) => item.filter === this.selectedFilterByTimeOption.value,
+          );
+          if (defaultData) {
+            this.kpiChartData[kpiId] = [defaultData];
+          }
+        }
+      }
       this.computeKpi205LineChartData();
     }
 
@@ -4480,6 +4507,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           : [];
       }
     }
+
+    // KPI205-specific: Populate time-based filter options
+    if (kpiId === 'kpi205' && trendValueList?.length) {
+      this.filterByTimeOptions = trendValueList.map((item) => ({
+        name: item.filter,
+        value: item.filter,
+      }));
+
+      // Set default selection to first option
+      if (this.filterByTimeOptions.length > 0) {
+        this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+      }
+    }
   }
 
   getDropdownArrayForBacklog(kpiId) {
@@ -6122,16 +6162,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * the raw aggregated data used by the bar chart.
    */
   computeKpi205LineChartData(): void {
-    const raw = this.kpiChartData['kpi205'];
+    const raw = (this.kpiChartData as any)['kpi205'];
     if (!raw?.length) {
-      this.kpiChartData['kpi205_line'] = [];
+      (this.kpiChartData as any)['kpi205_line'] = [];
       return;
     }
     // Map lineValue → value for each data point so multiline-v2 can render it.
     // lineValue holds the Average metric; value holds the Aggregated metric.
     // hoverValue is set to an empty object so the multiline-v2 tooltip shows only
     // the sprint name + value header line, without redundant extra rows.
-    this.kpiChartData['kpi205_line'] = raw.map((project: any) => ({
+    (this.kpiChartData as any)['kpi205_line'] = raw.map((project: any) => ({
       ...project,
       value: (project.value || []).map((point: any) => {
         const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
@@ -6142,8 +6182,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         };
       }),
     }));
-    const { forecasts, ...updatedKpiChartDataAvgKpi205 } =
-      this.kpiChartData['kpi205_line'][0];
+    const { forecasts, ...updatedKpiChartDataAvgKpi205 } = (
+      this.kpiChartData as any
+    )['kpi205_line'][0];
     const kpi205AvgChartData = [updatedKpiChartDataAvgKpi205];
     this.kpi205AvgChartData = kpi205AvgChartData.map((item) => ({
       ...item,
@@ -6151,5 +6192,54 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (valueItem) => valueItem.sSprintName !== 'Forecast',
       ), // Exclude forecast points from the Average line chart
     }));
+  }
+
+  onSelectFilterTimeOption(selectedOption) {
+    if (!selectedOption) return;
+
+    const kpiId = 'kpi205';
+    const idx = this.ifKpiExist(kpiId);
+
+    if (idx === -1) return;
+
+    // Update the selected filter in kpiSelectedFilterObj
+    this.kpiSelectedFilterObj[kpiId] = { filter: selectedOption.value };
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
+    // Re-compute chart data based on the selected filter
+    const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    const selectedData = trendValueList?.find(
+      (item) => item.filter === selectedOption.value,
+    );
+
+    if (selectedData) {
+      // Access the inner value property which contains the actual chart data
+      // The new structure has: { filter: 'Weekly', value: [{ data: 'KnowHOW', value: [...] }] }
+      // We need to extract the inner value array to maintain compatibility with the chart component
+      const chartData =
+        selectedData.value && Array.isArray(selectedData.value)
+          ? selectedData.value
+          : [selectedData];
+
+      // Update bar chart data (Aggregated)
+      (this.kpiChartData as any)[kpiId] = chartData;
+
+      // Update line chart data (Average)
+      this.computeKpi205LineChartData();
+
+      // Apply color mapping if needed
+      if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
+        (this.kpiChartData as any)[kpiId] = this.generateColorObj(
+          kpiId,
+          (this.kpiChartData as any)[kpiId],
+        );
+      }
+
+      // Update trends data
+      this.createTrendsData(kpiId);
+    } else {
+      (this.kpiChartData as any)[kpiId] = [];
+      (this.kpiChartData as any)['kpi205_line'] = [];
+    }
   }
 }
