@@ -507,6 +507,9 @@ export class MultilineV2Component implements OnChanges {
             return d.date;
           }
           if (useSprintNameLabels) {
+            if (kpiId === 'kpi208') {
+              return i + 1;
+            }
             return d.date || d.sSprintName || d.xOrder || i + 1;
           }
           return d.xOrder || i + 1;

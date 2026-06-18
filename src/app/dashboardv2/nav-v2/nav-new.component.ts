@@ -67,10 +67,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     this.sharedService.onTabSwitch.subscribe((data) => {
       this.selectedTab = data.selectedBoard;
-      console.log(
-        'Tab switch detected in NavNewComponent, selectedTab set to:',
-        this.selectedTab,
-      );
+      // console.log(
+      //   'Tab switch detected in NavNewComponent, selectedTab set to:',
+      //   this.selectedTab,
+      // );
       this.activeItem = this.items?.filter(
         (x) => x['slug'] == this.selectedTab?.toLowerCase(),
       )[0];
@@ -172,26 +172,26 @@ export class NavNewComponent implements OnInit, OnDestroy {
   setBoards(response) {
     if (response.success === true) {
       const data = response.data.userBoardConfigDTO;
-      console.log(
-        '🔍 INITIAL data from API:',
-        JSON.parse(JSON.stringify(data)),
-      );
-      console.log(
-        '🔍 Slingshot shown status:',
-        data[this.selectedType]
-          ?.find((b) => b.boardSlug === 'slingshot')
-          ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
-      );
+      // console.log(
+      //   '🔍 INITIAL data from API:',
+      //   JSON.parse(JSON.stringify(data)),
+      // );
+      // console.log(
+      //   '🔍 Slingshot shown status:',
+      //   data[this.selectedType]
+      //     ?.find((b) => b.boardSlug === 'slingshot')
+      //     ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
+      // );
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(
           localStorage.getItem('completeHierarchyData'),
         )[this.selectedType];
 
         if (levelDetails) {
-          console.log(
-            '🔍 BEFORE hierarchy mutations:',
-            JSON.parse(JSON.stringify(data)),
-          );
+          // console.log(
+          //   '🔍 BEFORE hierarchy mutations:',
+          //   JSON.parse(JSON.stringify(data)),
+          // );
           data[this.selectedType]?.forEach((board) => {
             if (board?.filters) {
               if (
@@ -245,16 +245,16 @@ export class NavNewComponent implements OnInit, OnDestroy {
               }
             }
           });
-          console.log(
-            '🔍 AFTER hierarchy mutations:',
-            JSON.parse(JSON.stringify(data)),
-          );
-          console.log(
-            '🔍 Slingshot shown status:',
-            data[this.selectedType]
-              ?.find((b) => b.boardSlug === 'slingshot')
-              ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
-          );
+          // console.log(
+          //   '🔍 AFTER hierarchy mutations:',
+          //   JSON.parse(JSON.stringify(data)),
+          // );
+          // console.log(
+          //   '🔍 Slingshot shown status:',
+          //   data[this.selectedType]
+          //     ?.find((b) => b.boardSlug === 'slingshot')
+          //     ?.kpis.map((k) => ({ id: k.kpiId, shown: k.shown })),
+          // );
 
           data['others']?.forEach((board) => {
             if (board?.filters) {
@@ -293,13 +293,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
           });
         }
         data['configDetails'] = response.data.configDetails;
-        console.log(
-          '🔍 BEFORE deepEqual check:',
-          JSON.parse(JSON.stringify(data)),
-        );
+        // console.log(
+        //   '🔍 BEFORE deepEqual check:',
+        //   JSON.parse(JSON.stringify(data)),
+        // );
         if (!this.helperService.deepEqual(this.dashConfigData, data)) {
           this.dashConfigData = data;
-          console.log('data sent to shared service:', data);
+          // console.log('data sent to shared service:', data);
           this.sharedService.setDashConfigData(data);
         }
 
@@ -309,20 +309,20 @@ export class NavNewComponent implements OnInit, OnDestroy {
             this.dashConfigData[this.selectedType].forEach((board) => {
               if (board.boardSlug === 'iteration') {
                 board.kpis = board.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
-                console.log('Filtered kpis for iteration board:', board.kpis);
+                // console.log('Filtered kpis for iteration board:', board.kpis);
               }
             });
           }
-          console.log('shallow copy ', [
-            ...this.dashConfigData[this.selectedType],
-            ...this.dashConfigData['others'],
-          ]);
+          // console.log('shallow copy ', [
+          //   ...this.dashConfigData[this.selectedType],
+          //   ...this.dashConfigData['others'],
+          // ]);
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
           ]
             .filter((board) => {
-              console.log('Checking board:', board.kpis);
+              // console.log('Checking board:', board.kpis);
               return (
                 board.kpis.some((kpi) => kpi.shown === true) &&
                 board.kpis.length > 0
@@ -384,7 +384,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     const selectedTab = obj?.value?.boardSlug || obj?.boardSlug;
 
     if (!selectedTab) {
-      console.warn('❌ selectedTab (boardSlug) is missing in object:', obj);
+      // console.warn('❌ selectedTab (boardSlug) is missing in object:', obj);
       return;
     }
 
