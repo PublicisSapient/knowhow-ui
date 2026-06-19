@@ -3034,31 +3034,6 @@ describe('ExecutiveV2Component', () => {
         shown: true,
       },
     ];
-
-    // Initialize filterApplyData with required properties including 'label'
-    component.filterApplyData = {
-      ids: ['project1'],
-      level: 5,
-      selectedMap: {
-        project: ['project1'],
-        sprint: [],
-      },
-      sprintIncluded: ['CLOSED'],
-      label: 'project',
-    };
-
-    // Initialize filterData with required structure
-    component.filterData = [
-      {
-        nodeId: 'project1',
-        nodeName: 'Test Project',
-        level: 5,
-        labelName: 'project',
-        label: 'project',
-        filterData: [],
-      },
-    ];
-
     component.service.setSelectedType('Scrum');
     component.ngOnInit();
     fixture.detectChanges();
@@ -15921,29 +15896,25 @@ describe('ExecutiveV2Component', () => {
       expect(component.computeKpi205LineChartData).toHaveBeenCalled();
     });
   });
+});
+
   describe('Feature Flags', () => {
     it('should check ASK_ME feature flag on init', (done) => {
-      const featureFlagService = TestBed.inject(FeatureFlagsService);
-      spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(
-        Promise.resolve(true),
-      );
+      const featureFlagService = TestBed.inject(FeatureFlagsService) as jasmine.SpyObj<FeatureFlagsService>;
+      featureFlagService.isFeatureEnabled.and.returnValue(Promise.resolve(true));
 
       component.ngOnInit();
 
       setTimeout(() => {
-        expect(featureFlagService.isFeatureEnabled).toHaveBeenCalledWith(
-          'ASK_ME',
-        );
+        expect(featureFlagService.isFeatureEnabled).toHaveBeenCalledWith('ASK_ME');
         expect(component.isAskMeEnabled).toBe(true);
         done();
       }, 100);
     });
 
     it('should set isAskMeEnabled to false when feature is disabled', (done) => {
-      const featureFlagService = TestBed.inject(FeatureFlagsService);
-      spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(
-        Promise.resolve(false),
-      );
+      const featureFlagService = TestBed.inject(FeatureFlagsService) as jasmine.SpyObj<FeatureFlagsService>;
+      featureFlagService.isFeatureEnabled.and.returnValue(Promise.resolve(false));
 
       component.ngOnInit();
 
@@ -16065,10 +16036,10 @@ describe('ExecutiveV2Component', () => {
     it('should reset all component properties to default values', () => {
       component.noFilterApplyData = true;
       component.kpiLoader = new Set(['kpi1', 'kpi2']);
-      component.processedKPI11Value = { kpi11: 'value' };
+      component.processedKPI11Value = { 'kpi11': 'value' };
       component.selectedBranchFilter = 'branch1';
       component.serviceObject = { key: 'value' };
-      component['kpi202WorkflowOrderFetched'] = true;
+      component.kpi202WorkflowOrderFetched = true;
       component.kpi202WorkflowOrder = ['status1', 'status2'];
 
       component.resetToDefaults();
@@ -16078,7 +16049,7 @@ describe('ExecutiveV2Component', () => {
       expect(component.processedKPI11Value).toEqual({});
       expect(component.selectedBranchFilter).toBe('Select');
       expect(component.serviceObject).toEqual({});
-      expect(component['kpi202WorkflowOrderFetched']).toBe(false);
+      expect(component.kpi202WorkflowOrderFetched).toBe(false);
       expect(component.kpi202WorkflowOrder).toEqual([]);
     });
   });
@@ -16156,24 +16127,18 @@ describe('ExecutiveV2Component', () => {
         authorities: ['ROLE_USER'],
       };
 
-      spyOn(localStorage, 'getItem').and.returnValue(
-        JSON.stringify(currentUserDetails),
-      );
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(currentUserDetails));
       spyOn(service, 'setBackupOfFilterSelectionState');
 
       component.urlRedirection(decodedStateFilters);
 
-      expect(service.setBackupOfFilterSelectionState).toHaveBeenCalledWith(
-        stateFiltersObjLocal,
-      );
+      expect(service.setBackupOfFilterSelectionState).toHaveBeenCalledWith(stateFiltersObjLocal);
     });
 
     it('should redirect to error page when user has no project access', () => {
       const stateFiltersObjLocal = {
         parent_level: {},
-        primary_level: [
-          { labelName: 'project', basicProjectConfigId: 'proj1' },
-        ],
+        primary_level: [{ labelName: 'project', basicProjectConfigId: 'proj1' }],
       };
       const decodedStateFilters = JSON.stringify(stateFiltersObjLocal);
       const currentUserDetails = {
@@ -16181,9 +16146,7 @@ describe('ExecutiveV2Component', () => {
         authorities: ['ROLE_USER'],
       };
 
-      spyOn(localStorage, 'getItem').and.returnValue(
-        JSON.stringify(currentUserDetails),
-      );
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(currentUserDetails));
       spyOn(router, 'navigate');
       spyOn(service, 'raiseError');
 
@@ -16201,9 +16164,7 @@ describe('ExecutiveV2Component', () => {
     it('should allow access for superadmin users', () => {
       const stateFiltersObjLocal = {
         parent_level: {},
-        primary_level: [
-          { labelName: 'project', basicProjectConfigId: 'proj1' },
-        ],
+        primary_level: [{ labelName: 'project', basicProjectConfigId: 'proj1' }],
       };
       const decodedStateFilters = JSON.stringify(stateFiltersObjLocal);
       const currentUserDetails = {
@@ -16211,16 +16172,12 @@ describe('ExecutiveV2Component', () => {
         authorities: ['ROLE_SUPERADMIN'],
       };
 
-      spyOn(localStorage, 'getItem').and.returnValue(
-        JSON.stringify(currentUserDetails),
-      );
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(currentUserDetails));
       spyOn(service, 'setBackupOfFilterSelectionState');
 
       component.urlRedirection(decodedStateFilters);
 
-      expect(service.setBackupOfFilterSelectionState).toHaveBeenCalledWith(
-        stateFiltersObjLocal,
-      );
+      expect(service.setBackupOfFilterSelectionState).toHaveBeenCalledWith(stateFiltersObjLocal);
     });
   });
 
@@ -16267,10 +16224,25 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
+  describe('Search Query Subscription', () => {
+    it('should handle page scroll on search', (done) => {
+      spyOn<any>(component, 'handlePageScrollOnSearch');
+      const searchQuery = { value: 'test-search' };
+
+      component['setupSearchQuerySubscription']();
+      service.searchQuery$.next(searchQuery);
+
+      setTimeout(() => {
+        expect(component['handlePageScrollOnSearch']).toHaveBeenCalledWith('test-search');
+        done();
+      }, 1600);
+    });
+  });
+
   describe('Scrum/Kanban Switch Subscription', () => {
     it('should reset and update on scrum/kanban switch', () => {
       spyOn(component, 'resetToDefaults');
-      component.kpiTrendObject = { kpi1: 'data' };
+      component.kpiTrendObject = { 'kpi1': 'data' };
 
       component['setupScrumKanbanSwitchSubscription']();
       service.onScrumKanbanSwitch.next({ selectedType: 'kanban' });
@@ -16286,9 +16258,7 @@ describe('ExecutiveV2Component', () => {
       const projectId = 'proj123';
       const cachedOrder = ['status1', 'status2', 'status3'];
 
-      spyOn(localStorage, 'getItem').and.returnValue(
-        JSON.stringify(cachedOrder),
-      );
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(cachedOrder));
 
       const cacheKey = `kpi202_workflow_order_${projectId}`;
       const result = localStorage.getItem(cacheKey);
@@ -16303,10 +16273,10 @@ describe('ExecutiveV2Component', () => {
     });
 
     it('should not fetch workflow order again once fetched', () => {
-      component['kpi202WorkflowOrderFetched'] = true;
+      component.kpi202WorkflowOrderFetched = true;
       component.kpi202WorkflowOrder = ['status1', 'status2'];
 
-      expect(component['kpi202WorkflowOrderFetched']).toBe(true);
+      expect(component.kpi202WorkflowOrderFetched).toBe(true);
     });
   });
 
@@ -16445,9 +16415,9 @@ describe('ExecutiveV2Component', () => {
 
     it('should handle multiple kpi full width flags', () => {
       component.kpiFullWidthFlags = {
-        kpi205: true,
-        kpi206: false,
-        kpi207: true,
+        'kpi205': true,
+        'kpi206': false,
+        'kpi207': true,
       };
       expect(Object.keys(component.kpiFullWidthFlags).length).toBe(3);
     });
@@ -16484,15 +16454,17 @@ describe('ExecutiveV2Component', () => {
 
   describe('Defects Breached SLAs', () => {
     it('should handle defectsBreachedSLAs data', () => {
-      const mockData = [{ issueId: 'DEF-1', sla: 'P1', breachedBy: '2 days' }];
+      const mockData = [
+        { issueId: 'DEF-1', sla: 'P1', breachedBy: '2 days' },
+      ];
       component.defectsBreachedSLAs = mockData;
       expect(component.defectsBreachedSLAs).toEqual(mockData);
     });
 
     it('should handle defectsBreachedSLAsAllValues', () => {
       const mockAllValues = {
-        Project1: [{ issueId: 'DEF-1', sla: 'P1' }],
-        Project2: [{ issueId: 'DEF-2', sla: 'P2' }],
+        'Project1': [{ issueId: 'DEF-1', sla: 'P1' }],
+        'Project2': [{ issueId: 'DEF-2', sla: 'P2' }],
       };
       component.defectsBreachedSLAsAllValues = mockAllValues;
       expect(component.defectsBreachedSLAsAllValues).toEqual(mockAllValues);
@@ -16506,7 +16478,7 @@ describe('ExecutiveV2Component', () => {
 
     it('should store kpi recommendation data', () => {
       const mockRecommData = {
-        kpi123: {
+        'kpi123': {
           recommendations: ['Improve test coverage', 'Reduce technical debt'],
         },
       };
@@ -16525,9 +16497,7 @@ describe('ExecutiveV2Component', () => {
 
   describe('ngOnDestroy', () => {
     it('should unsubscribe all subscriptions and complete destroy subject', () => {
-      const mockSubscription = jasmine.createSpyObj('Subscription', [
-        'unsubscribe',
-      ]);
+      const mockSubscription = jasmine.createSpyObj('Subscription', ['unsubscribe']);
       component.subscriptions = [mockSubscription, mockSubscription];
       component.queryParamsSubscription = mockSubscription;
 

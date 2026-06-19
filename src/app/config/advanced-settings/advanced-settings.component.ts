@@ -539,7 +539,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getSCMToolTimeDetails(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
-    return traceLog == undefined ||
+    return traceLog === undefined ||
       traceLog === null ||
       traceLog.executionResumesAt === 0
       ? 'NA'

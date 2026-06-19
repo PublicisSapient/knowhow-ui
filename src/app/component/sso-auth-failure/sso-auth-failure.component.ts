@@ -37,7 +37,7 @@ export class SsoAuthFailureComponent implements OnInit {
   }
 
   clearAllCookies() {
-    console.log('clear all cookie Called');
+    console.log('clear all cookie called - sso auth failure component');
     const cookies = document.cookie.split(';');
     // set past expiry to all cookies
     for (const cookie of cookies) {

@@ -209,10 +209,18 @@ export class GroupedColumnPlusLineChartV2Component
     d3.select(this.elem).select('#svgLegend').select('svg').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
+    // kpi205: clear the old sprint-legend-container and reset the counter so it
+    // re-renders with the newly-selected filter's data (Weekly / Bi-Weekly / Monthly).
+    d3.select(this.elem).selectAll('.sprint-legend-container').remove();
+    this.counter = 0;
     if (this.isXaxisGroup === true && selectedProjectCount === 1) {
       data = data.map((details) => {
         let finalResult = {};
-        const XValue = details.value[0].sSprintName || details.value[0].date;
+        // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
+        const XValue =
+          details.value[0].sSprintName ||
+          details.value[0].sSprintId ||
+          details.value[0].date;
         const sortValue = XValue;
         finalResult = {
           ...details,
@@ -276,7 +284,8 @@ export class GroupedColumnPlusLineChartV2Component
         if (details == null) {
           return null;
         }
-        const XValue = details.sSprintName || details.date;
+        // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
+        const XValue = details.sSprintName || details.sSprintId || details.date;
         const sortValue = XValue;
         return { ...details, sortSprint: sortValue };
       });
@@ -296,7 +305,7 @@ export class GroupedColumnPlusLineChartV2Component
           return i + 1;
         }
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-          return d.date || d.sortSprint || d.sSprintName;
+          return d.sortSprint || d.sSprintId || d.date || d.sSprintName;
         }
         return d.isForecast ? 'Forecast' : i + 1;
       });
@@ -483,7 +492,7 @@ export class GroupedColumnPlusLineChartV2Component
         .style('pointer-events', 'none')
         .style('opacity', 0);
 
-      if (benchmarkValue !== null) {
+      /* if (benchmarkValue !== null) {
         svgX
           .append('svg:line')
           .attr('x1', 0)
@@ -518,7 +527,7 @@ export class GroupedColumnPlusLineChartV2Component
           .style('font-size', '12px')
           .text(Math.round(benchmarkValue * 100) / 100)
           .attr('class', 'benchmark-label');
-      }
+      } */
 
       const xAxisGrid = d3
         .axisBottom(x0)
@@ -568,7 +577,11 @@ export class GroupedColumnPlusLineChartV2Component
         }
         let key;
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-          key = point.sortSprint || point.date || point.sSprintName;
+          key =
+            point.sortSprint ||
+            point.sSprintId ||
+            point.date ||
+            point.sSprintName;
         } else {
           key = point.isForecast ? 'Forecast' : index + 1;
         }
@@ -1465,7 +1478,12 @@ export class GroupedColumnPlusLineChartV2Component
           return;
         }
         const sprintKey = index; // You could use sprint.sSprintID if needed for uniqueness
-        const sprintName = sprint.sSprintName?.trim() || sprint.date?.trim();
+        // Read sprint label — try sSprintName first, then sSprintId (used by Bi-Weekly),
+        // then fall back to the date field (used by Monthly).
+        const sprintName =
+          sprint.sSprintName?.trim() ||
+          sprint.sSprintId?.trim() ||
+          sprint.date?.trim();
 
         if (!sprintMap.has(sprintKey)) {
           sprintMap.set(sprintKey, {

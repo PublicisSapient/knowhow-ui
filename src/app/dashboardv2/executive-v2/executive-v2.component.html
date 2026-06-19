@@ -84,7 +84,7 @@
                         [showExport]="(showChart === 'chart' || showChart === 'large')" [showChartView]="showChart"
                         [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                         [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'"
-                        [trendValueList]="selectedTab === 'iteration' ? iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {} : kpiChartData[kpi?.kpiId]"
+                        [trendValueList]="selectedTab === 'iteration' ? (iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {}) : kpiChartData[kpi?.kpiId]"
                         [colors]="colorObj" [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                         (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
@@ -189,11 +189,21 @@
                                            Aggregated shows bar chart only; Average shows line chart only. -->
                                       @if (kpi.kpiId === 'kpi205') {
                                         <div class="p-d-flex p-jc-start kpi-select-button-container">
+                                          @if(false) {
+                                            <p-dropdown
+                                              [options]="dataTypeDropdownOptions"
+                                              [(ngModel)]="selectedDataTypeForFlowEfficiency"
+                                              optionLabel="name"
+                                              (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                          }
+
                                           <p-dropdown
-                                            [options]="dataTypeDropdownOptions"
-                                            [(ngModel)]="selectedDataTypeForFlowEfficiency"
+                                            [options]="filterByTimeOptions"
+                                            [(ngModel)]="selectedFilterByTimeOption"
                                             optionLabel="name"
-                                            (onChange)="onSelectedDataTypeChange($event.value, kpi.kpiId)" />
+                                            (onChange)="onSelectFilterTimeOption($event.value)"
+                                            placeholder="Select Time Filter"
+                                            [style]="{'width': '200px'}" />
                                         </div>
                                       }
 
@@ -205,7 +215,7 @@
                                           [lineChart]="kpi.kpiId === 'kpi205' ? false : kpi?.kpiDetail?.lineChart"
                                           [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup" [unit]="kpi?.kpiDetail?.kpiUnit"
                                           [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [xCaption]="kpi.kpiId === 'kpi205' ? kpi205XCaption : (this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel)"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
                                           [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
                                           [selectedtype]="selectedtype" [viewType]="showChart"
@@ -220,7 +230,7 @@
                                       @if (kpi.kpiId === 'kpi205' && selectedDataTypeForFlowEfficiency?.code === 'AVG') {
                                         <app-multiline-v2
                                           [data]="kpi205AvgChartData"
-                                          [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                          [xCaption]="kpi205XCaption"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                           [name]="kpi?.kpiName"
                                           [kpiId]="kpi?.kpiId"
@@ -375,6 +385,17 @@
 
                                   <ng-container *ngSwitchCase="'stacked-area'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
+                                      @if (kpi.kpiId === 'kpi206') {
+                                        <div class="p-d-flex p-jc-start kpi-select-button-container" style="margin-top: 10px; margin-bottom: 10px;">
+                                          <p-dropdown
+                                            [options]="kpi206FilterOptions"
+                                            [(ngModel)]="selectedKpi206FilterOption"
+                                            optionLabel="name"
+                                            (onChange)="onSelectKpi206FilterOption($event.value)"
+                                            placeholder="Select Filter"
+                                            [style]="{'width': '200px'}" />
+                                        </div>
+                                      }
                                       <div class="stacked-area-chart">
                                         <app-stacked-area-chart [kpiId]="kpi?.kpiId"
                                           [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
