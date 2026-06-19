@@ -686,10 +686,31 @@ export class MultilineV2Component implements OnChanges {
         .style('opacity', 0);
 
       /* Add Axis into SVG */
+      // Check if this is a Range/Duration KPI that should display actual x-axis values
+      const isRangeDurationKPI =
+        self.xAxisLabel?.toLowerCase() === 'range' ||
+        self.xAxisLabel?.toLowerCase() === 'duration' ||
+        self.xCaption?.toLowerCase() === 'range' ||
+        self.xCaption?.toLowerCase() === 'duration';
+
       const xAxis = d3.axisBottom(xScale).tickFormat(function (tickval) {
-        return board == 'dora'
-          ? self.getFormatedDateBasedOnType(tickval, self.xCaption)
-          : tickval;
+        if (board == 'dora') {
+          return self.getFormatedDateBasedOnType(tickval, self.xCaption);
+        }
+        // For Range/Duration KPIs, display the actual category values
+        if (isRangeDurationKPI && data[0]?.value) {
+          const dataPoint = data[0].value.find((d, i) => {
+            if (d == null) return false;
+            return (d.xOrder || i + 1) === tickval;
+          });
+          return (
+            dataPoint?.xAxisTick ||
+            dataPoint?.sSprintName ||
+            dataPoint?.date ||
+            tickval
+          );
+        }
+        return tickval;
       });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
@@ -1159,9 +1180,12 @@ export class MultilineV2Component implements OnChanges {
       svgX
         .select('.x-axis')
         .selectAll('.tick')
-        .each(function (dataObj, index) {
+        .each(function (dataObj: any, index: any) {
           const tick = d3.select(this);
+          // For Range/Duration KPIs, the tick labels are already set correctly by tickFormat
+          // For other KPIs with xAxisTick, update the labels
           if (
+            !isRangeDurationKPI &&
             data[0]?.value[0] &&
             data[0]?.value[0]?.xAxisTick &&
             !(viewType === 'large' && selectedProjectCount === 1)
@@ -1221,10 +1245,12 @@ export class MultilineV2Component implements OnChanges {
           .style('opacity', 1)
           .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
-        const colorArr = [];
-        for (let i = 0; i < color?.length; i++) {
-          if (!colorArr.includes(color[i])) {
-            colorArr.push(color[i]);
+        const colorArr: any[] = [];
+        if (color && color.length) {
+          for (let i = 0; i < color.length; i++) {
+            if (!colorArr.includes(color[i])) {
+              colorArr.push(color[i]);
+            }
           }
         }
 
@@ -1254,7 +1280,8 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi170' &&
         kpiId !== 'KPI127' &&
         kpiId !== 'kpi997' &&
-        kpiId !== 'kpi184'
+        kpiId !== 'kpi184' &&
+        !isRangeDurationKPI // Skip legend for Range/Duration KPIs
       ) {
         // Render Sprint Legend
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
@@ -1262,12 +1289,12 @@ export class MultilineV2Component implements OnChanges {
     }
   }
 
-  wrap(text, width) {
-    text.each(function () {
+  wrap(text: any, width: any) {
+    text.each(function (this: any) {
       const text = d3.select(this);
       const words = text.text().split(/\s+/).reverse();
       let word;
-      let line = [];
+      let line: any[] = [];
       let lineNumber = 0;
       const lineHeight = 1.1; // ems
       const y = text.attr('y');
@@ -1296,7 +1323,7 @@ export class MultilineV2Component implements OnChanges {
     });
   }
 
-  getFormatedDateBasedOnType(date, xCaptionType) {
+  getFormatedDateBasedOnType(date: any, xCaptionType: any) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
