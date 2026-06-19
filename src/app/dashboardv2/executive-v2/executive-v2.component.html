@@ -84,7 +84,7 @@
                         [showExport]="(showChart === 'chart' || showChart === 'large')" [showChartView]="showChart"
                         [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                         [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'"
-                        [trendValueList]="selectedTab === 'iteration' ? iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {} : kpiChartData[kpi?.kpiId]"
+                        [trendValueList]="selectedTab === 'iteration' ? (iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {}) : kpiChartData[kpi?.kpiId]"
                         [colors]="colorObj" [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                         (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
@@ -385,6 +385,17 @@
 
                                   <ng-container *ngSwitchCase="'stacked-area'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
+                                      @if (kpi.kpiId === 'kpi206') {
+                                        <div class="p-d-flex p-jc-start kpi-select-button-container" style="margin-top: 10px; margin-bottom: 10px;">
+                                          <p-dropdown
+                                            [options]="kpi206FilterOptions"
+                                            [(ngModel)]="selectedKpi206FilterOption"
+                                            optionLabel="name"
+                                            (onChange)="onSelectKpi206FilterOption($event.value)"
+                                            placeholder="Select Filter"
+                                            [style]="{'width': '200px'}" />
+                                        </div>
+                                      }
                                       <div class="stacked-area-chart">
                                         <app-stacked-area-chart [kpiId]="kpi?.kpiId"
                                           [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
