@@ -6129,7 +6129,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   fetchAndCacheKpi202WorkflowOrder(): void {
     const projectId =
       this.service.getSelectedTrends()?.[0]?.basicProjectConfigId;
-    if (!projectId) return;
+    if (!projectId) {
+      return;
+    }
 
     const cacheKey = `kpi202_workflow_order_${projectId}`;
 
@@ -6147,16 +6149,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.httpService
       .getKPIFieldMappingConfig(`${projectId}/kpi202`)
       .subscribe((configResp: any) => {
-        if (!configResp?.success) return;
+        if (!configResp?.success) {
+          return;
+        }
         const toolId = configResp.data?.projectToolConfigId;
-        if (!toolId) return;
+        if (!toolId) {
+          return;
+        }
 
         this.httpService
           .getFieldMappingsWithHistory(toolId, 'kpi202', {
             releaseNodeId: null,
           })
           .subscribe((mappingResp: any) => {
-            if (!mappingResp?.success) return;
+            if (!mappingResp?.success) {
+              return;
+            }
             const responses: any[] =
               mappingResp.data?.fieldMappingResponses || [];
 
@@ -6429,12 +6437,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   onSelectFilterTimeOption(selectedOption) {
-    if (!selectedOption) return;
+    if (!selectedOption) {
+      return;
+    }
 
     const kpiId = 'kpi205';
     const idx = this.ifKpiExist(kpiId);
 
-    if (idx === -1) return;
+    if (idx === -1) {
+      return;
+    }
 
     // Update the selected filter in kpiSelectedFilterObj
     this.kpiSelectedFilterObj[kpiId] = { filter: selectedOption.value };
@@ -6478,12 +6490,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   onSelectKpi206FilterOption(selectedOption) {
-    if (!selectedOption) return;
+    if (!selectedOption) {
+      return;
+    }
 
     const kpiId = 'kpi206';
     const idx = this.ifKpiExist(kpiId);
 
-    if (idx === -1) return;
+    if (idx === -1) {
+      return;
+    }
 
     console.log(
       '[kpi206] onSelectKpi206FilterOption called with:',

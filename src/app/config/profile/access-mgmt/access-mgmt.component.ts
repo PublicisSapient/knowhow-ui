@@ -79,7 +79,7 @@ export class AccessMgmtComponent implements OnInit {
   projectAdminAccessLevels: any = [];
 
   constructor(
-    private service: SharedService,
+    private readonly service: SharedService,
     private httpService: HttpService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
