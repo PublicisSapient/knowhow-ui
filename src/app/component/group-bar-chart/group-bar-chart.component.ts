@@ -749,7 +749,7 @@ export class GroupBarChartComponent implements OnChanges {
       .style('bottom', 20 + 'px')
       .style('top', y[0] + 30 + 'px');
 
-    if (benchmarkValue !== null) {
+    /* if (benchmarkValue !== null) {
       const tooltip = d3
         .select('body')
         .append('div')
@@ -801,7 +801,7 @@ export class GroupBarChartComponent implements OnChanges {
         .style('font-size', '12px')
         .style('font-weight', 'bold')
         .text(benchmarkValue);
-    }
+    } */
   }
 
   findMaxVal(data) {

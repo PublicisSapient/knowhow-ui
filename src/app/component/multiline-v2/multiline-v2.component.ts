@@ -147,8 +147,12 @@ export class MultilineV2Component implements OnChanges {
         const sprintData = sprintEntry.projects;
 
         // Add sprint name if not already present
+        // Read x-axis label — try sSprintName first, then sSprintId (used by Bi-Weekly),
+        // then fall back to the date field (used by Monthly).
         const xAxisName =
-          xAxisLabelName.sSprintName?.trim() || xAxisLabelName.date?.trim();
+          xAxisLabelName.sSprintName?.trim() ||
+          xAxisLabelName.sSprintId?.trim() ||
+          xAxisLabelName.date?.trim();
         if (xAxisName && !sprintEntry.sprints.includes(xAxisName)) {
           sprintEntry.sprints.push(xAxisName);
         }
@@ -401,14 +405,14 @@ export class MultilineV2Component implements OnChanges {
       const sprintList = data[0]?.value
         ?.filter((details) => details != null)
         ?.map((details) => details.date || details?.sortSprint);
-      // When on slingshot tab and any sprint name is short, use sprint names
-      // as x-axis labels instead of numeric indices
-      const currentTab = this.service.getSelectedTab()?.toLowerCase();
-      const useSprintNameLabels =
-        currentTab === 'slingshot' &&
-        data[0]?.value
-          ?.filter((d) => d != null)
-          ?.some((d) => (d?.sSprintName ? d.sSprintName.length < 10 : false));
+      // // When on slingshot tab and any sprint name is short, use sprint names
+      // // as x-axis labels instead of numeric indices
+      // const currentTab = this.service.getSelectedTab()?.toLowerCase();
+      // const useSprintNameLabels =
+      //   currentTab === 'slingshot' &&
+      //   data[0]?.value
+      //     ?.filter((d) => d != null)
+      //     ?.some((d) => (d?.sSprintName ? d.sSprintName.length < 10 : false));
       const unitAbbs = {
         hours: 'Hrs',
         sp: 'SP',
@@ -489,31 +493,33 @@ export class MultilineV2Component implements OnChanges {
       });
 
       let xScale;
-
-      // Build x domain values depending on configuration
-      let xDomainValues;
       if (kpiId === 'kpi997') {
-        xDomainValues = [...sprintList];
+        xScale = d3
+          .scaleBand()
+          .domain([...sprintList])
+          .range([0, width])
+          .padding(0);
       } else {
-        xDomainValues = data[maxObjectNo].value?.map(function (d, i) {
-          if (d == null) {
-            return i + 1;
-          }
-          if (board == 'dora') {
-            return d.date;
-          }
-          if (useSprintNameLabels) {
-            return d.date || d.sSprintName || d.xOrder || i + 1;
-          }
-          return d.xOrder || i + 1;
-        });
+        xScale = d3
+          .scaleBand()
+          .rangeRound([0, width])
+          .padding(0)
+          .domain(
+            data[maxObjectNo].value?.map(function (d, i) {
+              if (d == null) {
+                return i + 1;
+              }
+              let returnObj = '';
+              if (board == 'dora') {
+                returnObj = d.date;
+              } else {
+                returnObj = d.xOrder || i + 1;
+              }
+              return returnObj;
+            }),
+          );
       }
 
-      xScale = d3
-        .scaleBand()
-        .rangeRound([0, width])
-        .padding(0)
-        .domain(xDomainValues);
       const getXCoordinate = (point, index) => {
         if (point == null) {
           return xScale(index + 1);
@@ -522,10 +528,6 @@ export class MultilineV2Component implements OnChanges {
           return xScale(point.date);
         } else if (kpiId === 'kpi997') {
           return xScale(point.date || point.sortSprint);
-        } else if (useSprintNameLabels) {
-          return xScale(
-            point.date || point.sSprintName || point.xOrder || index + 1,
-          );
         } else {
           return xScale(point.xOrder || index + 1);
         }
@@ -684,10 +686,31 @@ export class MultilineV2Component implements OnChanges {
         .style('opacity', 0);
 
       /* Add Axis into SVG */
+      // Check if this is a Range/Duration KPI that should display actual x-axis values
+      const isRangeDurationKPI =
+        self.xAxisLabel?.toLowerCase() === 'range' ||
+        self.xAxisLabel?.toLowerCase() === 'duration' ||
+        self.xCaption?.toLowerCase() === 'range' ||
+        self.xCaption?.toLowerCase() === 'duration';
+
       const xAxis = d3.axisBottom(xScale).tickFormat(function (tickval) {
-        return board == 'dora'
-          ? self.getFormatedDateBasedOnType(tickval, self.xCaption)
-          : tickval;
+        if (board == 'dora') {
+          return self.getFormatedDateBasedOnType(tickval, self.xCaption);
+        }
+        // For Range/Duration KPIs, display the actual category values
+        if (isRangeDurationKPI && data[0]?.value) {
+          const dataPoint = data[0].value.find((d, i) => {
+            if (d == null) return false;
+            return (d.xOrder || i + 1) === tickval;
+          });
+          return (
+            dataPoint?.xAxisTick ||
+            dataPoint?.sSprintName ||
+            dataPoint?.date ||
+            tickval
+          );
+        }
+        return tickval;
       });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
@@ -779,7 +802,7 @@ export class MultilineV2Component implements OnChanges {
         .style('pointer-events', 'none')
         .style('opacity', 0);
 
-      if (benchmarkValue !== null) {
+      /* if (benchmarkValue !== null) {
         svgX
           .append('svg:line')
           .attr('x1', 0)
@@ -814,7 +837,7 @@ export class MultilineV2Component implements OnChanges {
           .style('font-size', '12px')
           .text(Math.round(benchmarkValue * 100) / 100)
           .attr('class', 'benchmark-label');
-      }
+      } */
 
       // gridlines
       svgX
@@ -1062,7 +1085,6 @@ export class MultilineV2Component implements OnChanges {
 
       /* Add circles (data) on the line */
       if (this.kpiId !== 'kpi202_duplicate') {
-        console.log(this.kpiId);
         lines
           .selectAll('circle-group')
           .data(data)
@@ -1079,11 +1101,9 @@ export class MultilineV2Component implements OnChanges {
           .append('g')
           .attr('class', 'circle')
           .on('mouseover', function (event, d) {
-            console.log('d ', d);
             if (d?.isForecast) return;
             const topValue = 80;
             if (d.hoverValue) {
-              console.log('if');
               div
                 .transition()
                 .duration(200)
@@ -1111,7 +1131,6 @@ export class MultilineV2Component implements OnChanges {
                 .style('left', xPosition - 80 + 'px')
                 // .style('top', yScale(d.value) - topValue + 'px');
                 .style('top', yPosition + 20 + 'px');
-              console.log('d.hoverValue ', d.hoverValue);
               for (const hoverData in d.hoverValue) {
                 div
                   .append('p')
@@ -1161,32 +1180,19 @@ export class MultilineV2Component implements OnChanges {
       svgX
         .select('.x-axis')
         .selectAll('.tick')
-        .each(function (dataObj, index) {
+        .each(function (dataObj: any, index: any) {
           const tick = d3.select(this);
+          // For Range/Duration KPIs, the tick labels are already set correctly by tickFormat
+          // For other KPIs with xAxisTick, update the labels
           if (
+            !isRangeDurationKPI &&
             data[0]?.value[0] &&
             data[0]?.value[0]?.xAxisTick &&
             !(viewType === 'large' && selectedProjectCount === 1)
           ) {
             const textElement = this.getElementsByTagName('text');
-            let point;
-            // When using sprint name labels the tick value is the label itself
-            if (useSprintNameLabels) {
-              point = data[0].value.find(
-                (p) =>
-                  (p && (p.date || p.sortSprint || p.sSprintName)) === dataObj,
-              );
-              if (!point) {
-                const idx = parseInt(dataObj, 10);
-                if (!isNaN(idx)) point = data[0].value[idx - 1];
-              }
-            } else {
-              const idx =
-                typeof dataObj === 'number'
-                  ? dataObj - 1
-                  : parseInt(dataObj, 10) - 1;
-              point = data[0].value[idx];
-            }
+
+            const point = data[0].value[dataObj - 1];
             const fallbackLabel = point?.xAxisTick || dataObj;
             textElement[0].textContent = point?.isForecast
               ? point?.xAxisTick || point?.xName || 'Forecast'
@@ -1239,10 +1245,12 @@ export class MultilineV2Component implements OnChanges {
           .style('opacity', 1)
           .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
-        const colorArr = [];
-        for (let i = 0; i < color?.length; i++) {
-          if (!colorArr.includes(color[i])) {
-            colorArr.push(color[i]);
+        const colorArr: any[] = [];
+        if (color && color.length) {
+          for (let i = 0; i < color.length; i++) {
+            if (!colorArr.includes(color[i])) {
+              colorArr.push(color[i]);
+            }
           }
         }
 
@@ -1272,7 +1280,8 @@ export class MultilineV2Component implements OnChanges {
         kpiId !== 'kpi170' &&
         kpiId !== 'KPI127' &&
         kpiId !== 'kpi997' &&
-        kpiId !== 'kpi184'
+        kpiId !== 'kpi184' &&
+        !isRangeDurationKPI // Skip legend for Range/Duration KPIs
       ) {
         // Render Sprint Legend
         this.renderSprintsLegend(this.flattenData(data), this.xCaption);
@@ -1280,12 +1289,12 @@ export class MultilineV2Component implements OnChanges {
     }
   }
 
-  wrap(text, width) {
-    text.each(function () {
+  wrap(text: any, width: any) {
+    text.each(function (this: any) {
       const text = d3.select(this);
       const words = text.text().split(/\s+/).reverse();
       let word;
-      let line = [];
+      let line: any[] = [];
       let lineNumber = 0;
       const lineHeight = 1.1; // ems
       const y = text.attr('y');
@@ -1314,7 +1323,7 @@ export class MultilineV2Component implements OnChanges {
     });
   }
 
-  getFormatedDateBasedOnType(date, xCaptionType) {
+  getFormatedDateBasedOnType(date: any, xCaptionType: any) {
     const xCaption = xCaptionType?.toLowerCase();
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
