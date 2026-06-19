@@ -155,7 +155,6 @@ export class StackedGroupBarChartComponent
   }
 
   private createChart(): void {
-    console.log(this.kpiId, this.data);
     // Early return if no data is available
     if (this.kpiId === 'kpi195') {
       if (!this.defectsBreachedSLAs || this.defectsBreachedSLAs.length === 0) {

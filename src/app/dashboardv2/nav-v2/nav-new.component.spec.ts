@@ -313,35 +313,49 @@ describe('NavNewComponent', () => {
   });
 
   describe('getBoardConfig', () => {
-    it('should call httpService and handle success response', () => {
+    it('should call httpService and handle success response', (done) => {
       const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
       spyOn(component, 'setBoards');
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         of(responseMock),
       );
 
+      // ngOnInit sets up the subscription that listens to projectListSubject
+      component.ngOnInit();
+
       component.getBoardConfig(['proj1']);
 
-      expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
-        basicProjectConfigIds: ['proj1'],
-      });
-      expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+      // Use setTimeout to allow the subscription to process
+      setTimeout(() => {
+        expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+          basicProjectConfigIds: ['proj1'],
+        });
+        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        done();
+      }, 100);
     });
 
-    it('should handle error and call MessageService.add when getShowHideOnDashboardNewUI fails', () => {
+    it('should handle error and call MessageService.add when getShowHideOnDashboardNewUI fails', (done) => {
       // Simulate an error in the HTTP call
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         throwError({ message: 'Error' }),
       );
 
+      // ngOnInit sets up the subscription with error handling
+      component.ngOnInit();
+
       // Call the function that triggers the HTTP call
       component.getBoardConfig([]);
 
-      // Now, check that MessageService.add was called with the expected error object
-      expect(messageService.add).toHaveBeenCalledWith({
-        severity: 'error',
-        summary: 'Error',
-      });
+      // Use setTimeout to allow the subscription to process the error
+      setTimeout(() => {
+        // Now, check that MessageService.add was called with the expected error object
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'error',
+          summary: 'Error',
+        });
+        done();
+      }, 100);
     });
   });
 
@@ -730,6 +744,168 @@ describe('NavNewComponent', () => {
       component.setBoards(response);
 
       expect(component.items[0].disabled).toBe(true);
+    });
+  });
+
+  describe('getBoardConfig with projectListSubject', () => {
+    it('should emit project list and call httpService via subscription', (done) => {
+      const projectList = ['proj1', 'proj2'];
+      const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
+
+      spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
+        of(responseMock),
+      );
+      spyOn(component, 'setBoards');
+
+      component.ngOnInit();
+
+      component.getBoardConfig(projectList);
+
+      setTimeout(() => {
+        expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+          basicProjectConfigIds: projectList,
+        });
+        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        done();
+      }, 100);
+    });
+
+    it('should handle empty project list in subscription', (done) => {
+      const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
+
+      spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
+        of(responseMock),
+      );
+      spyOn(component, 'setBoards');
+
+      component.ngOnInit();
+
+      component.getBoardConfig([]);
+
+      setTimeout(() => {
+        expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+          basicProjectConfigIds: [],
+        });
+        done();
+      }, 100);
+    });
+  });
+
+  describe('handleMenuTabFunctionality edge cases', () => {
+    it('should handle missing boardSlug gracefully', () => {
+      const obj = { value: { someOtherProperty: 'test' } };
+
+      spyOn(sharedService, 'setSelectedBoard');
+      spyOn(console, 'warn');
+
+      component.handleMenuTabFunctionality(obj);
+
+      expect(sharedService.setSelectedBoard).not.toHaveBeenCalled();
+    });
+
+    it('should navigate correctly when boardSlug is in nested value property', () => {
+      const obj = { value: { boardSlug: 'backlog' } };
+
+      spyOn(sharedService, 'setSelectedBoard');
+      spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
+      component.handleMenuTabFunctionality(obj);
+
+      expect(component.selectedTab).toBe('backlog');
+      expect(sharedService.setSelectedBoard).toHaveBeenCalledWith('backlog');
+      expect(
+        sharedService.setBackupOfFilterSelectionState,
+      ).toHaveBeenCalledWith({
+        additional_level: null,
+      });
+      expect(router.navigate).toHaveBeenCalledWith(['/dashboard/backlog']);
+    });
+
+    it('should set backup filter for dora tab', () => {
+      const obj = { boardSlug: 'dora' };
+
+      spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
+      component.handleMenuTabFunctionality(obj);
+
+      expect(
+        sharedService.setBackupOfFilterSelectionState,
+      ).toHaveBeenCalledWith({
+        additional_level: null,
+      });
+    });
+
+    it('should set backup filter for kpi-maturity tab', () => {
+      const obj = { boardSlug: 'kpi-maturity' };
+
+      spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
+      component.handleMenuTabFunctionality(obj);
+
+      expect(
+        sharedService.setBackupOfFilterSelectionState,
+      ).toHaveBeenCalledWith({
+        additional_level: null,
+      });
+    });
+  });
+
+  describe('updateDataDirectly', () => {
+    it('should call handleMenuTabFunctionality after timeout', (done) => {
+      const searchQuery = { value: { boardSlug: 'iteration' } };
+
+      spyOn(component, 'handleMenuTabFunctionality');
+
+      component.updateDataDirectly(searchQuery);
+
+      setTimeout(() => {
+        expect(component.handleMenuTabFunctionality).toHaveBeenCalledWith(
+          searchQuery.value,
+        );
+        done();
+      }, 350);
+    });
+  });
+
+  describe('setBoards with iteration board kpi121 filtering', () => {
+    it('should filter out kpi121 from iteration board when selectedType is scrum', () => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.homeTabFlag.next(true);
+      component.pebFlag.next(true);
+
+      const response = {
+        success: true,
+        data: {
+          userBoardConfigDTO: {
+            scrum: [
+              {
+                boardName: 'Iteration',
+                boardSlug: 'iteration',
+                filters: {
+                  primaryFilter: { defaultLevel: { labelName: 'project' } },
+                },
+                kpis: [
+                  { kpiId: 'kpi121', shown: true },
+                  { kpiId: 'kpi123', shown: true },
+                ],
+              },
+            ],
+            others: [],
+          },
+        },
+      };
+
+      component.setBoards(response);
+
+      const iterationBoard = component.dashConfigData.scrum.find(
+        (board) => board.boardSlug === 'iteration',
+      );
+      expect(iterationBoard.kpis.length).toBe(1);
+      expect(iterationBoard.kpis[0].kpiId).toBe('kpi123');
     });
   });
 });
