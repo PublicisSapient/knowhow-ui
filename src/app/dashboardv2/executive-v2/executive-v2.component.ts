@@ -213,6 +213,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   filterByTimeOptions: any[] = [];
   selectedFilterByTimeOption: any = null;
 
+  // KPI205 data type filter (By Count / By Story Points)
+  kpi205DataTypeOptions: any[] = [
+    { name: 'By Count', code: 'COUNT' },
+    { name: 'By Story Points', code: 'STORY_POINTS' },
+  ];
+  selectedKpi205DataType: any = { name: 'By Count', code: 'COUNT' };
+  kpi205OriginalData: any = null; // Store original API response for kpi205
+  kpi205YAxisLabel: string = 'Count'; // Dynamic y-axis label for kpi205
+
   // KPI206-specific: Status/Group filter options and selection
   kpi206FilterOptions: any[] = [];
   selectedKpi206Filter: any = null;
@@ -2191,6 +2200,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // compute the 'Average' line chart data so multiline-v2 can render it
     // when the user switches the dropdown to 'Average'.
     if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
+      // Store original data if not already stored
+      // This handles both initial load and subsequent data changes
+      if (!this.kpi205OriginalData && this.kpiChartData[kpiId]?.length) {
+        this.kpi205OriginalData = JSON.parse(
+          JSON.stringify(this.kpiChartData[kpiId]),
+        );
+      }
+
       // Populate filter options if not already done
       if (this.filterByTimeOptions.length === 0 && trendValueList?.length) {
         this.filterByTimeOptions = trendValueList.map((item) => ({
@@ -2210,7 +2227,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (item) => item.filter === this.selectedFilterByTimeOption.value,
           );
           if (defaultData) {
-            this.kpiChartData[kpiId] = [defaultData];
+            // Extract the inner value array which contains the actual chart data
+            // The structure has: { filter: 'Weekly', value: [{ data: 'KnowHOW', value: [...] }] }
+            const chartData =
+              defaultData.value && Array.isArray(defaultData.value)
+                ? defaultData.value
+                : [defaultData];
+
+            this.kpiChartData[kpiId] = chartData;
+            // Store the original data for switching between Count and Story Points
+            this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
           }
         }
       }
@@ -6352,30 +6378,74 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * This method extracts `lineValue` from each data point and maps it to `value`
    * so that app-multiline-v2 can render the Average view correctly.
    *
+   * When "By Story Points" is selected, it reads from the `storyPoints` property
+   * instead of the `value` property for the bar chart.
+   *
    * The result is stored in kpiChartData['kpi205_line'] to avoid mutating
    * the raw aggregated data used by the bar chart.
    */
   computeKpi205LineChartData(): void {
-    const raw = (this.kpiChartData as any)['kpi205'];
-    if (!raw?.length) {
+    // Use original data if available, otherwise use current chart data
+    const sourceData =
+      this.kpi205OriginalData || (this.kpiChartData as any)['kpi205'];
+
+    if (!sourceData?.length) {
       (this.kpiChartData as any)['kpi205_line'] = [];
       return;
     }
+
+    // Check if "By Story Points" is selected
+    const useStoryPoints = this.selectedKpi205DataType?.code === 'STORY_POINTS';
+
+    // Create a deep clone to avoid mutating the original data
+    let chartData = JSON.parse(JSON.stringify(sourceData));
+
+    // If "By Story Points" is selected, transform the data to use storyPoints values from subfilterValues
+    if (useStoryPoints) {
+      chartData = chartData.map((project: any) => ({
+        ...project,
+        value: (project.value || []).map((point: any) => {
+          // Read from subfilterValues.storyPoints if available, otherwise fallback to original value
+          const storyPointsValue =
+            point.subfilterValues?.storyPoints !== undefined
+              ? point.subfilterValues.storyPoints
+              : point.value;
+
+          // Use hoverValue from subfilterValues when available, otherwise use default hoverValue
+          const hoverValue =
+            point.subfilterValues?.hoverValue !== undefined
+              ? point.subfilterValues.hoverValue
+              : point.hoverValue;
+
+          return {
+            ...point,
+            value: storyPointsValue,
+            hoverValue: hoverValue,
+          };
+        }),
+      }));
+    }
+
+    // Update the main chart data
+    (this.kpiChartData as any)['kpi205'] = chartData;
+
     // Map lineValue → value for each data point so multiline-v2 can render it.
     // lineValue holds the Average metric; value holds the Aggregated metric.
     // hoverValue is set to an empty object so the multiline-v2 tooltip shows only
     // the sprint name + value header line, without redundant extra rows.
-    (this.kpiChartData as any)['kpi205_line'] = raw.map((project: any) => ({
-      ...project,
-      value: (project.value || []).map((point: any) => {
-        const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
-        return {
-          ...point,
-          value: avgVal,
-          hoverValue: {},
-        };
+    (this.kpiChartData as any)['kpi205_line'] = chartData.map(
+      (project: any) => ({
+        ...project,
+        value: (project.value || []).map((point: any) => {
+          const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
+          return {
+            ...point,
+            value: avgVal,
+            hoverValue: {},
+          };
+        }),
       }),
-    }));
+    );
     const { forecasts, ...updatedKpiChartDataAvgKpi205 } = (
       this.kpiChartData as any
     )['kpi205_line'][0];
@@ -6419,6 +6489,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           ? selectedData.value
           : [selectedData];
 
+      // Store the original data for switching between Count and Story Points
+      this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
+
       // Update bar chart data (Aggregated)
       (this.kpiChartData as any)[kpiId] = chartData;
 
@@ -6438,7 +6511,45 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       (this.kpiChartData as any)[kpiId] = [];
       (this.kpiChartData as any)['kpi205_line'] = [];
+      this.kpi205OriginalData = null;
     }
+  }
+
+  onKpi205DataTypeChange(selectedOption) {
+    if (!selectedOption) {
+      return;
+    }
+
+    const kpiId = 'kpi205';
+    const idx = this.ifKpiExist(kpiId);
+
+    if (idx === -1) {
+      return;
+    }
+
+    // Update the selected data type
+    this.selectedKpi205DataType = selectedOption;
+
+    // Update y-axis label based on selection
+    this.kpi205YAxisLabel =
+      selectedOption.code === 'STORY_POINTS' ? 'Story Points' : 'Count';
+
+    // Re-compute chart data based on the selected data type and current time filter
+    this.computeKpi205LineChartData();
+
+    // Apply color mapping if needed
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
+      (this.kpiChartData as any)[kpiId] = this.generateColorObj(
+        kpiId,
+        (this.kpiChartData as any)[kpiId],
+      );
+    }
+
+    // Update trends data
+    this.createTrendsData(kpiId);
+
+    // Trigger change detection to update the chart
+    this.cdr.detectChanges();
   }
 
   onSelectKpi206FilterOption(selectedOption) {
