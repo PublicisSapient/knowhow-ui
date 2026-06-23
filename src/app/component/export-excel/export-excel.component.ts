@@ -146,7 +146,9 @@ export class ExportExcelComponent implements OnInit {
     kpiId,
   ) {
     this.iskanban = false;
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    if (kpiId !== 'kpi205') {
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -215,7 +217,9 @@ export class ExportExcelComponent implements OnInit {
       });
     }
 
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    if (this.modalDetails['kpiId'] !== 'kpi205') {
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
