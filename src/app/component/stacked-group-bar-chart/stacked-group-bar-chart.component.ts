@@ -242,7 +242,7 @@ export class StackedGroupBarChartComponent
         });
       });
     } else if (this.kpiId === 'kpi202') {
-      this.yAxisLabel = 'Time (Days)';
+      this.yAxisLabel = 'Days';
       this.xCaption = 'Story ID';
       // kpi202 uses trendValueList entries with dataValue
       // Collect all dynamic keys from dataValue across all data

@@ -293,6 +293,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.serviceObject = {};
     this.kpi202WorkflowOrderFetched = false;
     this.kpi202WorkflowOrder = [];
+
+    // Reset kpi205 data when filters change
+    this.kpi205OriginalData = null;
+    this.selectedKpi205DataType = { name: 'By Count', code: 'COUNT' };
+    this.kpi205YAxisLabel = 'Count';
+    this.filterByTimeOptions = [];
+    this.selectedFilterByTimeOption = null;
   }
 
   setGlobalConfigData(globalConfig) {
@@ -844,6 +851,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.immediateLoader = true;
       this.sprintGoalData = [];
       this.kpiRecommData = {};
+
+      // Reset kpi205-specific data when filter changes
+      this.kpi205OriginalData = null;
+      this.selectedKpi205DataType = { name: 'By Count', code: 'COUNT' };
+      this.kpi205YAxisLabel = 'Count';
+      this.filterByTimeOptions = [];
+      this.selectedFilterByTimeOption = null;
+
       // Reset workflow order fetch flag and restore cached order for the new project
       this.kpi202WorkflowOrderFetched = false;
       const incomingProjectId =
@@ -6167,12 +6182,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           });
       });
-  }
-
-  get kpi202YCaption(): string {
-    return this.selectedDataTypeForWorkflowGroup?.code === 'AVG'
-      ? 'Average Time (Days)'
-      : 'Time (Days)';
   }
 
   /**

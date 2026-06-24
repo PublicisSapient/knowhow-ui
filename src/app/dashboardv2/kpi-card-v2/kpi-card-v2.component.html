@@ -537,7 +537,7 @@
           kpiData?.kpiId === 'kpi201'
       }">
       <!-- Static Trend Indicator for Duplicate KPI -->
-      <div
+      <!-- <div
         *ngIf="kpiData?.kpiId === 'kpi202_duplicate'"
         class="trend-table-container">
         <table
@@ -580,11 +580,11 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
 
       <app-trend-indicator-v2
         *ngIf="
-          kpiData?.kpiId !== 'kpi202_duplicate' &&
+          selectedTab !== 'slingshot' &&
           checkIfDataPresent(kpiDataStatusCode)
         "
         [trendData]="trendData"

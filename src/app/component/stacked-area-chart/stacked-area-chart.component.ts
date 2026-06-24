@@ -210,11 +210,11 @@ export class StackedAreaChartComponent
     // Add Y axis label:
     svg
       .append('text')
-      .attr('text-anchor', 'end')
-      .attr('x', 0)
-      .attr('y', -20)
-      .text('')
-      .attr('text-anchor', 'start');
+      .attr('text-anchor', 'middle')
+      .attr('transform', `rotate(-90)`)
+      .attr('x', -height / 2)
+      .attr('y', -30) // Adjust this value to move label further left/right
+      .text('Count');
 
     // Add Y axis
     const y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
