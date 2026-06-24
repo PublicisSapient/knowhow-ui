@@ -436,7 +436,7 @@
                                         <p-skeleton width="100%" height="200px" borderRadius="6px"></p-skeleton>
                                       }
 
-                                      @if (!kpi202Switching && kpi202SelectedView === 'By Status') {
+                                      @if (!kpi202Switching && kpi202SelectedView === 'By Issue') {
                                         <app-stacked-group-bar-chart [defectsBreachedSLAs]="defectsBreachedSLAs"
                                           [defectsBreachedSLAsAllValues]="defectsBreachedSLAsAllValues"
                                           [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
