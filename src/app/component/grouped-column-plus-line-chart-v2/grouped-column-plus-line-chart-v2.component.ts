@@ -978,9 +978,7 @@ export class GroupedColumnPlusLineChartV2Component
               : formattedValue;
 
             // Return formatted label
-            return propertyName
-              ? `${propertyName}: ${displayValue}`
-              : displayValue;
+            return propertyName ? `${displayValue}` : displayValue;
           });
 
         // Size the background rectangles based on text dimensions
