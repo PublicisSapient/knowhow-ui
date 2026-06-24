@@ -6184,12 +6184,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  get kpi202YCaption(): string {
-    return this.selectedDataTypeForWorkflowGroup?.code === 'AVG'
-      ? 'Average Time (Days)'
-      : 'Time (Days)';
-  }
-
   /**
    * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
    * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
