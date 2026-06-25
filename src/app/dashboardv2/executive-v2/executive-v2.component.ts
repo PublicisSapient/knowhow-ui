@@ -145,7 +145,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   durationFilterKpi202 = 'Past 6 Months';
-  kpi202ViewOptions = ['By Workflow Group', 'By Status'];
+  kpi202ViewOptions = ['By Workflow Group', 'By Issue'];
   kpi202SelectedView = 'By Workflow Group';
   kpi202Switching = false;
   kpi204ViewOptions = ['By Range', 'By Sprint'];
@@ -212,6 +212,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   // KPI205 time-based filter
   filterByTimeOptions: any[] = [];
   selectedFilterByTimeOption: any = null;
+
+  // KPI205 data type filter (By Count / By Story Points)
+  kpi205DataTypeOptions: any[] = [
+    { name: 'By Count', code: 'COUNT' },
+    { name: 'By Story Points', code: 'STORY_POINTS' },
+  ];
+  selectedKpi205DataType: any = { name: 'By Count', code: 'COUNT' };
+  kpi205OriginalData: any = null; // Store original API response for kpi205
+  kpi205YAxisLabel: string = 'Count'; // Dynamic y-axis label for kpi205
 
   // KPI206-specific: Status/Group filter options and selection
   kpi206FilterOptions: any[] = [];
@@ -284,6 +293,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.serviceObject = {};
     this.kpi202WorkflowOrderFetched = false;
     this.kpi202WorkflowOrder = [];
+
+    // Reset kpi205 data when filters change
+    this.kpi205OriginalData = null;
+    this.selectedKpi205DataType = { name: 'By Count', code: 'COUNT' };
+    this.kpi205YAxisLabel = 'Count';
+    this.filterByTimeOptions = [];
+    this.selectedFilterByTimeOption = null;
   }
 
   setGlobalConfigData(globalConfig) {
@@ -835,6 +851,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.immediateLoader = true;
       this.sprintGoalData = [];
       this.kpiRecommData = {};
+
+      // Reset kpi205-specific data when filter changes
+      this.kpi205OriginalData = null;
+      this.selectedKpi205DataType = { name: 'By Count', code: 'COUNT' };
+      this.kpi205YAxisLabel = 'Count';
+      this.filterByTimeOptions = [];
+      this.selectedFilterByTimeOption = null;
+
       // Reset workflow order fetch flag and restore cached order for the new project
       this.kpi202WorkflowOrderFetched = false;
       const incomingProjectId =
@@ -2191,6 +2215,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // compute the 'Average' line chart data so multiline-v2 can render it
     // when the user switches the dropdown to 'Average'.
     if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
+      // Store original data if not already stored
+      // This handles both initial load and subsequent data changes
+      if (!this.kpi205OriginalData && this.kpiChartData[kpiId]?.length) {
+        this.kpi205OriginalData = JSON.parse(
+          JSON.stringify(this.kpiChartData[kpiId]),
+        );
+      }
+
       // Populate filter options if not already done
       if (this.filterByTimeOptions.length === 0 && trendValueList?.length) {
         this.filterByTimeOptions = trendValueList.map((item) => ({
@@ -2210,14 +2242,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             (item) => item.filter === this.selectedFilterByTimeOption.value,
           );
           if (defaultData) {
-            this.kpiChartData[kpiId] = [defaultData];
+            // Extract the inner value array which contains the actual chart data
+            // The structure has: { filter: 'Weekly', value: [{ data: 'KnowHOW', value: [...] }] }
+            const chartData =
+              defaultData.value && Array.isArray(defaultData.value)
+                ? defaultData.value
+                : [defaultData];
+
+            this.kpiChartData[kpiId] = chartData;
+            // Store the original data for switching between Count and Story Points
+            this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
           }
         }
       }
       this.computeKpi205LineChartData();
     }
 
-    console.log(`[${kpiId}] trendValueList?.length ${trendValueList}`);
     // kpi206-specific: Populate dropdown options and set default filter
     if (kpiId === 'kpi206' && trendValueList?.length) {
       // Populate filter options if not already done
@@ -2432,7 +2472,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       if (filterPropArr.includes('filter')) {
         if (kpiId === 'kpi206') {
-          console.log('[kpi206] Taking filter path - CORRECTING STRUCTURE');
           // kpi206 needs { filter: "value" } structure, not ["value"] array
           const firstOption = this.kpiDropdowns[kpiId][0]['options'][0];
           this.kpiSelectedFilterObj[kpiId] = {
@@ -2486,10 +2525,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       } else {
         if (kpiId === 'kpi206') {
-          console.log(
-            '[kpi206] Taking ELSE path in getDefaultKPIFilters - PREVENTING THE BUG',
-          );
-          // kpi206 should use { filter: "value" } structure, NOT { filter1: ["value"] }
           // This happens when filterPropArr doesn't include 'filter', which shouldn't happen for kpi206
           // Use 'Status' as default, or first option from dropdown if available
           const firstOption = this.kpiDropdowns[kpiId]?.[0]?.['options']?.[0];
@@ -2585,9 +2620,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (kpiId === 'kpi206' || kpiId === 'kpi207') &&
         this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
       ) {
-        console.log(
-          `[${kpiId}] Correcting filter structure from filter1 to filter`,
-        );
         // Get the first option from dropdown, or use 'Status' as default for kpi206
         const firstOption = this.kpiDropdowns[kpiId]?.[0]?.['options']?.[0];
         this.kpiSelectedFilterObj[kpiId] = {
@@ -2674,7 +2706,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     ) {
       // kpi206-specific: Populate dropdown options from trendValueList
       if (kpiId === 'kpi206') {
-        // console.log('[kpi206] Inside kpi206 dropdown population block');
         if (this.kpi206FilterOptions.length === 0) {
           this.kpi206FilterOptions = trendValueList.map((item) => ({
             name: item.filter,
@@ -2705,11 +2736,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
         if (selectedFilterData && selectedFilterData.value) {
           this.kpiChartData[kpiId] = selectedFilterData.value;
-        } else {
-          console.log(
-            '[kpi206] WARNING: No data found for filter:',
-            filterValue,
-          );
         }
       }
 
@@ -2778,10 +2804,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             trendValueList?.find((x) => x['filter'] === filterValue)?.value ??
             trendValueList?.[0]?.value ??
             [];
-          console.log(
-            '[kpi206] No filter selected, using default:',
-            filterValue,
-          );
         } else {
           // Prefer the 'Overall' entry; fall back to the first entry's value
           this.kpiChartData[kpiId] =
@@ -2827,17 +2849,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
     } else {
-      console.log('else block, no filter property ', trendValueList);
       if (trendValueList?.length > 0) {
-        console.log('if');
         this.kpiChartData[kpiId] = [
           ...this.helperService.sortAlphabetically(trendValueList),
         ];
       } else if (trendValueList?.hasOwnProperty('value')) {
-        console.log('else if');
         this.kpiChartData[kpiId] = [...trendValueList?.value];
       } else {
-        console.log('else');
         this.kpiChartData[kpiId] = [];
       }
     }
@@ -3807,17 +3825,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   getChartDataForCard(kpiId, idx) {
-    if (kpiId === 'kpi138') {
-      console.log(this.kpiSelectedFilterObj[kpiId]);
-    }
     const trendValueList = this.allKpiArray[idx]?.trendValueList
       ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
       : {};
 
     if (trendValueList && Object.keys(trendValueList)?.length > 0) {
       if (kpiId === 'kpi138') {
-        console.log(trendValueList);
-
         const selectedFilter1 =
           this.kpiSelectedFilterObj[kpiId]?.['filter1'] || [];
         const selectedFilter2 =
@@ -3994,9 +4007,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     this.getBackupKPIFiltersForBacklog(kpiId);
     const filters = this.kpiSelectedFilterObj[kpiId];
-    if (kpiId === 'kpi138') {
-      console.log(filters);
-    }
 
     if (kpiId === 'kpi138') {
       const f1 = Array.isArray(filters?.filter1)
@@ -4379,21 +4389,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkIfDataPresent(kpi) {
-    if (kpi.kpiId === 'kpi206') {
-      console.log('[kpi206] checkIfDataPresent called');
-      console.log(
-        '[kpi206] kpiStatusCodeArr[kpi206]:',
-        this.kpiStatusCodeArr[kpi.kpiId],
-      );
-      console.log(
-        '[kpi206] kpiChartData[kpi206]:',
-        this.kpiChartData[kpi.kpiId],
-      );
-      console.log(
-        '[kpi206] kpiChartData[kpi206]?.length:',
-        this.kpiChartData[kpi.kpiId]?.length,
-      );
-    }
     if (this.kpiStatusCodeArr[kpi.kpiId]) {
       if (
         (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
@@ -4405,16 +4400,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           kpi.kpiId === 'kpi207')
       ) {
         if (this.kpiChartData[kpi.kpiId]?.length) {
-          if (kpi.kpiId === 'kpi206') {
-            console.log('[kpi206] checkIfDataPresent returning TRUE');
-          }
           return true;
-        } else {
-          if (kpi.kpiId === 'kpi206') {
-            console.log(
-              '[kpi206] checkIfDataPresent returning FALSE - no length',
-            );
-          }
         }
       } else if (
         (this.kpiStatusCodeArr[kpi.kpiId] === '200' ||
@@ -4713,7 +4699,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       // kpi206-specific: Populate kpi206FilterOptions from filters
       if (kpiId === 'kpi206') {
-        // console.log('[kpi206] getDropdownArrayForBacklog - filters:', filters);
         if (filters && Object.keys(filters).length !== 0) {
           // Extract filter options from filters object
           const filterOptions = filters['filter']?.options || [];
@@ -5059,17 +5044,36 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           typeof event === 'object' &&
           this.selectedTab.toLowerCase() !== 'developer'
         ) {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+          // Check if kpiSelectedFilterObj has multiple filters (is an object with filter1, filter2, etc.)
+          const hasMultipleFilters =
+            this.kpiSelectedFilterObj[kpi?.kpiId] &&
+            typeof this.kpiSelectedFilterObj[kpi?.kpiId] === 'object' &&
+            !Array.isArray(this.kpiSelectedFilterObj[kpi?.kpiId]);
+
+          if (!hasMultipleFilters) {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+          }
+
           for (const key in event) {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             } else if (Array.isArray(event[key])) {
-              for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId] = [
-                  ...this.kpiSelectedFilterObj[kpi?.kpiId],
-                  Array.isArray(event[key]) ? event[key][i] : event[key],
-                ];
+              if (hasMultipleFilters) {
+                // Update the specific filter key in the object
+                this.kpiSelectedFilterObj[kpi?.kpiId][key] = event[key];
+              } else {
+                // Add to array for single filter case
+                for (let i = 0; i < event[key]?.length; i++) {
+                  // Ensure it's still an array before spreading
+                  if (!Array.isArray(this.kpiSelectedFilterObj[kpi?.kpiId])) {
+                    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+                  }
+                  this.kpiSelectedFilterObj[kpi?.kpiId] = [
+                    ...this.kpiSelectedFilterObj[kpi?.kpiId],
+                    Array.isArray(event[key]) ? event[key][i] : event[key],
+                  ];
+                }
               }
             } else {
               if (kpi.kpiDetail.kpiFilter?.toLowerCase() !== 'dropdown') {
@@ -5353,17 +5357,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createTrendsData(kpiId) {
-    if (kpiId === 'kpi206') {
-      console.log('[kpi206] createTrendsData called');
-      console.log(
-        '[kpi206] kpiChartData[kpi206] BEFORE:',
-        this.kpiChartData[kpiId],
-      );
-      console.log(
-        '[kpi206] kpiChartData[kpi206]?.length:',
-        this.kpiChartData[kpiId]?.length,
-      );
-    }
     const enabledKpiObj = this.updatedConfigGlobalData?.filter(
       (x) => x.kpiId == kpiId,
     )[0];
@@ -6191,12 +6184,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
   }
 
-  get kpi202YCaption(): string {
-    return this.selectedDataTypeForWorkflowGroup?.code === 'AVG'
-      ? 'Average Time (Days)'
-      : 'Time (Days)';
-  }
-
   /**
    * Aggregates kpiChartData['kpi202'] into a line-chart-compatible format
    * for the 'Cycle Time Workflows' duplicate widget (kpi202_duplicate).
@@ -6400,30 +6387,74 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * This method extracts `lineValue` from each data point and maps it to `value`
    * so that app-multiline-v2 can render the Average view correctly.
    *
+   * When "By Story Points" is selected, it reads from the `storyPoints` property
+   * instead of the `value` property for the bar chart.
+   *
    * The result is stored in kpiChartData['kpi205_line'] to avoid mutating
    * the raw aggregated data used by the bar chart.
    */
   computeKpi205LineChartData(): void {
-    const raw = (this.kpiChartData as any)['kpi205'];
-    if (!raw?.length) {
+    // Use original data if available, otherwise use current chart data
+    const sourceData =
+      this.kpi205OriginalData || (this.kpiChartData as any)['kpi205'];
+
+    if (!sourceData?.length) {
       (this.kpiChartData as any)['kpi205_line'] = [];
       return;
     }
+
+    // Check if "By Story Points" is selected
+    const useStoryPoints = this.selectedKpi205DataType?.code === 'STORY_POINTS';
+
+    // Create a deep clone to avoid mutating the original data
+    let chartData = JSON.parse(JSON.stringify(sourceData));
+
+    // If "By Story Points" is selected, transform the data to use storyPoints values from subfilterValues
+    if (useStoryPoints) {
+      chartData = chartData.map((project: any) => ({
+        ...project,
+        value: (project.value || []).map((point: any) => {
+          // Read from subfilterValues.storyPoints if available, otherwise fallback to original value
+          const storyPointsValue =
+            point.subfilterValues?.storyPoints !== undefined
+              ? point.subfilterValues.storyPoints
+              : point.value;
+
+          // Use hoverValue from subfilterValues when available, otherwise use default hoverValue
+          const hoverValue =
+            point.subfilterValues?.hoverValue !== undefined
+              ? point.subfilterValues.hoverValue
+              : point.hoverValue;
+
+          return {
+            ...point,
+            value: storyPointsValue,
+            hoverValue: hoverValue,
+          };
+        }),
+      }));
+    }
+
+    // Update the main chart data
+    (this.kpiChartData as any)['kpi205'] = chartData;
+
     // Map lineValue → value for each data point so multiline-v2 can render it.
     // lineValue holds the Average metric; value holds the Aggregated metric.
     // hoverValue is set to an empty object so the multiline-v2 tooltip shows only
     // the sprint name + value header line, without redundant extra rows.
-    (this.kpiChartData as any)['kpi205_line'] = raw.map((project: any) => ({
-      ...project,
-      value: (project.value || []).map((point: any) => {
-        const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
-        return {
-          ...point,
-          value: avgVal,
-          hoverValue: {},
-        };
+    (this.kpiChartData as any)['kpi205_line'] = chartData.map(
+      (project: any) => ({
+        ...project,
+        value: (project.value || []).map((point: any) => {
+          const avgVal = point.lineValue !== undefined ? point.lineValue : 0;
+          return {
+            ...point,
+            value: avgVal,
+            hoverValue: {},
+          };
+        }),
       }),
-    }));
+    );
     const { forecasts, ...updatedKpiChartDataAvgKpi205 } = (
       this.kpiChartData as any
     )['kpi205_line'][0];
@@ -6467,6 +6498,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           ? selectedData.value
           : [selectedData];
 
+      // Store the original data for switching between Count and Story Points
+      this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
+
       // Update bar chart data (Aggregated)
       (this.kpiChartData as any)[kpiId] = chartData;
 
@@ -6486,7 +6520,45 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       (this.kpiChartData as any)[kpiId] = [];
       (this.kpiChartData as any)['kpi205_line'] = [];
+      this.kpi205OriginalData = null;
     }
+  }
+
+  onKpi205DataTypeChange(selectedOption) {
+    if (!selectedOption) {
+      return;
+    }
+
+    const kpiId = 'kpi205';
+    const idx = this.ifKpiExist(kpiId);
+
+    if (idx === -1) {
+      return;
+    }
+
+    // Update the selected data type
+    this.selectedKpi205DataType = selectedOption;
+
+    // Update y-axis label based on selection
+    this.kpi205YAxisLabel =
+      selectedOption.code === 'STORY_POINTS' ? 'Story Points' : 'Count';
+
+    // Re-compute chart data based on the selected data type and current time filter
+    this.computeKpi205LineChartData();
+
+    // Apply color mapping if needed
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
+      (this.kpiChartData as any)[kpiId] = this.generateColorObj(
+        kpiId,
+        (this.kpiChartData as any)[kpiId],
+      );
+    }
+
+    // Update trends data
+    this.createTrendsData(kpiId);
+
+    // Trigger change detection to update the chart
+    this.cdr.detectChanges();
   }
 
   onSelectKpi206FilterOption(selectedOption) {
@@ -6500,11 +6572,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (idx === -1) {
       return;
     }
-
-    console.log(
-      '[kpi206] onSelectKpi206FilterOption called with:',
-      selectedOption,
-    );
 
     // Update the selected filter in kpiSelectedFilterObj
     this.kpiSelectedFilterObj[kpiId] = { filter: selectedOption.value };
@@ -6523,14 +6590,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       trendValueList = this.allKpiArray[idx].trendValueList;
     }
 
-    console.log('[kpi206] trendValueList:', trendValueList);
-    console.log('[kpi206] Looking for filter:', selectedOption.value);
-
     const selectedData = trendValueList?.find(
       (item) => item.filter === selectedOption.value,
     );
-
-    console.log('[kpi206] selectedData:', selectedData);
 
     if (selectedData && selectedData.value) {
       // Extract the inner value array which contains the actual chart data
@@ -6538,24 +6600,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       // Create a new array reference to trigger Angular change detection
       this.kpiChartData[kpiId] = [...selectedData.value];
 
-      console.log(
-        '[kpi206] Updated kpiChartData[kpi206]:',
-        this.kpiChartData[kpiId],
-      );
-      console.log(
-        '[kpi206] kpiChartData[kpi206].length:',
-        this.kpiChartData[kpiId].length,
-      );
-
       // CRITICAL: Also update allKpiArray so the kpi-card component sees the data
       // The kpi-card checks trendValueList.length, which comes from allKpiArray
       if (idx !== -1 && this.allKpiArray[idx]) {
         // Update trendValueList to the filtered data so kpi-card sees it
         this.allKpiArray[idx].trendValueList = [...selectedData.value];
-        console.log(
-          '[kpi206] Updated allKpiArray[idx].trendValueList.length:',
-          this.allKpiArray[idx].trendValueList.length,
-        );
       }
 
       // Apply color mapping if needed
@@ -6569,30 +6618,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           kpiId,
           this.kpiChartData[kpiId],
         );
-        console.log(
-          '[kpi206] After color mapping, length:',
-          (this.kpiChartData as any)[kpiId]?.length,
-        );
-      } else if (kpiId === 'kpi206') {
-        console.log('[kpi206] Skipping color mapping for kpi206');
       }
 
       // Update trends data
       this.createTrendsData(kpiId);
-      console.log(
-        '[kpi206] After createTrendsData, kpiChartData[kpi206]?.length:',
-        this.kpiChartData[kpiId]?.length,
-      );
 
       // Force change detection by creating a new reference to kpiChartData
       this.kpiChartData = { ...this.kpiChartData };
-      console.log('[kpi206] Triggered change detection');
-      console.log(
-        '[kpi206] Final kpiChartData[kpi206]:',
-        this.kpiChartData[kpiId],
-      );
     } else {
-      console.log('[kpi206] No selectedData found');
       this.kpiChartData[kpiId] = [];
     }
   }

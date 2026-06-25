@@ -16344,7 +16344,7 @@ describe('ExecutiveV2Component', () => {
     it('should initialize kpi202ViewOptions correctly', () => {
       expect(component.kpi202ViewOptions).toEqual([
         'By Workflow Group',
-        'By Status',
+        'By Issue',
       ]);
     });
 
