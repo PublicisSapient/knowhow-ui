@@ -2214,47 +2214,42 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // kpi205-specific: After chart data is set (Aggregated bars + Average lineValue),
     // compute the 'Average' line chart data so multiline-v2 can render it
     // when the user switches the dropdown to 'Average'.
-    if (kpiId === 'kpi205' && this.kpiChartData[kpiId]) {
-      // Store original data if not already stored
-      // This handles both initial load and subsequent data changes
-      if (!this.kpi205OriginalData && this.kpiChartData[kpiId]?.length) {
-        this.kpi205OriginalData = JSON.parse(
-          JSON.stringify(this.kpiChartData[kpiId]),
-        );
-      }
-
+    if (kpiId === 'kpi205' && trendValueList?.length) {
       // Populate filter options if not already done
-      if (this.filterByTimeOptions.length === 0 && trendValueList?.length) {
+      if (this.filterByTimeOptions.length === 0) {
         this.filterByTimeOptions = trendValueList.map((item) => ({
           name: item.filter,
           value: item.filter,
         }));
+      }
 
-        // Set default selection to first option
-        if (
-          this.filterByTimeOptions.length > 0 &&
-          !this.selectedFilterByTimeOption
-        ) {
-          this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+      // Set default selection to first option
+      if (
+        this.filterByTimeOptions.length > 0 &&
+        !this.selectedFilterByTimeOption
+      ) {
+        this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+      }
 
-          // Filter data based on default selection
-          const defaultData = trendValueList.find(
-            (item) => item.filter === this.selectedFilterByTimeOption.value,
-          );
-          if (defaultData) {
-            // Extract the inner value array which contains the actual chart data
-            // The structure has: { filter: 'Weekly', value: [{ data: 'KnowHOW', value: [...] }] }
-            const chartData =
-              defaultData.value && Array.isArray(defaultData.value)
-                ? defaultData.value
-                : [defaultData];
+      // Always filter chart data to align with the selectedFilterByTimeOption
+      if (this.selectedFilterByTimeOption) {
+        const selectedData = trendValueList.find(
+          (item) => item.filter === this.selectedFilterByTimeOption.value,
+        );
+        if (selectedData) {
+          // Extract the inner value array which contains the actual chart data
+          // The structure has: { filter: 'Weekly', value: [{ data: 'KnowHOW', value: [...] }] }
+          const chartData =
+            selectedData.value && Array.isArray(selectedData.value)
+              ? selectedData.value
+              : [selectedData];
 
-            this.kpiChartData[kpiId] = chartData;
-            // Store the original data for switching between Count and Story Points
-            this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
-          }
+          this.kpiChartData[kpiId] = chartData;
+          // Store the original data for switching between Count and Story Points
+          this.kpi205OriginalData = JSON.parse(JSON.stringify(chartData));
         }
       }
+
       this.computeKpi205LineChartData();
     }
 
@@ -4680,9 +4675,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         value: item.filter,
       }));
 
-      // Set default selection to first option
+      // Restore previous selection from backup or set default selection to first option
       if (this.filterByTimeOptions.length > 0) {
-        this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+        const savedFilter =
+          this.kpiSelectedFilterObj[kpiId]?.filter ||
+          this.service.getKpiSubFilterObj()?.[kpiId]?.filter;
+        if (savedFilter) {
+          this.selectedFilterByTimeOption =
+            this.filterByTimeOptions.find((opt) => opt.value === savedFilter) ||
+            this.filterByTimeOptions[0];
+        } else {
+          this.selectedFilterByTimeOption = this.filterByTimeOptions[0];
+        }
       }
     }
   }
