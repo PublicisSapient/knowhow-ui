@@ -416,7 +416,7 @@ export class MultilineV2Component implements OnChanges {
       const unitAbbs = {
         hours: 'Hrs',
         sp: 'SP',
-        days: 'Day',
+        days: 'Days',
         mrs: 'MRs',
         min: 'Min',
         '%': '%',

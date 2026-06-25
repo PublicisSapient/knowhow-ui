@@ -146,7 +146,14 @@ export class ExportExcelComponent implements OnInit {
     kpiId,
   ) {
     this.iskanban = false;
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    // Set frozen column based on kpiId
+    if (kpiId === 'kpi205') {
+      this.forzenColumns = ['week'];
+      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else {
+      this.forzenColumns = ['issue id'];
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -215,7 +222,14 @@ export class ExportExcelComponent implements OnInit {
       });
     }
 
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    // Set frozen column based on kpiId
+    if (this.modalDetails['kpiId'] === 'kpi205') {
+      this.forzenColumns = ['week'];
+      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else {
+      this.forzenColumns = ['issue id'];
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
@@ -332,6 +346,7 @@ export class ExportExcelComponent implements OnInit {
     this.tableColumns = [];
     this.isDisableSaveCOnfigurationBtn = false;
     this.markerInfo = [];
+    this.forzenColumns = ['issue id']; // Reset to default
   }
 
   checkIfArray(arr) {
@@ -537,6 +552,29 @@ export class ExportExcelComponent implements OnInit {
 
     // Return the updated array with "issue id" at the top
     return [issueIdColumn, ...remainingColumns];
+  }
+
+  makeWeekColumnOnFirstOrder(columns) {
+    // Identify the "week" column (case-insensitive)
+    const weekColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === 'week',
+    );
+
+    if (!weekColumn) {
+      return columns; // Return original if "week" is not found
+    }
+
+    // Set "week" to the first position and adjust its order
+    weekColumn.order = 0;
+
+    // Filter out the "week" column and reassign orders for the rest
+    const remainingColumns = columns
+      .filter((col) => col !== weekColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+
+    // Return the updated array with "week" at the top
+    return [weekColumn, ...remainingColumns];
   }
 
   sortableColumn(columnName, tableDataSet) {
