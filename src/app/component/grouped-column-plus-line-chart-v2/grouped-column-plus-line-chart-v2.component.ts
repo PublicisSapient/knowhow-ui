@@ -222,7 +222,7 @@ export class GroupedColumnPlusLineChartV2Component
         // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
         const XValue =
           details.value[0].sSprintName ||
-          details.value[0].sSprintId ||
+          details.value[0].sSprintID ||
           details.value[0].date;
         const sortValue = XValue;
         finalResult = {
@@ -288,7 +288,7 @@ export class GroupedColumnPlusLineChartV2Component
           return null;
         }
         // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
-        const XValue = details.sSprintName || details.sSprintId || details.date;
+        const XValue = details.sSprintName || details.sSprintID || details.date;
         const sortValue = XValue;
         return { ...details, sortSprint: sortValue };
       });
@@ -308,7 +308,7 @@ export class GroupedColumnPlusLineChartV2Component
           return i + 1;
         }
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-          return d.sortSprint || d.sSprintId || d.date || d.sSprintName;
+          return d.sortSprint || d.sSprintID || d.date || d.sSprintName;
         }
         return d.isForecast ? 'Forecast' : i + 1;
       });
@@ -582,7 +582,7 @@ export class GroupedColumnPlusLineChartV2Component
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
           key =
             point.sortSprint ||
-            point.sSprintId ||
+            point.sSprintID ||
             point.date ||
             point.sSprintName;
         } else {
@@ -1581,7 +1581,7 @@ export class GroupedColumnPlusLineChartV2Component
         // then fall back to the date field (used by Monthly).
         const sprintName =
           sprint.sSprintName?.trim() ||
-          sprint.sSprintId?.trim() ||
+          sprint.sSprintID?.trim() ||
           sprint.date?.trim();
 
         if (!sprintMap.has(sprintKey)) {

@@ -423,6 +423,7 @@ export class MultilineV2Component implements OnChanges {
         'check-ins': 'CI',
         tickets: 'T',
         lines: 'lines',
+        prs: 'PRs',
         unit: '',
       };
       const tempwidth =
@@ -637,7 +638,9 @@ export class MultilineV2Component implements OnChanges {
               return `${val} (${d.count} ${ft}${totalDays})`;
             }
             return `${val}${
-              showUnit ? ' ' + unitAbbs[showUnit?.toLowerCase()] : ''
+              showUnit
+                ? ' ' + (unitAbbs[showUnit?.toLowerCase()] ?? showUnit)
+                : ''
             }`;
           })
           .transition()
