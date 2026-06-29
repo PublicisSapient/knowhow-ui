@@ -21,7 +21,7 @@ import { Environment } from '../app/types/environment.types';
 export const environment: Environment = {
   production: true,
   baseUrl: '',
-  SSO_LOGIN: true,
+  SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: '',
   CENTRAL_API_URL: '',
   RESOURCE: 'PSKnowHOW',
