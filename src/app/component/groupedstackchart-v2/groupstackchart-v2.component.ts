@@ -22,6 +22,7 @@ import {
   ViewContainerRef,
   OnChanges,
   SimpleChanges,
+  HostListener,
 } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
@@ -111,6 +112,13 @@ export class GroupstackchartComponentv2 implements OnChanges {
     this.elemObserver.observe(this.elem);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.transformedData) {
+      this.draw(this.transformedData);
+    }
+  }
+
   draw(data) {
     if (data.length > 0) {
       const elem = this.elem;
@@ -122,17 +130,24 @@ export class GroupstackchartComponentv2 implements OnChanges {
       d3.select(elem).select('#verticalSVG').select('svg').remove();
       d3.select(elem).select('#horizontalSVG').select('svg').remove();
       d3.select(elem).select('#svgLegend').select('div').remove();
+      d3.select(elem).select('.sprint-legend-container').remove();
       // d3.select(elem).select('#legendIndicator').select('svg').remove();
       d3.select(elem).select('#xCaptionContainer').select('text').remove();
       if (!this.isDrilledDown) {
         data = this.formatData(data);
       }
-      const width =
-        this.dataPoints <= 5 &&
-        d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth
-          ? d3.select(this.elem).select('#groupstackchart').node()
-              ?.offsetWidth - 70
+      const containerWidth =
+        d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth ||
+        0;
+      const resizeWidth =
+        containerWidth > this.dataPoints * 20 * 4
+          ? containerWidth - 70
           : this.dataPoints * 20 * 4;
+
+      const width =
+        this.dataPoints <= 5 && containerWidth
+          ? containerWidth - 70
+          : resizeWidth;
       // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
       // const spacingVariable = 20;
       const height = 225;
@@ -265,11 +280,22 @@ export class GroupstackchartComponentv2 implements OnChanges {
 
       const stackData = stack.keys(keys)(groupData);
 
+      let xAxis = d3.axisBottom(x0);
+      if (this.kpiId === 'kpi211') {
+        xAxis = xAxis.tickFormat((d, i) => {
+          // Check if the value is 'Forecast', display it as text
+          if (d === 'Forecast') {
+            return 'Forecast';
+          }
+          return (i + 1).toString();
+        });
+      }
+
       svgX
         .append('g')
         .attr('class', 'xAxis')
         .attr('transform', `translate(0, ${y(0)})`)
-        .call(d3.axisBottom(x0));
+        .call(xAxis);
 
       d3.select('.xAxis')
         .selectAll('.tick text')
@@ -299,7 +325,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
             : 10
           : 0;
 
-      svgY
+      const yAxisGroup = svgY
         .append('g')
         .attr('class', 'yAxis')
         .call(
@@ -307,7 +333,9 @@ export class GroupstackchartComponentv2 implements OnChanges {
             .axisLeft(y)
             .ticks(5)
             .tickSize(-width + margin),
-        )
+        );
+
+      yAxisGroup
         .append('text')
         .attr('x', -80)
         .attr('y', -30)
@@ -333,6 +361,26 @@ export class GroupstackchartComponentv2 implements OnChanges {
         .style('stroke', '#dedede')
         .style('fill', 'none')
         .attr('class', 'gridline');
+
+      // vertical gridlines
+      if (this.kpiId === 'kpi211') {
+        svgX
+          .selectAll('line.vertical-gridline')
+          .data(x0.domain())
+          .enter()
+          .append('svg:line')
+          .attr('x1', function (d) {
+            return x0(d) + x0.bandwidth() / 2;
+          })
+          .attr('x2', function (d) {
+            return x0(d) + x0.bandwidth() / 2;
+          })
+          .attr('y1', 0)
+          .attr('y2', y(0))
+          .style('stroke', '#dedede')
+          .style('fill', 'none')
+          .attr('class', 'vertical-gridline');
+      }
 
       const serie = svgX
         .selectAll('.serie')
@@ -517,7 +565,135 @@ export class GroupstackchartComponentv2 implements OnChanges {
 
       const content = this.elem.querySelector('#horizontalSVG');
       content.scrollLeft += width;
+
+      if (this.kpiId === 'kpi211') {
+        const legendData = x0.domain().map((d, i) => ({
+          sprintNumber: i + 1,
+          sprintLabel: d,
+        }));
+        this.renderSprintsLegend(legendData, this.xCaption);
+      }
     }
+  }
+
+  renderSprintsLegend(legendData: any[], xAxisCaption: string) {
+    if (!this.elem || !legendData) return;
+
+    const body = d3.select(this.elem);
+
+    const container = body
+      .insert('div')
+      .attr('class', 'sprint-legend-container')
+      .style('margin', '20px 0 0 0')
+      .style('font-family', 'Arial, sans-serif')
+      .style('font-size', '14px')
+      .style('max-width', '100%');
+
+    const toggleButton = container
+      .append('button')
+      .style('margin', '0 0 10px 0')
+      .style('padding', '0')
+      .style('cursor', 'pointer')
+      .style('font-size', '14px')
+      .style('background', 'none')
+      .style('border', 'none')
+      .style('color', '#0b4bc8')
+      .style('text-decoration', 'underline')
+      .style('text-underline-offset', '5px')
+      .attr('class', 'p-element p-component')
+      .on('click', function () {
+        const isVisible = legend.style('display') !== 'none';
+        legend.style('display', isVisible ? 'none' : 'block');
+        legend.attr('aria-hidden', isVisible ? 'true' : 'false');
+        legend.attr('tabindex', isVisible ? '-1' : '0');
+        toggleButton.text(
+          isVisible ? 'Show X-Axis Legend' : 'Hide X-Axis Legend',
+        );
+      });
+
+    const legend = container
+      .append('div')
+      .attr('class', 'sprint-legend')
+      .style('padding', '0')
+      .style('border', '1px solid #ddd')
+      .style('border-radius', '6px')
+      .style('margin-top', '10px')
+      .style('display', 'none')
+      .attr('role', 'region')
+      .attr('aria-hidden', 'true')
+      .attr('aria-labelledby', 'legend-title');
+
+    toggleButton.text('Show X-Axis Legend');
+
+    const scrollContainer = legend
+      .append('div')
+      .style('overflow-x', 'auto')
+      .style('max-width', '100%');
+
+    const table = scrollContainer
+      .append('table')
+      .attr('role', 'table')
+      .style('width', '100%')
+      .style('border-collapse', 'collapse')
+      .style('min-width', '400px');
+
+    const thead = table.append('thead').attr('role', 'rowgroup');
+    const headerRow = thead.append('tr').attr('role', 'row');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('X-Axis')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('width', '10%')
+      .style('font-weight', '600');
+
+    headerRow
+      .append('th')
+      .attr('role', 'columnheader')
+      .attr('scope', 'col')
+      .text('Legend')
+      .style('text-align', 'left')
+      .style('padding', '12px 10px')
+      .style('border-bottom', '2px solid #ccc')
+      .style('background-color', '#f0f0f0')
+      .style('color', '#222')
+      .style('font-weight', '600');
+
+    const tbody = table.append('tbody').attr('role', 'rowgroup');
+
+    const rows = tbody
+      .selectAll('tr')
+      .data(legendData)
+      .enter()
+      .append('tr')
+      .attr('role', 'row')
+      .style('background', (d: any, i: number) =>
+        i % 2 === 0 ? '#fff' : '#fafafa',
+      );
+
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d: any) => `${xAxisCaption} ${d.sprintNumber}:`)
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('width', '10%')
+      .style('color', '#333');
+
+    rows
+      .append('td')
+      .attr('role', 'cell')
+      .text((d: any) => d.sprintLabel)
+      .style('padding', '10px 10px')
+      .style('border-bottom', '1px solid #eee')
+      .style('word-break', 'break-word')
+      .style('color', '#666');
   }
 
   transformData(data) {
@@ -527,6 +703,8 @@ export class GroupstackchartComponentv2 implements OnChanges {
       element?.value?.forEach((val) => {
         obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] =
+          this.filter &&
+          this.filter['filter1'] &&
           this.filter['filter1'][0] === 'Story Points'
             ? val['size']
             : val['value'];

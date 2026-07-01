@@ -150,6 +150,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi202Switching = false;
   kpi204ViewOptions = ['By Range', 'By Sprint'];
   kpi204SelectedView = 'By Range';
+  kpi211ViewOptions = ['Scatter Plot', 'Stacked Bar'];
+  kpi211SelectedView = 'Scatter Plot';
+  kpi211Switching = false;
+  kpi211StackedChartData: any[] = [];
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -300,6 +304,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpi205YAxisLabel = 'Count';
     this.filterByTimeOptions = [];
     this.selectedFilterByTimeOption = null;
+
+    // Reset kpi211 stacked chart data
+    this.kpi211StackedChartData = [];
   }
 
   setGlobalConfigData(globalConfig) {
@@ -858,6 +865,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpi205YAxisLabel = 'Count';
       this.filterByTimeOptions = [];
       this.selectedFilterByTimeOption = null;
+
+      // Reset kpi211 stacked chart data
+      this.kpi211StackedChartData = [];
 
       // Reset workflow order fetch flag and restore cached order for the new project
       this.kpi202WorkflowOrderFetched = false;
@@ -2381,6 +2391,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
+
+    // kpi211-specific: whenever the scatter-plot chart data is (re-)computed due to a
+    // filter change, recompute the stacked bar derived data from the updated dataValue.
+    if (kpiId === 'kpi211') {
+      this.computeKpi211StackedChartData();
+    }
   }
 
   applyForecastData(chartSeries): void {
@@ -3442,6 +3458,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.fetchAndCacheKpi202WorkflowOrder();
         }
         this.computeKpi202DuplicateChartData();
+      }
+
+      // After kpi211 chart data is set, compute stacked bar chart data from dataValue
+      if (data[key]?.kpiId === 'kpi211') {
+        this.computeKpi211StackedChartData();
       }
     }
   }
@@ -6632,5 +6653,61 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
+  }
+
+  onKpi211ChartTypeChange(chartType: string) {
+    this.kpi211Switching = true;
+    // Yield one tick so Angular renders the skeleton before mounting the heavy chart
+    setTimeout(() => {
+      this.kpi211SelectedView = chartType;
+      this.kpi211Switching = false;
+    }, 0);
+  }
+
+  /**
+   * Transforms kpiChartData['kpi211'] (scatter plot format) into a stacked bar chart
+   * format using the `dataValue` property on each weekly entry.
+   *
+   * kpiChartData['kpi211'] structure (after getChartData filter1+filter2 processing):
+   *   [{ data: 'ProjectName', value: [{date, kpiGroup, dataValue: [{name, data, value, hoverValue}], bubblePoints}] }]
+   *
+   * groupstackchart-v2 (transformData) expects a flat array of sprint/week entries:
+   *   [{ sSprintName, data: <total>, value: [{subFilter, value, size, drillDown}] }, ...]
+   *
+   * We flatten the project wrapper so each week becomes one top-level entry.
+   */
+  computeKpi211StackedChartData(): void {
+    const rawSeries: any[] = this.kpiChartData['kpi211'];
+    if (!rawSeries || !rawSeries.length) {
+      this.kpi211StackedChartData = [];
+      return;
+    }
+
+    const result: any[] = [];
+    rawSeries.forEach((projectSeries: any) => {
+      (projectSeries.value || []).forEach((week: any) => {
+        const subValues = (week.dataValue || []).map((dv: any) => ({
+          subFilter: dv.name,
+          value: dv.value,
+          size: dv.value,
+          data: dv.data,
+          hoverValue: dv.hoverValue || {},
+          drillDown: [],
+        }));
+        // 'data' is the total for this week — used by formatData's max-value calculation
+        const total = (week.dataValue || []).reduce(
+          (sum: number, dv: any) => sum + (dv.value || 0),
+          0,
+        );
+        result.push({
+          sSprintName: week.date,
+          date: week.date,
+          data: total,
+          kpiGroup: week.kpiGroup,
+          value: subValues,
+        });
+      });
+    });
+    this.kpi211StackedChartData = result;
   }
 }
