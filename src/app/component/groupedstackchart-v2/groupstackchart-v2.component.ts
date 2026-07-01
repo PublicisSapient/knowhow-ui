@@ -245,7 +245,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
           actualTypes.push(d.type);
         }
       });
-      actualTypes.reverse();
+      // Keep the original order for keys - do NOT reverse here
       z.domain(actualTypes);
       const keys = z.domain();
       let groupData = d3.rollup(
@@ -278,7 +278,10 @@ export class GroupstackchartComponentv2 implements OnChanges {
         return d[1];
       });
 
-      const stackData = stack.keys(keys)(groupData);
+      // Generate stack data and reverse it to change visual rendering order
+      // D3 stack renders first series at bottom, last at top
+      // Reversing makes the last item in dataValue array appear at the top
+      const stackData = stack.keys(keys)(groupData).reverse();
 
       let xAxis = d3.axisBottom(x0);
       if (this.kpiId === 'kpi211') {
@@ -548,6 +551,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
 
         let htmlString = '';
         this.sortAlphabetically(stackData);
+        // Reverse legend keys to match the visual stack order (top to bottom)
         const legendKeys = actualTypes
           .filter((type) => type.indexOf('drillDown') === -1)
           .reverse();

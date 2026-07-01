@@ -150,8 +150,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi202Switching = false;
   kpi204ViewOptions = ['By Range', 'By Sprint'];
   kpi204SelectedView = 'By Range';
-  kpi211ViewOptions = ['Scatter Plot', 'Stacked Bar'];
-  kpi211SelectedView = 'Scatter Plot';
+  kpi211ViewOptions = ['Stacked Bar', 'Scatter Plot'];
+  kpi211SelectedView = 'Stacked Bar';
   kpi211Switching = false;
   kpi211StackedChartData: any[] = [];
   selectedTrend: any = [];
