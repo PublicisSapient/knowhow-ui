@@ -385,6 +385,38 @@ export class GroupstackchartComponentv2 implements OnChanges {
           .attr('class', 'vertical-gridline');
       }
 
+      // Threshold line
+      if (
+        this.thresholdValue !== null &&
+        this.thresholdValue !== undefined &&
+        this.thresholdValue !== ''
+      ) {
+        const thresholdY = y(this.thresholdValue);
+
+        // Draw the threshold line
+        svgX
+          .append('line')
+          .attr('class', 'threshold-line')
+          .attr('x1', 0)
+          .attr('x2', width - margin)
+          .attr('y1', thresholdY)
+          .attr('y2', thresholdY)
+          .style('stroke', '#333333')
+          .style('stroke-dasharray', '1,1')
+          .attr('class', 'thresholdline');
+
+        // Add threshold label
+        svgX
+          .append('text')
+          .attr('x', width - margin - 5)
+          .attr('y', thresholdY - 5)
+          .attr('dy', '.5em')
+          .attr('text-anchor', 'end')
+          .text(this.thresholdValue)
+          .style('font-weight', 'normal')
+          .attr('class', 'thresholdlinetext');
+      }
+
       const serie = svgX
         .selectAll('.serie')
         .data(stackData)
