@@ -542,7 +542,7 @@ describe('ScatterPlotChartComponent', () => {
     });
 
     it('should calculate total lines correctly', () => {
-      const data = [
+      const data: any = [
         {
           data: 'Project1',
           value: [
@@ -554,12 +554,12 @@ describe('ScatterPlotChartComponent', () => {
                 {
                   size: '100',
                   label: 'PR001',
-                  hoverValue: { 'No of lines': 100 },
+                  hoverValue: { 'No. of lines': 100 },
                 },
                 {
                   size: '200',
                   label: 'PR002',
-                  hoverValue: { 'No of lines': 200 },
+                  hoverValue: { 'No. of lines': 200 },
                 },
               ],
             },
@@ -569,7 +569,7 @@ describe('ScatterPlotChartComponent', () => {
 
       const result = component.flattenData(data);
 
-      expect(result[0].projects['Project1']['No of lines']).toBe(300);
+      expect(result[0].projects['Project1']['No. of lines']).toBe(300);
     });
   });
 
@@ -587,6 +587,56 @@ describe('ScatterPlotChartComponent', () => {
         'sprint',
       );
       expect(result).toBe('Jan 1, 2025');
+    });
+  });
+
+  describe('renderSprintsLegend', () => {
+    it('should not throw error when elem is null', () => {
+      component.elem = null;
+      const data = [
+        {
+          data: 'Project1',
+          value: [
+            {
+              date: '2025-01-01',
+              kpiGroup: 'group1',
+              sprojectName: 'Project1',
+              bubblePoints: [],
+            },
+          ],
+        },
+      ];
+
+      expect(() => component.renderSprintsLegend(data, 'Week')).not.toThrow();
+    });
+
+    it('should not throw error when data is empty', () => {
+      const mockElem = document.createElement('div');
+      component.elem = mockElem;
+
+      expect(() => component.renderSprintsLegend([], 'Week')).not.toThrow();
+    });
+  });
+
+  describe('getBubbleColor', () => {
+    it('should return correct color for size < 100', () => {
+      const color = component['getBubbleColor'](50);
+      expect(color).toBeDefined();
+    });
+
+    it('should return correct color for size between 100 and 300', () => {
+      const color = component['getBubbleColor'](150);
+      expect(color).toBeDefined();
+    });
+
+    it('should return correct color for size between 300 and 500', () => {
+      const color = component['getBubbleColor'](400);
+      expect(color).toBeDefined();
+    });
+
+    it('should return correct color for size >= 500', () => {
+      const color = component['getBubbleColor'](600);
+      expect(color).toBeDefined();
     });
   });
 });

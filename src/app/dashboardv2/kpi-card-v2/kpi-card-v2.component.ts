@@ -362,7 +362,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.kpiData?.kpiId === 'kpi202' ||
           this.kpiData?.kpiId === 'kpi206' ||
           this.kpiData?.kpiId === 'kpi207' ||
-          this.kpiData?.kpiId === 'kpi208',
+          this.kpiData?.kpiId === 'kpi208' ||
+          this.kpiData?.kpiId === 'kpi211',
       },
       {
         label: 'Explore',

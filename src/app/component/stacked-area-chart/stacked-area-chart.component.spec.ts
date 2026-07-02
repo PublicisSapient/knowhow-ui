@@ -165,7 +165,13 @@ describe('StackedAreaChartComponent', () => {
 
   describe('ngOnDestroy', () => {
     it('should cleanup SVG and unobserve', () => {
-      const unobserveSpy = spyOn(component['elemObserver'], 'unobserve');
+      // Create a fresh mock for the ResizeObserver
+      const mockResizeObserver = jasmine.createSpyObj('ResizeObserver', [
+        'observe',
+        'unobserve',
+        'disconnect',
+      ]);
+      component['elemObserver'] = mockResizeObserver;
       component.elem = component.chartContainer.nativeElement;
 
       // Add a dummy SVG
@@ -174,7 +180,7 @@ describe('StackedAreaChartComponent', () => {
       component.ngOnDestroy();
 
       expect(d3.select(component.elem).select('svg').empty()).toBeTrue();
-      expect(unobserveSpy).toHaveBeenCalledWith(component.elem);
+      expect(mockResizeObserver.unobserve).toHaveBeenCalledWith(component.elem);
       expect(component.data).toEqual([]);
     });
   });
