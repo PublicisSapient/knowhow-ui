@@ -205,16 +205,16 @@ export class GroupstackchartComponentv2 implements OnChanges {
       let stackColorsList;
       // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
       stackColorsList = [
-        '#6079C5',
-        '#FFB587',
-        '#D48DEF',
-        '#A4F6A5',
-        '#FBCF5F',
-        '#9FECFF',
         '#ff8c00',
+        '#50C878',
+        '#A4F6A5',
+        '#097969',
+        '#6079C5',
+        '#F28C28',
+        '#D48DEF',
+        '#D22B2B',
         '#3F51B5',
         '#aaaaaa',
-        '#E7FFAC',
         '#85E3FF',
         '#8DA47E',
       ];
