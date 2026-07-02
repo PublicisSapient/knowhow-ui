@@ -111,6 +111,10 @@
   bottom: 6px;
 }
 
+#groupstackchart {
+  position: relative;
+}
+
 #xCaptionContainer {
   text-align: center;
   color: #437495;
