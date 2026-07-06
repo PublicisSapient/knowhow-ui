@@ -434,7 +434,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
 
     // Benchmark Line
-    if (benchmarkValue !== null) {
+    /* if (benchmarkValue !== null) {
       const tooltip = d3
         .select('body')
         .append('div')
@@ -486,7 +486,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .style('font-size', '12px')
         .style('font-weight', 'bold')
         .text(benchmarkValue);
-    }
+    } */
     //Add xCaption
     d3.select(elem)
       .select('#container')

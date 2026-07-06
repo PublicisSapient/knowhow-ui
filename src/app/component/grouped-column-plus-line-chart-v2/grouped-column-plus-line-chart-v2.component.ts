@@ -209,10 +209,21 @@ export class GroupedColumnPlusLineChartV2Component
     d3.select(this.elem).select('#svgLegend').select('svg').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
+    // kpi205: clear the old sprint-legend-container and reset the counter so it
+    // re-renders with the newly-selected filter's data (Weekly / Bi-Weekly / Monthly).
+    d3.select(this.elem).selectAll('.sprint-legend-container').remove();
+    // kpi205: clear old bar labels and label groups
+    d3.select(this.elem).selectAll('.bar-label').remove();
+    d3.select(this.elem).selectAll('.bar-label-group').remove();
+    this.counter = 0;
     if (this.isXaxisGroup === true && selectedProjectCount === 1) {
       data = data.map((details) => {
         let finalResult = {};
-        const XValue = details.value[0].sSprintName || details.value[0].date;
+        // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
+        const XValue =
+          details.value[0].sSprintName ||
+          details.value[0].sSprintID ||
+          details.value[0].date;
         const sortValue = XValue;
         finalResult = {
           ...details,
@@ -276,7 +287,8 @@ export class GroupedColumnPlusLineChartV2Component
         if (details == null) {
           return null;
         }
-        const XValue = details.sSprintName || details.date;
+        // Read sprint label — sSprintName (Weekly), sSprintId (Bi-Weekly), date (Monthly).
+        const XValue = details.sSprintName || details.sSprintID || details.date;
         const sortValue = XValue;
         return { ...details, sortSprint: sortValue };
       });
@@ -296,7 +308,7 @@ export class GroupedColumnPlusLineChartV2Component
           return i + 1;
         }
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-          return d.date || d.sortSprint || d.sSprintName;
+          return d.sortSprint || d.sSprintID || d.date || d.sSprintName;
         }
         return d.isForecast ? 'Forecast' : i + 1;
       });
@@ -483,7 +495,7 @@ export class GroupedColumnPlusLineChartV2Component
         .style('pointer-events', 'none')
         .style('opacity', 0);
 
-      if (benchmarkValue !== null) {
+      /* if (benchmarkValue !== null) {
         svgX
           .append('svg:line')
           .attr('x1', 0)
@@ -518,7 +530,7 @@ export class GroupedColumnPlusLineChartV2Component
           .style('font-size', '12px')
           .text(Math.round(benchmarkValue * 100) / 100)
           .attr('class', 'benchmark-label');
-      }
+      } */
 
       const xAxisGrid = d3
         .axisBottom(x0)
@@ -568,7 +580,11 @@ export class GroupedColumnPlusLineChartV2Component
         }
         let key;
         if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-          key = point.sortSprint || point.date || point.sSprintName;
+          key =
+            point.sortSprint ||
+            point.sSprintID ||
+            point.date ||
+            point.sSprintName;
         } else {
           key = point.isForecast ? 'Forecast' : index + 1;
         }
@@ -840,7 +856,7 @@ export class GroupedColumnPlusLineChartV2Component
 
         const rx = x1.bandwidth() / 2;
         const ry = x1.bandwidth() / 2;
-        slice
+        const bars = slice
           .selectAll('arc')
           .data((d) => d.value)
           .enter()
@@ -883,6 +899,102 @@ export class GroupedColumnPlusLineChartV2Component
       // ============================================
       // END OF MODIFIED SECTION
       // ============================================
+
+      // ============================================
+      // KPI205: Add value labels on top of bars with background
+      // ============================================
+      if (kpiId === 'kpi205') {
+        // Create a group for each label (background + text)
+        const labelGroups = slice
+          .selectAll('.bar-label-group')
+          .data((d) => d.value)
+          .enter()
+          .append('g')
+          .attr('class', 'bar-label-group')
+          .attr('transform', (d) => {
+            const xPos = x1(d.rate) + x1.bandwidth() / 2;
+            const yPos = y(d.value) - 8; // Position above the bar
+            return `translate(${xPos}, ${yPos})`;
+          });
+
+        // Add background rectangle with white fill and shadow
+        const backgrounds = labelGroups
+          .append('rect')
+          .attr('class', 'bar-label-bg')
+          .attr('rx', 3) // Rounded corners
+          .attr('ry', 3)
+          .style('fill', 'white')
+          .style('stroke', '#ddd')
+          .style('stroke-width', '1')
+          .style('filter', 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))');
+
+        // Add text with property name and value
+        const texts = labelGroups
+          .append('text')
+          .attr('class', 'bar-label-text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '0.35em') // Vertically center the text
+          .style('font-size', '9px')
+          .style('fill', '#333')
+          .style('font-weight', '500')
+          .style('pointer-events', 'none')
+          .text((d) => {
+            // Extract property name and value from hoverValue
+            let propertyName = '';
+            let value = d.value;
+
+            // Check if hoverValue exists directly on d
+            if (d.hoverValue) {
+              // Iterate through hoverValue to find the first valid key
+              for (const key in d.hoverValue) {
+                // Skip "AverageVelocity" for kpi205
+                if (key === 'AverageVelocity') {
+                  continue;
+                }
+                propertyName = key;
+                value = d.hoverValue[key];
+                break;
+              }
+            } else if (d.subfilterValues && d.subfilterValues.hoverValue) {
+              // Handle "By Story Points" case: subfilterValues: {storyPoints: 0, hoverValue: {Velocity: 0}}
+              for (const key in d.subfilterValues.hoverValue) {
+                if (key === 'AverageVelocity') {
+                  continue;
+                }
+                propertyName = key;
+                value = d.subfilterValues.hoverValue[key];
+                break;
+              }
+            }
+
+            if (value === null || value === undefined) {
+              return '';
+            }
+
+            // Round to 1 decimal place if needed
+            const formattedValue = value % 1 === 0 ? value : value.toFixed(1);
+            const displayValue = showUnit
+              ? `${formattedValue} ${showUnit}`
+              : formattedValue;
+
+            // Return formatted label
+            return propertyName ? `${displayValue}` : displayValue;
+          });
+
+        // Size the background rectangles based on text dimensions
+        texts.each(function () {
+          const textElement = this as SVGTextElement;
+          const bbox = textElement.getBBox();
+          const padding = 4;
+
+          d3.select(textElement.parentNode)
+            .select('.bar-label-bg')
+            .attr('x', bbox.x - padding)
+            .attr('y', bbox.y - padding)
+            .attr('width', bbox.width + padding * 2)
+            .attr('height', bbox.height + padding * 2);
+        });
+      }
 
       // threshold line
       if (self.thresholdValue) {
@@ -1465,7 +1577,12 @@ export class GroupedColumnPlusLineChartV2Component
           return;
         }
         const sprintKey = index; // You could use sprint.sSprintID if needed for uniqueness
-        const sprintName = sprint.sSprintName?.trim() || sprint.date?.trim();
+        // Read sprint label — try sSprintName first, then sSprintId (used by Bi-Weekly),
+        // then fall back to the date field (used by Monthly).
+        const sprintName =
+          sprint.sSprintName?.trim() ||
+          sprint.sSprintID?.trim() ||
+          sprint.date?.trim();
 
         if (!sprintMap.has(sprintKey)) {
           sprintMap.set(sprintKey, {

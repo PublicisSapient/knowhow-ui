@@ -624,7 +624,7 @@ export class SharedService {
   }
 
   clearAllCookies() {
-    console.log('clear all cookie Called');
+    console.log('clear all cookie called - shared service');
     const cookies = document.cookie.split(';');
     // set past expiry to all cookies
     for (const cookie of cookies) {

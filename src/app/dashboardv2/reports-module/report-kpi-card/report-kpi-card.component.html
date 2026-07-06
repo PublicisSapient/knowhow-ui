@@ -460,7 +460,7 @@
     *ngIf="
       (kpiData?.chartType === 'stacked-bar-chart' ||
       kpiData?.chartType === 'stacked-bar') &&
-      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
+      selectedTab !== 'slingshot'
     "
     class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
     <ul class="legend">
@@ -479,7 +479,7 @@
       (kpiData?.chartType === 'line' ||
       kpiData?.chartType === 'multipleline' ||
       kpiData?.chartType === 'grouped_column_plus_line') &&
-      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
+      selectedTab !== 'slingshot'
     "
     class="kpi-card-footer p-p-3">
     <app-trend-indicator-v2 [trendData]="kpiTrendsObj" [colorObj]="trendColors">
@@ -493,7 +493,7 @@
     *ngIf="
       (kpiData?.chartType === 'stacked-bar-chart' ||
       kpiData?.chartType === 'stacked-bar') &&
-      kpiData?.kpiId !== 'kpi202' && kpiData?.kpiId !== 'kpi202_duplicate'
+      selectedTab !== 'slingshot'
     "
     class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
     <ul class="legend">
