@@ -4,10 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Git Tag for UI Production Release"
+        description: "Git Tag for UI Production Release , Code Checkout from master"
         required: true
         type: string
-        default: "14.0.0"
+        default: "17.1.0"
+      deploy:
+        description: "Deploy to Production"
+        required: true
+        type: boolean
+        default: true
 
 env:
   IMAGE_NAME: knowhow-ui
@@ -41,10 +46,10 @@ jobs:
           echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
           echo "VALUES_FILE=values-prod.yaml" >> $GITHUB_ENV
 
-      - name: Checkout UI Repository using release tag
+      - name: Checkout UI Repository from master
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.release_tag }}
+          ref: master
           fetch-depth: 0
 
       - name: Cache node_modules
@@ -109,20 +114,26 @@ jobs:
           docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
 
-      - name: Checkout Helm Charts (Bitbucket)
-        run: |
-          git clone $BITBUCKET_HELM_REPO
-          cd $HELM_CHART_PATH
+          # Tag and push latest so the registry has a 'latest' pointer
+          docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
-          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+      # - name: Checkout Helm Charts (Bitbucket)
+      #   if: ${{ github.event.inputs.deploy == 'true' }}
+      #   run: |
+      #     git clone $BITBUCKET_HELM_REPO
+      #     cd $HELM_CHART_PATH
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add $VALUES_FILE
-          git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
-          git push origin HEAD
+      #     yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+      #     git add $VALUES_FILE
+      #     git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
+      #     git push origin HEAD
 
   deploy:
+    if: ${{ github.event.inputs.deploy == 'true' }}
     runs-on: github-actions-self-hosted-runner
     timeout-minutes: 30
     needs: build
@@ -147,8 +158,12 @@ jobs:
 
       - name: Sync App
         id: sync-app
-        run: argocd app sync $ARGOCD_APP_NAME
+        run: argocd app sync $ARGOCD_APP_NAME --force --prune 
         continue-on-error: true
+      
+      - name: Restart app
+        if: ${{ steps.sync-app.outcome == 'success' }}
+        run: argocd app actions run $ARGOCD_APP_NAME restart
 
       - name: Get App URL (on sync failure)
         if: ${{ steps.sync-app.outcome != 'success' }}
