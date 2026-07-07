@@ -106,9 +106,9 @@ export class AppInitializerService {
         {
           path: 'Report',
           loadChildren: () =>
-            import(
-              '../../app/dashboardv2/reports-module/reports-module.module'
-            ).then((m) => m.ReportsModuleModule),
+            import('../../app/dashboardv2/reports-module/reports-module.module').then(
+              (m) => m.ReportsModuleModule,
+            ),
           data: {
             feature: 'Report',
           },
@@ -162,9 +162,9 @@ export class AppInitializerService {
         {
           path: 'Report',
           loadChildren: () =>
-            import(
-              '../../app/dashboardv2/reports-module/reports-module.module'
-            ).then((m) => m.ReportsModuleModule),
+            import('../../app/dashboardv2/reports-module/reports-module.module').then(
+              (m) => m.ReportsModuleModule,
+            ),
           data: {
             feature: 'Report',
           },
@@ -223,7 +223,8 @@ export class AppInitializerService {
         environment['SSO_LOGIN'] =
           (env['SSO_LOGIN'] || '').toString().toLowerCase() === 'true';
         environment['AUTHENTICATION_SERVICE'] =
-          (env['AUTHENTICATION_SERVICE'] || '').toString().toLowerCase() === 'true';
+          (env['AUTHENTICATION_SERVICE'] || '').toString().toLowerCase() ===
+          'true';
         environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
         environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
         environment['MAP_URL'] = env['MAP_URL'] || '';
@@ -243,9 +244,8 @@ export class AppInitializerService {
     }
 
     // load google Analytics script on all instances except local and if customAPI property is true
-    const addGAScript = await this.featureToggleService.isFeatureEnabled(
-      'GOOGLE_ANALYTICS',
-    );
+    const addGAScript =
+      await this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
     if (addGAScript) {
       if (window.location.origin.indexOf('localhost') === -1) {
         this.ga.load('gaTagManager').then((data) => {
