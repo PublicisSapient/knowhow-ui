@@ -20,7 +20,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { environment } from '../../../../environments/environment';
+import { RuntimeEnvService } from 'src/app/services/runtime-env.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -68,7 +68,7 @@ export class AccessMgmtComponent implements OnInit {
     emailAddress: '',
     projectsAccess: [],
   };
-  ssoLogin = environment['SSO_LOGIN'];
+  ssoLogin = false;
   isSuperAdmin: boolean = false;
   isProjectAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
@@ -84,11 +84,13 @@ export class AccessMgmtComponent implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private authService: GetAuthorizationService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   ngOnInit() {
     this.isOpenSource = this.service.getGlobalConfigData()?.openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
+    this.ssoLogin = this.runtimeEnvService.getBoolean('SSO_LOGIN');
     this.isProjectAdmin = this.authService.checkIfProjectAdmin();
     this.getRolesList();
     this.getUsers();

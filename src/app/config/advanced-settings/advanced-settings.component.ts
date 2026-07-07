@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
 import { forkJoin, interval, of, Subscription } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from 'src/app/services/runtime-env.service';
 import { catchError, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -43,7 +43,7 @@ export class AdvancedSettingsComponent implements OnInit {
   selectedProject = {};
   processorsTracelogs = [];
   toolConfigsDetails = [];
-  ssoLogin = environment['SSO_LOGIN'];
+  ssoLogin = false;
   jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
@@ -61,12 +61,14 @@ export class AdvancedSettingsComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly route: ActivatedRoute,
     public router: Router,
+    private readonly runtimeEnvService: RuntimeEnvService,
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.pid = params['pid'];
     });
+    this.ssoLogin = this.runtimeEnvService.getBoolean('SSO_LOGIN');
 
     this.items = [
       {

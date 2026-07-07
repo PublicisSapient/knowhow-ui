@@ -5,7 +5,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from 'src/app/services/runtime-env.service';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { BehaviorSubject } from 'rxjs';
 
@@ -32,11 +32,9 @@ export class HeaderComponent implements OnInit {
   ifProjectAdmin: boolean = false;
   isGuest: boolean = false;
   appList: MenuItem[] | undefined;
-  ssoLogin = environment['SSO_LOGIN'];
-  auth_service = environment.AUTHENTICATION_SERVICE;
-  isSpeedSuite = environment?.['SPEED_SUITE']
-    ? environment?.['SPEED_SUITE']
-    : false;
+  ssoLogin = false;
+  auth_service = false;
+  isSpeedSuite = false;
   userRole = '';
   noToolsConfigured: boolean;
   isNotConfigPage: boolean = false;
@@ -53,6 +51,7 @@ export class HeaderComponent implements OnInit {
     private helperService: HelperService,
     private featureFlagService: FeatureFlagsService,
     private messageService: MessageService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   ngOnInit() {
@@ -68,6 +67,9 @@ export class HeaderComponent implements OnInit {
     this.getNotification();
     this.items = [{ label: 'Dashboard', icon: '' }];
     this.activeItem = this.items[0];
+    this.ssoLogin = this.runtimeEnvService.getBoolean('SSO_LOGIN');
+    this.auth_service = this.runtimeEnvService.getBoolean('AUTHENTICATION_SERVICE');
+    this.isSpeedSuite = this.runtimeEnvService.getBoolean('SPEED_SUITE');
 
     this.userDetails = this.sharedService.getCurrentUserDetails();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
@@ -167,14 +169,14 @@ export class HeaderComponent implements OnInit {
           label: 'Assessments',
           icon: '',
           command: () => {
-            window.open(environment['MAP_URL'], '_blank');
+            window.open(this.runtimeEnvService.getString('MAP_URL'), '_blank');
           },
         },
         {
           label: 'Retros',
           icon: '',
           command: () => {
-            window.open(environment['RETROS_URL'], '_blank');
+            window.open(this.runtimeEnvService.getString('RETROS_URL'), '_blank');
           },
         },
       ];
@@ -329,7 +331,8 @@ export class HeaderComponent implements OnInit {
           const data = response.data;
           // Combine baseUrl with relative URLs
           if (data.apiDocumentation && data.apiDocumentation.startsWith('/')) {
-            data.apiDocumentation = environment.baseUrl + data.apiDocumentation;
+            data.apiDocumentation =
+              this.runtimeEnvService.getString('baseUrl') + data.apiDocumentation;
           }
           this.configDetails = data;
           this.sharedService.setConfigurationDetails(data);

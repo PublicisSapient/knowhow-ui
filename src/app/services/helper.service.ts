@@ -25,7 +25,7 @@ import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from './runtime-env.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
@@ -62,6 +62,7 @@ export class HelperService {
     private router: Router,
     private route: ActivatedRoute,
     private utcToLocalUserPipe: UtcToLocalUserPipe,
+    private runtimeEnvService: RuntimeEnvService,
   ) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -1042,8 +1043,11 @@ export class HelperService {
         this.sharedService.clearPEBDataCache();
         localStorage.removeItem('shared_link');
         const redirect_uri = window.location.href;
+        const centralLoginUrl = this.runtimeEnvService.getString(
+          'CENTRAL_LOGIN_URL',
+        );
         window.location.href =
-          environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+          centralLoginUrl + '?redirect_uri=' + redirect_uri;
       }
       //   }
     });

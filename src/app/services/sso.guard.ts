@@ -8,7 +8,7 @@ import {
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, first, map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from './runtime-env.service';
 import { HttpService } from './http.service';
 import { SharedService } from './shared.service';
 
@@ -20,6 +20,7 @@ export class SSOGuard implements CanActivate {
     private router: Router,
     private httpService: HttpService,
     private sharedService: SharedService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   canActivate(
@@ -30,7 +31,7 @@ export class SSOGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!environment['SSO_LOGIN']) {
+    if (!this.runtimeEnvService.getBoolean('SSO_LOGIN')) {
       return true;
     } else {
       return this.getSSOUserInfo();

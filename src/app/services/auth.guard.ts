@@ -29,7 +29,7 @@ import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from './runtime-env.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -38,6 +38,7 @@ export class AuthGuard implements CanActivate {
     private getAuth: GetAuthService,
     private sharedService: SharedService,
     private httpService: HttpService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   canActivate(
@@ -54,10 +55,10 @@ export class AuthGuard implements CanActivate {
       if (currentUserDetails['authorities']) {
         return true;
       } else {
-        if (environment.AUTHENTICATION_SERVICE) {
-          /** redirect to central login url*/
-          if (environment.CENTRAL_LOGIN_URL) {
-            window.location.href = environment.CENTRAL_LOGIN_URL;
+        if (this.runtimeEnvService.getBoolean('AUTHENTICATION_SERVICE')) {
+          const centralUrl = this.runtimeEnvService.getString('CENTRAL_LOGIN_URL');
+          if (centralUrl) {
+            window.location.href = centralUrl;
           }
         } else {
           const queryParams = route.queryParams;
@@ -75,10 +76,10 @@ export class AuthGuard implements CanActivate {
             if (details['data']['authorities']) {
               return true;
             }
-            if (environment.AUTHENTICATION_SERVICE) {
-              /** redirect to central login url*/
-              if (environment.CENTRAL_LOGIN_URL) {
-                window.location.href = environment.CENTRAL_LOGIN_URL;
+            if (this.runtimeEnvService.getBoolean('AUTHENTICATION_SERVICE')) {
+              const centralUrl = this.runtimeEnvService.getString('CENTRAL_LOGIN_URL');
+              if (centralUrl) {
+                window.location.href = centralUrl;
               }
             } else {
               const queryParams = route.queryParams;

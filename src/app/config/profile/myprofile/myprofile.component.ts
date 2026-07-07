@@ -26,7 +26,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
 import { SharedService } from 'src/app/services/shared.service';
-import { environment } from 'src/environments/environment';
+import { RuntimeEnvService } from 'src/app/services/runtime-env.service';
 import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-myprofile',
@@ -50,7 +50,7 @@ export class MyprofileComponent implements OnInit {
   noAccess = false;
   roleBasedProjectList = [];
   dynamicCols: Array<any> = [];
-  ssoLogin = environment['SSO_LOGIN'];
+  ssoLogin = false;
   loginType = '';
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -59,6 +59,7 @@ export class MyprofileComponent implements OnInit {
     private profile: ProfileComponent,
     public sharedService: SharedService,
     private messageService: MessageService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   /**
@@ -72,6 +73,7 @@ export class MyprofileComponent implements OnInit {
       // logged in as SuperAdmin
       this.isSuperAdmin = true;
     }
+    this.ssoLogin = this.runtimeEnvService.getBoolean('SSO_LOGIN');
     if (this.getAuthorizationService.checkIfProjectAdmin()) {
       // logged in as projectAdmin
       this.isProjectAdmin = true;

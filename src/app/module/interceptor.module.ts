@@ -31,7 +31,7 @@ import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { RuntimeEnvService } from '../services/runtime-env.service';
 import * as uuid from 'uuid';
 import { HttpService } from '../services/http.service';
 declare let $: any;
@@ -44,6 +44,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     private route: ActivatedRoute,
     private service: SharedService,
     private httpService: HttpService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
 
   intercept(
@@ -53,7 +54,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
     const requestArea = req.headers.get('requestArea') || 'internal';
 
-    if (environment.AUTHENTICATION_SERVICE) {
+    if (this.runtimeEnvService.getBoolean('AUTHENTICATION_SERVICE')) {
       const cookie = document.cookie?.split(';');
       let authCookie_EXPIRY = cookie?.find((x) =>
         x.includes('authCookie_EXPIRY'),
@@ -91,26 +92,27 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const reqUrl = req.url;
     req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
+    const baseUrl = this.runtimeEnvService.getString('baseUrl');
     const redirectExceptions = [
-      environment.baseUrl + '/api/jenkins/kpi',
-      environment.baseUrl + '/api/zypher/kpi',
-      environment.baseUrl + '/api/jira/kpi',
-      environment.baseUrl + '/api/bitbucket/kpi',
-      environment.baseUrl + '/api/sonar/kpi',
-      environment.baseUrl + '/api/newrelic/kpi',
-      environment.baseUrl + '/api/jirakanban/kpi',
-      environment.baseUrl + '/api/sonarkanban/kpi',
-      environment.baseUrl + '/api/jenkinskanban/kpi',
-      environment.baseUrl + '/api/zypherkanban/kpi',
-      environment.baseUrl + '/api/bitbucketkanban/kpi',
-      environment.baseUrl + '/api/auth-types',
+      baseUrl + '/api/jenkins/kpi',
+      baseUrl + '/api/zypher/kpi',
+      baseUrl + '/api/jira/kpi',
+      baseUrl + '/api/bitbucket/kpi',
+      baseUrl + '/api/sonar/kpi',
+      baseUrl + '/api/newrelic/kpi',
+      baseUrl + '/api/jirakanban/kpi',
+      baseUrl + '/api/sonarkanban/kpi',
+      baseUrl + '/api/jenkinskanban/kpi',
+      baseUrl + '/api/zypherkanban/kpi',
+      baseUrl + '/api/bitbucketkanban/kpi',
+      baseUrl + '/api/auth-types',
     ];
 
     const partialRedirectExceptions = [
-      environment.baseUrl + '/api/sonar/project',
-      environment.baseUrl + '/api/userinfo',
-      environment.baseUrl + '/api/jenkins/jobName',
-      environment.baseUrl + '/api/reports?createdBy=',
+      baseUrl + '/api/sonar/project',
+      baseUrl + '/api/userinfo',
+      baseUrl + '/api/jenkins/jobName',
+      baseUrl + '/api/reports?createdBy=',
     ];
 
     // handling error response
@@ -154,24 +156,30 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           );
         }
         if (err instanceof HttpErrorResponse) {
-          console.log('environment sso_login', environment?.['SSO_LOGIN']);
+          console.log(
+            'environment sso_login',
+            this.runtimeEnvService.getBoolean('SSO_LOGIN'),
+          );
           if (err.status === 401) {
             if (requestArea === 'internal') {
-              if (environment?.['SSO_LOGIN']) {
+              if (this.runtimeEnvService.getBoolean('SSO_LOGIN')) {
                 this.httpService.setCurrentUserDetails({});
                 console.log('SSO_LOGIN', true);
                 const redirect_uri = window.location.href;
                 const encodedRedirectUri = encodeURIComponent(redirect_uri);
-                if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
+                const centralLoginUrl = this.runtimeEnvService.getString(
+                  'CENTRAL_LOGIN_URL',
+                );
+                if (centralLoginUrl && redirect_uri) {
                   window.location.href =
-                    environment.CENTRAL_LOGIN_URL +
+                    centralLoginUrl +
                     '?redirect_uri=' +
                     encodedRedirectUri;
                 } else {
                   window.location.reload();
                 }
               } else {
-                if (environment.AUTHENTICATION_SERVICE) {
+                if (this.runtimeEnvService.getBoolean('AUTHENTICATION_SERVICE')) {
                   this.redirectToLogin();
                 } else {
                   this.httpService.setCurrentUserDetails({});
@@ -182,22 +190,25 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
               }
             }
 
-            if (environment?.['SSO_LOGIN']) {
+            if (this.runtimeEnvService.getBoolean('SSO_LOGIN')) {
               this.router
                 .navigate(['./dashboard/my-knowhow'])
                 .then((success) => {
                   window.location.reload();
                 });
             }
-          } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
+          } else if (err.status === 403 && this.runtimeEnvService.getBoolean('SSO_LOGIN')) {
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
-            console.log('environment.SSO_LOGIN ', environment['SSO_LOGIN']);
+            console.log(
+              'environment.SSO_LOGIN ',
+              this.runtimeEnvService.getBoolean('SSO_LOGIN'),
+            );
             if (
               err?.status === 0 &&
               err?.statusText === 'Unknown Error' &&
-              environment['SSO_LOGIN']
+              this.runtimeEnvService.getBoolean('SSO_LOGIN')
             ) {
               this.service.clearAllCookies();
               this.router
@@ -216,8 +227,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     )
                   ) {
                     if (
-                      !environment?.['SSO_LOGIN'] ||
-                      (environment['SSO_LOGIN'] && !req.url.includes('api/sso/'))
+                      !this.runtimeEnvService.getBoolean('SSO_LOGIN') ||
+                      (this.runtimeEnvService.getBoolean('SSO_LOGIN') &&
+                        !req.url.includes('api/sso/'))
                     ) {
                       this.router.navigate(['./dashboard/Error']);
                     }
@@ -248,9 +260,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const redirect_uri = window.location.href;
     const encodedRedirectUri = encodeURIComponent(redirect_uri);
     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri));
-    if (environment.CENTRAL_LOGIN_URL && redirect_uri) {
+    const centralLoginUrl = this.runtimeEnvService.getString(
+      'CENTRAL_LOGIN_URL',
+    );
+    if (centralLoginUrl && redirect_uri) {
       window.location.href =
-        environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + encodedRedirectUri;
+        centralLoginUrl + '?redirect_uri=' + encodedRedirectUri;
     } else {
       window.location.reload();
     }

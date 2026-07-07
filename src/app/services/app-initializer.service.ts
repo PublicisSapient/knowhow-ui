@@ -12,6 +12,7 @@ import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
 import { FeatureGuard } from '../services/feature.guard';
 import { AccessGuard } from '../services/access.guard';
+import { RuntimeEnvService } from './runtime-env.service';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
@@ -38,6 +39,7 @@ export class AppInitializerService {
     private route: ActivatedRoute,
     private readonly ga: AnalyticsService,
     private helperService: HelperService,
+    private runtimeEnvService: RuntimeEnvService,
   ) {}
   commonRoutes: Routes = [
     { path: '', redirectTo: 'iteration', pathMatch: 'full' },
@@ -190,6 +192,7 @@ export class AppInitializerService {
   ];
 
   async checkFeatureFlag() {
+    console.log('ENV PRODUCTION:', environment);
     const loc = window.location.hash
       ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
       : '';
@@ -232,6 +235,8 @@ export class AppInitializerService {
         environment['SPEED_SUITE'] =
           (env['SPEED_SUITE'] || '').toString().toLowerCase() === 'true';
         environment['MCP_URL'] = env['MCP_URL'] || '';
+
+        this.runtimeEnvService.loadFromJson(env);
 
         await this.validateToken(loc);
         this.featureToggleService.config = await this.featureToggleService
