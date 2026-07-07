@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
   ifProjectAdmin: boolean = false;
   isGuest: boolean = false;
   appList: MenuItem[] | undefined;
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin = environment['SSO_LOGIN'];
   auth_service = environment.AUTHENTICATION_SERVICE;
   isSpeedSuite = environment?.['SPEED_SUITE']
     ? environment?.['SPEED_SUITE']

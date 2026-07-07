@@ -68,7 +68,7 @@ export class AccessMgmtComponent implements OnInit {
     emailAddress: '',
     projectsAccess: [],
   };
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin = environment['SSO_LOGIN'];
   isSuperAdmin: boolean = false;
   isProjectAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;

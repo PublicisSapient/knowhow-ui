@@ -50,7 +50,7 @@ export class MyprofileComponent implements OnInit {
   noAccess = false;
   roleBasedProjectList = [];
   dynamicCols: Array<any> = [];
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin = environment['SSO_LOGIN'];
   loginType = '';
   constructor(
     private formBuilder: UntypedFormBuilder,

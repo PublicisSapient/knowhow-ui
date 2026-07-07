@@ -43,7 +43,7 @@ export class AdvancedSettingsComponent implements OnInit {
   selectedProject = {};
   processorsTracelogs = [];
   toolConfigsDetails = [];
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin = environment['SSO_LOGIN'];
   jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;

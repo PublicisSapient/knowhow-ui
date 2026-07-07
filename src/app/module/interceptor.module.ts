@@ -193,11 +193,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
-            console.log('environment.SSO_LOGIN ', environment.SSO_LOGIN);
+            console.log('environment.SSO_LOGIN ', environment['SSO_LOGIN']);
             if (
               err?.status === 0 &&
               err?.statusText === 'Unknown Error' &&
-              environment.SSO_LOGIN
+              environment['SSO_LOGIN']
             ) {
               this.service.clearAllCookies();
               this.router
@@ -217,7 +217,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                   ) {
                     if (
                       !environment?.['SSO_LOGIN'] ||
-                      (environment.SSO_LOGIN && !req.url.includes('api/sso/'))
+                      (environment['SSO_LOGIN'] && !req.url.includes('api/sso/'))
                     ) {
                       this.router.navigate(['./dashboard/Error']);
                     }

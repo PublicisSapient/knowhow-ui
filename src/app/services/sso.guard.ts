@@ -30,7 +30,7 @@ export class SSOGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!environment.SSO_LOGIN) {
+    if (!environment['SSO_LOGIN']) {
       return true;
     } else {
       return this.getSSOUserInfo();
