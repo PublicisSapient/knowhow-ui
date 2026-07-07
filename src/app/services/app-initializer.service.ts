@@ -219,15 +219,17 @@ export class AppInitializerService {
       try {
         const env: any = await firstValueFrom(this.http.get('assets/env.json'));
         environment['baseUrl'] = env['baseUrl'] || '';
-        environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
+        // Convert string 'true'/'false' to boolean; treat empty/undefined as false
+        environment['SSO_LOGIN'] =
+          (env['SSO_LOGIN'] || '').toString().toLowerCase() === 'true';
         environment['AUTHENTICATION_SERVICE'] =
-          env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
+          (env['AUTHENTICATION_SERVICE'] || '').toString().toLowerCase() === 'true';
         environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
         environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
         environment['MAP_URL'] = env['MAP_URL'] || '';
         environment['RETROS_URL'] = env['RETROS_URL'] || '';
         environment['SPEED_SUITE'] =
-          env['SPEED_SUITE'] === 'true' ? true : false;
+          (env['SPEED_SUITE'] || '').toString().toLowerCase() === 'true';
         environment['MCP_URL'] = env['MCP_URL'] || '';
 
         await this.validateToken(loc);
@@ -261,6 +263,7 @@ export class AppInitializerService {
           localStorage.removeItem('last_link');
         }
         this.sharedService.navigateToLastVisitedURL(location);
+        resolve();
       } else {
         // Make API call or initialization logic here...
         this.httpService.getUserDetailsForCentral().subscribe(
@@ -298,13 +301,14 @@ export class AppInitializerService {
                 );
               }
             }
+            resolve();
           },
           (error) => {
-            console.log(error);
+            console.log('Token validation error:', error);
+            resolve();
           },
         );
       }
-      resolve();
     });
   }
 }
