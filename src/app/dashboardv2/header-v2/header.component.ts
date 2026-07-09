@@ -34,9 +34,10 @@ export class HeaderComponent implements OnInit {
   appList: MenuItem[] | undefined;
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
-  isSpeedSuite = environment?.['SPEED_SUITE']
-    ? environment?.['SPEED_SUITE']
-    : false;
+  isSpeedSuite =
+    environment?.['SPEED_SUITE'] === 'true'
+      ? environment?.['SPEED_SUITE']
+      : 'false';
   userRole = '';
   noToolsConfigured: boolean;
   isNotConfigPage: boolean = false;
@@ -156,7 +157,7 @@ export class HeaderComponent implements OnInit {
       });
     }
 
-    if (!this.ssoLogin) {
+    if (this.ssoLogin !== 'true') {
       this.appList = [
         {
           label: 'KnowHOW',

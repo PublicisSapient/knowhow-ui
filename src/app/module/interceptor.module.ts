@@ -157,7 +157,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           console.log('environment sso_login', environment?.['SSO_LOGIN']);
           if (err.status === 401) {
             if (requestArea === 'internal') {
-              if (environment?.['SSO_LOGIN']) {
+              if (environment?.['SSO_LOGIN'] === 'true') {
                 this.httpService.setCurrentUserDetails({});
                 console.log('SSO_LOGIN', true);
                 const redirect_uri = window.location.href;
@@ -171,7 +171,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                   window.location.reload();
                 }
               } else {
-                if (environment.AUTHENTICATION_SERVICE) {
+                if (environment.AUTHENTICATION_SERVICE === 'true') {
                   this.redirectToLogin();
                 } else {
                   this.httpService.setCurrentUserDetails({});
@@ -182,14 +182,17 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
               }
             }
 
-            if (environment?.['SSO_LOGIN']) {
+            if (environment?.['SSO_LOGIN'] === 'true') {
               this.router
                 .navigate(['./dashboard/my-knowhow'])
                 .then((success) => {
                   window.location.reload();
                 });
             }
-          } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
+          } else if (
+            err.status === 403 &&
+            environment?.['SSO_LOGIN'] === 'true'
+          ) {
             this.httpService.unauthorisedAccess = true;
             this.router.navigate(['/dashboard/unauthorized-access']);
           } else {
@@ -197,7 +200,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             if (
               err?.status === 0 &&
               err?.statusText === 'Unknown Error' &&
-              environment.SSO_LOGIN
+              environment.SSO_LOGIN === 'true'
             ) {
               this.service.clearAllCookies();
               this.router
@@ -216,8 +219,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     )
                   ) {
                     if (
-                      !environment?.['SSO_LOGIN'] ||
-                      (environment.SSO_LOGIN && !req.url.includes('api/sso/'))
+                      environment?.['SSO_LOGIN'] !== 'true' ||
+                      (environment?.['SSO_LOGIN'] === 'true' &&
+                        !req.url.includes('api/sso/'))
                     ) {
                       this.router.navigate(['./dashboard/Error']);
                     }

@@ -1021,7 +1021,7 @@ export class HelperService {
 
   logoutHttp() {
     this.httpService.logout().subscribe((responseData) => {
-      if (!environment['AUTHENTICATION_SERVICE']) {
+      if (environment['AUTHENTICATION_SERVICE'] !== 'true') {
         this.isKanban = false;
         // Set blank selectedProject after logged out state
         this.sharedService.setSelectedProject(null);

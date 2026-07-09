@@ -210,35 +210,44 @@ export class AppInitializerService {
       localStorage.removeItem('shared_link');
     }
 
-    if (!environment['production']) {
-      this.featureToggleService.config = this.featureToggleService
-        .loadConfig()
-        .then((res) => res);
-      await this.validateToken(loc);
-    } else {
-      try {
-        const env: any = await firstValueFrom(this.http.get('assets/env.json'));
-        environment['baseUrl'] = env['baseUrl'] || '';
-        environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
-        environment['AUTHENTICATION_SERVICE'] =
-          env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
-        environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
-        environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
-        environment['MAP_URL'] = env['MAP_URL'] || '';
-        environment['RETROS_URL'] = env['RETROS_URL'] || '';
-        environment['SPEED_SUITE'] =
-          env['SPEED_SUITE'] === 'true' ? true : false;
-        environment['MCP_URL'] = env['MCP_URL'] || '';
-
-        await this.validateToken(loc);
-        this.featureToggleService.config = await this.featureToggleService
+    return new Promise<void>(async (resolve, reject) => {
+      if (environment['production'] !== 'true') {
+        this.featureToggleService.config = this.featureToggleService
           .loadConfig()
           .then((res) => res);
-      } catch (error) {
-        console.error('Failed to load runtime env.json', error);
-        await this.validateToken(loc);
+        this.validateToken(loc);
+      } else {
+        const env$ = this.http.get('assets/env.json').pipe(
+          tap((env) => {
+            environment['baseUrl'] = env['baseUrl'] || '';
+            environment['SSO_LOGIN'] =
+              env['SSO_LOGIN'] === 'true' ? 'true' : 'false';
+            environment['AUTHENTICATION_SERVICE'] =
+              env['AUTHENTICATION_SERVICE'] === 'true' ? 'true' : 'false';
+            environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+            environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
+            environment['MAP_URL'] = env['MAP_URL'] || '';
+            environment['RETROS_URL'] = env['RETROS_URL'] || '';
+            environment['SPEED_SUITE'] =
+              env['SPEED_SUITE'] === 'true' ? 'true' : 'false';
+            environment['MCP_URL'] = env['MCP_URL'] || '';
+            if (
+              loc &&
+              loc.indexOf('authentication') === -1 &&
+              loc.indexOf('Error') === -1 &&
+              loc.indexOf('Config') === -1
+            ) {
+              localStorage.setItem('shared_link', loc);
+            }
+            this.validateToken(loc);
+          }),
+        );
+        env$.toPromise().then(async (res) => {
+          this.featureToggleService.config = this.featureToggleService
+            .loadConfig()
+            .then((res) => res);
+        });
       }
-    }
 
     // load google Analytics script on all instances except local and if customAPI property is true
     const addGAScript = await this.featureToggleService.isFeatureEnabled(
@@ -255,7 +264,7 @@ export class AppInitializerService {
 
   validateToken(location) {
     return new Promise<void>((resolve, reject) => {
-      if (!environment['AUTHENTICATION_SERVICE']) {
+      if (environment['AUTHENTICATION_SERVICE'] !== 'true') {
         this.router.resetConfig([...this.routes]);
         if (this.sharedService.checkStateFilterLength(location)) {
           localStorage.removeItem('last_link');
