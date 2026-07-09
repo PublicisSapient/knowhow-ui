@@ -48,6 +48,9 @@ jobs:
 
       - name: Checkout UI Repository from master
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.release_tag }}
+          fetch-depth: 0
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -115,19 +118,19 @@ jobs:
           docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
-      # - name: Checkout Helm Charts (Bitbucket)
-      #   if: ${{ github.event.inputs.deploy == 'true' }}
-      #   run: |
-      #     git clone $BITBUCKET_HELM_REPO
-      #     cd $HELM_CHART_PATH
+      - name: Checkout Helm Charts (Bitbucket)
+        if: ${{ github.event.inputs.deploy == 'true' }}
+        run: |
+          git clone $BITBUCKET_HELM_REPO
+          cd $HELM_CHART_PATH
 
-      #     yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
 
-      #     git config user.name "github-actions"
-      #     git config user.email "github-actions@github.com"
-      #     git add $VALUES_FILE
-      #     git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
-      #     git push origin HEAD
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
 
   deploy:
     if: ${{ github.event.inputs.deploy == 'true' }}
@@ -155,12 +158,8 @@ jobs:
 
       - name: Sync App
         id: sync-app
-        run: argocd app sync $ARGOCD_APP_NAME --force --prune 
+        run: argocd app sync $ARGOCD_APP_NAME
         continue-on-error: true
-      
-      - name: Restart app
-        if: ${{ steps.sync-app.outcome == 'success' }}
-        run: argocd app actions run $ARGOCD_APP_NAME restart
 
       - name: Get App URL (on sync failure)
         if: ${{ steps.sync-app.outcome != 'success' }}
