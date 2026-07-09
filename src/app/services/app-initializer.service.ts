@@ -249,17 +249,18 @@ export class AppInitializerService {
         });
       }
 
-    // load google Analytics script on all instances except local and if customAPI property is true
-    const addGAScript = await this.featureToggleService.isFeatureEnabled(
-      'GOOGLE_ANALYTICS',
-    );
-    if (addGAScript) {
-      if (window.location.origin.indexOf('localhost') === -1) {
-        this.ga.load('gaTagManager').then((data) => {
-          console.log('script loaded ', data);
-        });
+      // load google Analytics script on all instances except local and if customAPI property is true
+      const addGAScript = await this.featureToggleService.isFeatureEnabled(
+        'GOOGLE_ANALYTICS',
+      );
+      if (addGAScript) {
+        if (window.location.origin.indexOf('localhost') === -1) {
+          this.ga.load('gaTagManager').then((data) => {
+            console.log('script loaded ', data);
+          });
+        }
       }
-    }
+    });
   }
 
   validateToken(location) {
