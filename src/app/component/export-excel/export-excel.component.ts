@@ -146,7 +146,14 @@ export class ExportExcelComponent implements OnInit {
     kpiId,
   ) {
     this.iskanban = false;
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    // Set frozen column based on kpiId
+    if (kpiId === 'kpi205') {
+      this.forzenColumns = ['week'];
+      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else {
+      this.forzenColumns = ['issue id'];
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -161,8 +168,10 @@ export class ExportExcelComponent implements OnInit {
             Array.isArray(colData[key]) &&
             colData[key].length > 0 &&
             colData[key][0].hasOwnProperty('text') &&
-            colData[key][0].hasOwnProperty('hyperlink')
+            colData[key][0].hasOwnProperty('hyperlink') &&
+            !this.checkIsItHyperlink(colData[key][0].hyperlink)
           ) {
+            // Non-URL hyperlink values (e.g. "6.7 Days") — render as "text: value" plain text
             obj[key] = colData[key]
               .map((item) => `${item.text}: ${item.hyperlink}`)
               .join('\n');
@@ -182,8 +191,10 @@ export class ExportExcelComponent implements OnInit {
             }
           }
         } else if (key == 'Issue Id') {
-          obj['Issue Id'] = {};
-          obj['Issue Id'][colData[key]] = colData['Issue URL'];
+          obj['Issue Id'] = {
+            text: colData[key],
+            hyperlink: colData['Issue URL'],
+          };
         } else {
           obj[key] = colData[key];
         }
@@ -211,7 +222,14 @@ export class ExportExcelComponent implements OnInit {
       });
     }
 
-    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    // Set frozen column based on kpiId
+    if (this.modalDetails['kpiId'] === 'kpi205') {
+      this.forzenColumns = ['week'];
+      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else {
+      this.forzenColumns = ['issue id'];
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
@@ -328,6 +346,7 @@ export class ExportExcelComponent implements OnInit {
     this.tableColumns = [];
     this.isDisableSaveCOnfigurationBtn = false;
     this.markerInfo = [];
+    this.forzenColumns = ['issue id']; // Reset to default
   }
 
   checkIfArray(arr) {
@@ -535,11 +554,34 @@ export class ExportExcelComponent implements OnInit {
     return [issueIdColumn, ...remainingColumns];
   }
 
+  makeWeekColumnOnFirstOrder(columns) {
+    // Identify the "week" column (case-insensitive)
+    const weekColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === 'week',
+    );
+
+    if (!weekColumn) {
+      return columns; // Return original if "week" is not found
+    }
+
+    // Set "week" to the first position and adjust its order
+    weekColumn.order = 0;
+
+    // Filter out the "week" column and reassign orders for the rest
+    const remainingColumns = columns
+      .filter((col) => col !== weekColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+
+    // Return the updated array with "week" at the top
+    return [weekColumn, ...remainingColumns];
+  }
+
   sortableColumn(columnName, tableDataSet) {
     if (
       tableDataSet['tableValues'][0][columnName]?.hasOwnProperty('hyperlink')
     ) {
-      return Object.keys(tableDataSet['tableValues'][0][columnName])[0];
+      return 'text';
     } else {
       return columnName;
     }

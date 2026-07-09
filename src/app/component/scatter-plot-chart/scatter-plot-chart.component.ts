@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  HostListener,
   Input,
   SimpleChanges,
   ViewChild,
@@ -125,6 +126,16 @@ export class ScatterPlotChartComponent {
           this.createChart();
         }, 0);
       }
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.svgRef?.nativeElement) {
+      d3.select(this.svgRef.nativeElement).selectAll('*').remove();
+      d3.select(this.elem).select('.sprint-legend-container').remove();
+      this.counter = 0;
+      this.createChart();
     }
   }
 
@@ -435,11 +446,11 @@ export class ScatterPlotChartComponent {
         // Calculate total lines for this week from all PRs
         const totalLines =
           week.bubblePoints?.reduce((sum, pr) => {
-            return sum + (pr.hoverValue?.['No of lines'] || 0);
+            return sum + (pr.hoverValue?.['No. of lines'] || 0);
           }, 0) || 0;
 
         sprintData[projectName] = {
-          'No of lines': totalLines,
+          'No. of lines': totalLines,
         };
       });
     });

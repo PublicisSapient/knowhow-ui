@@ -87,7 +87,7 @@ export class FieldMappingFormComponent implements OnInit {
     ).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
-    if (this.kpiId === 'kpi202') {
+    if (this.kpiId === 'kpi202' || this.kpiId === 'kpi206') {
       const triggerField = this.fieldMappingConfig.find(
         (field) => field.fieldLabel === this.fieldMappingLabel,
       );
@@ -620,7 +620,7 @@ export class FieldMappingFormComponent implements OnInit {
       }
     });
 
-    if (this.kpiId === 'kpi202') {
+    if (this.kpiId === 'kpi202' || this.kpiId === 'kpi206') {
       const triggerField = this.fieldMappingConfig.find(
         (f) => f.fieldLabel === this.fieldMappingLabel,
       );

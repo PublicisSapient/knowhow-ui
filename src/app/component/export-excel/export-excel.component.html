@@ -73,7 +73,7 @@
             <ng-container *ngFor="let column of modalDetails['tableHeadings']">
               <!-- need to add different container for issue id because issue id marker was not working -->
              <ng-container *ngIf="column?.toLowerCase() === 'issue id'">
-              <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4 ? '380px' : '190px'}" tabindex="0" (keydown.enter)="openOnEnter($event)">
+              <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())" [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4 ? '380px' : '190px'}" tabindex="0" (keydown.enter)="openOnEnter($event)">
                 <div class="cell-indicator">
                   <div class="color-indicator" [ngStyle]="{'background-color': rowData['marker'] ? rowData['marker'] : ''}"></div>
                   <a *ngIf="typeOf(rowData[column]) else simpleText" [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank" aria-label="Link to {{rowData[column]?.text}}">{{rowData[column]?.text}}</a>

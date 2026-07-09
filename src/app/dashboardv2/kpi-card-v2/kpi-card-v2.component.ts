@@ -206,6 +206,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    // Removed premature console log - trendValueList may not be loaded yet at this point
+    // Data will be available after async operations complete
     this.chartType = this.kpiData.kpiDetail?.chartType;
     this.getAIRecommFlag();
     this.subscriptions.push(
@@ -357,7 +359,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.selectedTab === 'release' ||
           this.selectedTab === 'backlog' ||
           this.kpiData?.kpiId === 'kpi171' ||
-          this.kpiData?.kpiId === 'kpi202',
+          this.kpiData?.kpiId === 'kpi202' ||
+          this.kpiData?.kpiId === 'kpi206' ||
+          this.kpiData?.kpiId === 'kpi207' ||
+          this.kpiData?.kpiId === 'kpi208' ||
+          this.kpiData?.kpiId === 'kpi211',
       },
       {
         label: 'Explore',
@@ -873,8 +879,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           value[0].hasOwnProperty('text') &&
           value[0].hasOwnProperty('hyperlink')
         ) {
+          // If the hyperlink is a real URL, leave it as-is so the export component
+          // renders it as a clickable link (e.g. Issue ID column)
+          const firstHyperlink = value[0].hyperlink;
+          if (
+            firstHyperlink &&
+            (firstHyperlink.startsWith('http://') ||
+              firstHyperlink.startsWith('https://'))
+          ) {
+            return;
+          }
           console.log(`Transforming field ${key}:`, value);
-          // Transform array of objects into formatted string
+          // Non-URL hyperlink values (e.g. "6.7 Days") — render as "text: value" plain text
           transformedRow[key] = value
             .map((item) => `${item.text}: ${item.hyperlink}`)
             .join('\n');
@@ -955,6 +971,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.kpiData?.kpiId === 'kpi153' ||
         this.kpiData?.kpiId === 'kpi35')
     ) {
+      console.log(
+        'kpiId ',
+        this.kpiData?.kpiId,
+        ' trendValueList ',
+        this.trendValueList?.length,
+      );
       if (
         this.trendValueList?.length &&
         this.trendValueList[0]?.value?.length > 0
