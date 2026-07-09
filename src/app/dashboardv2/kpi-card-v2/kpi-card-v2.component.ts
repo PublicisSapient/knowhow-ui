@@ -495,22 +495,22 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
 
       // TODO: Disabled for KPI202 until it's stable
-      // if (
-      //   this.selectedTab === 'slingshot' &&
-      //   this.kpiData?.kpiId === 'kpi148'
-      // ) {
-      //   this.menuItems = this.menuItems.filter(
-      //     (item) => item.label !== 'Include in Report',
-      //   );
-      //   this.menuItems.push({
-      //     label: 'Include in Report',
-      //     icon: 'pi pi-briefcase',
-      //     command: ($event) => {
-      //       this.addToReportAction($event);
-      //     },
-      //     disabled: true,
-      //   });
-      // }
+      if (
+        this.selectedTab === 'slingshot' &&
+        this.kpiData?.kpiId === 'kpi211'
+      ) {
+        this.menuItems = this.menuItems.filter(
+          (item) => item.label !== 'Include in Report',
+        );
+        this.menuItems.push({
+          label: 'Include in Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction($event);
+          },
+          disabled: true,
+        });
+      }
     }
     // }
 

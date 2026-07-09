@@ -578,7 +578,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
           .duration(200)
           .style('display', 'block')
           .style('opacity', 1)
-          .attr('id', 'd3-legend')
+          .attr('id', `d3-legend ${this.kpiId}`)
           .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
         let htmlString = '';
