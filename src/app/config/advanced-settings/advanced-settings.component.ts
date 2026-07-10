@@ -43,7 +43,7 @@ export class AdvancedSettingsComponent implements OnInit {
   selectedProject = {};
   processorsTracelogs = [];
   toolConfigsDetails = [];
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin: boolean;
   jirsStepsPopup = false;
   jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
@@ -64,6 +64,7 @@ export class AdvancedSettingsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.ssoLogin = environment.SSO_LOGIN === 'true';
     this.route.queryParams.subscribe((params) => {
       this.pid = params['pid'];
     });

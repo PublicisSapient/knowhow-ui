@@ -29,14 +29,14 @@ export interface AnalyticsConfig {
 }
 
 export interface Environment {
-  production: boolean;
+  production: string;
   baseUrl: string;
-  SSO_LOGIN: boolean;
+  SSO_LOGIN: string;
   CENTRAL_LOGIN_URL: string;
   CENTRAL_API_URL: string;
   RESOURCE: string;
-  AUTHENTICATION_SERVICE: boolean;
-  SPEED_SUITE: boolean;
+  AUTHENTICATION_SERVICE: string;
+  SPEED_SUITE: string;
   MAP_URL: string;
   RETROS_URL: string;
   MCP_URL: string;

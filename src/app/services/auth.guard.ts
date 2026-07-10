@@ -54,7 +54,7 @@ export class AuthGuard implements CanActivate {
       if (currentUserDetails['authorities']) {
         return true;
       } else {
-        if (environment.AUTHENTICATION_SERVICE) {
+        if (environment.AUTHENTICATION_SERVICE === 'true') {
           /** redirect to central login url*/
           if (environment.CENTRAL_LOGIN_URL) {
             window.location.href = environment.CENTRAL_LOGIN_URL;
@@ -75,7 +75,7 @@ export class AuthGuard implements CanActivate {
             if (details['data']['authorities']) {
               return true;
             }
-            if (environment.AUTHENTICATION_SERVICE) {
+            if (environment.AUTHENTICATION_SERVICE === 'true') {
               /** redirect to central login url*/
               if (environment.CENTRAL_LOGIN_URL) {
                 window.location.href = environment.CENTRAL_LOGIN_URL;
