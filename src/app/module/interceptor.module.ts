@@ -53,7 +53,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
     const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
     const requestArea = req.headers.get('requestArea') || 'internal';
 
-    if (environment.AUTHENTICATION_SERVICE) {
+    if (environment.AUTHENTICATION_SERVICE === 'true') {
       const cookie = document.cookie?.split(';');
       let authCookie_EXPIRY = cookie?.find((x) =>
         x.includes('authCookie_EXPIRY'),

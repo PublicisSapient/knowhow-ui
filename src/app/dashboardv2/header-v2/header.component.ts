@@ -32,8 +32,8 @@ export class HeaderComponent implements OnInit {
   ifProjectAdmin: boolean = false;
   isGuest: boolean = false;
   appList: MenuItem[] | undefined;
-  ssoLogin = environment.SSO_LOGIN;
-  auth_service = environment.AUTHENTICATION_SERVICE;
+  ssoLogin: boolean;
+  auth_service: boolean;
   isSpeedSuite =
     environment?.['SPEED_SUITE'] === 'true'
       ? environment?.['SPEED_SUITE']
@@ -57,6 +57,8 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.ssoLogin = environment.SSO_LOGIN === 'true';
+    this.auth_service = environment.AUTHENTICATION_SERVICE === 'true';
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // Get the current URL and check if 'Config' is present
@@ -157,7 +159,7 @@ export class HeaderComponent implements OnInit {
       });
     }
 
-    if (this.ssoLogin !== 'true') {
+    if (!this.ssoLogin) {
       this.appList = [
         {
           label: 'KnowHOW',

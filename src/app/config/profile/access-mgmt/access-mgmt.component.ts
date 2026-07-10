@@ -68,7 +68,7 @@ export class AccessMgmtComponent implements OnInit {
     emailAddress: '',
     projectsAccess: [],
   };
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin: boolean;
   isSuperAdmin: boolean = false;
   isProjectAdmin: boolean = false;
   @ViewChild('addProjectsBtn') addProjectsBtn: ElementRef<HTMLButtonElement>;
@@ -87,6 +87,7 @@ export class AccessMgmtComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.ssoLogin = environment.SSO_LOGIN === 'true';
     this.isOpenSource = this.service.getGlobalConfigData()?.openSource;
     this.isSuperAdmin = this.authService.checkIfSuperUser();
     this.isProjectAdmin = this.authService.checkIfProjectAdmin();

@@ -216,6 +216,19 @@ export class AppInitializerService {
           .loadConfig()
           .then((res) => res);
         this.validateToken(loc);
+
+        // load google Analytics script on all instances except local and if customAPI property is true
+        const addGAScript = await this.featureToggleService.isFeatureEnabled(
+          'GOOGLE_ANALYTICS',
+        );
+        if (addGAScript) {
+          if (window.location.origin.indexOf('localhost') === -1) {
+            this.ga.load('gaTagManager').then((data) => {
+              console.log('script loaded ', data);
+            });
+          }
+        }
+        resolve();
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap((env) => {
@@ -242,23 +255,25 @@ export class AppInitializerService {
             this.validateToken(loc);
           }),
         );
-        env$.toPromise().then(async (res) => {
-          this.featureToggleService.config = this.featureToggleService
-            .loadConfig()
-            .then((res) => res);
+        await env$.toPromise().catch((err) => {
+          console.error('Failed to load env.json; using compiled defaults', err);
         });
-      }
+        this.featureToggleService.config = this.featureToggleService
+          .loadConfig()
+          .then((res) => res);
 
-      // load google Analytics script on all instances except local and if customAPI property is true
-      const addGAScript = await this.featureToggleService.isFeatureEnabled(
-        'GOOGLE_ANALYTICS',
-      );
-      if (addGAScript) {
-        if (window.location.origin.indexOf('localhost') === -1) {
-          this.ga.load('gaTagManager').then((data) => {
-            console.log('script loaded ', data);
-          });
+        // load google Analytics script on all instances except local and if customAPI property is true
+        const addGAScript = await this.featureToggleService.isFeatureEnabled(
+          'GOOGLE_ANALYTICS',
+        );
+        if (addGAScript) {
+          if (window.location.origin.indexOf('localhost') === -1) {
+            this.ga.load('gaTagManager').then((data) => {
+              console.log('script loaded ', data);
+            });
+          }
         }
+        resolve();
       }
     });
   }

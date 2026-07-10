@@ -50,7 +50,7 @@ export class MyprofileComponent implements OnInit {
   noAccess = false;
   roleBasedProjectList = [];
   dynamicCols: Array<any> = [];
-  ssoLogin = environment.SSO_LOGIN;
+  ssoLogin: boolean;
   loginType = '';
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -68,6 +68,7 @@ export class MyprofileComponent implements OnInit {
    * @returns - No return value.
    */
   ngOnInit() {
+    this.ssoLogin = environment.SSO_LOGIN === 'true';
     if (this.getAuthorizationService.checkIfSuperUser()) {
       // logged in as SuperAdmin
       this.isSuperAdmin = true;
