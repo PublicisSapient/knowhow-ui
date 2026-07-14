@@ -28,7 +28,9 @@ export class TrendIndicatorV2Component implements OnChanges {
             Project: this.colorObj.filter(
               (obj) => obj.nodeId === trend['hierarchyId'],
             )[0]?.color,
-            'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
+            'Latest Trend': !trend['value'].includes('undefined')
+              ? trend['value'] + ' (' + trend['trend'] + ')'
+              : trend['trend'],
             'KPI Maturity': this.getMaturityValue(trend),
           };
 

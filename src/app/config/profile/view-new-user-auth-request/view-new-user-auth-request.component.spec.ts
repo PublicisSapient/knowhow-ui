@@ -61,7 +61,7 @@ describe('ViewNewUserAuthRequestComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     let url = '';
-    if (environment['AUTHENTICATION_SERVICE']) {
+    if (environment['AUTHENTICATION_SERVICE'] === 'true') {
       url = baseUrl + '/api/userapprovals/central';
     } else {
       url = baseUrl + '/api/userapprovals';
@@ -86,7 +86,7 @@ describe('ViewNewUserAuthRequestComponent', () => {
     component.updateRequestStatus(fakeRequest, true);
     fixture.detectChanges();
     let url = '';
-    if (environment['AUTHENTICATION_SERVICE']) {
+    if (environment['AUTHENTICATION_SERVICE'] === 'true') {
       url = baseUrl + '/api/userapprovals/central';
     } else {
       url = baseUrl + '/api/userapprovals';
