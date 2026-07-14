@@ -216,10 +216,6 @@
   display: none !important;
 }
 
-#kpi202 ::ng-deep .kpi-card-footer {
-  display: none !important;
-}
-
 #kpi202 ::ng-deep .kpi-select-button-container,
 #kpi204 ::ng-deep .kpi-select-button-container,
 #kpi205 ::ng-deep .kpi-select-button-container,

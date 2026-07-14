@@ -130,6 +130,9 @@
   margin-top: 20px;
   overflow-y: auto;
 }
+::ng-deep #kpi211 .normal-legend {
+  flex-direction: row-reverse;
+}
 ::ng-deep .stack-key {
   width: 70px;
 }
