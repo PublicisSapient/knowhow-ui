@@ -19,14 +19,14 @@
 import { Environment } from '../app/types/environment.types';
 
 export const environment: Environment = {
-  production: true,
+  production: 'true',
   baseUrl: '',
-  SSO_LOGIN: true,
+  SSO_LOGIN: 'true',
   CENTRAL_LOGIN_URL: '',
   CENTRAL_API_URL: '',
   RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: true,
-  SPEED_SUITE: true,
+  AUTHENTICATION_SERVICE: 'true',
+  SPEED_SUITE: 'true',
   MAP_URL: '',
   RETROS_URL: '',
   MCP_URL: '',

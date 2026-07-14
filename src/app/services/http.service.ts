@@ -331,7 +331,7 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.logoutUrl = this.centralUserLogoutUrl;
     }
     return this.http.get(this.logoutUrl);
@@ -416,7 +416,7 @@ export class HttpService {
       email: this.userEmail,
       user: this.userName,
     };
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.changePasswordUrl = this.baseUrl + '/api/changePassword/central';
     }
     return this.http
@@ -617,7 +617,7 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.getAccessRequestNotificationsUrl =
         this.baseUrl + '/api/accessrequests/Pending/notification/central';
     }
@@ -638,7 +638,7 @@ export class HttpService {
 
   /** Delete User */
   deleteAccess(userNameRequestPayload: UserNameRequestDTO) {
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.deleteAccessUrl = this.baseUrl + '/api/userinfo/central/deleteUser';
     }
     return this.http.post(this.deleteAccessUrl, userNameRequestPayload);
@@ -1036,7 +1036,7 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.newUserAccessRequestUrl =
         this.baseUrl + '/api/userapprovals/central';
     }
@@ -1046,7 +1046,7 @@ export class HttpService {
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload) {
-    if (environment?.['AUTHENTICATION_SERVICE']) {
+    if (environment?.['AUTHENTICATION_SERVICE'] === 'true') {
       this.newUserAccessRequestUrl =
         this.baseUrl + '/api/userapprovals/central';
     }

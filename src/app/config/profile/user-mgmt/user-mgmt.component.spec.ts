@@ -101,7 +101,7 @@ describe('UserManagementComponent', () => {
     component.onSubmit();
     fixture.detectChanges();
     const url =
-      environment['AUTHENTICATION_SERVICE'] == true
+      environment['AUTHENTICATION_SERVICE'] === 'true'
         ? baseUrl + '/api/changePassword/central'
         : baseUrl + '/api/changePassword';
     httpMock.match(url)[0].flush(successResponse);
