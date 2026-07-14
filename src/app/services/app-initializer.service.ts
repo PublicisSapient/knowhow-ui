@@ -256,7 +256,10 @@ export class AppInitializerService {
           }),
         );
         await env$.toPromise().catch((err) => {
-          console.error('Failed to load env.json; using compiled defaults', err);
+          console.error(
+            'Failed to load env.json; using compiled defaults',
+            err,
+          );
         });
         this.featureToggleService.config = this.featureToggleService
           .loadConfig()
