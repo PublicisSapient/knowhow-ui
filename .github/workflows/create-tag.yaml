@@ -1,0 +1,70 @@
+name: Create Release Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (Example: 17.1.2)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.KNOWHOW_ADMIN_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Validate Version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format. Use x.y.z"
+            exit 1
+          fi
+
+      - name: Update package.json
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          npm version "$VERSION" --no-git-tag-version
+
+      - name: Commit package.json
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+
+          git add package.json package-lock.json 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No changes detected."
+          else
+            git commit -m "chore: bump version to $VERSION"
+          fi
+
+      - name: Push Commit
+        run: |
+          git push origin HEAD
+
+      - name: Create Git Tag
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+
+          if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "Tag already exists."
+            exit 1
+          fi
+
+          git tag "$VERSION"
+          git push origin "$VERSION"
