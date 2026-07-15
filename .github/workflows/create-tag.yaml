@@ -36,26 +36,34 @@ jobs:
             exit 1
           fi
 
-      - name: Update package.json
+      - name: Update package.json version
         run: |
           VERSION="${{ github.event.inputs.version }}"
           npm version "$VERSION" --no-git-tag-version
 
-      - name: Commit package.json
+          echo "Updated version:"
+          grep '"version"' package.json
+
+          git status
+
+      - name: Commit version change
         run: |
           VERSION="${{ github.event.inputs.version }}"
 
-          git add package.json package-lock.json 2>/dev/null || true
+          git add package.json package-lock.json
+
+          git status
 
           if git diff --cached --quiet; then
-            echo "No changes detected."
-          else
-            git commit -m "chore: bump version to $VERSION"
+            echo "No changes to commit"
+            exit 1
           fi
 
-      - name: Push Commit
+          git commit -m "chore: bump version to $VERSION"
+
+      - name: Push changes
         run: |
-          git push origin HEAD
+          git push origin HEAD:${{ github.ref_name }}
 
       - name: Create Git Tag
         run: |
