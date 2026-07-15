@@ -36,43 +36,25 @@ jobs:
             exit 1
           fi
 
-      - name: Update package.json version
+      - name: Update package.json
         run: |
           VERSION="${{ github.event.inputs.version }}"
           npm version "$VERSION" --no-git-tag-version
 
-          echo "Updated version:"
-          grep '"version"' package.json
-
-          git status
-
-      - name: Commit version change
+      - name: Commit changes
         run: |
           VERSION="${{ github.event.inputs.version }}"
 
-          git add package.json package-lock.json
-
-          git status
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-            exit 1
-          fi
-
+          git add package.json
           git commit -m "chore: bump version to $VERSION"
 
-      - name: Push changes
+      - name: Push commit
         run: |
           git push origin HEAD:${{ github.ref_name }}
 
-      - name: Create Git Tag
+      - name: Create tag
         run: |
           VERSION="${{ github.event.inputs.version }}"
-
-          if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
-            echo "Tag already exists."
-            exit 1
-          fi
 
           git tag "$VERSION"
           git push origin "$VERSION"
