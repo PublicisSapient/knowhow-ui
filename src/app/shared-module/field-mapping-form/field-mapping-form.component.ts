@@ -73,7 +73,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
   private readonly kpiTriggerFieldLabelMap: Record<string, string> = {
     kpi202: 'Workfow groups',
     kpi206: 'Workfow groups',
-    kpi217: 'fields to write prompts',
+    kpi217: 'Fields to write prompts',
   };
 
   get fieldMappingLabel(): string {
