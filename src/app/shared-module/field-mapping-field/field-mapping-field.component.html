@@ -16,7 +16,6 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
   <div [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
-
     <!-- Text Input -->
     <div class="p-inputgroup" *ngSwitchCase="'text'">
       <input
@@ -42,45 +41,63 @@
       ></button>
     </div>
 
-    <!-- Chips -->
-    <div class="p-inputgroup" *ngSwitchCase="'chips'">
-      <p-chips
-        class="p-w-100"
-        [disabled]="fieldConfig?.readOnly"
-        [inputId]="fieldConfig?.fieldName"
+    <!-- kpi215 Trigger Field (jiraFieldsSelectionKPI215) - Read-only, auto-managed by dynamic fields -->
+    <div class="p-inputgroup" *ngIf="kpiId === 'kpi215' && fieldConfig?.fieldName === 'jiraFieldsSelectionKPI215'">
+      <input
+        type="text"
+        pInputText
+        [id]="fieldConfig?.fieldName"
         [placeholder]="'Enter ' + (fieldConfig?.placeHolderText || fieldConfig?.fieldLabel)"
-        addOnBlur="true"
-        [(ngModel)]="value"
-        (onAdd)="setValue()"
-        (onRemove)="setValue()"
-        aria-label="Chips Input"
-        role="listbox"
-        (dragover)="$event.preventDefault()"
-        (drop)="$event.preventDefault()"
-      >
-        <ng-template let-item pTemplate="chip">
-          <span
-            draggable="true"
-            (dragstart)="onDragStart($event, item)"
-            (dragover)="onDragOver($event)"
-            (dragend)="onDragEnd($event)"
-            (drop)="onDrop($event, item)"
-            class="draggable-chip"
-          >
-            {{ item }}
-          </span>
-        </ng-template>
-      </p-chips>
-      <button
-        type="button"
-        pButton
-        pRipple
-        icon="pi pi-search"
-        *ngIf="fieldConfig?.fieldCategory"
-        (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
-        aria-label="Search and Add Multiple Values"
-      ></button>
+        class="p-w-100"
+        [value]="displayValue"
+        [disabled]="true"
+        [attr.aria-label]="fieldConfig?.fieldLabel + ' Text Input (Read-only)'"
+        [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
+        title="This field is auto-managed by group selections in the dynamic mappings below"
+      />
     </div>
+
+    <!-- Chips -->
+    @if(kpiId !== 'kpi215') {
+      <div class="p-inputgroup" *ngSwitchCase="'chips'">
+        <p-chips
+          class="p-w-100"
+          [disabled]="fieldConfig?.readOnly"
+          [inputId]="fieldConfig?.fieldName"
+          [placeholder]="'Enter ' + (fieldConfig?.placeHolderText || fieldConfig?.fieldLabel)"
+          addOnBlur="true"
+          [(ngModel)]="value"
+          (onAdd)="setValue()"
+          (onRemove)="setValue()"
+          aria-label="Chips Input"
+          role="listbox"
+          (dragover)="$event.preventDefault()"
+          (drop)="$event.preventDefault()"
+        >
+          <ng-template let-item pTemplate="chip">
+            <span
+              draggable="true"
+              (dragstart)="onDragStart($event, item)"
+              (dragover)="onDragOver($event)"
+              (dragend)="onDragEnd($event)"
+              (drop)="onDrop($event, item)"
+              class="draggable-chip"
+            >
+              {{ item }}
+            </span>
+          </ng-template>
+        </p-chips>
+        <button
+          type="button"
+          pButton
+          pRipple
+          icon="pi pi-search"
+          *ngIf="fieldConfig?.fieldCategory"
+          (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
+          aria-label="Search and Add Multiple Values"
+        ></button>
+      </div>
+    }
 
     <!-- Radio Buttons -->
     <div
