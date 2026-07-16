@@ -66,11 +66,11 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   /**
-   * Get display value for kpi215 trigger field.
+   * Get display value for kpi217 trigger field.
    * For arrays, convert to comma-separated string for display.
    */
   get displayValue(): string {
-    if (this.kpiId === 'kpi215' && Array.isArray(this.value)) {
+    if (this.kpiId === 'kpi217' && Array.isArray(this.value)) {
       return this.value.join(', ');
     }
     return typeof this.value === 'string' ? this.value : '';
