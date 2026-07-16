@@ -35,7 +35,7 @@
         pButton
         pRipple
         icon="pi pi-search"
-        *ngIf="fieldConfig?.fieldCategory"
+        *ngIf="kpiId !== 'kpi215' && fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
         aria-label="Search and Add Value"
       ></button>
