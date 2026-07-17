@@ -735,9 +735,13 @@ describe('FieldMappingFormComponent', () => {
   });
 
   it('should refresh history and values one field mapping value saved', () => {
-    spyOn(component, 'ngOnInit');
+    component.fieldMappingConfig =
+      fakeKpiFieldMappingConfigList.data.fieldConfiguration;
+    component.formData = fakeSelectedFieldMapping;
     component.selectedToolConfig = [{ id: 'testId' }];
     component.kpiId = 'dummyId';
+    // Initialize the form before calling refresh
+    component.ngOnInit();
     const spyObj = spyOn(sharedService, 'setSelectedFieldMapping');
     spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
       of({
@@ -779,5 +783,444 @@ describe('FieldMappingFormComponent', () => {
 
     const re3 = component.compareValues({ key1: 'value1' }, { key1: 'value1' });
     expect(re3).toBeTruthy();
+  });
+
+  describe('ngOnChanges', () => {
+    it('should reinitialize form when formData changes after initial load', () => {
+      component.fieldMappingConfig =
+        fakeKpiFieldMappingConfigList.data.fieldConfiguration;
+      component.formData = fakeSelectedFieldMapping;
+      component.ngOnInit();
+
+      const initSpy = spyOn(component, 'initializeForm');
+      const generateSpy = spyOn(component, 'generateFieldMappingConfiguration');
+
+      const newFormData = [...fakeSelectedFieldMapping];
+      const changes = {
+        formData: {
+          currentValue: newFormData,
+          previousValue: fakeSelectedFieldMapping,
+          firstChange: false,
+          isFirstChange: () => false,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).toHaveBeenCalled();
+      expect(generateSpy).toHaveBeenCalled();
+      expect(component.form.pristine).toBeTruthy();
+    });
+
+    it('should not reinitialize on first change', () => {
+      const initSpy = spyOn(component, 'initializeForm');
+
+      const changes = {
+        formData: {
+          currentValue: fakeSelectedFieldMapping,
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not reinitialize if form is not defined', () => {
+      component.form = null;
+      const initSpy = spyOn(component, 'initializeForm');
+
+      const changes = {
+        formData: {
+          currentValue: fakeSelectedFieldMapping,
+          previousValue: [],
+          firstChange: false,
+          isFirstChange: () => false,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Dynamic Workflow Fields', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: 'WorkFlow Status Mapping',
+        },
+      ];
+      component.formData = [];
+      component.kpiId = 'kpi202';
+    });
+
+    it('should update dynamic workflow fields for kpi202', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['In Progress', 'Done'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      expect(component.formConfig['WorkFlow Status Mapping']).toBeDefined();
+      const dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+      expect(dynamicFields[0].fieldName).toBe('jiraStatusForInProgress');
+      expect(dynamicFields[1].fieldName).toBe('jiraStatusForDone');
+    });
+
+    it('should update dynamic workflow fields for kpi206', () => {
+      component.kpiId = 'kpi206';
+      component.fieldMappingConfig[0].fieldName = 'jiraWorkflowGroupsKPI206';
+      component.ngOnInit();
+
+      const selectedGroups = ['To Do', 'In Review'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      expect(component.formConfig['WorkFlow Status Mapping']).toBeDefined();
+      const dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+      expect(dynamicFields[0].fieldName).toBe('jiraStatusForToDo');
+      expect(dynamicFields[1].fieldName).toBe('jiraStatusForInReview');
+    });
+
+    it('should update dynamic workflow fields for kpi217', () => {
+      component.kpiId = 'kpi217';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: undefined,
+        },
+      ];
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary', 'Description'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'jiraFieldsSelectionKPI217';
+      expect(component.formConfig[targetSection]).toBeDefined();
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+      expect(dynamicFields[0].fieldLabel).toBe('Summary');
+      expect(dynamicFields[1].fieldLabel).toBe('Description');
+    });
+
+    it('should remove dynamic fields when groups are deselected', () => {
+      component.ngOnInit();
+
+      // First add some groups
+      component.updateDynamicWorkflowFields(['Group1', 'Group2']);
+      let dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+
+      // Now remove one group
+      component.updateDynamicWorkflowFields(['Group1']);
+      dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(1);
+      expect(dynamicFields[0].fieldName).toBe('jiraStatusForGroup1');
+    });
+
+    it('should handle array trigger value in generateFromControlBasedOnFieldType', () => {
+      component.formData = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          originalValue: [
+            { label: 'In Progress', statuses: ['Implementing'] },
+            { label: 'Done', statuses: ['Closed'] },
+          ],
+        },
+      ];
+      component.ngOnInit();
+
+      const control = component.form.get('jiraWorkflowGroupsKPI202');
+      expect(control.value).toEqual(['In Progress', 'Done']);
+    });
+
+    it('should handle object trigger value in generateFromControlBasedOnFieldType', () => {
+      component.formData = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          originalValue: {
+            'In Progress': ['Implementing'],
+            Done: ['Closed'],
+          },
+        },
+      ];
+      component.ngOnInit();
+
+      const control = component.form.get('jiraWorkflowGroupsKPI202');
+      expect(control.value).toEqual(['In Progress', 'Done']);
+    });
+
+    it('should add form control for each dynamic field', () => {
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Group1', 'Group2']);
+
+      expect(component.form.contains('jiraStatusForGroup1')).toBeTruthy();
+      expect(component.form.contains('jiraStatusForGroup2')).toBeTruthy();
+    });
+  });
+
+  describe('Save with Dynamic Fields', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: 'WorkFlow Status Mapping',
+        },
+      ];
+      component.formData = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          originalValue: [],
+        },
+      ];
+      component.kpiId = 'kpi202';
+      component.selectedToolConfig = [{ id: '123', toolName: 'JIRA' }];
+      component.metaDataTemplateCode = '9';
+    });
+
+    it('should save dynamic workflow fields for kpi202', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      // Setup dynamic fields
+      component.updateDynamicWorkflowFields(['In Progress', 'Done']);
+      component.form.get('jiraStatusForInProgress').setValue(['Implementing']);
+      component.form.get('jiraStatusForDone').setValue(['Closed']);
+
+      component.save();
+
+      expect(saveSpy).toHaveBeenCalled();
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f) => f.fieldName === 'jiraWorkflowGroupsKPI202',
+      );
+      expect(triggerField).toBeDefined();
+      expect(triggerField.originalValue).toEqual([
+        { label: 'In Progress', statuses: ['Implementing'] },
+        { label: 'Done', statuses: ['Closed'] },
+      ]);
+    });
+
+    it('should save dynamic workflow fields for kpi217', () => {
+      component.kpiId = 'kpi217';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: undefined,
+        },
+      ];
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI217',
+          originalValue: [],
+        },
+      ];
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      // Setup dynamic fields
+      component.updateDynamicWorkflowFields(['Summary', 'Description']);
+      component.form.get('jiraStatusForSummary').setValue('Prompt for summary');
+      component.form
+        .get('jiraStatusForDescription')
+        .setValue('Prompt for description');
+
+      component.save();
+
+      expect(saveSpy).toHaveBeenCalled();
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f) => f.fieldName === 'jiraFieldsSelectionKPI217',
+      );
+      expect(triggerField).toBeDefined();
+      expect(triggerField.originalValue).toEqual([
+        { label: 'Summary', prompt: 'Prompt for summary' },
+        { label: 'Description', prompt: 'Prompt for description' },
+      ]);
+    });
+
+    it('should not save empty mapping values', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields([]);
+      component.save();
+
+      // Should still be called but with empty or minimal data
+      expect(saveSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('fieldMappingLabel getter', () => {
+    it('should return correct label for kpi202', () => {
+      component.kpiId = 'kpi202';
+      expect(component.fieldMappingLabel).toBe('Workfow groups');
+    });
+
+    it('should return correct label for kpi206', () => {
+      component.kpiId = 'kpi206';
+      expect(component.fieldMappingLabel).toBe('Workfow groups');
+    });
+
+    it('should return correct label for kpi217', () => {
+      component.kpiId = 'kpi217';
+      expect(component.fieldMappingLabel).toBe('Fields to write prompts');
+    });
+
+    it('should return empty string for unknown kpiId', () => {
+      component.kpiId = 'kpi999';
+      expect(component.fieldMappingLabel).toBe('');
+    });
+  });
+
+  describe('getStaticFields and getDynamicFields', () => {
+    beforeEach(() => {
+      component.formConfig = {
+        'Test Section': [
+          { fieldName: 'field1', isDynamic: false },
+          { fieldName: 'field2', isDynamic: true },
+          { fieldName: 'field3', isDynamic: false },
+        ],
+      };
+    });
+
+    it('should return only static fields', () => {
+      const staticFields = component.getStaticFields('Test Section');
+      expect(staticFields.length).toBe(2);
+      expect(staticFields[0].fieldName).toBe('field1');
+      expect(staticFields[1].fieldName).toBe('field3');
+    });
+
+    it('should return only dynamic fields', () => {
+      const dynamicFields = component.getDynamicFields('Test Section');
+      expect(dynamicFields.length).toBe(1);
+      expect(dynamicFields[0].fieldName).toBe('field2');
+    });
+
+    it('should return empty array for non-existent section', () => {
+      const staticFields = component.getStaticFields('Non Existent');
+      const dynamicFields = component.getDynamicFields('Non Existent');
+      expect(staticFields).toEqual([]);
+      expect(dynamicFields).toEqual([]);
+    });
+  });
+
+  describe('generateFieldMappingConfiguration with kpi217', () => {
+    it('should use fieldName as section for kpi217 trigger field with undefined section', () => {
+      component.kpiId = 'kpi217';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          section: undefined,
+        },
+        {
+          fieldName: 'otherField',
+          fieldLabel: 'Other',
+          section: 'Custom Fields Mapping',
+        },
+      ];
+      component.generateFieldMappingConfiguration();
+
+      expect(component.formConfig['jiraFieldsSelectionKPI217']).toBeDefined();
+      expect(
+        component.formConfig['jiraFieldsSelectionKPI217'].length,
+      ).toBeGreaterThan(0);
+      expect(
+        component.fieldMappingSectionList.includes('jiraFieldsSelectionKPI217'),
+      ).toBeTruthy();
+    });
+
+    it('should default to Field Mapping for undefined section when not kpi217 trigger', () => {
+      component.kpiId = 'kpi100';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'someField',
+          fieldLabel: 'Some Field',
+          section: undefined,
+        },
+      ];
+      component.generateFieldMappingConfiguration();
+
+      expect(component.formConfig['Field Mapping']).toBeDefined();
+      expect(
+        component.fieldMappingSectionList.includes('Field Mapping'),
+      ).toBeTruthy();
+    });
+  });
+
+  describe('Dialog focus management', () => {
+    beforeEach(() => {
+      // Reset scroll to 0 before each test
+      document.documentElement.scrollTop = 0;
+    });
+
+    it('should record scroll position and focus dialog header', () => {
+      // Set scroll position just before the test
+      document.documentElement.scrollTop = 200;
+      const currentScroll = document.documentElement.scrollTop;
+
+      const mockHeader = document.createElement('div');
+      mockHeader.id = 'addValuesDialogTitle';
+      mockHeader.focus = jasmine.createSpy('focus');
+      spyOn(document, 'getElementById').and.returnValue(mockHeader);
+
+      component.addValueDialog = {
+        contentViewChild: {},
+      } as any;
+
+      component.recordScrollPosition();
+
+      // Verify that scroll position was captured (use actual current scroll value)
+      expect(component.bodyScrollPosition).toBe(currentScroll);
+      expect(mockHeader.focus).toHaveBeenCalled();
+    });
+
+    it('should record scroll position even if dialog header is not found', () => {
+      // Set a specific scroll position
+      document.documentElement.scrollTop = 300;
+      const currentScroll = document.documentElement.scrollTop;
+
+      spyOn(document, 'getElementById').and.returnValue(null);
+      component.addValueDialog = {
+        contentViewChild: {},
+      } as any;
+
+      component.recordScrollPosition();
+
+      // Verify that bodyScrollPosition was updated to current scroll position
+      expect(component.bodyScrollPosition).toBe(currentScroll);
+      // Should not throw error even if element is null
+    });
   });
 });

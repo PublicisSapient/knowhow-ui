@@ -200,4 +200,108 @@ describe('FieldMappingFieldComponent', () => {
     expect(spy).toHaveBeenCalled();
     expect(component.draggedItem).toBeNull();
   });
+
+  it('should not reorder if draggedItem is null', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.value = ['A', 'B', 'C'];
+    component.draggedItem = null;
+    const spy = spyOn(component, 'setValue');
+    component.onDrop(mockEvent, 'B');
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(component.value).toEqual(['A', 'B', 'C']);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should not reorder if value is not an array', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.value = 'string value';
+    component.draggedItem = 'A';
+    const spy = spyOn(component, 'setValue');
+    component.onDrop(mockEvent, 'B');
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should not reorder if draggedItem equals targetItem', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.value = ['A', 'B', 'C'];
+    component.draggedItem = 'B';
+    const spy = spyOn(component, 'setValue');
+    component.onDrop(mockEvent, 'B');
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(component.value).toEqual(['A', 'B', 'C']);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  describe('displayValue getter', () => {
+    it('should return comma-separated string for kpi217 with array value', () => {
+      component.kpiId = 'kpi217';
+      component.value = ['option1', 'option2', 'option3'];
+      expect(component.displayValue).toBe('option1, option2, option3');
+    });
+
+    it('should return empty string for kpi217 with empty array', () => {
+      component.kpiId = 'kpi217';
+      component.value = [];
+      expect(component.displayValue).toBe('');
+    });
+
+    it('should return string value for non-kpi217 with string value', () => {
+      component.kpiId = 'kpi100';
+      component.value = 'test value';
+      expect(component.displayValue).toBe('test value');
+    });
+
+    it('should return empty string for non-kpi217 with non-string value', () => {
+      component.kpiId = 'kpi100';
+      component.value = 123;
+      expect(component.displayValue).toBe('');
+    });
+
+    it('should return string value for kpi217 with non-array value', () => {
+      component.kpiId = 'kpi217';
+      component.value = 'string value';
+      expect(component.displayValue).toBe('string value');
+    });
+  });
+
+  it('should format value for condtional input v2', () => {
+    const spyObj = spyOn(component, 'onChange');
+    component.setValueConditionalInputV2([
+      {
+        label: 'testLabel',
+        structuredValue: { key: 'value' },
+      },
+    ]);
+    expect(spyObj).toHaveBeenCalledWith([
+      {
+        label: 'testLabel',
+        structuredValue: { key: 'value' },
+      },
+    ]);
+  });
+
+  it('should trigger change detection on drop', () => {
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation'),
+    } as any;
+    component.value = ['A', 'B', 'C'];
+    component.draggedItem = 'C';
+    const cdrSpy = spyOn(component['cdr'], 'detectChanges');
+    component.onDrop(mockEvent, 'A');
+    expect(cdrSpy).toHaveBeenCalled();
+  });
 });

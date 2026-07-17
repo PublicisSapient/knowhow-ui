@@ -677,7 +677,9 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     // --- focus on dialog header
     if (this.addValueDialog.contentViewChild) {
       const headerEl = document.getElementById('addValuesDialogTitle');
-      headerEl.focus();
+      if (headerEl) {
+        headerEl.focus();
+      }
     }
   }
 
@@ -962,9 +964,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           // After reinitializing the form and dynamic fields, mark the form as pristine
           // so the UI reflects the loaded state. Dynamic field controls have been recreated
           // with proper values from the mapping structure.
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
-          this.form.updateValueAndValidity();
+          if (this.form) {
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            this.form.updateValueAndValidity();
+          }
           this.sharedService.setSelectedFieldMapping(mappings['data']);
         }
       });
