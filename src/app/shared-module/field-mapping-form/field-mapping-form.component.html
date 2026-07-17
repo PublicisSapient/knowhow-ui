@@ -63,7 +63,7 @@
                               <div class="p-d-flex p-align-center">
                                   <div>
                                       <span *ngIf="dynField?.processorCommon"><i class="fas fa-sync-alt p-mr-2" aria-hidden="true"></i></span>
-                                      <label class="field-title" style="background-olor: transparent;" [attr.for]="dynField['fieldName']" tabindex="0">
+                                      <label class="field-title" style="background-color: transparent;" [attr.for]="dynField['fieldName']" tabindex="0">
                                           {{dynField['fieldLabel']}}
                                           <span class="p-mr-1" style="color: red;" *ngIf="dynField?.mandatory" aria-hidden="true">*</span>
                                           <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>Definition: {{dynField.tooltip.definition}} <br> {{dynField.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{dynField.tooltip.kpiImpacted ? dynField.tooltip.kpiImpacted : '' }}</span>" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="<span>Definition: {{dynField.tooltip.definition}} <br> {{dynField.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{dynField.tooltip.kpiImpacted ? dynField.tooltip.kpiImpacted : '' }}</span>" tabindex="0"></span>
