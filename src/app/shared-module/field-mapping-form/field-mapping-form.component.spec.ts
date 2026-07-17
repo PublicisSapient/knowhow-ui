@@ -870,9 +870,9 @@ describe('FieldMappingFormComponent', () => {
       component.updateDynamicWorkflowFields(selectedGroups);
 
       expect(component.formConfig['WorkFlow Status Mapping']).toBeDefined();
-      const dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
-        (f) => f.isDynamic,
-      );
+      const dynamicFields = component.formConfig[
+        'WorkFlow Status Mapping'
+      ].filter((f) => f.isDynamic);
       expect(dynamicFields.length).toBe(2);
       expect(dynamicFields[0].fieldName).toBe('jiraStatusForInProgress');
       expect(dynamicFields[1].fieldName).toBe('jiraStatusForDone');
@@ -887,9 +887,9 @@ describe('FieldMappingFormComponent', () => {
       component.updateDynamicWorkflowFields(selectedGroups);
 
       expect(component.formConfig['WorkFlow Status Mapping']).toBeDefined();
-      const dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
-        (f) => f.isDynamic,
-      );
+      const dynamicFields = component.formConfig[
+        'WorkFlow Status Mapping'
+      ].filter((f) => f.isDynamic);
       expect(dynamicFields.length).toBe(2);
       expect(dynamicFields[0].fieldName).toBe('jiraStatusForToDo');
       expect(dynamicFields[1].fieldName).toBe('jiraStatusForInReview');
@@ -926,9 +926,9 @@ describe('FieldMappingFormComponent', () => {
 
       // First add some groups
       component.updateDynamicWorkflowFields(['Group1', 'Group2']);
-      let dynamicFields = component.formConfig['WorkFlow Status Mapping'].filter(
-        (f) => f.isDynamic,
-      );
+      let dynamicFields = component.formConfig[
+        'WorkFlow Status Mapping'
+      ].filter((f) => f.isDynamic);
       expect(dynamicFields.length).toBe(2);
 
       // Now remove one group
