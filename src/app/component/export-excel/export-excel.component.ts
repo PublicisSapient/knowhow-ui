@@ -146,7 +146,13 @@ export class ExportExcelComponent implements OnInit {
     kpiId,
   ) {
     this.iskanban = false;
-    rawColumConfig = this.reorderFirstColumn(rawColumConfig);
+    if (kpiId === 'kpi205') {
+      this.forzenColumns = ['week'];
+      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else {
+      this.forzenColumns = ['issue id'];
+      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+    }
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -215,7 +221,17 @@ export class ExportExcelComponent implements OnInit {
       });
     }
 
-    rawColumConfig = this.reorderFirstColumn(rawColumConfig);
+    if (this.sharedService.selectedTab === 'iteration') {
+      if (this.modalDetails['kpiId'] === 'kpi205') {
+        this.forzenColumns = ['week'];
+        rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+      } else {
+        this.forzenColumns = ['issue id'];
+        rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
+      }
+    } else {
+      rawColumConfig = this.reorderFirstColumn(rawColumConfig);
+    }
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
