@@ -146,14 +146,7 @@ export class ExportExcelComponent implements OnInit {
     kpiId,
   ) {
     this.iskanban = false;
-    // Set frozen column based on kpiId
-    if (kpiId === 'kpi205') {
-      this.forzenColumns = ['week'];
-      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
-    } else {
-      this.forzenColumns = ['issue id'];
-      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
-    }
+    rawColumConfig = this.reorderFirstColumn(rawColumConfig);
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -222,14 +215,7 @@ export class ExportExcelComponent implements OnInit {
       });
     }
 
-    // Set frozen column based on kpiId
-    if (this.modalDetails['kpiId'] === 'kpi205') {
-      this.forzenColumns = ['week'];
-      rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
-    } else {
-      this.forzenColumns = ['issue id'];
-      rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
-    }
+    rawColumConfig = this.reorderFirstColumn(rawColumConfig);
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
@@ -531,6 +517,22 @@ export class ExportExcelComponent implements OnInit {
     }
   }
 
+  reorderFirstColumn(columns) {
+    const hasCol = (name: string) =>
+      columns.some((col) => col.columnName.toLowerCase() === name);
+
+    if (hasCol('week')) {
+      this.forzenColumns = ['week'];
+      return this.makeWeekColumnOnFirstOrder(columns);
+    } else if (hasCol('days/weeks')) {
+      this.forzenColumns = ['days/weeks'];
+      return this.makeDaysWeeksColumnOnFirstOrder(columns);
+    } else {
+      this.forzenColumns = ['issue id'];
+      return this.makeIssueIDOnFirstOrder(columns);
+    }
+  }
+
   makeIssueIDOnFirstOrder(columns) {
     // Identify the "issue id" column (case-insensitive)
     const issueIdColumn = columns.find(
@@ -575,6 +577,25 @@ export class ExportExcelComponent implements OnInit {
 
     // Return the updated array with "week" at the top
     return [weekColumn, ...remainingColumns];
+  }
+
+  makeDaysWeeksColumnOnFirstOrder(columns) {
+    const daysWeeksColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === 'days/weeks',
+    );
+
+    if (!daysWeeksColumn) {
+      return columns;
+    }
+
+    daysWeeksColumn.order = 0;
+
+    const remainingColumns = columns
+      .filter((col) => col !== daysWeeksColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+
+    return [daysWeeksColumn, ...remainingColumns];
   }
 
   sortableColumn(columnName, tableDataSet) {
