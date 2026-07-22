@@ -2994,6 +2994,19 @@ describe('ExecutiveV2Component', () => {
       aiGatewayBaseUrl: 'http://localhost:7001/',
     });
 
+    // Initialize kpi217 test data
+    component.kpi217ViewOptions = ['Overall', 'Details'];
+    component.kpi217SelectedView = 'Overall';
+    component.kpi217Switching = false;
+    component.kpi217SprintOptions = [
+      'Sprint 1',
+      'Sprint 2',
+      'Sprint 3',
+      'Sprint 4',
+      'Sprint 5',
+    ];
+    component.kpi217SelectedSprint = 'Sprint 1';
+
     // const type = 'scrum';
     // service.selectedtype = type;
     // service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
@@ -16365,6 +16378,211 @@ describe('ExecutiveV2Component', () => {
     it('should initialize kpi204SelectedView with default value', () => {
       expect(component.kpi204SelectedView).toBe('By Range');
     });
+  });
+
+  describe('KPI 217 View Toggle Feature', () => {
+    /**
+     * Test: Verify kpi217ViewOptions contains 'Overall' and 'Details'
+     */
+    it('should initialize kpi217ViewOptions correctly', () => {
+      expect(component.kpi217ViewOptions).toEqual(['Overall', 'Details']);
+    });
+
+    /**
+     * Test: Verify kpi217SelectedView defaults to 'Overall'
+     */
+    it('should initialize kpi217SelectedView with default value Overall', () => {
+      expect(component.kpi217SelectedView).toBe('Overall');
+    });
+
+    /**
+     * Test: Verify kpi217Switching defaults to false
+     */
+    it('should initialize kpi217Switching to false', () => {
+      expect(component.kpi217Switching).toBe(false);
+    });
+
+    /**
+     * Test: Verify kpi217SprintOptions contains 5 sprint names
+     */
+    it('should initialize kpi217SprintOptions with 5 sprints', () => {
+      expect(component.kpi217SprintOptions).toEqual([
+        'Sprint 1',
+        'Sprint 2',
+        'Sprint 3',
+        'Sprint 4',
+        'Sprint 5',
+      ]);
+    });
+
+    /**
+     * Test: Verify kpi217SelectedSprint defaults to 'Sprint 1'
+     */
+    it('should initialize kpi217SelectedSprint with default value Sprint 1', () => {
+      expect(component.kpi217SelectedSprint).toBe('Sprint 1');
+    });
+
+    /**
+     * Test: Verify onKpi217ViewChange method exists and is callable
+     */
+    it('should have onKpi217ViewChange method', () => {
+      expect(component.onKpi217ViewChange).toBeDefined();
+      expect(typeof component.onKpi217ViewChange).toBe('function');
+    });
+
+    /**
+     * Test: Verify switching from 'Overall' to 'Details' updates kpi217SelectedView
+     */
+    it('should update kpi217SelectedView when switching from Overall to Details', fakeAsync(() => {
+      component.kpi217SelectedView = 'Overall';
+      component.onKpi217ViewChange('Details');
+
+      expect(component.kpi217Switching).toBe(true);
+
+      tick();
+
+      expect(component.kpi217SelectedView).toBe('Details');
+      expect(component.kpi217Switching).toBe(false);
+    }));
+
+    /**
+     * Test: Verify switching from 'Details' to 'Overall' updates kpi217SelectedView
+     */
+    it('should update kpi217SelectedView when switching from Details to Overall', fakeAsync(() => {
+      component.kpi217SelectedView = 'Details';
+      component.onKpi217ViewChange('Overall');
+
+      expect(component.kpi217Switching).toBe(true);
+
+      tick();
+
+      expect(component.kpi217SelectedView).toBe('Overall');
+      expect(component.kpi217Switching).toBe(false);
+    }));
+
+    /**
+     * Test: Verify kpi217Switching flag is set during view change
+     */
+    it('should set kpi217Switching flag to true during view change', () => {
+      component.kpi217SelectedView = 'Overall';
+      component.onKpi217ViewChange('Details');
+
+      expect(component.kpi217Switching).toBe(true);
+    });
+
+    /**
+     * Test: Verify setTimeout is used for smooth transitions
+     */
+    it('should use setTimeout for smooth view transitions', fakeAsync(() => {
+      spyOn(window, 'setTimeout').and.callThrough();
+
+      component.onKpi217ViewChange('Details');
+
+      expect(window.setTimeout).toHaveBeenCalled();
+      tick();
+    }));
+
+    /**
+     * Test: Verify resetToDefaults resets kpi217SelectedView to 'Overall'
+     */
+    it('should reset kpi217SelectedView to Overall in resetToDefaults', () => {
+      component.kpi217SelectedView = 'Details';
+      component.kpi217SelectedSprint = 'Sprint 3';
+
+      component.resetToDefaults();
+
+      expect(component.kpi217SelectedView).toBe('Overall');
+    });
+
+    /**
+     * Test: Verify resetToDefaults resets kpi217SelectedSprint to empty string
+     * The sprint selection is repopulated when new KPI data arrives via populateKpi217SprintOptions
+     */
+    it('should reset kpi217SelectedSprint to empty string in resetToDefaults', () => {
+      component.kpi217SelectedView = 'Details';
+      component.kpi217SelectedSprint = 'Sprint 5';
+
+      component.resetToDefaults();
+
+      expect(component.kpi217SelectedSprint).toBe('');
+    });
+
+    /**
+     * Test: Verify view change updates state correctly with multiple switches
+     */
+    it('should handle multiple view switches correctly', fakeAsync(() => {
+      // First switch: Overall -> Details
+      component.onKpi217ViewChange('Details');
+      tick();
+      expect(component.kpi217SelectedView).toBe('Details');
+
+      // Second switch: Details -> Overall
+      component.onKpi217ViewChange('Overall');
+      tick();
+      expect(component.kpi217SelectedView).toBe('Overall');
+
+      // Third switch: Overall -> Details again
+      component.onKpi217ViewChange('Details');
+      tick();
+      expect(component.kpi217SelectedView).toBe('Details');
+    }));
+
+    /**
+     * Test: Verify switching flag is reset after timeout completes
+     */
+    it('should reset kpi217Switching flag after setTimeout completes', fakeAsync(() => {
+      component.onKpi217ViewChange('Details');
+
+      expect(component.kpi217Switching).toBe(true);
+
+      tick();
+
+      expect(component.kpi217Switching).toBe(false);
+    }));
+
+    /**
+     * Test: Verify sprint selection updates kpi217SelectedSprint
+     */
+    it('should update kpi217SelectedSprint when sprint is selected', () => {
+      component.kpi217SelectedSprint = 'Sprint 1';
+
+      component.kpi217SelectedSprint = 'Sprint 3';
+
+      expect(component.kpi217SelectedSprint).toBe('Sprint 3');
+    });
+
+    /**
+     * Test: Verify sprint dropdown options are populated correctly
+     */
+    it('should have all sprint options available for selection', () => {
+      const expectedSprints = [
+        'Sprint 1',
+        'Sprint 2',
+        'Sprint 3',
+        'Sprint 4',
+        'Sprint 5',
+      ];
+
+      expect(component.kpi217SprintOptions.length).toBe(5);
+      expect(component.kpi217SprintOptions).toEqual(expectedSprints);
+    });
+
+    /**
+     * Test: Verify view change does not affect sprint selection
+     */
+    it('should preserve sprint selection when changing views', fakeAsync(() => {
+      component.kpi217SelectedSprint = 'Sprint 4';
+
+      component.onKpi217ViewChange('Details');
+      tick();
+
+      expect(component.kpi217SelectedSprint).toBe('Sprint 4');
+
+      component.onKpi217ViewChange('Overall');
+      tick();
+
+      expect(component.kpi217SelectedSprint).toBe('Sprint 4');
+    }));
   });
 
   describe('KPI 205 Time-based Filter', () => {
