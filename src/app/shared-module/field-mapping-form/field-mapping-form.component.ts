@@ -19,6 +19,8 @@ import {
   Component,
   Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   Output,
   EventEmitter,
   ViewChild,
@@ -34,7 +36,7 @@ import { Dialog } from 'primeng/dialog';
   templateUrl: './field-mapping-form.component.html',
   styleUrls: ['./field-mapping-form.component.css'],
 })
-export class FieldMappingFormComponent implements OnInit {
+export class FieldMappingFormComponent implements OnInit, OnChanges {
   @Input() fieldMappingMetaData;
   @Input() fieldMappingConfig;
   @Input() formData;
@@ -68,7 +70,16 @@ export class FieldMappingFormComponent implements OnInit {
   nestedFieldANDParent = {};
   @Input() nodeId = '';
 
-  readonly fieldMappingLabel: string = 'Workfow groups';
+  private readonly kpiTriggerFieldLabelMap: Record<string, string> = {
+    kpi202: 'Workfow groups',
+    kpi206: 'Workfow groups',
+    kpi218: 'Fields to write prompts',
+  };
+
+  get fieldMappingLabel(): string {
+    return this.kpiTriggerFieldLabelMap[this.kpiId] || '';
+  }
+
   readonly workFlowStatusMappingSection: string = 'WorkFlow Status Mapping';
 
   @ViewChild('addValueDialog') addValueDialog!: Dialog;
@@ -80,6 +91,29 @@ export class FieldMappingFormComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
   ) {}
 
+  /**
+   * React to @Input changes, particularly formData
+   * When formData is updated (e.g., dialog reopened with new data),
+   * reinitialize the form to display the latest values
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    // Only reinitialize if formData changed and it's NOT the initial value
+    // (ngOnInit will handle the first initialization)
+    if (
+      changes['formData'] &&
+      changes['formData'].currentValue &&
+      !changes['formData'].firstChange &&
+      this.form
+    ) {
+      // formData has changed after initial load - reinitialize form with new data
+      this.initializeForm();
+      this.generateFieldMappingConfiguration();
+      // Mark form as pristine since it's now freshly loaded
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+    }
+  }
+
   ngOnInit(): void {
     this.historyList = [];
     this.filterHierarchy = JSON.parse(
@@ -87,14 +121,17 @@ export class FieldMappingFormComponent implements OnInit {
     ).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
-    if (this.kpiId === 'kpi202' || this.kpiId === 'kpi206') {
+    if (
+      this.kpiId === 'kpi202' ||
+      this.kpiId === 'kpi206' ||
+      this.kpiId === 'kpi218'
+    ) {
       const triggerField = this.fieldMappingConfig.find(
         (field) => field.fieldLabel === this.fieldMappingLabel,
       );
       if (triggerField) {
-        this.updateDynamicWorkflowFields(
-          this.form.get(triggerField.fieldName).value,
-        );
+        const initialVal = this.form.get(triggerField.fieldName)?.value;
+        this.updateDynamicWorkflowFields(initialVal);
         this.form
           .get(triggerField.fieldName)
           .valueChanges.subscribe((selectedGroups) => {
@@ -114,11 +151,30 @@ export class FieldMappingFormComponent implements OnInit {
   }
 
   updateDynamicWorkflowFields(selectedGroups: string[] | string) {
-    if (
-      !this.formConfig ||
-      !this.formConfig[this.workFlowStatusMappingSection]
-    ) {
+    if (!this.formConfig) {
       return;
+    }
+
+    const triggerField = this.fieldMappingConfig.find(
+      (f) => f.fieldLabel === this.fieldMappingLabel,
+    );
+
+    if (!triggerField) {
+      return;
+    }
+
+    // Find the actual key in formConfig where the trigger field lives.
+    // This is robust against fields that have section:undefined from the backend
+    // (which generateFieldMappingConfiguration normalises to 'Field Mapping').
+    const targetSection =
+      Object.keys(this.formConfig).find((key) =>
+        this.formConfig[key]?.some(
+          (f) => f.fieldName === triggerField.fieldName,
+        ),
+      ) || this.workFlowStatusMappingSection;
+
+    if (!this.formConfig[targetSection]) {
+      this.formConfig[targetSection] = [];
     }
 
     const groups = Array.isArray(selectedGroups)
@@ -130,9 +186,9 @@ export class FieldMappingFormComponent implements OnInit {
       : [];
 
     // Remove existing dynamic fields from formConfig
-    this.formConfig[this.workFlowStatusMappingSection] = this.formConfig[
-      this.workFlowStatusMappingSection
-    ].filter((field) => !field.isDynamic);
+    this.formConfig[targetSection] = this.formConfig[targetSection].filter(
+      (field) => !field.isDynamic,
+    );
 
     const currentDynamicFieldNames = groups.map(
       (it) => `jiraStatusFor${it.replace(/\s+/g, '')}`,
@@ -147,9 +203,7 @@ export class FieldMappingFormComponent implements OnInit {
     });
 
     const maxDisplayOrder = Math.max(
-      ...this.formConfig[this.workFlowStatusMappingSection].map(
-        (f) => f.fieldDisplayOrder || 0,
-      ),
+      ...this.formConfig[targetSection].map((f) => f.fieldDisplayOrder || 0),
       0,
     );
 
@@ -158,10 +212,13 @@ export class FieldMappingFormComponent implements OnInit {
       const capitalizedGroup = group;
       const dynamicField = {
         fieldName: dynamicFieldName,
-        fieldLabel: `Status to identify ${capitalizedGroup}`,
-        fieldType: 'chips',
+        fieldLabel:
+          this.kpiId !== 'kpi218'
+            ? `Status to identify ${capitalizedGroup}`
+            : capitalizedGroup,
+        fieldType: this.kpiId === 'kpi218' ? 'text' : 'chips',
         fieldCategory: 'workflow',
-        section: this.workFlowStatusMappingSection,
+        section: targetSection,
         processorCommon: false,
         isDynamic: true,
         fieldDisplayOrder: maxDisplayOrder + index + 1,
@@ -169,7 +226,7 @@ export class FieldMappingFormComponent implements OnInit {
         tooltip: { definition: `Status mapping for ${group}` },
       };
 
-      this.formConfig[this.workFlowStatusMappingSection].push(dynamicField);
+      this.formConfig[targetSection].push(dynamicField);
 
       // Add to form group if not already present
       if (!this.form.contains(dynamicFieldName)) {
@@ -191,7 +248,12 @@ export class FieldMappingFormComponent implements OnInit {
               const matchedGroup = triggerValue.find(
                 (item: any) => item.label === group,
               );
-              initialValue = matchedGroup ? matchedGroup.statuses : [];
+              // For kpi218, the value is stored as 'prompt', for kpi202/206 it's 'statuses'
+              if (this.kpiId === 'kpi218') {
+                initialValue = matchedGroup ? matchedGroup.prompt : '';
+              } else {
+                initialValue = matchedGroup ? matchedGroup.statuses : [];
+              }
             } else {
               initialValue = triggerValue[0][group] || [];
             }
@@ -235,8 +297,21 @@ export class FieldMappingFormComponent implements OnInit {
     });
 
     // Re-sort to ensure dynamic fields are at the bottom
-    this.formConfig[this.workFlowStatusMappingSection].sort(
+    this.formConfig[targetSection].sort(
       (a, b) => (a.fieldDisplayOrder || 0) - (b.fieldDisplayOrder || 0),
+    );
+
+    // Spread to create a new formConfig reference so Angular's change detection
+    // picks up the mutation and re-evaluates getDynamicFields() in the template.
+    this.formConfig = { ...this.formConfig };
+
+    console.log(
+      '[kpi218 debug] After update — targetSection:',
+      targetSection,
+      '| dynamic fields:',
+      this.formConfig[targetSection]
+        ?.filter((f) => f.isDynamic)
+        .map((f) => f.fieldName),
     );
   }
 
@@ -244,11 +319,26 @@ export class FieldMappingFormComponent implements OnInit {
     const fieldMappingSections = [];
     const fieldMappingConfigration = {};
     this.fieldMappingConfig.forEach((field) => {
-      fieldMappingSections.push(field.section);
-      if (!fieldMappingConfigration[field.section]) {
-        fieldMappingConfigration[field.section] = [field];
+      // Normalise missing section (undefined):
+      // - For kpi218 with fieldName 'jiraFieldsSelectionKPI218', use fieldName as section key
+      //   so trigger and dynamic fields render in the same accordion section.
+      // - Otherwise, default to 'Field Mapping'.
+      let sectionKey = field.section;
+      if (!sectionKey) {
+        if (
+          this.kpiId === 'kpi218' &&
+          field.fieldName === 'jiraFieldsSelectionKPI218'
+        ) {
+          sectionKey = field.fieldName; // Use 'jiraFieldsSelectionKPI218' as section key
+        } else {
+          sectionKey = 'Field Mapping'; // Default fallback
+        }
+      }
+      fieldMappingSections.push(sectionKey);
+      if (!fieldMappingConfigration[sectionKey]) {
+        fieldMappingConfigration[sectionKey] = [field];
       } else {
-        fieldMappingConfigration[field.section].push(field);
+        fieldMappingConfigration[sectionKey].push(field);
       }
     });
     const sectionsInCorrectOrder = [
@@ -258,6 +348,7 @@ export class FieldMappingFormComponent implements OnInit {
       this.workFlowStatusMappingSection,
       'Additional Filter Identifier',
       'Project Level Threshold',
+      'jiraFieldsSelectionKPI218', // kpi218-specific section (no backend section defined)
     ];
     const sectionsList = [...new Set(fieldMappingSections)].sort((a, b) =>
       a.localeCompare(b, undefined, { sensitivity: 'base' }),
@@ -478,7 +569,7 @@ export class FieldMappingFormComponent implements OnInit {
     if (isSingle) {
       if (this.form.controls[this.selectedField].value) {
         this.selectedValue = this.fieldMappingMultiSelectValues.filter(
-          (fieldMappingMultiSelectValue) =>
+          (fieldMappingMultiSelectValue: any) =>
             fieldMappingMultiSelectValue.data ===
             this.form.controls[this.selectedField].value,
         );
@@ -490,10 +581,12 @@ export class FieldMappingFormComponent implements OnInit {
       }
     } else {
       if (this.form.controls[this.selectedField].value) {
+        // Fix: Compare against 'key' property to properly match selected values
+        // The form control stores labels (keys), so we need to check against the 'key' property
         this.selectedMultiValue = this.fieldMappingMultiSelectValues.filter(
-          (fieldMappingMultiSelectValue) =>
+          (fieldMappingMultiSelectValue: any) =>
             this.form.controls[this.selectedField].value.includes(
-              fieldMappingMultiSelectValue.data,
+              fieldMappingMultiSelectValue.key,
             ),
         );
       }
@@ -584,7 +677,9 @@ export class FieldMappingFormComponent implements OnInit {
     // --- focus on dialog header
     if (this.addValueDialog.contentViewChild) {
       const headerEl = document.getElementById('addValuesDialogTitle');
-      headerEl.focus();
+      if (headerEl) {
+        headerEl.focus();
+      }
     }
   }
 
@@ -620,7 +715,11 @@ export class FieldMappingFormComponent implements OnInit {
       }
     });
 
-    if (this.kpiId === 'kpi202' || this.kpiId === 'kpi206') {
+    if (
+      this.kpiId === 'kpi202' ||
+      this.kpiId === 'kpi206' ||
+      this.kpiId === 'kpi218'
+    ) {
       const triggerField = this.fieldMappingConfig.find(
         (f) => f.fieldLabel === this.fieldMappingLabel,
       );
@@ -628,16 +727,37 @@ export class FieldMappingFormComponent implements OnInit {
         const mappingValue = [];
         let dynamicFieldChanged = false;
 
+        // Find the section where the trigger field is stored in formConfig.
+        // This handles cases where triggerField.section is undefined (e.g., kpi218).
+        const targetSection =
+          Object.keys(this.formConfig).find((key) =>
+            this.formConfig[key]?.some(
+              (f) => f.fieldName === triggerField.fieldName,
+            ),
+          ) || this.workFlowStatusMappingSection;
+
         // Build mappingValue from ALL dynamic fields currently in the form
-        this.formConfig[this.workFlowStatusMappingSection]?.forEach(
-          (config) => {
-            if (config.isDynamic) {
+        this.formConfig[targetSection]?.forEach((config) => {
+          if (config.isDynamic) {
+            if (this.kpiId === 'kpi218') {
+              mappingValue.push({
+                label: config.fieldLabel,
+                prompt: this.form.value[config.fieldName] || '',
+              });
+            } else {
               mappingValue.push({
                 label: config.originalGroupName,
                 statuses: this.form.value[config.fieldName] || [],
               });
             }
-          },
+          }
+        });
+
+        console.log(
+          '[kpi218 debug save] targetSection:',
+          targetSection,
+          'mappingValue:',
+          mappingValue,
         );
 
         // Remove dynamic fields from finalList so they aren't sent directly
@@ -654,9 +774,10 @@ export class FieldMappingFormComponent implements OnInit {
         );
         if (triggerIndex !== -1) {
           finalList[triggerIndex].originalValue = mappingValue;
-        } else if (dynamicFieldChanged) {
-          // Even if trigger field didn't change (groups list same), we might need to save mapping
-          // So we add it if any dynamic field was changed
+        } else if (dynamicFieldChanged || mappingValue.length > 0) {
+          // Add trigger field if any dynamic field was changed
+          // OR if we have mapping values (even if trigger field itself didn't change,
+          // dynamic fields were created, so we need to save the mapping)
           finalList.push({
             fieldName: triggerField.fieldName,
             originalValue: mappingValue,
@@ -840,6 +961,14 @@ export class FieldMappingFormComponent implements OnInit {
           this.formData = mappings['data'].fieldMappingResponses;
           this.metaDataTemplateCode = mappings['data'].metaTemplateCode;
           this.ngOnInit();
+          // After reinitializing the form and dynamic fields, mark the form as pristine
+          // so the UI reflects the loaded state. Dynamic field controls have been recreated
+          // with proper values from the mapping structure.
+          if (this.form) {
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            this.form.updateValueAndValidity();
+          }
           this.sharedService.setSelectedFieldMapping(mappings['data']);
         }
       });

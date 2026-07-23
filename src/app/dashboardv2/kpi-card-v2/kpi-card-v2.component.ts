@@ -190,6 +190,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpi205LineChartData: any;
   /** kpi205-specific: currently selected dropdown code ('AGT' | 'AVG') */
   @Input() kpi205SelectedView: string;
+  /** kpi218-specific: currently selected view ('Overall' | 'Details') */
+  @Input() kpi218SelectedView: string;
 
   constructor(
     public service: SharedService,

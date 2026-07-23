@@ -54,6 +54,7 @@ describe('Pipe: Default', () => {
 
   it('should transform value correctly when input is not "project" and hierarchyData is not available', () => {
     localStorage.removeItem('hierarchyData');
+    localStorage.removeItem('completeHierarchyData'); // Also remove fallback data
     const transformedValue = pipe.transform('hierarchyLevelThree');
     expect(transformedValue).toEqual('hierarchyLevelThree');
   });

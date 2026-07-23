@@ -19,6 +19,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DashboardV2Component } from './dashboard-v2.component';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthService } from '../../services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -88,6 +89,18 @@ describe('DashboardV2Component', () => {
     sharedService.onTabSwitch.next({ selectedBoard: 'iteration' });
 
     expect(component.selectedTab).toBe('iteration');
+  });
+
+  it('should initialize selectedTab from the current dashboard URL on first load', () => {
+    const router = TestBed.inject(Router);
+    spyOnProperty(router, 'url', 'get').and.returnValue(
+      '/dashboard/iteration?stateFilters=abc',
+    );
+
+    component.initializeSelectedTabFromUrl();
+
+    expect(component.selectedTab).toBe('iteration');
+    expect(sharedService.getSelectedTab()).toBe('iteration');
   });
 
   it('should not store data in localStorage when API returns an error', () => {

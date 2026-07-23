@@ -23,40 +23,63 @@
           <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section" role="group" [attr.aria-label]="section + ' section'" tabindex="0">
               <div class="p-p-0">
                   <!-- Static Fields -->
-                  <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of getStaticFields(section)" role="group" [attr.aria-label]="field['fieldLabel'] + ' Field Group'">
-                      <div class="p-d-flex p-align-center">
-                          <div>
-                              <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2" aria-hidden="true"></i></span>
-                              <label class="field-title" style="background-color: white;" [attr.for]="field['fieldName']" tabindex="0">
-                                  {{field['fieldLabel']}}
-                                  <span class="p-mr-1" style="color: red;" *ngIf="field?.mandatory" aria-hidden="true">*</span>
-                                  <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tabindex="0"></span>
-                              </label>
-                            <img #commentSummary class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" src="assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + field['fieldLabel']" tabindex="0" />
+                  <ng-container *ngFor="let field of getStaticFields(section)">
+                      <div class="p-mb-3 p-d-flex p-align-center p-justify-between" role="group" [attr.aria-label]="field['fieldLabel'] + ' Field Group'">
+                          <div class="p-d-flex p-align-center">
+                              <div>
+                                  <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2" aria-hidden="true"></i></span>
+                                  <label class="field-title" style="background-color: white;" [attr.for]="field['fieldName']" tabindex="0">
+                                      {{field['fieldLabel']}}
+                                      <span class="p-mr-1" style="color: red;" *ngIf="field?.mandatory" aria-hidden="true">*</span>
+                                      <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="<span>Definition: {{field.tooltip.definition}} <br> {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}</span>" tabindex="0"></span>
+                                  </label>
+                                <img #commentSummary class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(field.fieldName);" src="assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + field['fieldLabel']" tabindex="0" />
+                              </div>
+                          </div>
+                          <ng-container *ngIf="!field?.nestedFields else nestedFieldContainerStatic">
+                              <div class="w-60vw">
+                                  <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field" [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Input'"></app-field-mapping-field>
+                              </div>
+                          </ng-container>
+                          <ng-template #nestedFieldContainerStatic>
+                              <div class="fields-container p-p-2 w-60vw">
+                                  <div class="p-d-flex p-justify-between">
+                                      <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field" [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Primary Input'"></app-field-mapping-field>
+                                  </div>
+                                  <div class="p-m-2" *ngFor="let nestedField of field['nestedFields']">
+                                      <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
+                                          <label class="field-title">{{nestedField['fieldLabel']}} <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>Definition: {{nestedField?.tooltip?.definition}} <hr *ngIf="nestedField?.tooltip?.kpiImpacted"></span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="Nested Field Information" tabindex="0"></span></label>
+                                          <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)" [thresholdUnit]="thresholdUnit" [attr.aria-label]="nestedField['fieldLabel'] + ' Input'"></app-field-mapping-field>
+                                      </ng-container>
+                                  </div>
+                              </div>
+                          </ng-template>
+                      </div>
+
+                      <!-- kpi218: Dynamic Mappings rendered INLINE right below the trigger field -->
+                      <div *ngIf="kpiId === 'kpi218' && field.fieldLabel === fieldMappingLabel && getDynamicFields(section).length > 0"
+                           class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
+                          <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let dynField of getDynamicFields(section)" role="group" [attr.aria-label]="dynField['fieldLabel'] + ' Field Group'">
+                              <div class="p-d-flex p-align-center">
+                                  <div>
+                                      <span *ngIf="dynField?.processorCommon"><i class="fas fa-sync-alt p-mr-2" aria-hidden="true"></i></span>
+                                      <label class="field-title" style="background-color: transparent;" [attr.for]="dynField['fieldName']" tabindex="0">
+                                          {{dynField['fieldLabel']}}
+                                          <span class="p-mr-1" style="color: red;" *ngIf="dynField?.mandatory" aria-hidden="true">*</span>
+                                          <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>Definition: {{dynField.tooltip.definition}} <br> {{dynField.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{dynField.tooltip.kpiImpacted ? dynField.tooltip.kpiImpacted : '' }}</span>" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="<span>Definition: {{dynField.tooltip.definition}} <br> {{dynField.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }} {{dynField.tooltip.kpiImpacted ? dynField.tooltip.kpiImpacted : '' }}</span>" tabindex="0"></span>
+                                      </label>
+                                      <img class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(dynField.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(dynField.fieldName);" src="assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + dynField['fieldLabel']" tabindex="0" />
+                                  </div>
+                              </div>
+                              <div class="w-60vw">
+                                  <app-field-mapping-field [kpiId]="kpiId" [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="dynField" [formControlName]="dynField['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="dynField['fieldLabel'] + ' Input'"></app-field-mapping-field>
+                              </div>
                           </div>
                       </div>
-                      <ng-container *ngIf="!field?.nestedFields else nestedFieldContainerStatic">
-                          <div class="w-60vw">
-                              <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field" [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Input'"></app-field-mapping-field>
-                          </div>
-                      </ng-container>
-                      <ng-template #nestedFieldContainerStatic>
-                          <div class="fields-container p-p-2 w-60vw">
-                              <div class="p-d-flex p-justify-between">
-                                  <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field" [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Primary Input'"></app-field-mapping-field>
-                              </div>
-                              <div class="p-m-2" *ngFor="let nestedField of field['nestedFields']">
-                                  <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
-                                      <label class="field-title">{{nestedField['fieldLabel']}} <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>Definition: {{nestedField?.tooltip?.definition}} <hr *ngIf="nestedField?.tooltip?.kpiImpacted"></span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="Nested Field Information" tabindex="0"></span></label>
-                                      <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)" [thresholdUnit]="thresholdUnit" [attr.aria-label]="nestedField['fieldLabel'] + ' Input'"></app-field-mapping-field>
-                                  </ng-container>
-                              </div>
-                          </div>
-                      </ng-template>
-                  </div>
-                  
-                  <!-- Dynamic Fields Wrapper -->
-                  <div *ngIf="getDynamicFields(section).length > 0" class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
+                  </ng-container>
+
+                  <!-- Dynamic Fields Wrapper (kpi202/kpi206: renders at the bottom of the section) -->
+                  <div *ngIf="kpiId !== 'kpi218' && getDynamicFields(section).length > 0" class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
                       <h5 style="margin-top: 0; margin-bottom: 20px; color: #495057; font-weight: 600; font-size: 14px;">Dynamic Mappings</h5>
                       <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of getDynamicFields(section)" role="group" [attr.aria-label]="field['fieldLabel'] + ' Field Group'">
                           <div class="p-d-flex p-align-center">
