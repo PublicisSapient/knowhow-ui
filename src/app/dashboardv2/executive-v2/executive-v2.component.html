@@ -208,6 +208,9 @@
                             ? selectedDataTypeForFlowEfficiency?.code
                             : null
                         "
+                        [kpi218SelectedView]="
+                          kpi?.kpiId === 'kpi218' ? kpi218SelectedView : null
+                        "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
                         ">
