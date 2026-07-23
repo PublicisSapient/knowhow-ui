@@ -2411,6 +2411,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   applyForecastData(chartSeries): void {
     chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
+      if (!forecastEntries?.length) return;
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
@@ -2455,6 +2456,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       newPoint['sprintNames'] = [forecastLabel];
       newPoint['xOrder'] = forecastLabel;
       series.value = [...series?.value, newPoint];
+      delete series.forecasts;
     });
   }
 

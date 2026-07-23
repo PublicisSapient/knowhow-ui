@@ -16760,4 +16760,76 @@ describe('ExecutiveV2Component', () => {
       expect(component.refreshCounter).toBe(0);
     });
   });
+
+  describe('applyForecastData', () => {
+    const makeActualPoint = () => ({
+      data: '10',
+      value: 10,
+      date: '01-Jan-2026 to 07-Jan-2026',
+      sprojectName: 'TestProject',
+      hoverValue: {},
+    });
+
+    const makeForecastEntry = (value = 12.5) => ({
+      data: String(value),
+      value,
+      date: 'Forecast',
+      sprojectName: 'TestProject',
+    });
+
+    it('should append exactly one forecast point to series.value', () => {
+      const series: any = {
+        data: 'TestProject',
+        value: [makeActualPoint()],
+        forecasts: [makeForecastEntry()],
+      };
+      component.applyForecastData([series]);
+      expect(series.value.length).toBe(2);
+      expect(series.value[1].isForecast).toBeTrue();
+    });
+
+    it('should mark the appended point with isForecast: true', () => {
+      const series: any = {
+        data: 'TestProject',
+        value: [makeActualPoint()],
+        forecasts: [makeForecastEntry(7.3)],
+      };
+      component.applyForecastData([series]);
+      const forecastPoint = series.value[series.value.length - 1];
+      expect(forecastPoint.isForecast).toBeTrue();
+      expect(forecastPoint.value).toBe(7.3);
+    });
+
+    it('should delete series.forecasts after applying so a second call is idempotent', () => {
+      const series: any = {
+        data: 'TestProject',
+        value: [makeActualPoint()],
+        forecasts: [makeForecastEntry()],
+      };
+      component.applyForecastData([series]);
+      component.applyForecastData([series]); // second call (e.g. from dropdown re-render)
+      expect(series.value.length).toBe(2); // still only one forecast point
+      expect(series.value.filter((p: any) => p.isForecast).length).toBe(1);
+    });
+
+    it('should handle multiple series independently', () => {
+      const seriesA: any = {
+        data: 'ProjectA',
+        value: [makeActualPoint()],
+        forecasts: [makeForecastEntry(5)],
+      };
+      const seriesB: any = {
+        data: 'ProjectB',
+        value: [makeActualPoint(), makeActualPoint()],
+        forecasts: [makeForecastEntry(8)],
+      };
+      component.applyForecastData([seriesA, seriesB]);
+      expect(seriesA.value.length).toBe(2);
+      expect(seriesB.value.length).toBe(3);
+      expect(seriesA.value[1].value).toBe(5);
+      expect(seriesB.value[2].value).toBe(8);
+      expect(seriesA.forecasts).toBeUndefined();
+      expect(seriesB.forecasts).toBeUndefined();
+    });
+  });
 });
