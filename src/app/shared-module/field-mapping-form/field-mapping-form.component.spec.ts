@@ -895,11 +895,11 @@ describe('FieldMappingFormComponent', () => {
       expect(dynamicFields[1].fieldName).toBe('jiraStatusForInReview');
     });
 
-    it('should update dynamic workflow fields for kpi217', () => {
-      component.kpiId = 'kpi217';
+    it('should update dynamic workflow fields for kpi218', () => {
+      component.kpiId = 'kpi218';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldName: 'jiraFieldsSelectionKPI218',
           fieldLabel: 'Fields to write prompts',
           fieldType: 'chips',
           fieldCategory: 'workflow',
@@ -911,7 +911,7 @@ describe('FieldMappingFormComponent', () => {
       const selectedGroups = ['Summary', 'Description'];
       component.updateDynamicWorkflowFields(selectedGroups);
 
-      const targetSection = 'jiraFieldsSelectionKPI217';
+      const targetSection = 'jiraFieldsSelectionKPI218';
       expect(component.formConfig[targetSection]).toBeDefined();
       const dynamicFields = component.formConfig[targetSection].filter(
         (f) => f.isDynamic,
@@ -1027,11 +1027,11 @@ describe('FieldMappingFormComponent', () => {
       ]);
     });
 
-    it('should save dynamic workflow fields for kpi217', () => {
-      component.kpiId = 'kpi217';
+    it('should save dynamic workflow fields for kpi218', () => {
+      component.kpiId = 'kpi218';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldName: 'jiraFieldsSelectionKPI218',
           fieldLabel: 'Fields to write prompts',
           fieldType: 'chips',
           fieldCategory: 'workflow',
@@ -1040,7 +1040,7 @@ describe('FieldMappingFormComponent', () => {
       ];
       component.formData = [
         {
-          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldName: 'jiraFieldsSelectionKPI218',
           originalValue: [],
         },
       ];
@@ -1059,7 +1059,7 @@ describe('FieldMappingFormComponent', () => {
       expect(saveSpy).toHaveBeenCalled();
       const savedData = saveSpy.calls.argsFor(0)[0];
       const triggerField = savedData.find(
-        (f) => f.fieldName === 'jiraFieldsSelectionKPI217',
+        (f) => f.fieldName === 'jiraFieldsSelectionKPI218',
       );
       expect(triggerField).toBeDefined();
       expect(triggerField.originalValue).toEqual([
@@ -1091,8 +1091,8 @@ describe('FieldMappingFormComponent', () => {
       expect(component.fieldMappingLabel).toBe('Workfow groups');
     });
 
-    it('should return correct label for kpi217', () => {
-      component.kpiId = 'kpi217';
+    it('should return correct label for kpi218', () => {
+      component.kpiId = 'kpi218';
       expect(component.fieldMappingLabel).toBe('Fields to write prompts');
     });
 
@@ -1134,12 +1134,12 @@ describe('FieldMappingFormComponent', () => {
     });
   });
 
-  describe('generateFieldMappingConfiguration with kpi217', () => {
-    it('should use fieldName as section for kpi217 trigger field with undefined section', () => {
-      component.kpiId = 'kpi217';
+  describe('generateFieldMappingConfiguration with kpi218', () => {
+    it('should use fieldName as section for kpi218 trigger field with undefined section', () => {
+      component.kpiId = 'kpi218';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraFieldsSelectionKPI217',
+          fieldName: 'jiraFieldsSelectionKPI218',
           fieldLabel: 'Fields to write prompts',
           fieldType: 'chips',
           section: undefined,
@@ -1152,16 +1152,16 @@ describe('FieldMappingFormComponent', () => {
       ];
       component.generateFieldMappingConfiguration();
 
-      expect(component.formConfig['jiraFieldsSelectionKPI217']).toBeDefined();
+      expect(component.formConfig['jiraFieldsSelectionKPI218']).toBeDefined();
       expect(
-        component.formConfig['jiraFieldsSelectionKPI217'].length,
+        component.formConfig['jiraFieldsSelectionKPI218'].length,
       ).toBeGreaterThan(0);
       expect(
-        component.fieldMappingSectionList.includes('jiraFieldsSelectionKPI217'),
+        component.fieldMappingSectionList.includes('jiraFieldsSelectionKPI218'),
       ).toBeTruthy();
     });
 
-    it('should default to Field Mapping for undefined section when not kpi217 trigger', () => {
+    it('should default to Field Mapping for undefined section when not kpi218 trigger', () => {
       component.kpiId = 'kpi100';
       component.fieldMappingConfig = [
         {

@@ -246,32 +246,32 @@ describe('FieldMappingFieldComponent', () => {
   });
 
   describe('displayValue getter', () => {
-    it('should return comma-separated string for kpi217 with array value', () => {
-      component.kpiId = 'kpi217';
+    it('should return comma-separated string for kpi218 with array value', () => {
+      component.kpiId = 'kpi218';
       component.value = ['option1', 'option2', 'option3'];
       expect(component.displayValue).toBe('option1, option2, option3');
     });
 
-    it('should return empty string for kpi217 with empty array', () => {
-      component.kpiId = 'kpi217';
+    it('should return empty string for kpi218 with empty array', () => {
+      component.kpiId = 'kpi218';
       component.value = [];
       expect(component.displayValue).toBe('');
     });
 
-    it('should return string value for non-kpi217 with string value', () => {
+    it('should return string value for non-kpi218 with string value', () => {
       component.kpiId = 'kpi100';
       component.value = 'test value';
       expect(component.displayValue).toBe('test value');
     });
 
-    it('should return empty string for non-kpi217 with non-string value', () => {
+    it('should return empty string for non-kpi218 with non-string value', () => {
       component.kpiId = 'kpi100';
       component.value = 123;
       expect(component.displayValue).toBe('');
     });
 
-    it('should return string value for kpi217 with non-array value', () => {
-      component.kpiId = 'kpi217';
+    it('should return string value for kpi218 with non-array value', () => {
+      component.kpiId = 'kpi218';
       component.value = 'string value';
       expect(component.displayValue).toBe('string value');
     });

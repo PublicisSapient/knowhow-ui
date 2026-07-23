@@ -56,8 +56,8 @@
                           </ng-template>
                       </div>
 
-                      <!-- kpi217: Dynamic Mappings rendered INLINE right below the trigger field -->
-                      <div *ngIf="kpiId === 'kpi217' && field.fieldLabel === fieldMappingLabel && getDynamicFields(section).length > 0"
+                      <!-- kpi218: Dynamic Mappings rendered INLINE right below the trigger field -->
+                      <div *ngIf="kpiId === 'kpi218' && field.fieldLabel === fieldMappingLabel && getDynamicFields(section).length > 0"
                            class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
                           <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let dynField of getDynamicFields(section)" role="group" [attr.aria-label]="dynField['fieldLabel'] + ' Field Group'">
                               <div class="p-d-flex p-align-center">
@@ -79,7 +79,7 @@
                   </ng-container>
 
                   <!-- Dynamic Fields Wrapper (kpi202/kpi206: renders at the bottom of the section) -->
-                  <div *ngIf="kpiId !== 'kpi217' && getDynamicFields(section).length > 0" class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
+                  <div *ngIf="kpiId !== 'kpi218' && getDynamicFields(section).length > 0" class="dynamic-mapping-container" style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e9ecef;">
                       <h5 style="margin-top: 0; margin-bottom: 20px; color: #495057; font-weight: 600; font-size: 14px;">Dynamic Mappings</h5>
                       <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of getDynamicFields(section)" role="group" [attr.aria-label]="field['fieldLabel'] + ' Field Group'">
                           <div class="p-d-flex p-align-center">

@@ -154,11 +154,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi211SelectedView = 'Stacked Bar';
   kpi211Switching = false;
   kpi211StackedChartData: any[] = [];
-  kpi217ViewOptions = ['Overall', 'Details'];
-  kpi217SelectedView = 'Overall';
-  kpi217Switching = false;
-  kpi217SprintOptions: string[] = [];
-  kpi217SelectedSprint = '';
+  kpi218ViewOptions = ['Overall', 'Details'];
+  kpi218SelectedView = 'Overall';
+  kpi218Switching = false;
+  kpi218SprintOptions: string[] = [];
+  kpi218SelectedSprint = '';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -313,9 +313,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // Reset kpi211 stacked chart data
     this.kpi211StackedChartData = [];
 
-    // Reset kpi217 view
-    this.kpi217SelectedView = 'Overall';
-    this.kpi217SelectedSprint = '';
+    // Reset kpi218 view
+    this.kpi218SelectedView = 'Overall';
+    this.kpi218SelectedSprint = '';
   }
 
   setGlobalConfigData(globalConfig) {
@@ -3476,9 +3476,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.computeKpi211StackedChartData();
       }
 
-      // After kpi217 chart data is set, populate sprint options from trendValueList
-      if (data[key]?.kpiId === 'kpi217') {
-        this.populateKpi217SprintOptions(data[key]);
+      // After kpi218 chart data is set, populate sprint options from trendValueList
+      if (data[key]?.kpiId === 'kpi218') {
+        this.populateKpi218SprintOptions(data[key]);
       }
     }
   }
@@ -6077,26 +6077,26 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  onKpi217ViewChange(selectedView: string): void {
-    this.kpi217Switching = true;
+  onKpi218ViewChange(selectedView: string): void {
+    this.kpi218Switching = true;
     // Yield one tick so Angular renders the skeleton before mounting the heavy chart
     setTimeout(() => {
-      this.kpi217SelectedView = selectedView;
-      this.kpi217Switching = false;
+      this.kpi218SelectedView = selectedView;
+      this.kpi218Switching = false;
     }, 0);
   }
 
   /**
-   * Returns the drillDown data for the currently selected sprint in kpi217 Details view.
+   * Returns the drillDown data for the currently selected sprint in kpi218 Details view.
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
    */
-  getKpi217DrillDownData(): any[] | null {
-    if (this.kpi217SelectedView !== 'Details' || !this.kpi217SelectedSprint) {
+  getKpi218DrillDownData(): any[] | null {
+    if (this.kpi218SelectedView !== 'Details' || !this.kpi218SelectedSprint) {
       return null;
     }
 
-    const kpiIdx = this.ifKpiExist('kpi217');
+    const kpiIdx = this.ifKpiExist('kpi218');
     if (kpiIdx === -1) {
       return null;
     }
@@ -6111,7 +6111,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (const trendItem of kpiData.trendValueList) {
       if (trendItem.value && Array.isArray(trendItem.value)) {
         const matchingItem = trendItem.value.find(
-          (item: any) => item.sSprintName === this.kpi217SelectedSprint,
+          (item: any) => item.sSprintName === this.kpi218SelectedSprint,
         );
         if (matchingItem) {
           sprintData = matchingItem;
@@ -6165,17 +6165,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
-   * Populates kpi217SprintOptions dynamically from trendValueList
+   * Populates kpi218SprintOptions dynamically from trendValueList
    * Extracts sSprintName from each item in the trendValueList
    * Automatically preselects the first sprint and triggers drillDown data display
    */
-  populateKpi217SprintOptions(kpiData: any): void {
+  populateKpi218SprintOptions(kpiData: any): void {
     if (
       !kpiData ||
       !kpiData.trendValueList ||
       !Array.isArray(kpiData.trendValueList)
     ) {
-      this.kpi217SprintOptions = [];
+      this.kpi218SprintOptions = [];
       return;
     }
 
@@ -6192,14 +6192,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    // Convert Set to Array and assign to kpi217SprintOptions
-    this.kpi217SprintOptions = Array.from(sprintNames);
+    // Convert Set to Array and assign to kpi218SprintOptions
+    this.kpi218SprintOptions = Array.from(sprintNames);
 
     // Set default selected sprint to the first option if available
-    if (this.kpi217SprintOptions.length > 0 && !this.kpi217SelectedSprint) {
-      this.kpi217SelectedSprint = this.kpi217SprintOptions[0];
+    if (this.kpi218SprintOptions.length > 0 && !this.kpi218SelectedSprint) {
+      this.kpi218SelectedSprint = this.kpi218SprintOptions[0];
       // Keep the default view as 'Overall' to show the line chart by default
-      // this.kpi217SelectedView = 'Overall'; // Already initialized in component property declaration
+      // this.kpi218SelectedView = 'Overall'; // Already initialized in component property declaration
     }
   }
 

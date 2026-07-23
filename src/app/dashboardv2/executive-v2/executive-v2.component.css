@@ -219,11 +219,90 @@
 #kpi202 ::ng-deep .kpi-select-button-container,
 #kpi204 ::ng-deep .kpi-select-button-container,
 #kpi205 ::ng-deep .kpi-select-button-container,
-#kpi211 ::ng-deep .kpi-select-button-container {
+#kpi211 ::ng-deep .kpi-select-button-container,
+#kpi218 ::ng-deep .kpi-select-button-container {
   margin-top: -40px;
   margin-bottom: 50px;
 }
 
+#kpi218 ::ng-deep .kpi-select-button-container {
+  margin-bottom: 10px;
+}
+
 .bar-fill {
   height: 100%;
+}
+
+/* KPI218 Table Styles */
+.kpi218-details-view ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  display: none;
+}
+
+.kpi218-details-view ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 12px;
+  border: none;
+}
+
+.kpi218-details-view ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: #f8f9fa;
+}
+
+.kpi218-details-view .progress-bar-container {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.kpi218-details-view .progress-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.kpi218-details-view
+  ::ng-deep
+  .p-datatable
+  .p-datatable-tbody
+  > tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.kpi218-details-view
+  ::ng-deep
+  .p-datatable
+  .p-datatable-tbody
+  > tr:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+/* Sub-header styling */
+.kpi218-details-view .criteria-compliance-header {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Remove table borders */
+.kpi218-details-view ::ng-deep .p-datatable {
+  border: none;
+}
+
+.kpi218-details-view ::ng-deep .p-datatable .p-datatable-wrapper {
+  border: none;
+}
+
+/* Responsive table design */
+@media (max-width: 768px) {
+  .kpi218-details-view ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 8px;
+    font-size: 0.875rem;
+  }
+
+  .kpi218-details-view .criteria-compliance-header {
+    font-size: 0.75rem;
+  }
 }
