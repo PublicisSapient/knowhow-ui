@@ -208,8 +208,8 @@
                             ? selectedDataTypeForFlowEfficiency?.code
                             : null
                         "
-                        [kpi218SelectedView]="
-                          kpi?.kpiId === 'kpi218' ? kpi218SelectedView : null
+                        [kpi311SelectedView]="
+                          kpi?.kpiId === 'kpi311' ? kpi311SelectedView : null
                         "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
@@ -303,28 +303,28 @@
                                           " />
                                       </div>
                                       }
-                                      @if (kpi.kpiId === 'kpi218') {
+                                      @if (kpi.kpiId === 'kpi311') {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
-                                          [options]="kpi218ViewOptions"
-                                          [ngModel]="kpi218SelectedView"
+                                          [options]="kpi311ViewOptions"
+                                          [ngModel]="kpi311SelectedView"
                                           (onChange)="
-                                            onKpi218ViewChange($event.value)
+                                            onKpi311ViewChange($event.value)
                                           "></p-selectButton>
                                       </div>
-                                      @if (kpi218SelectedView === 'Details') {
+                                      @if (kpi311SelectedView === 'Details') {
                                       <div
                                         class="p-d-flex p-jc-end kpi-select-button-container">
                                         <p-dropdown
-                                          [options]="kpi218SprintOptions"
-                                          [(ngModel)]="kpi218SelectedSprint"
+                                          [options]="kpi311SprintOptions"
+                                          [(ngModel)]="kpi311SelectedSprint"
                                           placeholder="Select Sprint"
                                           [style]="{ width: '200px' }" />
                                       </div>
                                       }
                                       }
-                                      @if (kpi.kpiId !== 'kpi218' || kpi218SelectedView === 'Overall') {
+                                      @if (kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') {
                                       <div class="multiline-chart">
                                         <app-multiline-v2
                                           [thresholdValue]="
@@ -365,12 +365,12 @@
                                         </app-multiline-v2>
                                       </div>
                                       }
-                                      @if (kpi.kpiId === 'kpi218' && kpi218SelectedView === 'Details') {
-                                      <div class="kpi218-details-view p-py-3">
-                                        @if (getKpi218DrillDownData()) {
+                                      @if (kpi.kpiId === 'kpi311' && kpi311SelectedView === 'Details') {
+                                      <div class="kpi311-details-view p-py-3">
+                                        @if (getKpi311DrillDownData()) {
                                         <div class="drilldown-visualization">
                                           <div class="criteria-compliance-header">Criteria Compliance</div>
-                                          <p-table [value]="getKpi218DrillDownData()" styleClass="p-datatable-gridlines">
+                                          <p-table [value]="getKpi311DrillDownData()" styleClass="p-datatable-gridlines">
                                             <ng-template pTemplate="header">
                                               <tr>
                                                 <th style="width: 50%;">Metric Name</th>
