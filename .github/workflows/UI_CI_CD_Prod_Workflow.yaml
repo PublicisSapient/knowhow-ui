@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Git Tag for UI Production Release , Code Checkout from master"
+        description: "Git Tag for UI Production Release"
         required: true
         type: string
         default: "17.1.0"
@@ -46,8 +46,11 @@ jobs:
           echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
           echo "VALUES_FILE=values-prod.yaml" >> $GITHUB_ENV
 
-      - name: Checkout UI Repository from master
+      - name: Checkout UI Repository using release tag
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.release_tag }}
+          fetch-depth: 0
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -60,11 +63,11 @@ jobs:
         with:
           node-version: 18
 
-      # # Always run tests in PROD
-      # - name: Code Format Check (Prettier)
-      #   run: |
-      #     npm install
-      #     npx prettier "**/*.{ts,css}" --check
+      # Always run tests in PROD
+      - name: Code Format Check (Prettier)
+        run: |
+          npm install
+          npx prettier "**/*.{ts,css}" --check
 
       - name: Install Dependencies & Build UI (Prod)
         run: |
@@ -83,24 +86,24 @@ jobs:
           tar -czvf ui2.tar *
           mv ui2.tar ../nginx/files
 
-      # - name: Run UI Unit Tests (Always ON)
-      #   run: |
-      #     npm install --save-dev @angular-devkit/build-angular@17.3.12
-      #     ng test --code-coverage --watch=false
+      - name: Run UI Unit Tests (Always ON)
+        run: |
+          npm install --save-dev @angular-devkit/build-angular@17.3.12
+          ng test --code-coverage --watch=false
 
-      # - name: SonarQube Analysis  # Run static analysis
-      #   run: |
-      #     chown -R $(whoami) "$GITHUB_WORKSPACE"
-      #     echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
-      #     echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
-      #     echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
-      #     npm install -D sonarqube-scanner
-      #     npm run sonar
+      - name: SonarQube Analysis  # Run static analysis
+        run: |
+          chown -R $(whoami) "$GITHUB_WORKSPACE"
+          echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
+          echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
+          echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
+          npm install -D sonarqube-scanner
+          npm run sonar
 
-      # - name: Check SonarQube Quality Gate
-      #   run: |
-      #     chmod +x SonarQG.sh
-      #     ./SonarQG.sh ./.scannerwork/report-task.txt
+      - name: Check SonarQube Quality Gate
+        run: |
+          chmod +x SonarQG.sh
+          ./SonarQG.sh ./.scannerwork/report-task.txt
 
       - name: Build & Push Docker Image to ACR
         run: |
@@ -121,13 +124,13 @@ jobs:
           git clone $BITBUCKET_HELM_REPO
           cd $HELM_CHART_PATH
 
-      #     yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
+          yq -i ".image.tag = \"${IMAGE_TAG}\"" $VALUES_FILE
 
-      #     git config user.name "github-actions"
-      #     git config user.email "github-actions@github.com"
-      #     git add $VALUES_FILE
-      #     git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
-      #     git push origin HEAD
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $VALUES_FILE
+          git diff --cached --quiet || git commit -m "Prod: Update image tag to ${IMAGE_TAG}"
+          git push origin HEAD
 
   deploy:
     if: ${{ github.event.inputs.deploy == 'true' }}
@@ -155,12 +158,8 @@ jobs:
 
       - name: Sync App
         id: sync-app
-        run: argocd app sync $ARGOCD_APP_NAME --force --prune
+        run: argocd app sync $ARGOCD_APP_NAME
         continue-on-error: true
-
-      - name: Restart app
-        if: ${{ steps.sync-app.outcome == 'success' }}
-        run: argocd app actions run $ARGOCD_APP_NAME restart
 
       - name: Get App URL (on sync failure)
         if: ${{ steps.sync-app.outcome != 'success' }}
