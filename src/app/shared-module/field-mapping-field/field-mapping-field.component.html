@@ -35,14 +35,14 @@
         pButton
         pRipple
         icon="pi pi-search"
-        *ngIf="kpiId !== 'kpi218' && fieldConfig?.fieldCategory"
+        *ngIf="kpiId !== 'kpi311' && fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
         aria-label="Search and Add Value"
       ></button>
     </div>
 
-    <!-- kpi218 Trigger Field (jiraFieldsSelectionKPI218) - Read-only, auto-managed by dynamic fields -->
-    <div class="p-inputgroup" *ngIf="kpiId === 'kpi218' && fieldConfig?.fieldName === 'jiraFieldsSelectionKPI218'">
+    <!-- kpi311 Trigger Field (jiraFieldsSelectionKPI311) - Read-only, auto-managed by dynamic fields -->
+    <div class="p-inputgroup" *ngIf="kpiId === 'kpi311' && fieldConfig?.fieldName === 'jiraFieldsSelectionKPI311'">
       <input
         type="text"
         pInputText
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Chips -->
-    @if(kpiId !== 'kpi218') {
+    @if(kpiId !== 'kpi311') {
       <div class="p-inputgroup" *ngSwitchCase="'chips'">
         <p-chips
           class="p-w-100"
