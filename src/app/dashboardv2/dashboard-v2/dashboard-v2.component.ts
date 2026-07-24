@@ -21,6 +21,7 @@ import {
   ChangeDetectorRef,
   AfterContentInit,
   ViewChild,
+  OnInit,
 } from '@angular/core';
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
@@ -37,7 +38,7 @@ import { NavNewComponent } from '../nav-v2/nav-new.component';
 /**
  Route the path from app-route and redirect to dashboard
  */
-export class DashboardV2Component implements AfterContentInit {
+export class DashboardV2Component implements AfterContentInit, OnInit {
   displayModal = false;
   modalDetails = {
     header: 'User Request Approved',
@@ -98,8 +99,49 @@ export class DashboardV2Component implements AfterContentInit {
     });
   }
 
+  ngOnInit() {
+    this.initializeSelectedTabFromUrl();
+  }
+
   ngAfterContentInit() {
     this.cdRef.detectChanges();
+  }
+
+  initializeSelectedTabFromUrl() {
+    const selectedTabFromService = this.service.getSelectedTab();
+    if (selectedTabFromService) {
+      this.selectedTab = selectedTabFromService;
+      return;
+    }
+
+    const currentUrl = decodeURIComponent(this.router.url || '');
+    const pathSegments = currentUrl.split('/').filter(Boolean);
+    const boardName = pathSegments[1];
+
+    if (!boardName) {
+      return;
+    }
+
+    const normalizedBoardName = boardName
+      .split('?')[0]
+      .split('#')[0]
+      .split(' ')
+      .join('-')
+      .toLowerCase();
+
+    const hiddenRoutes = [
+      'config',
+      'report',
+      'analysis',
+      'error',
+      'help',
+      'unauthorized-access',
+    ];
+
+    if (!hiddenRoutes.includes(normalizedBoardName)) {
+      this.selectedTab = normalizedBoardName;
+      this.service.setSelectedBoard(normalizedBoardName);
+    }
   }
 
   ngOnDestroy() {

@@ -154,6 +154,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpi211SelectedView = 'Stacked Bar';
   kpi211Switching = false;
   kpi211StackedChartData: any[] = [];
+  kpi218ViewOptions = ['Overall', 'Details'];
+  kpi218SelectedView = 'Overall';
+  kpi218Switching = false;
+  kpi218SprintOptions: string[] = [];
+  kpi218SelectedSprint = '';
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
@@ -307,6 +312,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // Reset kpi211 stacked chart data
     this.kpi211StackedChartData = [];
+
+    // Reset kpi218 view
+    this.kpi218SelectedView = 'Overall';
+    this.kpi218SelectedSprint = '';
   }
 
   setGlobalConfigData(globalConfig) {
@@ -2402,6 +2411,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   applyForecastData(chartSeries): void {
     chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
+      if (!forecastEntries?.length) return;
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
@@ -2446,6 +2456,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       newPoint['sprintNames'] = [forecastLabel];
       newPoint['xOrder'] = forecastLabel;
       series.value = [...series?.value, newPoint];
+      delete series.forecasts;
     });
   }
 
@@ -3463,6 +3474,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       // After kpi211 chart data is set, compute stacked bar chart data from dataValue
       if (data[key]?.kpiId === 'kpi211') {
         this.computeKpi211StackedChartData();
+      }
+
+      // After kpi218 chart data is set, populate sprint options from trendValueList
+      if (data[key]?.kpiId === 'kpi218') {
+        this.populateKpi218SprintOptions(data[key]);
       }
     }
   }
@@ -6058,6 +6074,132 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         '',
       );
       this.postJiraKpi(postData, 'jira', true);
+    }
+  }
+
+  onKpi218ViewChange(selectedView: string): void {
+    this.kpi218Switching = true;
+    // Yield one tick so Angular renders the skeleton before mounting the heavy chart
+    setTimeout(() => {
+      this.kpi218SelectedView = selectedView;
+      this.kpi218Switching = false;
+    }, 0);
+  }
+
+  /**
+   * Returns the drillDown data for the currently selected sprint in kpi218 Details view.
+   * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
+   * Calculates percentage relative to the 'value' property (total issues).
+   */
+  getKpi218DrillDownData(): any[] | null {
+    if (this.kpi218SelectedView !== 'Details' || !this.kpi218SelectedSprint) {
+      return null;
+    }
+
+    const kpiIdx = this.ifKpiExist('kpi218');
+    if (kpiIdx === -1) {
+      return null;
+    }
+
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList)) {
+      return null;
+    }
+
+    // Find the data for the selected sprint
+    let sprintData: any = null;
+    for (const trendItem of kpiData.trendValueList) {
+      if (trendItem.value && Array.isArray(trendItem.value)) {
+        const matchingItem = trendItem.value.find(
+          (item: any) => item.sSprintName === this.kpi218SelectedSprint,
+        );
+        if (matchingItem) {
+          sprintData = matchingItem;
+          break;
+        }
+      }
+    }
+
+    if (!sprintData?.drillDown) {
+      return null;
+    }
+
+    // Get the total value from the 'value' property (total issues for this sprint)
+    const totalValue = Number(sprintData.value) || 0;
+
+    // Transform drillDown object into array of metric cards
+    const drillDownObj = sprintData.drillDown;
+    const metrics: any[] = [];
+
+    for (const key in drillDownObj) {
+      if (drillDownObj.hasOwnProperty(key)) {
+        const value = Number(drillDownObj[key]) || 0;
+        // Calculate percentage relative to the total value
+        // Example: if value is 7 and "Priority Set" is 1, then percentage = (1/7)*100 = 14.3%
+        const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
+        metrics.push({
+          label: key,
+          value: value,
+          percentage: Math.round(percentage * 10) / 10,
+        });
+      }
+    }
+
+    return metrics;
+  }
+
+  /**
+   * Returns a color based on the percentage value for the metric bar visualization.
+   * Uses a gradient from red (low) to green (high).
+   */
+  getMetricColor(percentage: number): string {
+    if (percentage >= 80) {
+      return '#28a745'; // Green
+    } else if (percentage >= 50) {
+      return '#ffc107'; // Yellow
+    } else if (percentage >= 30) {
+      return '#fd7e14'; // Orange
+    } else {
+      return '#dc3545'; // Red
+    }
+  }
+
+  /**
+   * Populates kpi218SprintOptions dynamically from trendValueList
+   * Extracts sSprintName from each item in the trendValueList
+   * Automatically preselects the first sprint and triggers drillDown data display
+   */
+  populateKpi218SprintOptions(kpiData: any): void {
+    if (
+      !kpiData ||
+      !kpiData.trendValueList ||
+      !Array.isArray(kpiData.trendValueList)
+    ) {
+      this.kpi218SprintOptions = [];
+      return;
+    }
+
+    // Extract unique sprint names from trendValueList
+    const sprintNames = new Set<string>();
+
+    kpiData.trendValueList.forEach((trendItem: any) => {
+      if (trendItem.value && Array.isArray(trendItem.value)) {
+        trendItem.value.forEach((valueItem: any) => {
+          if (valueItem.sSprintName) {
+            sprintNames.add(valueItem.sSprintName);
+          }
+        });
+      }
+    });
+
+    // Convert Set to Array and assign to kpi218SprintOptions
+    this.kpi218SprintOptions = Array.from(sprintNames);
+
+    // Set default selected sprint to the first option if available
+    if (this.kpi218SprintOptions.length > 0 && !this.kpi218SelectedSprint) {
+      this.kpi218SelectedSprint = this.kpi218SprintOptions[0];
+      // Keep the default view as 'Overall' to show the line chart by default
+      // this.kpi218SelectedView = 'Overall'; // Already initialized in component property declaration
     }
   }
 
