@@ -367,6 +367,18 @@
                                       }
                                       @if (kpi.kpiId === 'kpi311' && kpi311SelectedView === 'Details') {
                                       <div class="kpi311-details-view p-py-3">
+                                        <!-- New Data blocks go here -->
+                                        <div class="metrics-grid column-3 p-py-3 p-mb-3">
+                                          <div *ngFor="let block of getKpi311DataBlocks()" class="data-block p-p-3" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <div class="block-header" style="font-size: 0.875rem; color: #6c757d; margin-bottom: 8px;">{{ block.header }}</div>
+                                            <div class="block-value" style="font-size: 2rem; font-weight: 600; color: #2c3e50;">
+                                              {{ block.value }}{{ block.unit }}
+                                            </div>
+                                            <div class="block-info" style="font-size: 0.875rem; margin-top: 8px;" [innerHTML]="block.info"></div>
+                                          </div>
+                                        </div>
+                                        <!-- /end -->
+
                                         @if (getKpi311DrillDownData()) {
                                         <div class="drilldown-visualization">
                                           <div class="criteria-compliance-header">Criteria Compliance</div>

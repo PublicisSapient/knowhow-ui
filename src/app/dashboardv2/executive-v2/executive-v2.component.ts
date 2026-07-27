@@ -6087,6 +6087,60 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
+   * Returns an array of data blocks for kpi311 Details view.
+   * Reads projectScore, scoreFactor, and validScoreFactor from the API response root level.
+   * Maps these properties to the three data blocks: Overall Hygiene Score, Stories Evaluated, and Ready Stories.
+   */
+  getKpi311DataBlocks(): any[] {
+    const kpiIdx = this.ifKpiExist('kpi311');
+    if (kpiIdx === -1) {
+      return [];
+    }
+
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData) {
+      return [];
+    }
+
+    // Read properties from the API response root level
+    const projectScore = kpiData.projectScore || 0;
+    const scoreFactor = kpiData.scoreFactor || 0;
+    const validScoreFactor = kpiData.validScoreFactor || 0;
+    const projectScoreTrend = kpiData.projectScoreTrend || 0;
+    const podCount = kpiData.podCount || 1;
+
+    // Return array of 3 blocks in the correct order: projectScore (left), scoreFactor (center), validScoreFactor (right)
+    return [
+      {
+        header: 'Overall Hygiene Score',
+        value: projectScore,
+        unit: '%',
+        info: `<span style="color: ${
+          projectScoreTrend >= 0 ? '#10b981' : '#ef4444'
+        }">${
+          projectScoreTrend >= 0 ? '+' : ''
+        }${projectScoreTrend}%</span><span style="color: #6c757d;"> vs previous sprint</span>`,
+      },
+      {
+        header: 'Stories Evaluated',
+        value: scoreFactor,
+        unit: '',
+        info: `<span style="color: #6c757d;">across ${podCount} pod${
+          podCount > 1 ? 's' : ''
+        }</span>`,
+      },
+      {
+        header: 'Ready Stories',
+        value: validScoreFactor,
+        unit: '',
+        info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${
+          scoreFactor - validScoreFactor
+        }</span><span style="color: #6c757d;"> not ready</span>`,
+      },
+    ];
+  }
+
+  /**
    * Returns the drillDown data for the currently selected sprint in kpi311 Details view.
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
