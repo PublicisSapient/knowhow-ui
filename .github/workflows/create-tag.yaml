@@ -39,14 +39,25 @@ jobs:
       - name: Update package.json
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          npm version "$VERSION" --no-git-tag-version
+          CURRENT=$(node -p "require('./package.json').version")
+          echo "Current package.json version: $CURRENT"
+
+          if [ "$CURRENT" != "$VERSION" ]; then
+            npm version "$VERSION" --no-git-tag-version
+          else
+            echo "Version unchanged, skipping npm version"
+          fi
 
       - name: Commit changes
         run: |
           VERSION="${{ github.event.inputs.version }}"
 
-          git add package.json
-          git commit -m "chore: bump version to $VERSION"
+          if git status --porcelain | grep . >/dev/null; then
+            git add package.json
+            git commit -m "chore: bump version to $VERSION"
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Push commit
         run: |
@@ -56,5 +67,9 @@ jobs:
         run: |
           VERSION="${{ github.event.inputs.version }}"
 
-          git tag "$VERSION"
-          git push origin "$VERSION"
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            echo "Tag $VERSION already exists, skipping tag creation"
+          else
+            git tag "$VERSION"
+            git push origin "$VERSION"
+          fi
