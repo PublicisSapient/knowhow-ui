@@ -16832,4 +16832,141 @@ describe('ExecutiveV2Component', () => {
       expect(seriesB.forecasts).toBeUndefined();
     });
   });
+
+  describe('getKpi311DataBlocks()', () => {
+    it('should return empty array when kpi311 does not exist in allKpiArray', () => {
+      spyOn(component, 'ifKpiExist').and.returnValue(-1);
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result).toEqual([]);
+      expect(component.ifKpiExist).toHaveBeenCalledWith('kpi311');
+    });
+
+    it('should return empty array when kpiData is null or undefined', () => {
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [null];
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return correct data blocks with all properties from kpiData', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 85,
+        scoreFactor: 50,
+        validScoreFactor: 40,
+        projectScoreTrend: 5,
+        podCount: 3,
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result.length).toBe(3);
+
+      // First block - Overall Hygiene Score
+      expect(result[0].header).toBe('Overall Hygiene Score');
+      expect(result[0].value).toBe(85);
+      expect(result[0].unit).toBe('%');
+      expect(result[0].info).toContain('+5%');
+      expect(result[0].info).toContain('vs previous sprint');
+
+      // Second block - Stories Evaluated
+      expect(result[1].header).toBe('Stories Evaluated');
+      expect(result[1].value).toBe(50);
+      expect(result[1].unit).toBe('');
+      expect(result[1].info).toContain('across 3 pods');
+
+      // Third block - Ready Stories
+      expect(result[2].header).toBe('Ready Stories');
+      expect(result[2].value).toBe(40);
+      expect(result[2].unit).toBe('');
+      expect(result[2].info).toContain('vs');
+      expect(result[2].info).toContain('10');
+      expect(result[2].info).toContain('not ready');
+    });
+
+    it('should show negative trend correctly with red color', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 75,
+        scoreFactor: 30,
+        validScoreFactor: 25,
+        projectScoreTrend: -3,
+        podCount: 2,
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result[0].info).toContain('#ef4444');
+      expect(result[0].info).toContain('-3%');
+      expect(result[0].info).not.toContain('+');
+    });
+
+    it('should handle single pod count correctly (singular form)', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 80,
+        scoreFactor: 25,
+        validScoreFactor: 20,
+        projectScoreTrend: 0,
+        podCount: 1,
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result[1].info).toContain('across 1 pod');
+      expect(result[1].info).not.toContain('pods');
+    });
+
+    it('should use default values when properties are missing', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        // All other properties missing
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result.length).toBe(3);
+      expect(result[0].value).toBe(0); // projectScore default
+      expect(result[1].value).toBe(0); // scoreFactor default
+      expect(result[2].value).toBe(0); // validScoreFactor default
+      expect(result[0].info).toContain('+0%'); // projectScoreTrend default 0
+      expect(result[1].info).toContain('across 1 pod'); // podCount default 1
+    });
+
+    it('should calculate not ready stories correctly', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 90,
+        scoreFactor: 100,
+        validScoreFactor: 75,
+        projectScoreTrend: 2,
+        podCount: 4,
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+
+      const result = component.getKpi311DataBlocks();
+
+      // Not ready = scoreFactor - validScoreFactor = 100 - 75 = 25
+      expect(result[2].info).toContain('25');
+      expect(result[2].info).toContain('not ready');
+    });
+  });
 });
