@@ -393,10 +393,10 @@
                                             <ng-template pTemplate="body" let-metric>
                                               <tr>
                                                 <td style="color: #495057; width: 50%;">{{ metric.label }}</td>
-                                                <td style="text-align: center; font-size: 0.875rem; color: #6c757d; width: 15%;">{{ metric.percentage }}%</td>
+                                                <td style="text-align: center; font-size: 0.875rem; color: #6c757d; width: 15%;">{{ metric.value }}%</td>
                                                 <td style="width: 35%;">
                                                   <div class="progress-bar-container" style="height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
-                                                    <div class="progress-bar-fill" [style.width.%]="metric.percentage" [style.background]="getMetricColor(metric.percentage)"></div>
+                                                    <div class="progress-bar-fill" [style.width.%]="metric.value" [style.background]="getMetricColor(metric.value)"></div>
                                                   </div>
                                                 </td>
                                               </tr>

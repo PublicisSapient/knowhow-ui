@@ -6188,13 +6188,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (const key in drillDownObj) {
       if (drillDownObj.hasOwnProperty(key)) {
         const value = Number(drillDownObj[key]) || 0;
-        // Calculate percentage relative to the total value
-        // Example: if value is 7 and "Priority Set" is 1, then percentage = (1/7)*100 = 14.3%
-        const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
         metrics.push({
           label: key,
-          value: value,
-          percentage: Math.round(percentage * 10) / 10,
+          value: Math.round(value * 10) / 10,
         });
       }
     }
