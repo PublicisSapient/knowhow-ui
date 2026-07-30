@@ -49,11 +49,29 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   draggedItem: any = null;
 
   @Input() kpiId;
+  weightValue: number | undefined;
+  private textOnlyValue: string = ''; // Store text separately for kpi311
 
   onChange = (val) => {};
   onTouched = () => {};
   writeValue(val: any): void {
+    // For kpi311, if incoming value has [weight]: format, extract just the text
+    if (
+      this.kpiId === 'kpi311' &&
+      typeof val === 'string' &&
+      val.includes(']:')
+    ) {
+      const match = val.match(/^\[(.+?)\]:\s*(.*)$/);
+      if (match) {
+        const weight = match[1];
+        this.textOnlyValue = match[2];
+        this.value = this.textOnlyValue;
+        this.weightValue = weight === 'null' ? undefined : Number(weight);
+        return;
+      }
+    }
     this.value = val;
+    this.textOnlyValue = typeof val === 'string' ? val : '';
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -78,7 +96,17 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   setValue(isAddtional?) {
     if (typeof this.value === 'string' || this.value instanceof String) {
-      this.onChange(this.value.trim());
+      // For kpi311, format as [weight]: text or [null]: text
+      if (this.kpiId === 'kpi311') {
+        const weight =
+          this.weightValue != null && this.weightValue !== undefined
+            ? this.weightValue
+            : 'null';
+        const combinedValue = `[${weight}]: ${this.value.trim()}`;
+        this.onChange(combinedValue);
+      } else {
+        this.onChange(this.value.trim());
+      }
     } else if (Array.isArray(this.value) && isAddtional !== true) {
       this.value = this.value.map((val) => val.trim());
       this.onChange(this.value);
@@ -87,6 +115,17 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
         this.value = 0;
       }
       this.onChange(this.value);
+    }
+  }
+
+  /**
+   * For kpi311: When weight value changes, update the combined prompt value.
+   * This ensures the weight is appended to the text field value.
+   */
+  setWeightValue() {
+    if (this.kpiId === 'kpi311' && this.value) {
+      // Trigger setValue to combine text and weight
+      this.setValue();
     }
   }
 

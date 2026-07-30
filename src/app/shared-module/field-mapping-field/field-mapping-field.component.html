@@ -15,15 +15,28 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <div [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
+  <div [id]="kpiId" [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
     <!-- Text Input -->
     <div class="p-inputgroup" *ngSwitchCase="'text'">
+      @if(kpiId === 'kpi311') {
+        <input
+          type="number"
+          pInputText
+          [id]="'weight-'+fieldConfig?.fieldName"
+          class="w-5 p-mr-2"
+          [(ngModel)]="weightValue"
+          (change)="setWeightValue()"
+          [disabled]="fieldConfig?.readOnly"
+          [attr.aria-label]="fieldConfig?.fieldLabel + ' Weight Input'"
+          [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
+        />
+      }
       <input
         type="text"
         pInputText
         [id]="fieldConfig?.fieldName"
         [placeholder]="'Enter ' + (fieldConfig?.placeHolderText || fieldConfig?.fieldLabel)"
-        class="p-w-100"
+        class="w-95"
         [(ngModel)]="value"
         (change)="setValue()"
         [disabled]="fieldConfig?.readOnly"
