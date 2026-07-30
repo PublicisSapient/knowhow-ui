@@ -108,6 +108,19 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       // formData has changed after initial load - reinitialize form with new data
       this.initializeForm();
       this.generateFieldMappingConfiguration();
+      if (
+        this.kpiId === 'kpi202' ||
+        this.kpiId === 'kpi206' ||
+        this.kpiId === 'kpi311'
+      ) {
+        const triggerField = this.fieldMappingConfig.find(
+          (field) => field.fieldLabel === this.fieldMappingLabel,
+        );
+        if (triggerField) {
+          const initialVal = this.form.get(triggerField.fieldName)?.value;
+          this.updateDynamicWorkflowFields(initialVal);
+        }
+      }
       // Mark form as pristine since it's now freshly loaded
       this.form.markAsPristine();
       this.form.markAsUntouched();
@@ -848,7 +861,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
 
         // Remove dynamic fields from finalList so they aren't sent directly
         for (let i = finalList.length - 1; i >= 0; i--) {
-          if (finalList[i].fieldName.startsWith('jiraStatusFor')) {
+          if (
+            finalList[i].fieldName.startsWith('jiraStatusFor') ||
+            finalList[i].fieldName.startsWith('jiraWeightageFor') ||
+            finalList[i].fieldName.startsWith('jiraFieldNameFor')
+          ) {
             dynamicFieldChanged = true;
             finalList.splice(i, 1);
           }
@@ -859,7 +876,13 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           (f) => f.fieldName === triggerField.fieldName,
         );
         if (triggerIndex !== -1) {
-          finalList[triggerIndex].originalValue = mappingValue;
+          if (mappingValue.length > 0 || dynamicFieldChanged) {
+            finalList[triggerIndex].originalValue = mappingValue;
+          } else {
+            // Don't overwrite existing saved data with an empty array just because
+            // the chips control initialised to [] from a null originalValue.
+            finalList.splice(triggerIndex, 1);
+          }
         } else if (dynamicFieldChanged || mappingValue.length > 0) {
           // Add trigger field if any dynamic field was changed
           // OR if we have mapping values (even if trigger field itself didn't change,
