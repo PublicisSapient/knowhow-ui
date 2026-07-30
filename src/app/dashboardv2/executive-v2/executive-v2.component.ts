@@ -6102,40 +6102,45 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return [];
     }
 
-    // Read properties from the API response root level
-    const projectScore = kpiData.projectScore || 0;
-    const scoreFactor = kpiData.scoreFactor || 0;
-    const validScoreFactor = kpiData.validScoreFactor || 0;
-    const projectScoreTrend = kpiData.projectScoreTrend || 0;
-    const podCount = kpiData.podCount || 1;
+    // Find sprint-specific data from trendValueList for the selected sprint
+    let sprintData: any = null;
+    if (this.kpi311SelectedSprint && kpiData.trendValueList && Array.isArray(kpiData.trendValueList)) {
+      for (const trendItem of kpiData.trendValueList) {
+        if (trendItem.value && Array.isArray(trendItem.value)) {
+          const match = trendItem.value.find(
+            (item: any) => item.sSprintName === this.kpi311SelectedSprint,
+          );
+          if (match) {
+            sprintData = match;
+            break;
+          }
+        }
+      }
+    }
 
-    // Return array of 3 blocks in the correct order: projectScore (left), scoreFactor (center), validScoreFactor (right)
+    const hygieneScore = sprintData ? Math.round((sprintData.value || 0) * 100) / 100 : 0;
+    const storiesEvaluated = sprintData?.hoverValue?.sampledIssueCount ?? 0;
+    const readyStories = sprintData?.hoverValue?.passedIssueCount ?? 0;
+    const notReady = storiesEvaluated - readyStories;
+
     return [
       {
         header: 'Overall Hygiene Score',
-        value: projectScore,
+        value: hygieneScore,
         unit: '%',
-        info: `<span style="color: ${
-          projectScoreTrend >= 0 ? '#10b981' : '#ef4444'
-        }">${
-          projectScoreTrend >= 0 ? '+' : ''
-        }${projectScoreTrend}%</span><span style="color: #6c757d;"> vs previous sprint</span>`,
+        info: '',
       },
       {
         header: 'Stories Evaluated',
-        value: scoreFactor,
+        value: storiesEvaluated,
         unit: '',
-        info: `<span style="color: #6c757d;">across ${podCount} pod${
-          podCount > 1 ? 's' : ''
-        }</span>`,
+        info: '',
       },
       {
         header: 'Ready Stories',
-        value: validScoreFactor,
+        value: readyStories,
         unit: '',
-        info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${
-          scoreFactor - validScoreFactor
-        }</span><span style="color: #6c757d;"> not ready</span>`,
+        info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${notReady}</span><span style="color: #6c757d;"> not ready</span>`,
       },
     ];
   }

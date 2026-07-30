@@ -72,7 +72,11 @@
                                   </div>
                               </div>
                               <div class="w-60vw">
-                                  <app-field-mapping-field [kpiId]="kpiId" [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="dynField" [formControlName]="dynField['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="dynField['fieldLabel'] + ' Input'"></app-field-mapping-field>
+                                  <div *ngIf="dynField['fieldNameControlName']" class="p-mb-2">
+                                      <label style="font-size: 0.75rem; font-weight: 600; color: #495057; display: block; margin-bottom: 4px;">Jira Field Name</label>
+                                      <input pInputText style="width: 100%;" [formControlName]="dynField['fieldNameControlName']" placeholder="e.g. assigneeName" [attr.aria-label]="dynField['fieldLabel'] + ' Jira Field Name'" />
+                                  </div>
+                                  <app-field-mapping-field [kpiId]="kpiId" [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="dynField" [formControlName]="dynField['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="dynField['fieldLabel'] + ' Prompt'"></app-field-mapping-field>
                               </div>
                           </div>
                       </div>

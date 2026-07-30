@@ -193,11 +193,17 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     const currentDynamicFieldNames = groups.map(
       (it) => `jiraStatusFor${it.replace(/\s+/g, '')}`,
     );
+    const currentFieldNameControls = groups.map(
+      (it) => `jiraFieldNameFor${it.replace(/\s+/g, '')}`,
+    );
 
     // Sync formData: keep non-dynamic fields or current dynamic fields
     this.formData = this.formData.filter((d) => {
-      if (!d.fieldName.startsWith('jiraStatusFor')) {
+      if (!d.fieldName.startsWith('jiraStatusFor') && !d.fieldName.startsWith('jiraFieldNameFor')) {
         return true;
+      }
+      if (d.fieldName.startsWith('jiraFieldNameFor')) {
+        return currentFieldNameControls.includes(d.fieldName);
       }
       return currentDynamicFieldNames.includes(d.fieldName);
     });
@@ -209,9 +215,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
 
     groups.forEach((group, index) => {
       const dynamicFieldName = `jiraStatusFor${group.replace(/\s+/g, '')}`;
+      const fieldNameControlName = `jiraFieldNameFor${group.replace(/\s+/g, '')}`;
       const capitalizedGroup = group;
       const dynamicField = {
         fieldName: dynamicFieldName,
+        fieldNameControlName: this.kpiId === 'kpi311' ? fieldNameControlName : undefined,
         fieldLabel:
           this.kpiId !== 'kpi311'
             ? `Status to identify ${capitalizedGroup}`
@@ -238,6 +246,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           this.formData.find((d) => d.fieldName === triggerField?.fieldName)
             ?.originalValue || {};
         let initialValue = [];
+        let initialFieldName = '';
         if (Array.isArray(triggerValue)) {
           if (
             triggerValue.length > 0 &&
@@ -251,6 +260,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
               // For kpi311, the value is stored as 'prompt', for kpi202/206 it's 'statuses'
               if (this.kpiId === 'kpi311') {
                 initialValue = matchedGroup ? matchedGroup.prompt : '';
+                initialFieldName = matchedGroup ? (matchedGroup.fieldName || '') : '';
               } else {
                 initialValue = matchedGroup ? matchedGroup.statuses : [];
               }
@@ -264,6 +274,14 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
 
         const control = new FormControl(initialValue);
         this.form.addControl(dynamicFieldName, control);
+
+        // kpi311: also create a control for the Jira field name
+        if (this.kpiId === 'kpi311' && !this.form.contains(fieldNameControlName)) {
+          this.form.addControl(fieldNameControlName, new FormControl(initialFieldName));
+          if (!this.formData.find((d) => d.fieldName === fieldNameControlName)) {
+            this.formData.push({ fieldName: fieldNameControlName, originalValue: initialFieldName });
+          }
+        }
 
         // Bug fix: if this control previously had chips and is now completely cleared, delete its group!
         let previousLength = Array.isArray(initialValue)
@@ -742,6 +760,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
             if (this.kpiId === 'kpi311') {
               mappingValue.push({
                 label: config.fieldLabel,
+                fieldName: this.form.value[config.fieldNameControlName] || '',
                 prompt: this.form.value[config.fieldName] || '',
               });
             } else {
