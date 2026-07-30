@@ -50,7 +50,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   @Input() kpiId;
   weightValue: number | undefined;
-  private textOnlyValue: string = ''; // Store text separately for kpi311
+  private textOnlyValue = ''; // Store text separately for kpi311
 
   onChange = (val) => {};
   onTouched = () => {};
