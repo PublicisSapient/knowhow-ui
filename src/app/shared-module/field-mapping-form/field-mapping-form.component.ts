@@ -202,7 +202,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
 
     // Sync formData: keep non-dynamic fields or current dynamic fields
     this.formData = this.formData.filter((d) => {
-      if (!d.fieldName.startsWith('jiraStatusFor') && !d.fieldName.startsWith('jiraFieldNameFor') && !d.fieldName.startsWith('jiraWeightageFor')) {
+      if (
+        !d.fieldName.startsWith('jiraStatusFor') &&
+        !d.fieldName.startsWith('jiraFieldNameFor') &&
+        !d.fieldName.startsWith('jiraWeightageFor')
+      ) {
         return true;
       }
       if (d.fieldName.startsWith('jiraFieldNameFor')) {
@@ -221,13 +225,21 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
 
     groups.forEach((group, index) => {
       const dynamicFieldName = `jiraStatusFor${group.replace(/\s+/g, '')}`;
-      const fieldNameControlName = `jiraFieldNameFor${group.replace(/\s+/g, '')}`;
-      const weightageControlName = `jiraWeightageFor${group.replace(/\s+/g, '')}`;
+      const fieldNameControlName = `jiraFieldNameFor${group.replace(
+        /\s+/g,
+        '',
+      )}`;
+      const weightageControlName = `jiraWeightageFor${group.replace(
+        /\s+/g,
+        '',
+      )}`;
       const capitalizedGroup = group;
       const dynamicField = {
         fieldName: dynamicFieldName,
-        fieldNameControlName: this.kpiId === 'kpi311' ? fieldNameControlName : undefined,
-        weightageControlName: this.kpiId === 'kpi311' ? weightageControlName : undefined,
+        fieldNameControlName:
+          this.kpiId === 'kpi311' ? fieldNameControlName : undefined,
+        weightageControlName:
+          this.kpiId === 'kpi311' ? weightageControlName : undefined,
         fieldLabel:
           this.kpiId !== 'kpi311'
             ? `Status to identify ${capitalizedGroup}`
@@ -269,8 +281,12 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
               // For kpi311, the value is stored as 'prompt', for kpi202/206 it's 'statuses'
               if (this.kpiId === 'kpi311') {
                 initialValue = matchedGroup ? matchedGroup.prompt : '';
-                initialFieldName = matchedGroup ? (matchedGroup.fieldName || '') : '';
-                initialWeightage = matchedGroup ? (matchedGroup.weightage ?? null) : null;
+                initialFieldName = matchedGroup
+                  ? matchedGroup.fieldName || ''
+                  : '';
+                initialWeightage = matchedGroup
+                  ? matchedGroup.weightage ?? null
+                  : null;
               } else {
                 initialValue = matchedGroup ? matchedGroup.statuses : [];
               }
@@ -286,21 +302,43 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
         this.form.addControl(dynamicFieldName, control);
 
         // kpi311: also create controls for the Jira field name and weightage
-        if (this.kpiId === 'kpi311' && !this.form.contains(fieldNameControlName)) {
-          this.form.addControl(fieldNameControlName, new FormControl(initialFieldName));
-          if (!this.formData.find((d) => d.fieldName === fieldNameControlName)) {
-            this.formData.push({ fieldName: fieldNameControlName, originalValue: initialFieldName });
+        if (
+          this.kpiId === 'kpi311' &&
+          !this.form.contains(fieldNameControlName)
+        ) {
+          this.form.addControl(
+            fieldNameControlName,
+            new FormControl(initialFieldName),
+          );
+          if (
+            !this.formData.find((d) => d.fieldName === fieldNameControlName)
+          ) {
+            this.formData.push({
+              fieldName: fieldNameControlName,
+              originalValue: initialFieldName,
+            });
           }
         }
         if (this.kpiId === 'kpi311') {
           if (!this.form.contains(weightageControlName)) {
-            this.form.addControl(weightageControlName, new FormControl(initialWeightage, [Validators.min(10)]));
-            if (!this.formData.find((d) => d.fieldName === weightageControlName)) {
-              this.formData.push({ fieldName: weightageControlName, originalValue: initialWeightage });
+            this.form.addControl(
+              weightageControlName,
+              new FormControl(initialWeightage, [Validators.min(10)]),
+            );
+            if (
+              !this.formData.find((d) => d.fieldName === weightageControlName)
+            ) {
+              this.formData.push({
+                fieldName: weightageControlName,
+                originalValue: initialWeightage,
+              });
             }
           } else {
             this.form.removeControl(weightageControlName);
-            this.form.addControl(weightageControlName, new FormControl(initialWeightage, [Validators.min(10)]));
+            this.form.addControl(
+              weightageControlName,
+              new FormControl(initialWeightage, [Validators.min(10)]),
+            );
           }
         }
 

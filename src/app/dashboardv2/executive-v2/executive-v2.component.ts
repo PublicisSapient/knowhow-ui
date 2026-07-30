@@ -6104,7 +6104,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // Find sprint-specific data from trendValueList for the selected sprint
     let sprintData: any = null;
-    if (this.kpi311SelectedSprint && kpiData.trendValueList && Array.isArray(kpiData.trendValueList)) {
+    if (
+      this.kpi311SelectedSprint &&
+      kpiData.trendValueList &&
+      Array.isArray(kpiData.trendValueList)
+    ) {
       for (const trendItem of kpiData.trendValueList) {
         if (trendItem.value && Array.isArray(trendItem.value)) {
           const match = trendItem.value.find(
@@ -6118,7 +6122,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
-    const hygieneScore = sprintData ? Math.round((sprintData.value || 0) * 100) / 100 : 0;
+    const hygieneScore = sprintData
+      ? Math.round((sprintData.value || 0) * 100) / 100
+      : 0;
     const storiesEvaluated = sprintData?.hoverValue?.sampledIssueCount ?? 0;
     const readyStories = sprintData?.hoverValue?.passedIssueCount ?? 0;
     const notReady = storiesEvaluated - readyStories;
