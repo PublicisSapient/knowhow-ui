@@ -6102,49 +6102,34 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return [];
     }
 
-    // Find sprint-specific data from trendValueList for the selected sprint
-    let sprintData: any = null;
-    if (
-      this.kpi311SelectedSprint &&
-      kpiData.trendValueList &&
-      Array.isArray(kpiData.trendValueList)
-    ) {
-      for (const trendItem of kpiData.trendValueList) {
-        if (trendItem.value && Array.isArray(trendItem.value)) {
-          const match = trendItem.value.find(
-            (item: any) => item.sSprintName === this.kpi311SelectedSprint,
-          );
-          if (match) {
-            sprintData = match;
-            break;
-          }
-        }
-      }
-    }
+    const projectScore = kpiData.projectScore ?? 0;
+    const scoreFactor = kpiData.scoreFactor ?? 0;
+    const validScoreFactor = kpiData.validScoreFactor ?? 0;
+    const projectScoreTrend = kpiData.projectScoreTrend ?? 0;
+    const podCount = kpiData.podCount ?? 1;
+    const notReady = scoreFactor - validScoreFactor;
 
-    const hygieneScore = sprintData
-      ? Math.round((sprintData.value || 0) * 100) / 100
-      : 0;
-    const storiesEvaluated = sprintData?.hoverValue?.sampledIssueCount ?? 0;
-    const readyStories = sprintData?.hoverValue?.passedIssueCount ?? 0;
-    const notReady = storiesEvaluated - readyStories;
+    const trendSign = projectScoreTrend >= 0 ? '+' : '';
+    const trendColor = projectScoreTrend < 0 ? '#ef4444' : '#22c55e';
+    const trendInfo = `<span style="color: ${trendColor}; font-weight: 500;">${trendSign}${projectScoreTrend}%</span><span style="color: #6c757d;"> vs previous sprint</span>`;
+    const podText = `across ${podCount} ${podCount === 1 ? 'pod' : 'pods'}`;
 
     return [
       {
         header: 'Overall Hygiene Score',
-        value: hygieneScore,
+        value: projectScore,
         unit: '%',
-        info: '',
+        info: trendInfo,
       },
       {
         header: 'Stories Evaluated',
-        value: storiesEvaluated,
+        value: scoreFactor,
         unit: '',
-        info: '',
+        info: podText,
       },
       {
         header: 'Ready Stories',
-        value: readyStories,
+        value: validScoreFactor,
         unit: '',
         info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${notReady}</span><span style="color: #6c757d;"> not ready</span>`,
       },

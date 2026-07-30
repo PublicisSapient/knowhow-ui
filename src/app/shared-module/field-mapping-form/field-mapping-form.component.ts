@@ -818,12 +818,14 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           if (config.isDynamic) {
             if (this.kpiId === 'kpi311') {
               const w = this.form.value[config.weightageControlName];
-              mappingValue.push({
+              const fn = this.form.value[config.fieldNameControlName] || '';
+              const entry: any = {
                 label: config.fieldLabel,
-                fieldName: this.form.value[config.fieldNameControlName] || '',
-                weightage: w !== null && w !== '' ? Number(w) : null,
                 prompt: this.form.value[config.fieldName] || '',
-              });
+              };
+              if (fn) entry.fieldName = fn;
+              if (w !== null && w !== '' && w !== undefined) entry.weightage = Number(w);
+              mappingValue.push(entry);
             } else {
               mappingValue.push({
                 label: config.originalGroupName,
