@@ -16969,4 +16969,574 @@ describe('ExecutiveV2Component', () => {
       expect(result[2].info).toContain('not ready');
     });
   });
+
+  describe('resetToDefaults - KPI-specific resets', () => {
+    it('should reset kpi205-specific properties', () => {
+      // Setup
+      component.kpi205OriginalData = { some: 'data' };
+      component.selectedKpi205DataType = {
+        name: 'By Story Points',
+        code: 'STORY_POINTS',
+      };
+      component.kpi205YAxisLabel = 'Story Points';
+      component.filterByTimeOptions = [{ name: 'Weekly', value: 'Weekly' }];
+      component.selectedFilterByTimeOption = {
+        name: 'Weekly',
+        value: 'Weekly',
+      };
+
+      // Execute
+      component.resetToDefaults();
+
+      // Assert
+      expect(component.kpi205OriginalData).toBeNull();
+      expect(component.selectedKpi205DataType).toEqual({
+        name: 'By Count',
+        code: 'COUNT',
+      });
+      expect(component.kpi205YAxisLabel).toEqual('Count');
+      expect(component.filterByTimeOptions).toEqual([]);
+      expect(component.selectedFilterByTimeOption).toBeNull();
+    });
+
+    it('should reset kpi211 stacked chart data', () => {
+      // Setup
+      component.kpi211StackedChartData = [{ some: 'data' }];
+
+      // Execute
+      component.resetToDefaults();
+
+      // Assert
+      expect(component.kpi211StackedChartData).toEqual([]);
+    });
+
+    it('should reset kpi311 view properties', () => {
+      // Setup
+      component.kpi311SelectedView = 'Details';
+      component.kpi311SelectedSprint = 'Sprint 5';
+
+      // Execute
+      component.resetToDefaults();
+
+      // Assert
+      expect(component.kpi311SelectedView).toEqual('Overall');
+      expect(component.kpi311SelectedSprint).toEqual('');
+    });
+  });
+
+  describe('getChartData - KPI205 Filter Handling', () => {
+    beforeEach(() => {
+      component.allKpiArray = [];
+      component.updatedConfigGlobalData = [
+        {
+          kpiId: 'kpi205',
+          kpiDetail: {
+            chartType: 'grouped_column_plus_line',
+            aggregationCriteria: 'average',
+          },
+        },
+      ];
+      component.colorObj = {};
+    });
+
+    it('should populate filterByTimeOptions for kpi205', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Weekly',
+          value: [{ data: 'Project1', value: [{ data: '10', value: 10 }] }],
+        },
+        {
+          filter: 'Monthly',
+          value: [{ data: 'Project1', value: [{ data: '20', value: 20 }] }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi205',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartData('kpi205', 0, 'average');
+
+      expect(component.filterByTimeOptions.length).toBe(2);
+      expect(component.filterByTimeOptions[0]).toEqual({
+        name: 'Weekly',
+        value: 'Weekly',
+      });
+      expect(component.filterByTimeOptions[1]).toEqual({
+        name: 'Monthly',
+        value: 'Monthly',
+      });
+    });
+
+    it('should set default selectedFilterByTimeOption for kpi205', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Weekly',
+          value: [{ data: 'Project1', value: [{ data: '10', value: 10 }] }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi205',
+        trendValueList: mockTrendValueList,
+      });
+      component.filterByTimeOptions = [];
+      component.selectedFilterByTimeOption = null;
+
+      component.getChartData('kpi205', 0, 'average');
+
+      expect(component.selectedFilterByTimeOption).toEqual({
+        name: 'Weekly',
+        value: 'Weekly',
+      });
+    });
+
+    it('should filter kpi205 data based on selectedFilterByTimeOption', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Weekly',
+          value: [{ data: 'Project1', value: [{ data: '10', value: 10 }] }],
+        },
+        {
+          filter: 'Monthly',
+          value: [{ data: 'Project1', value: [{ data: '20', value: 20 }] }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi205',
+        trendValueList: mockTrendValueList,
+      });
+      component.selectedFilterByTimeOption = {
+        name: 'Monthly',
+        value: 'Monthly',
+      };
+      component.filterByTimeOptions = [
+        { name: 'Weekly', value: 'Weekly' },
+        { name: 'Monthly', value: 'Monthly' },
+      ];
+
+      component.getChartData('kpi205', 0, 'average');
+
+      expect(component.kpiChartData['kpi205']).toBeDefined();
+      expect(component.kpiChartData['kpi205'][0].data).toEqual('Project1');
+    });
+
+    it('should store original data for kpi205', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Weekly',
+          value: [
+            {
+              data: 'Project1',
+              value: [
+                { data: '10', value: 10, hoverValue: { 'Story Points': 20 } },
+              ],
+            },
+          ],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi205',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartData('kpi205', 0, 'average');
+
+      expect(component.kpi205OriginalData).toBeDefined();
+      expect(component.kpi205OriginalData).not.toBeNull();
+    });
+
+    it('should call computeKpi205LineChartData for kpi205', () => {
+      const spy = spyOn(component, 'computeKpi205LineChartData');
+      const mockTrendValueList = [
+        {
+          filter: 'Weekly',
+          value: [{ data: 'Project1', value: [{ data: '10', value: 10 }] }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi205',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartData('kpi205', 0, 'average');
+
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('getChartData - KPI206 Filter Handling', () => {
+    beforeEach(() => {
+      component.allKpiArray = [];
+      component.updatedConfigGlobalData = [
+        {
+          kpiId: 'kpi206',
+          kpiDetail: {
+            chartType: 'line',
+            aggregationCriteria: 'average',
+          },
+        },
+      ];
+      component.colorObj = {};
+      component.kpiSelectedFilterObj = {};
+      spyOn(component.service, 'setKpiSubFilterObj');
+    });
+
+    it('should populate kpi206FilterOptions', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5 } }],
+        },
+        {
+          filter: 'Group',
+          value: [{ date: '2024-01-01', value: { Development: 3 } }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartData('kpi206', 0, 'average');
+
+      expect(component.kpi206FilterOptions.length).toBe(2);
+      expect(component.kpi206FilterOptions[0]).toEqual({
+        name: 'Status',
+        value: 'Status',
+      });
+      expect(component.kpi206FilterOptions[1]).toEqual({
+        name: 'Group',
+        value: 'Group',
+      });
+    });
+
+    it('should set default selectedKpi206FilterOption', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5 } }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+      component.kpi206FilterOptions = [];
+      component.selectedKpi206FilterOption = null;
+
+      component.getChartData('kpi206', 0, 'average');
+
+      expect(component.selectedKpi206FilterOption).toEqual({
+        name: 'Status',
+        value: 'Status',
+      });
+      expect(component.kpiSelectedFilterObj['kpi206']).toEqual({
+        filter: 'Status',
+      });
+    });
+
+    it('should filter kpi206 data based on selected filter', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5, Done: 3 } }],
+        },
+        {
+          filter: 'Group',
+          value: [
+            { date: '2024-01-01', value: { Development: 4, Testing: 2 } },
+          ],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+      component.selectedKpi206FilterOption = { name: 'Group', value: 'Group' };
+      component.kpi206FilterOptions = [
+        { name: 'Status', value: 'Status' },
+        { name: 'Group', value: 'Group' },
+      ];
+
+      component.getChartData('kpi206', 0, 'average');
+
+      expect(component.kpiChartData['kpi206']).toBeDefined();
+      expect(component.kpiChartData['kpi206'][0].value).toEqual({
+        Development: 4,
+        Testing: 2,
+      });
+    });
+
+    it('should restore previous kpi206 filter selection from kpiSelectedFilterObj', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5 } }],
+        },
+        {
+          filter: 'Group',
+          value: [{ date: '2024-01-01', value: { Development: 3 } }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+      component.kpiSelectedFilterObj['kpi206'] = { filter: 'Group' };
+      component.kpi206FilterOptions = [];
+
+      component.getChartData('kpi206', 0, 'average');
+
+      expect(component.selectedKpi206FilterOption).toEqual({
+        name: 'Group',
+        value: 'Group',
+      });
+    });
+  });
+
+  describe('getChartData - KPI211 Stacked Chart Trigger', () => {
+    beforeEach(() => {
+      component.allKpiArray = [];
+      component.updatedConfigGlobalData = [
+        {
+          kpiId: 'kpi211',
+          kpiDetail: {
+            chartType: 'scatter',
+            aggregationCriteria: 'average',
+          },
+        },
+      ];
+      component.colorObj = {};
+    });
+
+    it('should call computeKpi211StackedChartData after chart data is set', () => {
+      const spy = spyOn(component, 'computeKpi211StackedChartData');
+      const mockTrendValueList = [
+        {
+          filter: 'Overall',
+          value: [{ data: 'Project1', value: [{ x: 1, y: 2 }] }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi211',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartData('kpi211', 0, 'average');
+
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('computeKpi205LineChartData', () => {
+    it('should compute line chart data when kpi205OriginalData exists', () => {
+      component.kpi205OriginalData = [
+        {
+          data: 'Project1',
+          value: [
+            { data: '10', value: 10, hoverValue: { 'Story Points': 20 } },
+            { data: '15', value: 15, hoverValue: { 'Story Points': 30 } },
+          ],
+        },
+        {
+          data: 'Project2',
+          value: [
+            { data: '20', value: 20, hoverValue: { 'Story Points': 40 } },
+            { data: '25', value: 25, hoverValue: { 'Story Points': 50 } },
+          ],
+        },
+      ];
+      component.selectedKpi205DataType = { name: 'By Count', code: 'COUNT' };
+
+      component.computeKpi205LineChartData();
+
+      expect(component.kpi205AvgChartData).toBeDefined();
+      // Should create an Average line data structure
+    });
+
+    it('should handle STORY_POINTS data type', () => {
+      component.kpi205OriginalData = [
+        {
+          data: 'Project1',
+          value: [
+            { data: '10', value: 10, hoverValue: { 'Story Points': 20 } },
+            { data: '15', value: 15, hoverValue: { 'Story Points': 30 } },
+          ],
+        },
+      ];
+      component.selectedKpi205DataType = {
+        name: 'By Story Points',
+        code: 'STORY_POINTS',
+      };
+
+      component.computeKpi205LineChartData();
+
+      expect(component.kpi205AvgChartData).toBeDefined();
+      // Average should be calculated from Story Points values
+    });
+
+    it('should handle null kpi205OriginalData', () => {
+      component.kpi205OriginalData = null;
+
+      expect(() => component.computeKpi205LineChartData()).not.toThrow();
+    });
+
+    it('should handle empty kpi205OriginalData', () => {
+      component.kpi205OriginalData = [];
+
+      component.computeKpi205LineChartData();
+
+      expect(component.kpi205AvgChartData).toBeDefined();
+    });
+  });
+
+  describe('computeKpi211StackedChartData', () => {
+    it('should compute stacked chart data when kpi211 chart data exists', () => {
+      component.kpiChartData = {
+        kpi211: [
+          {
+            data: 'Project1',
+            value: [
+              {
+                date: 'Sprint1',
+                x: 'Sprint1',
+                y: 10,
+                kpiGroup: 'Group1',
+                dataValue: [
+                  {
+                    name: 'Category1',
+                    value: 5,
+                    data: 'data1',
+                    hoverValue: {},
+                  },
+                  {
+                    name: 'Category2',
+                    value: 5,
+                    data: 'data2',
+                    hoverValue: {},
+                  },
+                ],
+              },
+              {
+                date: 'Sprint2',
+                x: 'Sprint2',
+                y: 20,
+                kpiGroup: 'Group1',
+                dataValue: [
+                  {
+                    name: 'Category1',
+                    value: 10,
+                    data: 'data1',
+                    hoverValue: {},
+                  },
+                  {
+                    name: 'Category2',
+                    value: 10,
+                    data: 'data2',
+                    hoverValue: {},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      component.computeKpi211StackedChartData();
+
+      expect(component.kpi211StackedChartData).toBeDefined();
+      expect(component.kpi211StackedChartData.length).toBeGreaterThan(0);
+    });
+
+    it('should handle empty kpi211 chart data', () => {
+      component.kpiChartData = { kpi211: [] };
+
+      component.computeKpi211StackedChartData();
+
+      expect(component.kpi211StackedChartData).toEqual([]);
+    });
+
+    it('should handle missing kpi211 in kpiChartData', () => {
+      component.kpiChartData = {};
+
+      expect(() => component.computeKpi211StackedChartData()).not.toThrow();
+    });
+  });
+
+  describe('getChartDataForBacklog - KPI206/KPI207 Filter Structure', () => {
+    beforeEach(() => {
+      component.allKpiArray = [];
+      component.updatedConfigGlobalData = [
+        {
+          kpiId: 'kpi206',
+          kpiDetail: {
+            chartType: 'line',
+            aggregationCriteria: 'average',
+          },
+        },
+      ];
+      component.colorObj = {};
+      component.kpiSelectedFilterObj = {};
+      spyOn(component.service, 'setKpiSubFilterObj');
+    });
+
+    it('should use correct filter structure for kpi206', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5 } }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+
+      component.getChartDataForBacklog('kpi206', 0, 'average');
+
+      // Should use { filter: "Status" } not { filter1: ["Status"] }
+      expect(component.kpiSelectedFilterObj['kpi206']).toEqual({
+        filter: 'Status',
+      });
+    });
+
+    it('should correct legacy filter1 structure for kpi206', () => {
+      const mockTrendValueList = [
+        {
+          filter: 'Status',
+          value: [{ date: '2024-01-01', value: { 'To Do': 5 } }],
+        },
+      ];
+
+      component.allKpiArray.push({
+        kpiId: 'kpi206',
+        trendValueList: mockTrendValueList,
+      });
+
+      // Simulate legacy cache with incorrect structure
+      component.kpiSelectedFilterObj['kpi206'] = { filter1: ['Status'] };
+      component.kpiDropdowns = {
+        kpi206: [{ options: ['Status', 'Group'] }],
+      };
+
+      component.getChartDataForBacklog('kpi206', 0, 'average');
+
+      // Should be corrected to { filter: "Status" }
+      expect(component.kpiSelectedFilterObj['kpi206']).toEqual({
+        filter: 'Status',
+      });
+      expect(component.kpiSelectedFilterObj['kpi206'].filter1).toBeUndefined();
+    });
+  });
 });

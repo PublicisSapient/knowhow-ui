@@ -824,8 +824,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
                 prompt: this.form.value[config.fieldName] || '',
               };
               if (fn) entry.fieldName = fn;
-              if (w !== null && w !== '' && w !== undefined)
+              if (w !== null && w !== '' && w !== undefined) {
                 entry.weightage = Number(w);
+              } else if (w === null) {
+                entry.weightage = null;
+              }
               mappingValue.push(entry);
             } else {
               mappingValue.push({
