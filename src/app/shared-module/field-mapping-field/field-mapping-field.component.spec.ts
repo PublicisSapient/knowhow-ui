@@ -304,4 +304,291 @@ describe('FieldMappingFieldComponent', () => {
     component.onDrop(mockEvent, 'A');
     expect(cdrSpy).toHaveBeenCalled();
   });
+
+  describe('kpi311 weight value functionality', () => {
+    beforeEach(() => {
+      component.kpiId = 'kpi311';
+    });
+
+    describe('setValue() with weight for kpi311', () => {
+      it('should combine text and weight value in [weight]: text format', () => {
+        component.value = 'This is a test prompt';
+        component.weightValue = 5;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[5]: This is a test prompt');
+      });
+
+      it('should use "null" when weightValue is undefined', () => {
+        component.value = 'This is a test prompt';
+        component.weightValue = undefined;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[null]: This is a test prompt');
+      });
+
+      it('should use "null" when weightValue is null', () => {
+        component.value = 'This is a test prompt';
+        component.weightValue = null;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[null]: This is a test prompt');
+      });
+
+      it('should handle weight value of 0', () => {
+        component.value = 'Acceptance Criteria';
+        component.weightValue = 0;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[0]: Acceptance Criteria');
+      });
+
+      it('should trim whitespace from text value', () => {
+        component.value = '  Some text with spaces  ';
+        component.weightValue = 12;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[12]: Some text with spaces');
+      });
+
+      it('should handle negative weight values', () => {
+        component.value = 'Test prompt';
+        component.weightValue = -5;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[-5]: Test prompt');
+      });
+
+      it('should handle decimal weight values', () => {
+        component.value = 'Risk details';
+        component.weightValue = 3.5;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[3.5]: Risk details');
+      });
+    });
+
+    describe('setWeightValue() for kpi311', () => {
+      it('should call setValue when weight changes and value exists', () => {
+        component.value = 'Test prompt';
+        component.weightValue = 10;
+        const spyObj = spyOn(component, 'setValue');
+
+        component.setWeightValue();
+
+        expect(spyObj).toHaveBeenCalled();
+      });
+
+      it('should not call setValue when value is empty', () => {
+        component.value = '';
+        component.weightValue = 10;
+        const spyObj = spyOn(component, 'setValue');
+
+        component.setWeightValue();
+
+        expect(spyObj).not.toHaveBeenCalled();
+      });
+
+      it('should not call setValue when value is null', () => {
+        component.value = null;
+        component.weightValue = 10;
+        const spyObj = spyOn(component, 'setValue');
+
+        component.setWeightValue();
+
+        expect(spyObj).not.toHaveBeenCalled();
+      });
+
+      it('should not call setValue when value is undefined', () => {
+        component.value = undefined;
+        component.weightValue = 10;
+        const spyObj = spyOn(component, 'setValue');
+
+        component.setWeightValue();
+
+        expect(spyObj).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('writeValue() with [weight]: text format for kpi311', () => {
+      it('should extract weight and text from [weight]: text format', () => {
+        component.writeValue('[5]: This is a test prompt');
+
+        expect(component.value).toBe('This is a test prompt');
+        expect(component.weightValue).toBe(5);
+      });
+
+      it('should extract weight as undefined when [null] is provided', () => {
+        component.writeValue('[null]: This is a test prompt');
+
+        expect(component.value).toBe('This is a test prompt');
+        expect(component.weightValue).toBeUndefined();
+      });
+
+      it('should handle [0]: text format', () => {
+        component.writeValue('[0]: Acceptance Criteria');
+
+        expect(component.value).toBe('Acceptance Criteria');
+        expect(component.weightValue).toBe(0);
+      });
+
+      it('should handle negative weight values', () => {
+        component.writeValue('[-5]: Test prompt');
+
+        expect(component.value).toBe('Test prompt');
+        expect(component.weightValue).toBe(-5);
+      });
+
+      it('should handle decimal weight values', () => {
+        component.writeValue('[3.5]: Risk details');
+
+        expect(component.value).toBe('Risk details');
+        expect(component.weightValue).toBe(3.5);
+      });
+
+      it('should handle text with multiple colons', () => {
+        component.writeValue('[10]: This: is: a: test');
+
+        expect(component.value).toBe('This: is: a: test');
+        expect(component.weightValue).toBe(10);
+      });
+
+      it('should handle text with extra spaces after colon', () => {
+        component.writeValue('[12]:    Test with spaces');
+
+        expect(component.value).toBe('Test with spaces');
+        expect(component.weightValue).toBe(12);
+      });
+
+      it('should handle plain text without weight format', () => {
+        component.writeValue('Plain text without weight');
+
+        expect(component.value).toBe('Plain text without weight');
+      });
+
+      it('should not parse if format does not match [weight]: pattern', () => {
+        component.writeValue('Invalid [5] format');
+
+        expect(component.value).toBe('Invalid [5] format');
+      });
+
+      it('should handle empty text after weight', () => {
+        component.writeValue('[7]: ');
+
+        expect(component.value).toBe('');
+        expect(component.weightValue).toBe(7);
+      });
+    });
+
+    describe('writeValue() for non-kpi311', () => {
+      beforeEach(() => {
+        component.kpiId = 'kpi100';
+      });
+
+      it('should not parse weight format for non-kpi311', () => {
+        component.writeValue('[5]: This is a test prompt');
+
+        expect(component.value).toBe('[5]: This is a test prompt');
+        expect(component.weightValue).toBeUndefined();
+      });
+
+      it('should set value normally for non-kpi311', () => {
+        component.writeValue('Normal text value');
+
+        expect(component.value).toBe('Normal text value');
+      });
+    });
+
+    describe('setValue() for non-kpi311', () => {
+      beforeEach(() => {
+        component.kpiId = 'kpi100';
+      });
+
+      it('should not add weight format for non-kpi311', () => {
+        component.value = 'Test prompt';
+        component.weightValue = 5;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('Test prompt');
+      });
+    });
+
+    describe('setWeightValue() for non-kpi311', () => {
+      beforeEach(() => {
+        component.kpiId = 'kpi100';
+      });
+
+      it('should not call setValue for non-kpi311', () => {
+        component.value = 'Test prompt';
+        component.weightValue = 10;
+        const spyObj = spyOn(component, 'setValue');
+
+        component.setWeightValue();
+
+        expect(spyObj).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('edge cases', () => {
+      beforeEach(() => {
+        component.kpiId = 'kpi311';
+      });
+
+      it('should handle very large weight values', () => {
+        component.value = 'Test';
+        component.weightValue = 999999;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[999999]: Test');
+      });
+
+      it('should handle empty string value', () => {
+        component.value = '';
+        component.weightValue = 5;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[5]: ');
+      });
+
+      it('should handle special characters in text', () => {
+        component.value = 'Test @#$% special chars!';
+        component.weightValue = 3;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[3]: Test @#$% special chars!');
+      });
+
+      it('should handle multiline text', () => {
+        component.value = 'Line 1\nLine 2\nLine 3';
+        component.weightValue = 2;
+        const spyObj = spyOn(component, 'onChange');
+
+        component.setValue();
+
+        expect(spyObj).toHaveBeenCalledWith('[2]: Line 1\nLine 2\nLine 3');
+      });
+    });
+  });
 });
