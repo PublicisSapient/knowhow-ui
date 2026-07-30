@@ -149,6 +149,8 @@ export class ExportExcelComponent implements OnInit {
     if (kpiId === 'kpi205') {
       this.forzenColumns = ['week'];
       rawColumConfig = this.makeWeekColumnOnFirstOrder(rawColumConfig);
+    } else if (kpiId === 'kpi311') {
+      this.forzenColumns = [];
     } else {
       this.forzenColumns = ['issue id'];
       rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
@@ -229,7 +231,7 @@ export class ExportExcelComponent implements OnInit {
         this.forzenColumns = ['issue id'];
         rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
       }
-    } else {
+    } else if (this.modalDetails['kpiId'] !== 'kpi311') {
       rawColumConfig = this.reorderFirstColumn(rawColumConfig);
     }
     this.tableColumns = rawColumConfig;
