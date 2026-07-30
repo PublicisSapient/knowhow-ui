@@ -196,14 +196,20 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     const currentFieldNameControls = groups.map(
       (it) => `jiraFieldNameFor${it.replace(/\s+/g, '')}`,
     );
+    const currentWeightageControls = groups.map(
+      (it) => `jiraWeightageFor${it.replace(/\s+/g, '')}`,
+    );
 
     // Sync formData: keep non-dynamic fields or current dynamic fields
     this.formData = this.formData.filter((d) => {
-      if (!d.fieldName.startsWith('jiraStatusFor') && !d.fieldName.startsWith('jiraFieldNameFor')) {
+      if (!d.fieldName.startsWith('jiraStatusFor') && !d.fieldName.startsWith('jiraFieldNameFor') && !d.fieldName.startsWith('jiraWeightageFor')) {
         return true;
       }
       if (d.fieldName.startsWith('jiraFieldNameFor')) {
         return currentFieldNameControls.includes(d.fieldName);
+      }
+      if (d.fieldName.startsWith('jiraWeightageFor')) {
+        return currentWeightageControls.includes(d.fieldName);
       }
       return currentDynamicFieldNames.includes(d.fieldName);
     });
@@ -216,10 +222,12 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     groups.forEach((group, index) => {
       const dynamicFieldName = `jiraStatusFor${group.replace(/\s+/g, '')}`;
       const fieldNameControlName = `jiraFieldNameFor${group.replace(/\s+/g, '')}`;
+      const weightageControlName = `jiraWeightageFor${group.replace(/\s+/g, '')}`;
       const capitalizedGroup = group;
       const dynamicField = {
         fieldName: dynamicFieldName,
         fieldNameControlName: this.kpiId === 'kpi311' ? fieldNameControlName : undefined,
+        weightageControlName: this.kpiId === 'kpi311' ? weightageControlName : undefined,
         fieldLabel:
           this.kpiId !== 'kpi311'
             ? `Status to identify ${capitalizedGroup}`
@@ -247,6 +255,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
             ?.originalValue || {};
         let initialValue = [];
         let initialFieldName = '';
+        let initialWeightage = null;
         if (Array.isArray(triggerValue)) {
           if (
             triggerValue.length > 0 &&
@@ -261,6 +270,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
               if (this.kpiId === 'kpi311') {
                 initialValue = matchedGroup ? matchedGroup.prompt : '';
                 initialFieldName = matchedGroup ? (matchedGroup.fieldName || '') : '';
+                initialWeightage = matchedGroup ? (matchedGroup.weightage ?? null) : null;
               } else {
                 initialValue = matchedGroup ? matchedGroup.statuses : [];
               }
@@ -275,11 +285,22 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
         const control = new FormControl(initialValue);
         this.form.addControl(dynamicFieldName, control);
 
-        // kpi311: also create a control for the Jira field name
+        // kpi311: also create controls for the Jira field name and weightage
         if (this.kpiId === 'kpi311' && !this.form.contains(fieldNameControlName)) {
           this.form.addControl(fieldNameControlName, new FormControl(initialFieldName));
           if (!this.formData.find((d) => d.fieldName === fieldNameControlName)) {
             this.formData.push({ fieldName: fieldNameControlName, originalValue: initialFieldName });
+          }
+        }
+        if (this.kpiId === 'kpi311') {
+          if (!this.form.contains(weightageControlName)) {
+            this.form.addControl(weightageControlName, new FormControl(initialWeightage, [Validators.min(10)]));
+            if (!this.formData.find((d) => d.fieldName === weightageControlName)) {
+              this.formData.push({ fieldName: weightageControlName, originalValue: initialWeightage });
+            }
+          } else {
+            this.form.removeControl(weightageControlName);
+            this.form.addControl(weightageControlName, new FormControl(initialWeightage, [Validators.min(10)]));
           }
         }
 
@@ -758,9 +779,11 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
         this.formConfig[targetSection]?.forEach((config) => {
           if (config.isDynamic) {
             if (this.kpiId === 'kpi311') {
+              const w = this.form.value[config.weightageControlName];
               mappingValue.push({
                 label: config.fieldLabel,
                 fieldName: this.form.value[config.fieldNameControlName] || '',
+                weightage: w !== null && w !== '' ? Number(w) : null,
                 prompt: this.form.value[config.fieldName] || '',
               });
             } else {
