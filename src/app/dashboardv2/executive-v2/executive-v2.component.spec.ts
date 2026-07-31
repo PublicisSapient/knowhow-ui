@@ -16968,6 +16968,118 @@ describe('ExecutiveV2Component', () => {
       expect(result[2].info).toContain('25');
       expect(result[2].info).toContain('not ready');
     });
+
+    it('should read score and counts from the selected sprint in trendValueList', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 50,
+        scoreFactor: 100,
+        validScoreFactor: 50,
+        projectScoreTrend: 0,
+        podCount: 2,
+        trendValueList: [
+          {
+            value: [
+              {
+                sSprintName: 'Sprint 1',
+                value: 60,
+                hoverValue: { sampledIssueCount: 20, passedIssueCount: 10 },
+                drillDown: {},
+              },
+              {
+                sSprintName: 'Sprint 2',
+                value: 80,
+                hoverValue: { sampledIssueCount: 30, passedIssueCount: 25 },
+                drillDown: {},
+              },
+            ],
+          },
+        ],
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+      component.kpi311SelectedSprint = 'Sprint 2';
+
+      const result = component.getKpi311DataBlocks();
+
+      expect(result[0].value).toBe(80);
+      expect(result[1].value).toBe(30);
+      expect(result[2].value).toBe(25);
+      // not ready = 30 - 25 = 5
+      expect(result[2].info).toContain('5');
+    });
+
+    it('should compute trend as delta vs previous sprint', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 0,
+        scoreFactor: 0,
+        validScoreFactor: 0,
+        projectScoreTrend: 0,
+        podCount: 1,
+        trendValueList: [
+          {
+            value: [
+              {
+                sSprintName: 'Sprint 1',
+                value: 60,
+                hoverValue: { sampledIssueCount: 10, passedIssueCount: 5 },
+                drillDown: {},
+              },
+              {
+                sSprintName: 'Sprint 2',
+                value: 75,
+                hoverValue: { sampledIssueCount: 10, passedIssueCount: 8 },
+                drillDown: {},
+              },
+            ],
+          },
+        ],
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+      component.kpi311SelectedSprint = 'Sprint 2';
+
+      const result = component.getKpi311DataBlocks();
+
+      // trend = 75 - 60 = 15
+      expect(result[0].info).toContain('+15%');
+      expect(result[0].info).toContain('#22c55e');
+    });
+
+    it('should show zero trend for the first sprint (no previous sprint)', () => {
+      const mockKpiData = {
+        kpiId: 'kpi311',
+        projectScore: 0,
+        scoreFactor: 0,
+        validScoreFactor: 0,
+        projectScoreTrend: 99,
+        podCount: 1,
+        trendValueList: [
+          {
+            value: [
+              {
+                sSprintName: 'Sprint 1',
+                value: 70,
+                hoverValue: { sampledIssueCount: 10, passedIssueCount: 7 },
+                drillDown: {},
+              },
+            ],
+          },
+        ],
+      };
+
+      spyOn(component, 'ifKpiExist').and.returnValue(0);
+      component.allKpiArray = [mockKpiData];
+      component.kpi311SelectedSprint = 'Sprint 1';
+
+      const result = component.getKpi311DataBlocks();
+
+      // No previous sprint — falls back to projectScoreTrend
+      expect(result[0].info).toContain('+99%');
+    });
   });
 
   describe('resetToDefaults - KPI-specific resets', () => {

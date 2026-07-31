@@ -6087,9 +6087,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns an array of data blocks for kpi311 Details view.
-   * Reads projectScore, scoreFactor, and validScoreFactor from the API response root level.
-   * Maps these properties to the three data blocks: Overall Hygiene Score, Stories Evaluated, and Ready Stories.
+   * Returns an array of data blocks for the kpi311 Overall tab.
+   * When a sprint is selected the tiles reflect that sprint's score, stories
+   * evaluated, and ready stories (read from trendValueList hoverValue).
+   * Trend is computed as the delta vs the immediately preceding sprint.
+   * Falls back to project-level aggregates when no sprint is selected or
+   * trendValueList is absent.
    */
   getKpi311DataBlocks(): any[] {
     const kpiIdx = this.ifKpiExist('kpi311');
@@ -6102,34 +6105,63 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return [];
     }
 
-    const projectScore = kpiData.projectScore ?? 0;
-    const scoreFactor = kpiData.scoreFactor ?? 0;
-    const validScoreFactor = kpiData.validScoreFactor ?? 0;
-    const projectScoreTrend = kpiData.projectScoreTrend ?? 0;
     const podCount = kpiData.podCount ?? 1;
-    const notReady = scoreFactor - validScoreFactor;
-
-    const trendSign = projectScoreTrend >= 0 ? '+' : '';
-    const trendColor = projectScoreTrend < 0 ? '#ef4444' : '#22c55e';
-    const trendInfo = `<span style="color: ${trendColor}; font-weight: 500;">${trendSign}${projectScoreTrend}%</span><span style="color: #6c757d;"> vs previous sprint</span>`;
     const podText = `across ${podCount} ${podCount === 1 ? 'pod' : 'pods'}`;
+
+    // Flatten trendValueList into an ordered array of sprint items
+    const allSprintItems: any[] = [];
+    if (kpiData.trendValueList && Array.isArray(kpiData.trendValueList)) {
+      for (const trendItem of kpiData.trendValueList) {
+        if (trendItem.value && Array.isArray(trendItem.value)) {
+          allSprintItems.push(...trendItem.value);
+        }
+      }
+    }
+
+    const sprintIdx = allSprintItems.findIndex(
+      (item: any) => item.sSprintName === this.kpi311SelectedSprint,
+    );
+    const sprintData = sprintIdx >= 0 ? allSprintItems[sprintIdx] : null;
+
+    const hygieneScore = sprintData
+      ? Number(sprintData.value) || 0
+      : kpiData.projectScore ?? 0;
+    const storiesEvaluated =
+      sprintData?.hoverValue?.sampledIssueCount ?? kpiData.scoreFactor ?? 0;
+    const readyStories =
+      sprintData?.hoverValue?.passedIssueCount ?? kpiData.validScoreFactor ?? 0;
+    const notReady = storiesEvaluated - readyStories;
+
+    // Trend: delta vs previous sprint when sprint data is available;
+    // fall back to the pre-computed projectScoreTrend otherwise.
+    let trendDelta: number;
+    if (sprintData && sprintIdx > 0) {
+      const prevScore = Number(allSprintItems[sprintIdx - 1].value) || 0;
+      trendDelta = Math.round((hygieneScore - prevScore) * 100) / 100;
+    } else {
+      trendDelta = kpiData.projectScoreTrend ?? 0;
+    }
+
+    const trendSign = trendDelta >= 0 ? '+' : '';
+    const trendColor = trendDelta < 0 ? '#ef4444' : '#22c55e';
+    const trendInfo = `<span style="color: ${trendColor}; font-weight: 500;">${trendSign}${trendDelta}%</span><span style="color: #6c757d;"> vs previous sprint</span>`;
 
     return [
       {
         header: 'Overall Hygiene Score',
-        value: projectScore,
+        value: hygieneScore,
         unit: '%',
         info: trendInfo,
       },
       {
         header: 'Stories Evaluated',
-        value: scoreFactor,
+        value: storiesEvaluated,
         unit: '',
         info: podText,
       },
       {
         header: 'Ready Stories',
-        value: validScoreFactor,
+        value: readyStories,
         unit: '',
         info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${notReady}</span><span style="color: #6c757d;"> not ready</span>`,
       },
