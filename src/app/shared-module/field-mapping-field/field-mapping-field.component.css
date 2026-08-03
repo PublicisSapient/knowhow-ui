@@ -100,17 +100,17 @@ label.btn-import-label {
   border-radius: 0.5rem !important;
 }
 
-::ng-deep .field-mapping .p-inputtext.w-95 {
+/* ::ng-deep .field-mapping .p-inputtext.w-95 {
   width: 95%;
-}
+} */
 
 ::ng-deep .field-mapping .p-inputtext.w-80 {
   width: 80%;
 }
 
-::ng-deep .field-mapping .p-inputtext.w-5 {
+/* ::ng-deep .field-mapping .p-inputtext.w-5 {
   width: 5%;
-}
+} */
 
 ::ng-deep .field-mapping .p-dropdown {
   width: 100%;

@@ -18,7 +18,7 @@
   <div [id]="kpiId" [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
     <!-- Text Input -->
     <div class="p-inputgroup" *ngSwitchCase="'text'">
-      @if(kpiId === 'kpi311') {
+      <!-- @if(kpiId === 'kpi311') {
         <input
           type="number"
           pInputText
@@ -30,13 +30,13 @@
           [attr.aria-label]="fieldConfig?.fieldLabel + ' Weight Input'"
           [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
         />
-      }
+      } -->
       <input
         type="text"
         pInputText
         [id]="fieldConfig?.fieldName"
         [placeholder]="'Enter ' + (fieldConfig?.placeHolderText || fieldConfig?.fieldLabel)"
-        class="w-95"
+        class="w-100"
         [(ngModel)]="value"
         (change)="setValue()"
         [disabled]="fieldConfig?.readOnly"
