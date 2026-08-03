@@ -211,6 +211,9 @@
                         [kpi311SelectedView]="
                           kpi?.kpiId === 'kpi311' ? kpi311SelectedView : null
                         "
+                        [kpi311AllSprintsFailed]="
+                          kpi?.kpiId === 'kpi311' ? isKpi311AllSprintsFailed() : false
+                        "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
                         ">
@@ -303,7 +306,17 @@
                                           " />
                                       </div>
                                       }
-                                      @if (kpi.kpiId === 'kpi311') {
+                                      @if (kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed()) {
+                                      <div class="min-ht">
+                                        <div class="p-w-100 p-d-flex p-justify-center">
+                                          <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                        </div>
+                                        <div class="p-w-100">
+                                          <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                        </div>
+                                      </div>
+                                      }
+                                      @if (kpi.kpiId === 'kpi311' && !isKpi311AllSprintsFailed()) {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
@@ -324,7 +337,7 @@
                                       </div>
                                       }
                                       }
-                                      @if (kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') {
+                                      @if ((kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') && !(kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed())) {
                                       <div class="multiline-chart">
                                         <app-multiline-v2
                                           [thresholdValue]="
@@ -367,6 +380,16 @@
                                       }
                                       @if (kpi.kpiId === 'kpi311' && kpi311SelectedView === 'Details') {
                                       <div class="kpi311-details-view p-py-3">
+                                        @if (isKpi311SprintFailed()) {
+                                        <div class="min-ht">
+                                          <div class="p-w-100 p-d-flex p-justify-center">
+                                            <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                          </div>
+                                          <div class="p-w-100">
+                                            <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                          </div>
+                                        </div>
+                                        } @else {
                                         <!-- New Data blocks go here -->
                                         <div class="metrics-grid column-3 p-py-3 p-mb-3">
                                           <div *ngFor="let block of getKpi311DataBlocks()" class="data-block p-p-3" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -407,6 +430,7 @@
                                         <div class="empty-container p-p-4" style="border: 1px dashed #ccc; border-radius: 8px; min-height: 200px; background-color: #f8f9fa;">
                                           <p class="p-text-center" style="color: #6c757d; padding-top: 80px;">No drillDown data available for the selected sprint</p>
                                         </div>
+                                        }
                                         }
                                       </div>
                                       }
