@@ -107,6 +107,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
       // } else {
       //   this.onChange(this.value.trim());
       // }
+      this.onChange(this.value.trim());
     } else if (Array.isArray(this.value) && isAddtional !== true) {
       this.value = this.value.map((val) => val.trim());
       this.onChange(this.value);
