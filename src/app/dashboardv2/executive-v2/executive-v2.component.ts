@@ -6242,6 +6242,28 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
+   * Returns true when the currently selected kpi311 sprint has evaluationFailed=true
+   * in its hoverValue — meaning the AI gateway failed for that sprint and no verdicts
+   * were produced.
+   */
+  isKpi311SprintFailed(): boolean {
+    if (!this.kpi311SelectedSprint) return false;
+    const kpiIdx = this.ifKpiExist('kpi311');
+    if (kpiIdx === -1) return false;
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData?.trendValueList) return false;
+    for (const trendItem of kpiData.trendValueList) {
+      if (trendItem.value && Array.isArray(trendItem.value)) {
+        const item = trendItem.value.find(
+          (i: any) => i.sSprintName === this.kpi311SelectedSprint,
+        );
+        if (item) return item.hoverValue?.evaluationFailed === true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Populates kpi311SprintOptions dynamically from trendValueList
    * Extracts sSprintName from each item in the trendValueList
    * Automatically preselects the first sprint and triggers drillDown data display
