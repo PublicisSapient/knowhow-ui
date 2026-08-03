@@ -211,6 +211,9 @@
                         [kpi311SelectedView]="
                           kpi?.kpiId === 'kpi311' ? kpi311SelectedView : null
                         "
+                        [kpi311AllSprintsFailed]="
+                          kpi?.kpiId === 'kpi311' ? isKpi311AllSprintsFailed() : false
+                        "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
                         ">
@@ -303,7 +306,17 @@
                                           " />
                                       </div>
                                       }
-                                      @if (kpi.kpiId === 'kpi311') {
+                                      @if (kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed()) {
+                                      <div class="min-ht">
+                                        <div class="p-w-100 p-d-flex p-justify-center">
+                                          <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                        </div>
+                                        <div class="p-w-100">
+                                          <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                        </div>
+                                      </div>
+                                      }
+                                      @if (kpi.kpiId === 'kpi311' && !isKpi311AllSprintsFailed()) {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
@@ -324,7 +337,7 @@
                                       </div>
                                       }
                                       }
-                                      @if (kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') {
+                                      @if ((kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') && !(kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed())) {
                                       <div class="multiline-chart">
                                         <app-multiline-v2
                                           [thresholdValue]="
