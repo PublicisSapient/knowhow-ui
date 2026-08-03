@@ -6,3 +6,13 @@ repos:
         language_version: python3
         stages: [pre-commit]
         exclude: ^src/test/
+
+  # Automated dependency tracking and tech stack documentation
+  - repo: local
+    hooks:
+      - id: check-dependency-changes
+        name: Check Dependency Changes
+        entry: scripts/check-dependency-changes.sh
+        language: system
+        files: ^package\.json$
+        pass_filenames: false

@@ -6,7 +6,6 @@ import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { AnalyticsService } from './analytics.service';
-import { firstValueFrom } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
