@@ -2411,7 +2411,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   applyForecastData(chartSeries): void {
     chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
-      if (!forecastEntries?.length) return;
+      if (!forecastEntries?.length) {
+        return;
+      }
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
@@ -6205,9 +6207,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (!sprintData?.drillDown) {
       return null;
     }
-
-    // Get the total value from the 'value' property (total issues for this sprint)
-    const totalValue = Number(sprintData.value) || 0;
 
     // Transform drillDown object into array of metric cards
     const drillDownObj = sprintData.drillDown;
