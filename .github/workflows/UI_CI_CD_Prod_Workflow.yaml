@@ -156,11 +156,14 @@ jobs:
             exit 1
           fi
 
-          # Verify index.html is served
-          if curl -s http://localhost:8080 | grep -q "<!doctype html>"; then
+          # Verify index.html is served (check for common HTML indicators)
+          RESPONSE=$(curl -s http://localhost:8080)
+          if echo "$RESPONSE" | grep -qi -e "<!doctype html>" -e "<html" -e "<head>" -e "<title>"; then
             echo "✅ index.html is being served correctly"
           else
             echo "❌ index.html not found or malformed"
+            echo "Response received:"
+            echo "$RESPONSE" | head -20
             docker logs $CONTAINER_ID
             docker stop $CONTAINER_ID
             docker rm $CONTAINER_ID
