@@ -118,6 +118,60 @@ jobs:
           docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
+      # Smoke test: Verify Docker container and Nginx (Critical for Production)
+      - name: Smoke Test - Docker Container & Nginx Health Check
+        run: |
+          echo "🧪 Starting production smoke test for Docker container..."
+
+          # Run the container in detached mode
+          CONTAINER_ID=$(docker run -d -p 8080:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG)
+          echo "Container started with ID: $CONTAINER_ID"
+
+          # Wait for Nginx to start (max 30 seconds)
+          echo "Waiting for Nginx to be ready..."
+          for i in {1..30}; do
+            if curl -f -s http://localhost:8080 > /dev/null; then
+              echo "✅ Nginx is responding!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Nginx failed to respond after 30 seconds"
+              docker logs $CONTAINER_ID
+              docker stop $CONTAINER_ID
+              docker rm $CONTAINER_ID
+              exit 1
+            fi
+            sleep 1
+          done
+
+          # Verify HTTP 200 response
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+          if [ "$HTTP_CODE" == "200" ]; then
+            echo "✅ Smoke test passed: Nginx returned HTTP $HTTP_CODE"
+          else
+            echo "❌ Smoke test failed: Expected HTTP 200, got $HTTP_CODE"
+            docker logs $CONTAINER_ID
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
+
+          # Verify index.html is served
+          if curl -s http://localhost:8080 | grep -q "<!doctype html>"; then
+            echo "✅ index.html is being served correctly"
+          else
+            echo "❌ index.html not found or malformed"
+            docker logs $CONTAINER_ID
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
+
+          # Cleanup
+          docker stop $CONTAINER_ID
+          docker rm $CONTAINER_ID
+          echo "✅ Production smoke test completed successfully - container and Nginx are working!"
+
       - name: Checkout Helm Charts (Bitbucket)
         if: ${{ github.event.inputs.deploy == 'true' }}
         run: |
