@@ -148,8 +148,8 @@ jobs:
         run: |
           echo "🧪 Starting smoke test for Docker container..."
 
-          # Run the container in detached mode
-          CONTAINER_ID=$(docker run -d -p 8080:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG)
+          # Run the container in detached mode with dummy API_HOST to avoid DNS resolution issues
+          CONTAINER_ID=$(docker run -d -p 8080:80 -e API_HOST=127.0.0.1 -e API_PORT=8080 $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG)
           echo "Container started with ID: $CONTAINER_ID"
 
           # Wait for Nginx to start (max 30 seconds)
