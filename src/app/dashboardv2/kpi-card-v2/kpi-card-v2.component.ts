@@ -192,6 +192,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpi205SelectedView: string;
   /** kpi311-specific: currently selected view ('Overall' | 'Details') */
   @Input() kpi311SelectedView: string;
+  /** kpi311-specific: true when every sprint has failed evaluation */
+  @Input() kpi311AllSprintsFailed: boolean = false;
 
   constructor(
     public service: SharedService,
