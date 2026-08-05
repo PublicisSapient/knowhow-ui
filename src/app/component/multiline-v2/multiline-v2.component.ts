@@ -460,8 +460,10 @@ export class MultilineV2Component implements OnChanges {
           data[i].value[j].xOrder = data[i].value[j]?.isForecast
             ? 'Forecast'
             : j + 1;
-          if (maxYValue < parseInt(data[i].value[j]?.value, 10)) {
-            maxYValue = data[i].value[j].value;
+          // Use parseFloat to handle decimal values correctly (e.g., 0.26, 0.35)
+          const currentValue = parseFloat(data[i].value[j]?.value);
+          if (!isNaN(currentValue) && maxYValue < currentValue) {
+            maxYValue = currentValue;
           }
         }
       }
@@ -472,10 +474,6 @@ export class MultilineV2Component implements OnChanges {
       );
       if (benchmarkValue !== null && benchmarkValue > maxYValue) {
         maxYValue = benchmarkValue;
-      }
-
-      if (maxYValue === 0) {
-        maxYValue = 50;
       }
       if (thresholdValue && thresholdValue !== '') {
         if (thresholdValue > maxYValue) {
@@ -534,26 +532,12 @@ export class MultilineV2Component implements OnChanges {
         }
       };
 
-      let divisor = 10;
-      let power = 1;
-      let quotient = maxYValue;
-      while (quotient >= 1) {
-        quotient = quotient / Math.pow(divisor, power);
-        ++power;
-      }
-      divisor = Math.pow(10, power > 1 ? power - 1 : 1);
-      if (maxYValue >= 0 && maxYValue <= 5) {
+      // Double the max value for better visualization
+      // If max value is 0.35, y-axis will show 0-0.7
+      if (maxYValue === 0) {
         maxYValue = 5;
-      } else if (maxYValue > 5 && maxYValue <= 50) {
-        maxYValue = 50;
-      } else if (maxYValue > 50 && maxYValue <= 100) {
-        maxYValue = 100;
-      } else if (maxYValue > 100 && maxYValue <= 200) {
-        maxYValue = 200;
-      } else if (maxYValue > 200 && maxYValue <= 500) {
-        maxYValue = 500;
-      } else if (maxYValue > 500) {
-        maxYValue += divisor;
+      } else {
+        maxYValue = maxYValue * 2;
       }
 
       if (
