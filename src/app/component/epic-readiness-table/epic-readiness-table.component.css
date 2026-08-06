@@ -1,0 +1,132 @@
+.epic-readiness-table-container {
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
+}
+
+/* Horizontal scroll wrapper */
+.table-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-blue {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.text-blue:hover {
+  text-decoration: underline;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.status-open {
+  background-color: #007bff;
+  color: white;
+}
+
+.status-ready {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Readiness Score Badge Styles */
+.readiness-score-badge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 50px;
+}
+
+/* Color coding based on percentage thresholds */
+/* Green: ≥80% */
+.badge-green {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Yellow: 50-79% */
+.badge-yellow {
+  background-color: #fffc107;
+  color: black;
+}
+
+/* Orange: 30-49% */
+.badge-orange {
+  background-color: #fd7e14;
+  color: white;
+}
+
+/* Red: <30% */
+.badge-red {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Table Styling */
+::ng-deep .epic-readiness-table-container .p-datatable {
+  table-layout: fixed;
+  min-width: 1270px; /* Sum of all column widths */
+}
+
+::ng-deep
+  .epic-readiness-table-container
+  .p-datatable
+  .p-datatable-thead
+  > tr
+  > th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep
+  .epic-readiness-table-container
+  .p-datatable
+  .p-datatable-tbody
+  > tr
+  > td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+  white-space: normal;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+::ng-deep
+  .epic-readiness-table-container
+  .p-datatable
+  .p-datatable-tbody
+  > tr:hover {
+  background-color: #f8f9fa;
+}
+
+::ng-deep
+  .epic-readiness-table-container
+  .p-datatable-striped
+  .p-datatable-tbody
+  > tr:nth-child(even) {
+  background-color: #fafafa;
+}

@@ -152,6 +152,7 @@ import { IndicatorsComponent } from './dashboard/indicators/indicators.component
 import { ListBlockComponent } from './dashboard/list-block/list-block.component';
 import { TopTilesComponent } from './dashboard/top-tiles/top-tiles.component';
 import { ChatbotComponent } from './dashboard/chatbot/chatbot.component';
+import { EpicReadinessTableComponent } from './component/epic-readiness-table/epic-readiness-table.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -207,6 +208,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     PebCalculatorComponent,
     HomeComponent,
     DynamicCurrencyPipe,
+    EpicReadinessTableComponent,
   ],
   imports: [
     SharedModuleModule,

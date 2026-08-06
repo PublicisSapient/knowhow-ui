@@ -236,6 +236,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedKpi206Filter: any = null;
   selectedKpi206FilterOption: any = null; // For ngModel binding in dropdown
 
+  // KPI312-specific: Excel data for export
+  kpi312ExcelData: any[] = [];
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -1569,6 +1572,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               const kpi187Data = getData.find(
                 (data) => data.kpiId === 'kpi189',
               );
+              const kpi312Data = getData.find(
+                (data) => data.kpiId === 'kpi312',
+              );
               if (
                 kpi187Data &&
                 kpi187Data.hasOwnProperty('trendValueList') &&
@@ -1577,6 +1583,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.sprintGoalData = JSON.parse(
                   JSON.stringify(kpi187Data['trendValueList']),
                 );
+              }
+
+              if (
+                kpi312Data &&
+                kpi312Data.hasOwnProperty('excelData') &&
+                kpi312Data['excelData'].length
+              ) {
+                this.kpi312ExcelData = kpi312Data['excelData'];
               }
 
               const releaseFrequencyInd = getData.findIndex(
