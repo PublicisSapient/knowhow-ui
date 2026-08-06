@@ -90,9 +90,15 @@ export class EpicReadinessTableComponent implements OnInit, OnChanges {
     // Map the excelData to table format
     this.tableData = excelData.map((item) => {
       // Extract Epic ID and URL from the object
-      const epicIdKeys = item['Epic ID'] ? Object.keys(item['Epic ID']) : [];
-      const epicId = epicIdKeys[0] || item['epicId'] || '';
-      const epicUrl = epicIdKeys[1] || item['epicUrl'] || '';
+      // Epic ID object structure: { 'EPIC-123': 'https://url.com' }
+      // Object.keys()[0] = Epic ID, Object.values()[0] = URL
+      const epicIdObj = item['Epic ID'];
+      const epicId =
+        (epicIdObj && Object.keys(epicIdObj)[0]) || item['epicId'] || '';
+      const epicUrl =
+        (epicIdObj && (Object.values(epicIdObj)[0] as string)) ||
+        item['epicUrl'] ||
+        '';
 
       return {
         epicId: epicId,
