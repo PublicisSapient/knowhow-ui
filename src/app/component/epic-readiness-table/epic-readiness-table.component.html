@@ -1,0 +1,90 @@
+<div class="epic-readiness-table-container" *ngIf="columnHeaders && tableData">
+  <div class="table-scroll-wrapper">
+    <p-table
+      [value]="tableData"
+      styleClass="p-datatable-sm p-datatable-striped"
+      [autoLayout]="false"
+      [scrollable]="true"
+      scrollHeight="flex">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col" *ngFor="let col of columnHeaders; let i = index"
+              [style.width]="col.width">
+            {{ col.header }}
+          </th>
+        </tr>
+      </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <!-- Epic ID -->
+        <td *ngIf="columnHeaders[0]"
+            [ngStyle]="{'color': getColorForRow(row)}">
+          <a *ngIf="row.epicUrl" [href]="row.epicUrl" class="text-blue" target="_blank" rel="noopener noreferrer">
+            {{ row[columnHeaders[0].field] }}
+          </a>
+          <span *ngIf="!row.epicUrl">{{ row[columnHeaders[0].field] }}</span>
+        </td>
+
+        <!-- Epic Name -->
+        <td *ngIf="columnHeaders[1]">
+          {{ row[columnHeaders[1].field] }}
+        </td>
+
+        <!-- Status -->
+        <td *ngIf="columnHeaders[2]">
+          <span class="status-badge"
+                [ngClass]="{
+                  'status-open': row[columnHeaders[2].field]?.toLowerCase() === 'open',
+                  'status-ready': row[columnHeaders[2].field]?.toLowerCase() === 'ready for release'
+                }">
+            {{ row[columnHeaders[2].field] }}
+          </span>
+        </td>
+
+        <!-- Business Clarity -->
+        <td *ngIf="columnHeaders[3]" class="text-center">
+          {{ formatPercentage(row[columnHeaders[3].field]) }}
+        </td>
+
+        <!-- Scope Definition -->
+        <td *ngIf="columnHeaders[4]" class="text-center">
+          {{ formatPercentage(row[columnHeaders[4].field]) }}
+        </td>
+
+        <!-- Solution Readiness -->
+        <td *ngIf="columnHeaders[5]" class="text-center">
+          {{ formatPercentage(row[columnHeaders[5].field]) }}
+        </td>
+
+        <!-- Dependency Readiness -->
+        <td *ngIf="columnHeaders[6]" class="text-center">
+          {{ formatPercentage(row[columnHeaders[6].field]) }}
+        </td>
+
+        <!-- Risk Readiness -->
+        <td *ngIf="columnHeaders[7]" class="text-center">
+          {{ formatPercentage(row[columnHeaders[7].field]) }}
+        </td>
+
+        <!-- Readiness Score -->
+        <td *ngIf="columnHeaders[8]" class="text-center">
+          <span class="readiness-score-badge"
+                [ngClass]="getReadinessScoreBadgeClass(row[columnHeaders[8].field])">
+            {{ getFormattedReadinessScore(row[columnHeaders[8].field]) }}
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="columnHeaders.length" class="text-center">
+          No Epic Readiness data available.
+        </td>
+      </tr>
+    </ng-template>
+    </p-table>
+  </div>
+</div>

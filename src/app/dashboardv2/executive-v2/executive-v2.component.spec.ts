@@ -16181,7 +16181,7 @@ describe('ExecutiveV2Component', () => {
       );
     });
 
-    it('should redirect to error page when user has no project access', () => {
+    it('should redirect to error page when user has no project access', (done) => {
       const stateFiltersObjLocal = {
         parent_level: {},
         primary_level: [
@@ -16208,6 +16208,7 @@ describe('ExecutiveV2Component', () => {
           status: 901,
           message: 'No project access.',
         });
+        done();
       }, 150);
     });
 
