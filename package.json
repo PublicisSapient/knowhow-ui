@@ -14,7 +14,10 @@
     "lint": "ng lint dashboard",
     "e2e": "ng e2e",
     "sonar": "sonar-scanner",
-    "prettier": "prettier src/**/*.{ts,css} --write"
+    "prettier": "prettier src/**/*.{ts,css} --write",
+    "tech-stack:report": "node scripts/generate-tech-stack-report.js",
+    "tech-stack:check": "node scripts/generate-tech-stack-report.js --no-readme-update",
+    "postinstall": "node scripts/check-precommit-setup.js"
   },
   "husky": {
     "hooks": {

@@ -236,6 +236,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedKpi206Filter: any = null;
   selectedKpi206FilterOption: any = null; // For ngModel binding in dropdown
 
+  // KPI312-specific: Excel data for export
+  kpi312ExcelData: any[] = [];
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -1569,6 +1572,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               const kpi187Data = getData.find(
                 (data) => data.kpiId === 'kpi189',
               );
+              const kpi312Data = getData.find(
+                (data) => data.kpiId === 'kpi312',
+              );
               if (
                 kpi187Data &&
                 kpi187Data.hasOwnProperty('trendValueList') &&
@@ -1577,6 +1583,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 this.sprintGoalData = JSON.parse(
                   JSON.stringify(kpi187Data['trendValueList']),
                 );
+              }
+
+              if (
+                kpi312Data &&
+                kpi312Data.hasOwnProperty('excelData') &&
+                kpi312Data['excelData'].length
+              ) {
+                this.kpi312ExcelData = kpi312Data['excelData'];
               }
 
               const releaseFrequencyInd = getData.findIndex(
@@ -2411,7 +2425,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   applyForecastData(chartSeries): void {
     chartSeries?.forEach((series) => {
       const forecastEntries = series?.forecasts;
-      if (!forecastEntries?.length) return;
+      if (!forecastEntries?.length) {
+        return;
+      }
       const forecastPoint = forecastEntries[0];
       const numericValue = Number(
         forecastPoint?.value ?? forecastPoint?.data ?? 0,
@@ -6087,6 +6103,88 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   /**
+   * Returns an array of data blocks for the kpi311 Overall tab.
+   * When a sprint is selected the tiles reflect that sprint's score, stories
+   * evaluated, and ready stories (read from trendValueList hoverValue).
+   * Trend is computed as the delta vs the immediately preceding sprint.
+   * Falls back to project-level aggregates when no sprint is selected or
+   * trendValueList is absent.
+   */
+  getKpi311DataBlocks(): any[] {
+    const kpiIdx = this.ifKpiExist('kpi311');
+    if (kpiIdx === -1) {
+      return [];
+    }
+
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData) {
+      return [];
+    }
+
+    const podCount = kpiData.podCount ?? 1;
+    const podText = `across ${podCount} ${podCount === 1 ? 'pod' : 'pods'}`;
+
+    // Flatten trendValueList into an ordered array of sprint items
+    const allSprintItems: any[] = [];
+    if (kpiData.trendValueList && Array.isArray(kpiData.trendValueList)) {
+      for (const trendItem of kpiData.trendValueList) {
+        if (trendItem.value && Array.isArray(trendItem.value)) {
+          allSprintItems.push(...trendItem.value);
+        }
+      }
+    }
+
+    const sprintIdx = allSprintItems.findIndex(
+      (item: any) => item.sSprintName === this.kpi311SelectedSprint,
+    );
+    const sprintData = sprintIdx >= 0 ? allSprintItems[sprintIdx] : null;
+
+    const hygieneScore = sprintData
+      ? Number(sprintData.value) || 0
+      : kpiData.projectScore ?? 0;
+    const storiesEvaluated =
+      sprintData?.hoverValue?.sampledIssueCount ?? kpiData.scoreFactor ?? 0;
+    const readyStories =
+      sprintData?.hoverValue?.passedIssueCount ?? kpiData.validScoreFactor ?? 0;
+    const notReady = storiesEvaluated - readyStories;
+
+    // Trend: delta vs previous sprint when sprint data is available;
+    // fall back to the pre-computed projectScoreTrend otherwise.
+    let trendDelta: number;
+    if (sprintData && sprintIdx > 0) {
+      const prevScore = Number(allSprintItems[sprintIdx - 1].value) || 0;
+      trendDelta = Math.round((hygieneScore - prevScore) * 100) / 100;
+    } else {
+      trendDelta = kpiData.projectScoreTrend ?? 0;
+    }
+
+    const trendSign = trendDelta >= 0 ? '+' : '';
+    const trendColor = trendDelta < 0 ? '#ef4444' : '#22c55e';
+    const trendInfo = `<span style="color: ${trendColor}; font-weight: 500;">${trendSign}${trendDelta}%</span><span style="color: #6c757d;"> vs previous sprint</span>`;
+
+    return [
+      {
+        header: 'Overall Hygiene Score',
+        value: hygieneScore,
+        unit: '%',
+        info: trendInfo,
+      },
+      {
+        header: 'Stories Evaluated',
+        value: storiesEvaluated,
+        unit: '',
+        info: podText,
+      },
+      {
+        header: 'Ready Stories',
+        value: readyStories,
+        unit: '',
+        info: `<span style="color: #6c757d;">vs</span><span style="color: #ef4444; font-weight: 500;"> ${notReady}</span><span style="color: #6c757d;"> not ready</span>`,
+      },
+    ];
+  }
+
+  /**
    * Returns the drillDown data for the currently selected sprint in kpi311 Details view.
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
@@ -6124,9 +6222,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return null;
     }
 
-    // Get the total value from the 'value' property (total issues for this sprint)
-    const totalValue = Number(sprintData.value) || 0;
-
     // Transform drillDown object into array of metric cards
     const drillDownObj = sprintData.drillDown;
     const metrics: any[] = [];
@@ -6134,13 +6229,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (const key in drillDownObj) {
       if (drillDownObj.hasOwnProperty(key)) {
         const value = Number(drillDownObj[key]) || 0;
-        // Calculate percentage relative to the total value
-        // Example: if value is 7 and "Priority Set" is 1, then percentage = (1/7)*100 = 14.3%
-        const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
         metrics.push({
           label: key,
-          value: value,
-          percentage: Math.round(percentage * 10) / 10,
+          value: Math.round(value * 10) / 10,
         });
       }
     }
@@ -6162,6 +6253,49 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       return '#dc3545'; // Red
     }
+  }
+
+  /**
+   * Returns true when the currently selected kpi311 sprint has evaluationFailed=true
+   * in its hoverValue — meaning the AI gateway failed for that sprint and no verdicts
+   * were produced.
+   */
+  isKpi311SprintFailed(): boolean {
+    if (!this.kpi311SelectedSprint) return false;
+    const kpiIdx = this.ifKpiExist('kpi311');
+    if (kpiIdx === -1) return false;
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData?.trendValueList) return false;
+    for (const trendItem of kpiData.trendValueList) {
+      if (trendItem.value && Array.isArray(trendItem.value)) {
+        const item = trendItem.value.find(
+          (i: any) => i.sSprintName === this.kpi311SelectedSprint,
+        );
+        if (item) return item.hoverValue?.['Evaluation Status'] === 'Failed';
+      }
+    }
+    return false;
+  }
+
+  /** Returns true when every sprint in the kpi311 trend data has evaluation failed — no valid data at all. */
+  isKpi311AllSprintsFailed(): boolean {
+    const kpiIdx = this.ifKpiExist('kpi311');
+    if (kpiIdx === -1) return false;
+    const kpiData = this.allKpiArray[kpiIdx];
+    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList))
+      return false;
+    const allItems: any[] = [];
+    for (const trendItem of kpiData.trendValueList) {
+      if (trendItem.value && Array.isArray(trendItem.value)) {
+        allItems.push(...trendItem.value);
+      }
+    }
+    return (
+      allItems.length > 0 &&
+      allItems.every(
+        (i: any) => i.hoverValue?.['Evaluation Status'] === 'Failed',
+      )
+    );
   }
 
   /**

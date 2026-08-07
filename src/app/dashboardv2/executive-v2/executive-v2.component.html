@@ -150,6 +150,7 @@
                               : {}
                             : kpiChartData[kpi?.kpiId]
                         "
+                        [kpi312ExcelData]="selectedTab === 'slingshot' ? this.kpi312ExcelData : []"
                         [colors]="colorObj"
                         [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
@@ -211,6 +212,9 @@
                         [kpi311SelectedView]="
                           kpi?.kpiId === 'kpi311' ? kpi311SelectedView : null
                         "
+                        [kpi311AllSprintsFailed]="
+                          kpi?.kpiId === 'kpi311' ? isKpi311AllSprintsFailed() : false
+                        "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
                         ">
@@ -265,15 +269,25 @@
                                     </ng-container>
                                   </ng-container>
 
-                                  <app-table
-                                    *ngSwitchCase="'table'"
-                                    [trendBoxColorObj]="trendBoxColorObj"
-                                    [data]="kpiChartData[kpi?.kpiId]?.data"
-                                    [cols]="
-                                      kpiChartData[kpi?.kpiId]?.columnHeaders
-                                    "
-                                    [showMarker]="'true'"
-                                    [showMarkerColumnNumber]="0"></app-table>
+                                  <ng-container *ngSwitchCase="'table'">
+                                    <!-- Epic Readiness Table for kpi312 -->
+                                    <app-epic-readiness-table
+                                      *ngIf="kpi.kpiId === 'kpi312'"
+                                      [kpiChartData]="this.kpi312ExcelData"
+                                      [trendBoxColorObj]="trendBoxColorObj">
+                                    </app-epic-readiness-table>
+
+                                    <!-- Default table for other KPIs -->
+                                    <app-table
+                                      *ngIf="kpi.kpiId !== 'kpi312'"
+                                      [trendBoxColorObj]="trendBoxColorObj"
+                                      [data]="kpiChartData[kpi?.kpiId]?.data"
+                                      [cols]="
+                                        kpiChartData[kpi?.kpiId]?.columnHeaders
+                                      "
+                                      [showMarker]="'true'"
+                                      [showMarkerColumnNumber]="0"></app-table>
+                                  </ng-container>
 
                                   <ng-container *ngSwitchCase="'line'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
@@ -303,7 +317,17 @@
                                           " />
                                       </div>
                                       }
-                                      @if (kpi.kpiId === 'kpi311') {
+                                      @if (kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed()) {
+                                      <div class="min-ht">
+                                        <div class="p-w-100 p-d-flex p-justify-center">
+                                          <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                        </div>
+                                        <div class="p-w-100">
+                                          <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                        </div>
+                                      </div>
+                                      }
+                                      @if (kpi.kpiId === 'kpi311' && !isKpi311AllSprintsFailed()) {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
@@ -324,7 +348,7 @@
                                       </div>
                                       }
                                       }
-                                      @if (kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') {
+                                      @if ((kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') && !(kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed())) {
                                       <div class="multiline-chart">
                                         <app-multiline-v2
                                           [thresholdValue]="
@@ -367,6 +391,28 @@
                                       }
                                       @if (kpi.kpiId === 'kpi311' && kpi311SelectedView === 'Details') {
                                       <div class="kpi311-details-view p-py-3">
+                                        @if (isKpi311SprintFailed()) {
+                                        <div class="min-ht">
+                                          <div class="p-w-100 p-d-flex p-justify-center">
+                                            <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                          </div>
+                                          <div class="p-w-100">
+                                            <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                          </div>
+                                        </div>
+                                        } @else {
+                                        <!-- New Data blocks go here -->
+                                        <div class="metrics-grid column-3 p-py-3 p-mb-3">
+                                          <div *ngFor="let block of getKpi311DataBlocks()" class="data-block p-p-3" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <div class="block-header" style="font-size: 0.875rem; color: #6c757d; margin-bottom: 8px;">{{ block.header }}</div>
+                                            <div class="block-value" style="font-size: 2rem; font-weight: 600; color: #2c3e50;">
+                                              {{ block.value }}{{ block.unit }}
+                                            </div>
+                                            <div class="block-info" style="font-size: 0.875rem; margin-top: 8px; display: none;" [innerHTML]="block.info"></div>
+                                          </div>
+                                        </div>
+                                        <!-- /end -->
+
                                         @if (getKpi311DrillDownData()) {
                                         <div class="drilldown-visualization">
                                           <div class="criteria-compliance-header">Criteria Compliance</div>
@@ -381,10 +427,10 @@
                                             <ng-template pTemplate="body" let-metric>
                                               <tr>
                                                 <td style="color: #495057; width: 50%;">{{ metric.label }}</td>
-                                                <td style="text-align: center; font-size: 0.875rem; color: #6c757d; width: 15%;">{{ metric.percentage }}%</td>
+                                                <td style="text-align: center; font-size: 0.875rem; color: #6c757d; width: 15%;">{{ metric.value }}%</td>
                                                 <td style="width: 35%;">
                                                   <div class="progress-bar-container" style="height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
-                                                    <div class="progress-bar-fill" [style.width.%]="metric.percentage" [style.background]="getMetricColor(metric.percentage)"></div>
+                                                    <div class="progress-bar-fill" [style.width.%]="metric.value" [style.background]="getMetricColor(metric.value)"></div>
                                                   </div>
                                                 </td>
                                               </tr>
@@ -395,6 +441,7 @@
                                         <div class="empty-container p-p-4" style="border: 1px dashed #ccc; border-radius: 8px; min-height: 200px; background-color: #f8f9fa;">
                                           <p class="p-text-center" style="color: #6c757d; padding-top: 80px;">No drillDown data available for the selected sprint</p>
                                         </div>
+                                        }
                                         }
                                       </div>
                                       }
@@ -1432,7 +1479,7 @@
                         <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
-                        <h4 class="p-text-center">No data Available.</h4>
+                        <h4 class="p-text-center">No data Available.5</h4>
                       </div>
                     </div>
                   </ng-template>
@@ -1465,7 +1512,7 @@
                         <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
-                        <h4 class="p-text-center">No Data Available.</h4>
+                        <h4 class="p-text-center">No Data Available.6</h4>
                       </div>
                     </div>
                   </ng-template>

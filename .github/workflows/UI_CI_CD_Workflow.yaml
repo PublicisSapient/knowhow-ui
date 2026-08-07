@@ -143,6 +143,63 @@ jobs:
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+      # Smoke test: Verify Docker container and Nginx
+      - name: Smoke Test - Docker Container & Nginx Health Check
+        run: |
+          echo "🧪 Starting smoke test for Docker container..."
+
+          # Run the container in detached mode with dummy API_HOST to avoid DNS resolution issues
+          CONTAINER_ID=$(docker run -d -p 8080:80 -e API_HOST=127.0.0.1 -e API_PORT=8080 $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG)
+          echo "Container started with ID: $CONTAINER_ID"
+
+          # Wait for Nginx to start (max 30 seconds)
+          echo "Waiting for Nginx to be ready..."
+          for i in {1..30}; do
+            if curl -f -s http://localhost:8080 > /dev/null; then
+              echo "✅ Nginx is responding!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Nginx failed to respond after 30 seconds"
+              docker logs $CONTAINER_ID
+              docker stop $CONTAINER_ID
+              docker rm $CONTAINER_ID
+              exit 1
+            fi
+            sleep 1
+          done
+
+          # Verify HTTP 200 response
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+          if [ "$HTTP_CODE" == "200" ]; then
+            echo "✅ Smoke test passed: Nginx returned HTTP $HTTP_CODE"
+          else
+            echo "❌ Smoke test failed: Expected HTTP 200, got $HTTP_CODE"
+            docker logs $CONTAINER_ID
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
+
+          # Verify index.html is served (check for common HTML indicators)
+          RESPONSE=$(curl -s http://localhost:8080)
+          if echo "$RESPONSE" | grep -qi -e "<!doctype html>" -e "<html" -e "<head>" -e "<title>"; then
+            echo "✅ index.html is being served correctly"
+          else
+            echo "❌ index.html not found or malformed"
+            echo "Response received:"
+            echo "$RESPONSE" | head -20
+            docker logs $CONTAINER_ID
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
+
+          # Cleanup
+          docker stop $CONTAINER_ID
+          docker rm $CONTAINER_ID
+          echo "✅ Smoke test completed successfully - container and Nginx are working!"
+
       - name: Checkout Helm charts from Bitbucket
         run: |
           git clone ${{ secrets.SPEEDTOOLS_BITBUCKET_HELM_REPO }}

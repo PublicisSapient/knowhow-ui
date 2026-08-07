@@ -1047,12 +1047,20 @@ describe('FieldMappingFormComponent', () => {
       const saveSpy = spyOn(component, 'saveFieldMapping');
       component.ngOnInit();
 
-      // Setup dynamic fields
+      // Setup dynamic fields with all required values
       component.updateDynamicWorkflowFields(['Summary', 'Description']);
       component.form.get('jiraStatusForSummary').setValue('Prompt for summary');
       component.form
+        .get('jiraFieldNameForSummary')
+        .setValue('customfield_10001');
+      component.form.get('jiraWeightageForSummary').setValue(50);
+      component.form
         .get('jiraStatusForDescription')
         .setValue('Prompt for description');
+      component.form
+        .get('jiraFieldNameForDescription')
+        .setValue('customfield_10002');
+      component.form.get('jiraWeightageForDescription').setValue(30);
 
       component.save();
 
@@ -1063,8 +1071,18 @@ describe('FieldMappingFormComponent', () => {
       );
       expect(triggerField).toBeDefined();
       expect(triggerField.originalValue).toEqual([
-        { label: 'Summary', prompt: 'Prompt for summary' },
-        { label: 'Description', prompt: 'Prompt for description' },
+        {
+          label: 'Summary',
+          fieldName: 'customfield_10001',
+          weightage: 50,
+          prompt: 'Prompt for summary',
+        },
+        {
+          label: 'Description',
+          fieldName: 'customfield_10002',
+          weightage: 30,
+          prompt: 'Prompt for description',
+        },
       ]);
     });
 
@@ -1221,6 +1239,425 @@ describe('FieldMappingFormComponent', () => {
       // Verify that bodyScrollPosition was updated to current scroll position
       expect(component.bodyScrollPosition).toBe(currentScroll);
       // Should not throw error even if element is null
+    });
+  });
+
+  describe('ngOnChanges', () => {
+    it('should reinitialize form when formData changes after initial load', () => {
+      component.fieldMappingConfig =
+        fakeKpiFieldMappingConfigList.data.fieldConfiguration;
+      component.formData = fakeSelectedFieldMapping;
+      component.ngOnInit();
+
+      const initSpy = spyOn(component, 'initializeForm').and.callThrough();
+      const generateSpy = spyOn(
+        component,
+        'generateFieldMappingConfiguration',
+      ).and.callThrough();
+
+      const newFormData = [
+        ...fakeSelectedFieldMapping,
+        { fieldName: 'newField', originalValue: 'newValue' },
+      ];
+      const changes = {
+        formData: {
+          currentValue: newFormData,
+          previousValue: fakeSelectedFieldMapping,
+          firstChange: false,
+          isFirstChange: () => false,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).toHaveBeenCalled();
+      expect(generateSpy).toHaveBeenCalled();
+      expect(component.form.pristine).toBeTruthy();
+      expect(component.form.untouched).toBeTruthy();
+    });
+
+    it('should not reinitialize on first change', () => {
+      const initSpy = spyOn(component, 'initializeForm');
+
+      const changes = {
+        formData: {
+          currentValue: fakeSelectedFieldMapping,
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not reinitialize if form is not defined', () => {
+      component.form = null;
+      const initSpy = spyOn(component, 'initializeForm');
+
+      const changes = {
+        formData: {
+          currentValue: fakeSelectedFieldMapping,
+          previousValue: [],
+          firstChange: false,
+          isFirstChange: () => false,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not reinitialize if formData did not change', () => {
+      component.fieldMappingConfig =
+        fakeKpiFieldMappingConfigList.data.fieldConfiguration;
+      component.formData = fakeSelectedFieldMapping;
+      component.ngOnInit();
+
+      const initSpy = spyOn(component, 'initializeForm');
+
+      const changes = {
+        someOtherInput: {
+          currentValue: 'new',
+          previousValue: 'old',
+          firstChange: false,
+          isFirstChange: () => false,
+        },
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(initSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('kpi311 Dynamic Workflow Fields', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: undefined,
+        },
+      ];
+      component.formData = [];
+      component.kpiId = 'kpi311';
+    });
+
+    it('should create dynamic fields with text inputs for kpi311', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary', 'Description'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'jiraFieldsSelectionKPI311';
+      expect(component.formConfig[targetSection]).toBeDefined();
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+      expect(dynamicFields[0].fieldLabel).toBe('Summary');
+      expect(dynamicFields[0].fieldType).toBe('text');
+      expect(dynamicFields[1].fieldLabel).toBe('Description');
+      expect(dynamicFields[1].fieldType).toBe('text');
+    });
+
+    it('should create fieldNameControlName for kpi311 dynamic fields', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'jiraFieldsSelectionKPI311';
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields[0].fieldNameControlName).toBe(
+        'jiraFieldNameForSummary',
+      );
+    });
+
+    it('should create weightageControlName for kpi311 dynamic fields', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'jiraFieldsSelectionKPI311';
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f) => f.isDynamic,
+      );
+      expect(dynamicFields[0].weightageControlName).toBe(
+        'jiraWeightageForSummary',
+      );
+    });
+
+    it('should add weightage form controls with min validator', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const weightageControl = component.form.get('jiraWeightageForSummary');
+      expect(weightageControl).toBeDefined();
+
+      // Test min validator
+      weightageControl.setValue(5);
+      expect(weightageControl.valid).toBeFalse();
+
+      weightageControl.setValue(10);
+      expect(weightageControl.valid).toBeTrue();
+    });
+
+    it('should restore previous values for kpi311 dynamic fields', () => {
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          originalValue: [
+            {
+              label: 'Summary',
+              fieldName: 'customfield_10001',
+              weightage: 50,
+              prompt: 'Write summary',
+            },
+          ],
+        },
+      ];
+      component.ngOnInit();
+
+      const selectedGroups = ['Summary'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      expect(component.form.get('jiraStatusForSummary').value).toBe(
+        'Write summary',
+      );
+      expect(component.form.get('jiraFieldNameForSummary').value).toBe(
+        'customfield_10001',
+      );
+      expect(component.form.get('jiraWeightageForSummary').value).toBe(50);
+    });
+
+    it('should use fieldName as section for kpi311 trigger field', () => {
+      component.generateFieldMappingConfiguration();
+
+      expect(component.formConfig['jiraFieldsSelectionKPI311']).toBeDefined();
+      expect(
+        component.fieldMappingSectionList.includes('jiraFieldsSelectionKPI311'),
+      ).toBeTruthy();
+    });
+  });
+
+  describe('Save with kpi311 Dynamic Fields', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          fieldCategory: 'workflow',
+          section: undefined,
+        },
+      ];
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          originalValue: [],
+        },
+      ];
+      component.kpiId = 'kpi311';
+      component.selectedToolConfig = [{ id: '123', toolName: 'JIRA' }];
+      component.metaDataTemplateCode = '9';
+    });
+
+    it('should save kpi311 dynamic fields with correct payload structure', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      // Setup dynamic fields
+      component.updateDynamicWorkflowFields(['Summary', 'Description']);
+      component.form.get('jiraStatusForSummary').setValue('Write a summary');
+      component.form
+        .get('jiraFieldNameForSummary')
+        .setValue('customfield_10001');
+      component.form.get('jiraWeightageForSummary').setValue(50);
+      component.form
+        .get('jiraStatusForDescription')
+        .setValue('Write description');
+      component.form
+        .get('jiraFieldNameForDescription')
+        .setValue('customfield_10002');
+      component.form.get('jiraWeightageForDescription').setValue(30);
+
+      component.save();
+
+      expect(saveSpy).toHaveBeenCalled();
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f) => f.fieldName === 'jiraFieldsSelectionKPI311',
+      );
+
+      expect(triggerField).toBeDefined();
+      expect(triggerField.originalValue).toEqual([
+        {
+          label: 'Summary',
+          fieldName: 'customfield_10001',
+          weightage: 50,
+          prompt: 'Write a summary',
+        },
+        {
+          label: 'Description',
+          fieldName: 'customfield_10002',
+          weightage: 30,
+          prompt: 'Write description',
+        },
+      ]);
+    });
+
+    it('should handle null weightage for kpi311', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Summary']);
+      component.form.get('jiraStatusForSummary').setValue('Write summary');
+      component.form
+        .get('jiraFieldNameForSummary')
+        .setValue('customfield_10001');
+      component.form.get('jiraWeightageForSummary').setValue(null);
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f) => f.fieldName === 'jiraFieldsSelectionKPI311',
+      );
+
+      expect(triggerField.originalValue[0].weightage).toBeNull();
+    });
+
+    it('should not include individual dynamic field entries in finalList', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Summary']);
+      component.form.get('jiraStatusForSummary').setValue('Write summary');
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const dynamicFieldEntry = savedData.find(
+        (f) => f.fieldName === 'jiraStatusForSummary',
+      );
+
+      expect(dynamicFieldEntry).toBeUndefined();
+    });
+  });
+
+  describe('fieldMappingLabel getter', () => {
+    it('should return correct label for kpi202', () => {
+      component.kpiId = 'kpi202';
+      expect(component.fieldMappingLabel).toBe('Workfow groups');
+    });
+
+    it('should return correct label for kpi206', () => {
+      component.kpiId = 'kpi206';
+      expect(component.fieldMappingLabel).toBe('Workfow groups');
+    });
+
+    it('should return correct label for kpi311', () => {
+      component.kpiId = 'kpi311';
+      expect(component.fieldMappingLabel).toBe('Fields to write prompts');
+    });
+
+    it('should return empty string for unknown kpiId', () => {
+      component.kpiId = 'kpi999';
+      expect(component.fieldMappingLabel).toBe('');
+    });
+  });
+
+  describe('getStaticFields and getDynamicFields', () => {
+    beforeEach(() => {
+      component.formConfig = {
+        'Test Section': [
+          { fieldName: 'field1', isDynamic: false },
+          { fieldName: 'field2', isDynamic: true },
+          { fieldName: 'field3', isDynamic: false },
+        ],
+      };
+    });
+
+    it('should return only static fields', () => {
+      const staticFields = component.getStaticFields('Test Section');
+      expect(staticFields.length).toBe(2);
+      expect(staticFields[0].fieldName).toBe('field1');
+      expect(staticFields[1].fieldName).toBe('field3');
+    });
+
+    it('should return only dynamic fields', () => {
+      const dynamicFields = component.getDynamicFields('Test Section');
+      expect(dynamicFields.length).toBe(1);
+      expect(dynamicFields[0].fieldName).toBe('field2');
+    });
+
+    it('should return empty array for non-existent section', () => {
+      const staticFields = component.getStaticFields('Non Existent');
+      const dynamicFields = component.getDynamicFields('Non Existent');
+      expect(staticFields).toEqual([]);
+      expect(dynamicFields).toEqual([]);
+    });
+  });
+
+  describe('recordScrollPosition with focus management', () => {
+    beforeEach(() => {
+      document.documentElement.scrollTop = 0;
+    });
+
+    it('should record scroll position and focus dialog header', () => {
+      document.documentElement.scrollTop = 200;
+      const currentScroll = document.documentElement.scrollTop;
+
+      const mockHeader = document.createElement('div');
+      mockHeader.id = 'addValuesDialogTitle';
+      mockHeader.focus = jasmine.createSpy('focus');
+      spyOn(document, 'getElementById').and.returnValue(mockHeader);
+
+      component.addValueDialog = {
+        contentViewChild: {},
+      } as any;
+
+      component.recordScrollPosition();
+
+      expect(component.bodyScrollPosition).toBe(currentScroll);
+      expect(mockHeader.focus).toHaveBeenCalled();
+    });
+
+    it('should record scroll position even if dialog header is not found', () => {
+      document.documentElement.scrollTop = 300;
+      const currentScroll = document.documentElement.scrollTop;
+
+      spyOn(document, 'getElementById').and.returnValue(null);
+      component.addValueDialog = {
+        contentViewChild: {},
+      } as any;
+
+      component.recordScrollPosition();
+
+      expect(component.bodyScrollPosition).toBe(currentScroll);
+      // Should not throw error even if element is null
+    });
+
+    it('should not throw error when contentViewChild is undefined', () => {
+      document.documentElement.scrollTop = 150;
+      const currentScroll = document.documentElement.scrollTop;
+
+      component.addValueDialog = {} as any;
+
+      expect(() => component.recordScrollPosition()).not.toThrow();
+      expect(component.bodyScrollPosition).toBe(currentScroll);
     });
   });
 });

@@ -1,0 +1,53 @@
+# Optional: CI/CD Integration for Dependency Tracking
+# This workflow can run the tech stack report in CI to ensure it's always up to date
+
+name: Dependency Documentation Check
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+jobs:
+  check-tech-stack-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Generate tech stack report
+        run: npm run tech-stack:check
+      
+      - name: Check if TECH_STACK.md needs update
+        run: |
+          if git diff --quiet TECH_STACK.md; then
+            echo "✅ TECH_STACK.md is up to date"
+          else
+            echo "⚠️  TECH_STACK.md needs to be updated"
+            echo "Run: npm run tech-stack:report"
+            git diff TECH_STACK.md
+            exit 1
+          fi
+      
+      - name: Check if README.md needs update
+        run: |
+          if git diff --quiet README.md; then
+            echo "✅ README.md is up to date"
+          else
+            echo "⚠️  README.md needs to be updated"
+            echo "Run: npm run tech-stack:report"
+            git diff README.md
+            exit 1
+          fi
+      
+      - name: Success
+        run: |
+          echo "🎉 All dependency documentation is synchronized!"

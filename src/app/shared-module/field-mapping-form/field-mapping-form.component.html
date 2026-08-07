@@ -71,8 +71,18 @@
                                       <img class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)" (click)="hitoryPopup.toggle($event); handleBtnClick(dynField.fieldName);" (keydown.enter)="hitoryPopup.toggle($event); handleBtnClick(dynField.fieldName);" src="assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + dynField['fieldLabel']" tabindex="0" />
                                   </div>
                               </div>
-                              <div class="w-60vw">
-                                  <app-field-mapping-field [kpiId]="kpiId" [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="dynField" [formControlName]="dynField['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="dynField['fieldLabel'] + ' Input'"></app-field-mapping-field>
+                              <div class="w-60vw p-d-flex p-align-center" style="gap: 8px;">
+                                  <!-- fieldName: hidden, preserved on save -->
+                                  <input *ngIf="dynField['fieldNameControlName']" type="hidden" [formControlName]="dynField['fieldNameControlName']" />
+                                  <!-- weightage: inline numeric input -->
+                                  <input *ngIf="dynField['weightageControlName']" pInputText type="number" min="10"
+                                         style="width: 80px; flex-shrink: 0;"
+                                         [formControlName]="dynField['weightageControlName']"
+                                         placeholder="Weightage"
+                                         [attr.aria-label]="dynField['fieldLabel'] + ' Weightage'" />
+                                  <div style="flex: 1;">
+                                      <app-field-mapping-field [kpiId]="kpiId" [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="dynField" [formControlName]="dynField['fieldName']" [thresholdUnit]="thresholdUnit" (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="dynField['fieldLabel'] + ' Prompt'"></app-field-mapping-field>
+                                  </div>
                               </div>
                           </div>
                       </div>
