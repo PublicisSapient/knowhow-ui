@@ -91,6 +91,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() filterApplyData: any;
   @Input() tableData: any[];
   @Input() tableColumns: any[];
+  @Input() kpi312ExcelData: any;
   // showComments: boolean = false;
   loading = false;
   noData = false;
@@ -192,6 +193,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpi205SelectedView: string;
   /** kpi311-specific: currently selected view ('Overall' | 'Details') */
   @Input() kpi311SelectedView: string;
+  /** kpi311-specific: true when every sprint has failed evaluation */
+  @Input() kpi311AllSprintsFailed: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -994,6 +997,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.trendValueList?.data &&
         this.trendValueList?.data?.length
       );
+    } else if (
+      (data === '200' || data === '201' || data === '203') &&
+      this.kpiData?.kpiId === 'kpi312'
+    ) {
+      if (this.kpi312ExcelData?.length) {
+        return true;
+      }
     } else {
       return (
         (data === '200' || data === '201' || data === '203') &&
