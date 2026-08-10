@@ -92,6 +92,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() tableData: any[];
   @Input() tableColumns: any[];
   @Input() kpi312ExcelData: any;
+  @Input() kpi312MaturityBlockData: any;
   // showComments: boolean = false;
   loading = false;
   noData = false;
@@ -1001,7 +1002,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       (data === '200' || data === '201' || data === '203') &&
       this.kpiData?.kpiId === 'kpi312'
     ) {
-      if (this.kpi312ExcelData?.length) {
+      if (
+        this.kpi312ExcelData?.length &&
+        this.kpi312MaturityBlockData?.length
+      ) {
         return true;
       }
     } else {

@@ -1,4 +1,15 @@
 <div class="epic-readiness-table-container" *ngIf="columnHeaders && tableData">
+  <!-- Maturity Blocks -->
+  <div class="maturity-blocks" *ngIf="maturityBlockData && maturityBlockData.length > 0">
+    <div class="maturity-block" *ngFor="let block of maturityBlockData">
+      <div class="block-label">{{ block.label }}</div>
+      <div class="block-value">
+        {{ block.value }}
+        <span class="block-info" *ngIf="block.labelInfo">{{ block.labelInfo }}</span>
+      </div>
+    </div>
+  </div>
+
   <div class="table-scroll-wrapper">
     <p-table
       [value]="tableData"

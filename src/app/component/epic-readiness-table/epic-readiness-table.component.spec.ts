@@ -62,6 +62,13 @@ describe('EpicReadinessTableComponent', () => {
     },
   };
 
+  const mockMaturityBlockData = [
+    { label: 'Total Active Epics', value: 11 },
+    { label: 'Construction Ready', value: 1 },
+    { label: 'Avg Readiness Score', value: 58.5 },
+    { label: 'At Risk / Blocked', value: 1, labelInfo: 'Readiness < 50%' },
+  ];
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [EpicReadinessTableComponent],
@@ -471,6 +478,73 @@ describe('EpicReadinessTableComponent', () => {
       );
       expect(firstRowCells[3].nativeElement.textContent.trim()).toBe('40.0%');
       expect(firstRowCells[4].nativeElement.textContent.trim()).toBe('60.0%');
+    });
+  });
+
+  describe('Maturity Blocks', () => {
+    beforeEach(async () => {
+      component.kpiChartData = mockExcelData;
+      component.maturityBlockData = mockMaturityBlockData;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    });
+
+    it('should render maturity blocks when data is available', () => {
+      const maturityBlocks = fixture.debugElement.queryAll(
+        By.css('.maturity-block'),
+      );
+      expect(maturityBlocks.length).toBe(4);
+    });
+
+    it('should render block labels correctly', () => {
+      const blockLabels = fixture.debugElement.queryAll(By.css('.block-label'));
+      expect(blockLabels[0].nativeElement.textContent.trim()).toBe(
+        'Total Active Epics',
+      );
+      expect(blockLabels[1].nativeElement.textContent.trim()).toBe(
+        'Construction Ready',
+      );
+      expect(blockLabels[2].nativeElement.textContent.trim()).toBe(
+        'Avg Readiness Score',
+      );
+      expect(blockLabels[3].nativeElement.textContent.trim()).toBe(
+        'At Risk / Blocked',
+      );
+    });
+
+    it('should render block values correctly', () => {
+      const blockValues = fixture.debugElement.queryAll(By.css('.block-value'));
+      expect(blockValues[0].nativeElement.textContent.trim()).toContain('11');
+      expect(blockValues[1].nativeElement.textContent.trim()).toContain('1');
+      expect(blockValues[2].nativeElement.textContent.trim()).toContain('58.5');
+      expect(blockValues[3].nativeElement.textContent.trim()).toContain('1');
+    });
+
+    it('should render labelInfo when present', () => {
+      const blockInfos = fixture.debugElement.queryAll(By.css('.block-info'));
+      expect(blockInfos.length).toBe(1);
+      expect(blockInfos[0].nativeElement.textContent.trim()).toBe(
+        'Readiness < 50%',
+      );
+    });
+
+    it('should not render maturity blocks when data is null', () => {
+      component.maturityBlockData = null;
+      fixture.detectChanges();
+      const maturityBlocks = fixture.debugElement.queryAll(
+        By.css('.maturity-block'),
+      );
+      expect(maturityBlocks.length).toBe(0);
+    });
+
+    it('should not render maturity blocks when data is empty array', () => {
+      component.maturityBlockData = [];
+      fixture.detectChanges();
+      const maturityBlocks = fixture.debugElement.queryAll(
+        By.css('.maturity-block'),
+      );
+      expect(maturityBlocks.length).toBe(0);
     });
   });
 
