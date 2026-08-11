@@ -74,6 +74,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     kpi202: 'Workfow groups',
     kpi206: 'Workfow groups',
     kpi311: 'Fields to write prompts',
+    kpi312: 'Epic readiness dimensions',
   };
 
   get fieldMappingLabel(): string {
@@ -111,7 +112,8 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       if (
         this.kpiId === 'kpi202' ||
         this.kpiId === 'kpi206' ||
-        this.kpiId === 'kpi311'
+        this.kpiId === 'kpi311' ||
+        this.kpiId === 'kpi312'
       ) {
         const triggerField = this.fieldMappingConfig.find(
           (field) => field.fieldLabel === this.fieldMappingLabel,
@@ -137,7 +139,8 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     if (
       this.kpiId === 'kpi202' ||
       this.kpiId === 'kpi206' ||
-      this.kpiId === 'kpi311'
+      this.kpiId === 'kpi311' ||
+      this.kpiId === 'kpi312'
     ) {
       const triggerField = this.fieldMappingConfig.find(
         (field) => field.fieldLabel === this.fieldMappingLabel,
@@ -160,19 +163,45 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
   }
 
   getDynamicFields(section: string) {
-    return this.formConfig[section]?.filter((f) => f.isDynamic) || [];
+    const dynamicFields =
+      this.formConfig[section]?.filter((f) => f.isDynamic) || [];
+    console.log(
+      `[getDynamicFields] section: "${section}", count: ${dynamicFields.length}, fields:`,
+      dynamicFields.map((f: any) => f.fieldName),
+    );
+    return dynamicFields;
   }
 
   updateDynamicWorkflowFields(selectedGroups: string[] | string) {
+    console.log('[Dynamic Fields Debug] ========== START ==========');
+    console.log('[Dynamic Fields Debug] kpiId:', this.kpiId);
+    console.log('[Dynamic Fields Debug] selectedGroups:', selectedGroups);
+    console.log(
+      '[Dynamic Fields Debug] fieldMappingLabel:',
+      this.fieldMappingLabel,
+    );
+
     if (!this.formConfig) {
+      console.log(
+        '[Dynamic Fields Debug] formConfig is null/undefined - EXITING',
+      );
       return;
     }
 
     const triggerField = this.fieldMappingConfig.find(
       (f) => f.fieldLabel === this.fieldMappingLabel,
     );
+    console.log('[Dynamic Fields Debug] triggerField found:', triggerField);
 
     if (!triggerField) {
+      console.log('[Dynamic Fields Debug] No trigger field found - EXITING');
+      console.log(
+        '[Dynamic Fields Debug] Available fields:',
+        this.fieldMappingConfig.map((f) => ({
+          fieldName: f.fieldName,
+          fieldLabel: f.fieldLabel,
+        })),
+      );
       return;
     }
 
@@ -185,6 +214,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           (f) => f.fieldName === triggerField.fieldName,
         ),
       ) || this.workFlowStatusMappingSection;
+    console.log('[Dynamic Fields Debug] targetSection:', targetSection);
 
     if (!this.formConfig[targetSection]) {
       this.formConfig[targetSection] = [];
@@ -250,14 +280,19 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       const dynamicField = {
         fieldName: dynamicFieldName,
         fieldNameControlName:
-          this.kpiId === 'kpi311' ? fieldNameControlName : undefined,
+          this.kpiId === 'kpi311' || this.kpiId === 'kpi312'
+            ? fieldNameControlName
+            : undefined,
         weightageControlName:
-          this.kpiId === 'kpi311' ? weightageControlName : undefined,
+          this.kpiId === 'kpi311' || this.kpiId === 'kpi312'
+            ? weightageControlName
+            : undefined,
         fieldLabel:
-          this.kpiId !== 'kpi311'
+          this.kpiId !== 'kpi311' && this.kpiId !== 'kpi312'
             ? `Status to identify ${capitalizedGroup}`
             : capitalizedGroup,
-        fieldType: this.kpiId === 'kpi311' ? 'text' : 'chips',
+        fieldType:
+          this.kpiId === 'kpi311' || this.kpiId === 'kpi312' ? 'text' : 'chips',
         fieldCategory: 'workflow',
         section: targetSection,
         processorCommon: false,
@@ -291,8 +326,8 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
               const matchedGroup = triggerValue.find(
                 (item: any) => item.label === group,
               );
-              // For kpi311, the value is stored as 'prompt', for kpi202/206 it's 'statuses'
-              if (this.kpiId === 'kpi311') {
+              // For kpi311/kpi312, the value is stored as 'prompt', for kpi202/206 it's 'statuses'
+              if (this.kpiId === 'kpi311' || this.kpiId === 'kpi312') {
                 initialValue = matchedGroup ? matchedGroup.prompt : '';
                 initialFieldName = matchedGroup
                   ? matchedGroup.fieldName || ''
@@ -314,9 +349,9 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
         const control = new FormControl(initialValue);
         this.form.addControl(dynamicFieldName, control);
 
-        // kpi311: also create controls for the Jira field name and weightage
+        // kpi311/kpi312: also create controls for the Jira field name and weightage
         if (
-          this.kpiId === 'kpi311' &&
+          (this.kpiId === 'kpi311' || this.kpiId === 'kpi312') &&
           !this.form.contains(fieldNameControlName)
         ) {
           this.form.addControl(
@@ -332,7 +367,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
             });
           }
         }
-        if (this.kpiId === 'kpi311') {
+        if (this.kpiId === 'kpi311' || this.kpiId === 'kpi312') {
           if (!this.form.contains(weightageControlName)) {
             this.form.addControl(
               weightageControlName,
@@ -396,13 +431,21 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     this.formConfig = { ...this.formConfig };
 
     console.log(
-      '[kpi311 debug] After update — targetSection:',
+      '[Dynamic Fields Debug] After update — targetSection:',
       targetSection,
-      '| dynamic fields:',
+    );
+    console.log(
+      '[Dynamic Fields Debug] Dynamic fields count:',
+      this.formConfig[targetSection]?.filter((f) => f.isDynamic).length,
+    );
+    console.log(
+      '[Dynamic Fields Debug] Dynamic field names:',
       this.formConfig[targetSection]
         ?.filter((f) => f.isDynamic)
         .map((f) => f.fieldName),
     );
+    console.log('[Dynamic Fields Debug] Full formConfig:', this.formConfig);
+    console.log('[Dynamic Fields Debug] ========== END ==========');
   }
 
   generateFieldMappingConfiguration() {
@@ -416,8 +459,10 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       let sectionKey = field.section;
       if (!sectionKey) {
         if (
-          this.kpiId === 'kpi311' &&
-          field.fieldName === 'jiraFieldsSelectionKPI311'
+          (this.kpiId === 'kpi311' &&
+            field.fieldName === 'jiraFieldsSelectionKPI311') ||
+          (this.kpiId === 'kpi312' &&
+            field.fieldName === 'jiraFieldsSelectionKPI312')
         ) {
           sectionKey = field.fieldName; // Use 'jiraFieldsSelectionKPI311' as section key
         } else {
@@ -439,6 +484,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       'Additional Filter Identifier',
       'Project Level Threshold',
       'jiraFieldsSelectionKPI311', // kpi311-specific section (no backend section defined)
+      'jiraFieldsSelectionKPI312', // kpi312-specific section (no backend section defined)
     ];
     const sectionsList = [...new Set(fieldMappingSections)].sort((a, b) =>
       a.localeCompare(b, undefined, { sensitivity: 'base' }),
@@ -808,7 +854,8 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     if (
       this.kpiId === 'kpi202' ||
       this.kpiId === 'kpi206' ||
-      this.kpiId === 'kpi311'
+      this.kpiId === 'kpi311' ||
+      this.kpiId === 'kpi312'
     ) {
       const triggerField = this.fieldMappingConfig.find(
         (f) => f.fieldLabel === this.fieldMappingLabel,
@@ -829,7 +876,7 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
         // Build mappingValue from ALL dynamic fields currently in the form
         this.formConfig[targetSection]?.forEach((config) => {
           if (config.isDynamic) {
-            if (this.kpiId === 'kpi311') {
+            if (this.kpiId === 'kpi311' || this.kpiId === 'kpi312') {
               const w = this.form.value[config.weightageControlName];
               const fn = this.form.value[config.fieldNameControlName] || '';
               const entry: any = {

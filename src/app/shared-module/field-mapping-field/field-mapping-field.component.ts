@@ -88,8 +88,11 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
    * For arrays, convert to comma-separated string for display.
    */
   get displayValue(): string {
-    if (this.kpiId === 'kpi311' && Array.isArray(this.value)) {
-      return this.value.join(', ');
+    if (this.kpiId === 'kpi311' || this.kpiId === 'kpi312') {
+      if (Array.isArray(this.value)) {
+        return this.value.join(', ');
+      }
+      return typeof this.value === 'string' ? this.value : '';
     }
     return typeof this.value === 'string' ? this.value : '';
   }
