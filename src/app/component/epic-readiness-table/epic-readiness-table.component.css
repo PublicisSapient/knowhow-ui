@@ -4,6 +4,52 @@
   padding: 1rem;
 }
 
+/* Maturity Blocks */
+.maturity-blocks {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.maturity-block {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.maturity-block:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.block-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.block-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.2;
+}
+
+.block-info {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #dc3545;
+  margin-top: 0.25rem;
+}
+
 /* Horizontal scroll wrapper */
 .table-scroll-wrapper {
   width: 100%;

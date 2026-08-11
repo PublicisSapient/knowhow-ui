@@ -151,6 +151,7 @@
                             : kpiChartData[kpi?.kpiId]
                         "
                         [kpi312ExcelData]="selectedTab === 'slingshot' ? this.kpi312ExcelData : []"
+                        [kpi312MaturityBlockData]="selectedTab === 'slingshot' ? this.kpi312MaturityBlockData : []"
                         [colors]="colorObj"
                         [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
@@ -274,7 +275,8 @@
                                     <app-epic-readiness-table
                                       *ngIf="kpi.kpiId === 'kpi312'"
                                       [kpiChartData]="this.kpi312ExcelData"
-                                      [trendBoxColorObj]="trendBoxColorObj">
+                                      [trendBoxColorObj]="trendBoxColorObj"
+                                      [maturityBlockData]="this.kpi312MaturityBlockData">
                                     </app-epic-readiness-table>
 
                                     <!-- Default table for other KPIs -->

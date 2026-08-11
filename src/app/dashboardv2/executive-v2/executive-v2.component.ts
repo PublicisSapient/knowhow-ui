@@ -238,6 +238,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // KPI312-specific: Excel data for export
   kpi312ExcelData: any[] = [];
+  kpi312MaturityBlockData: any[] = []; // New property to hold maturity block data for KPI312
 
   constructor(
     public service: SharedService,
@@ -1591,6 +1592,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 kpi312Data['excelData'].length
               ) {
                 this.kpi312ExcelData = kpi312Data['excelData'];
+                this.kpi312MaturityBlockData = kpi312Data['trendValueList'];
               }
 
               const releaseFrequencyInd = getData.findIndex(
