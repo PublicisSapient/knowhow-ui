@@ -727,7 +727,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     if (currentTrendList.length == 1 || selectedTab === 'release') {
-      console.log(JSON.stringify(currentTrendList));
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
@@ -873,7 +872,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * @returns The transformed data
    */
   transformKpi202DataForExcel(exportData: any[]): any[] {
-    console.log('transformKpi202DataForExcel called with data:', exportData);
     const result = exportData.map((row) => {
       const transformedRow = { ...row };
       Object.keys(transformedRow).forEach((key) => {
@@ -895,17 +893,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           ) {
             return;
           }
-          console.log(`Transforming field ${key}:`, value);
           // Non-URL hyperlink values (e.g. "6.7 Days") — render as "text: value" plain text
           transformedRow[key] = value
             .map((item) => `${item.text}: ${item.hyperlink}`)
             .join('\n');
-          console.log(`After transform, field ${key}:`, transformedRow[key]);
         }
       });
       return transformedRow;
     });
-    console.log('Final transformed data:', result);
     return result;
   }
 
@@ -921,16 +916,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       // Transform kpi202 data for proper Excel export formatting
       if (this.kpiData?.kpiId === 'kpi202') {
-        console.log(
-          'Original export data for KPI202:',
-          JSON.stringify(exportData),
-        );
         exportData = this.transformKpi202DataForExcel(exportData);
-        console.log('Transformed export data:', JSON.stringify(exportData));
       }
-      console.log('Emitting kpiExcelSubject with data:', {
-        excelData: exportData,
-      });
       this.service.kpiExcelSubject.next({
         markerInfo: this.cardData?.dataGroup?.markerInfo,
         columns: this.cardData['modalHeads'],
@@ -977,12 +964,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.kpiData?.kpiId === 'kpi153' ||
         this.kpiData?.kpiId === 'kpi35')
     ) {
-      console.log(
-        'kpiId ',
-        this.kpiData?.kpiId,
-        ' trendValueList ',
-        this.trendValueList?.length,
-      );
       if (
         this.trendValueList?.length &&
         this.trendValueList[0]?.value?.length > 0
@@ -1796,7 +1777,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     } else if (this.kpiData.kpiDetail.kpiSource === 'Zypher') {
       payloadDataFromKPIGroup = this.service.getKPIPostZypherData();
     }
-    console.log('payloadDataFromKPIGroup', payloadDataFromKPIGroup);
     const shared_link = window.location.href,
       queryParams = new URLSearchParams(shared_link.split('?')[1]),
       stateFilters = JSON.stringify(queryParams.get('stateFilters')),
@@ -2024,7 +2004,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   expandToFullWidth(event: any) {
     // Toggle the expansion state
     this.isExpandedToFullWidth = !this.isExpandedToFullWidth;
-    console.log('Toggling full width to:', this.isExpandedToFullWidth);
 
     // Emit the current state to parent component
     this.fullWidthToggled.emit(this.isExpandedToFullWidth);

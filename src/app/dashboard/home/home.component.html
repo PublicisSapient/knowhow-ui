@@ -95,7 +95,7 @@
                       {{ row[col.field] === 'M0' ? 'N/A' : row[col.field] }}
                     </div>
                     }
-                
+
                 </ng-container>
               </td>
             </tr>
@@ -180,7 +180,7 @@
               <td [attr.colspan]="tableData['columns'].length" role="cell" tabindex="0">
                 <div class="p-d-flex p-flex-column p-align-center">
                   <img alt="no-data" src="assets/img/NoDataFound.svg" />
-                  <h4>No Data Available. </h4>
+                  <h4>No Data Available.</h4>
                 </div>
               </td>
             </tr>
@@ -233,7 +233,7 @@
 
       <div *ngIf="loader" class="loader"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div>
     </div>
-  </div>  
+  </div>
 
   <!-- MATURITY WHEEL -->
   <div class="kpi-details-table-container p-mt-3" [hidden]="true">

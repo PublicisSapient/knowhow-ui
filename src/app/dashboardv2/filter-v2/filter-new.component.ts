@@ -2545,7 +2545,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   debouncedFilterKpis = this.helperService.debounce(async (event: any) => {
-    console.log('groupedKpiOptions ', this.groupedKpiOptions);
     event.query = event.query.replace(/[^a-zA-Z0-9\s]/g, '');
     // (event.target as HTMLInputElement).value = event.query;
 

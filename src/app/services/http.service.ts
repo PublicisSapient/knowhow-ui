@@ -942,7 +942,6 @@ export class HttpService {
         this.router.navigate(['./authentication/login']);
       }
       // TODO: send the error to remote logging infrastructure
-      // console.log('http', of(result as T)); // log to console instead
       // Let the app keep running by returning an empty result.
       return of(error);
     };
