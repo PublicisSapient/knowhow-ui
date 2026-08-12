@@ -184,7 +184,6 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   onDragStart(event: DragEvent, item: any) {
-    console.log('[Chips DnD] Drag Start:', item);
     this.draggedItem = item;
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
@@ -199,17 +198,10 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   onDragEnd(event: DragEvent) {
-    console.log('[Chips DnD] Drag End');
     this.draggedItem = null;
   }
 
   onDrop(event: DragEvent, targetItem: any) {
-    console.log(
-      '[Chips DnD] Drop target:',
-      targetItem,
-      'Dragged item:',
-      this.draggedItem,
-    );
     event.preventDefault();
     event.stopPropagation();
     if (
@@ -219,12 +211,6 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
     ) {
       const fromIndex = this.value.indexOf(this.draggedItem);
       const toIndex = this.value.indexOf(targetItem);
-      console.log(
-        '[Chips DnD] Indices - fromIndex:',
-        fromIndex,
-        'toIndex:',
-        toIndex,
-      );
 
       if (fromIndex !== -1 && toIndex !== -1) {
         // Move item in array with a new reference so PrimeNG and Angular trigger change detection
@@ -232,7 +218,6 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
         newValue.splice(fromIndex, 1);
         newValue.splice(toIndex, 0, this.draggedItem);
         this.value = newValue;
-        console.log('[Chips DnD] New Value array:', this.value);
         // Trigger onChange/form value updates
         this.setValue();
         this.cdr.detectChanges();

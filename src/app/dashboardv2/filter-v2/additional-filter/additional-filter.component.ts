@@ -223,7 +223,6 @@ export class AdditionalFilterComponent implements OnChanges {
           }
           if (this.stateFilters[key].length) {
             // why is sqd filter not showing
-            console.log(this.filterData[correctIndex]);
             this.selectedFilters[correctIndex] = this.filterData[
               correctIndex
             ].filter((f) =>

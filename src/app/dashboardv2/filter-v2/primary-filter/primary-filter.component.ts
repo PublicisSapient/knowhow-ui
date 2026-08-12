@@ -725,8 +725,6 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   preventDropdownClose(event: Event) {
-    // event.stopPropagation();
-    console.log('preventDropdownClose');
     this.preventClose = true;
   }
 

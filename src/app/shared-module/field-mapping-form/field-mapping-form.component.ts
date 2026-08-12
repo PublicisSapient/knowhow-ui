@@ -165,43 +165,19 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
   getDynamicFields(section: string) {
     const dynamicFields =
       this.formConfig[section]?.filter((f) => f.isDynamic) || [];
-    console.log(
-      `[getDynamicFields] section: "${section}", count: ${dynamicFields.length}, fields:`,
-      dynamicFields.map((f: any) => f.fieldName),
-    );
     return dynamicFields;
   }
 
   updateDynamicWorkflowFields(selectedGroups: string[] | string) {
-    console.log('[Dynamic Fields Debug] ========== START ==========');
-    console.log('[Dynamic Fields Debug] kpiId:', this.kpiId);
-    console.log('[Dynamic Fields Debug] selectedGroups:', selectedGroups);
-    console.log(
-      '[Dynamic Fields Debug] fieldMappingLabel:',
-      this.fieldMappingLabel,
-    );
-
     if (!this.formConfig) {
-      console.log(
-        '[Dynamic Fields Debug] formConfig is null/undefined - EXITING',
-      );
       return;
     }
 
     const triggerField = this.fieldMappingConfig.find(
       (f) => f.fieldLabel === this.fieldMappingLabel,
     );
-    console.log('[Dynamic Fields Debug] triggerField found:', triggerField);
 
     if (!triggerField) {
-      console.log('[Dynamic Fields Debug] No trigger field found - EXITING');
-      console.log(
-        '[Dynamic Fields Debug] Available fields:',
-        this.fieldMappingConfig.map((f) => ({
-          fieldName: f.fieldName,
-          fieldLabel: f.fieldLabel,
-        })),
-      );
       return;
     }
 
@@ -214,7 +190,6 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
           (f) => f.fieldName === triggerField.fieldName,
         ),
       ) || this.workFlowStatusMappingSection;
-    console.log('[Dynamic Fields Debug] targetSection:', targetSection);
 
     if (!this.formConfig[targetSection]) {
       this.formConfig[targetSection] = [];
@@ -429,23 +404,6 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
     // Spread to create a new formConfig reference so Angular's change detection
     // picks up the mutation and re-evaluates getDynamicFields() in the template.
     this.formConfig = { ...this.formConfig };
-
-    console.log(
-      '[Dynamic Fields Debug] After update — targetSection:',
-      targetSection,
-    );
-    console.log(
-      '[Dynamic Fields Debug] Dynamic fields count:',
-      this.formConfig[targetSection]?.filter((f) => f.isDynamic).length,
-    );
-    console.log(
-      '[Dynamic Fields Debug] Dynamic field names:',
-      this.formConfig[targetSection]
-        ?.filter((f) => f.isDynamic)
-        .map((f) => f.fieldName),
-    );
-    console.log('[Dynamic Fields Debug] Full formConfig:', this.formConfig);
-    console.log('[Dynamic Fields Debug] ========== END ==========');
   }
 
   generateFieldMappingConfiguration() {
@@ -898,13 +856,6 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
             }
           }
         });
-
-        console.log(
-          '[kpi311 debug save] targetSection:',
-          targetSection,
-          'mappingValue:',
-          mappingValue,
-        );
 
         // Remove dynamic fields from finalList so they aren't sent directly
         for (let i = finalList.length - 1; i >= 0; i--) {
