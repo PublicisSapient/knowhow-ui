@@ -1661,12 +1661,12 @@ describe('FieldMappingFormComponent', () => {
     });
   });
 
-  describe('kpi312 Epic Readiness Dimensions Field Mapping', () => {
+  describe('kpi312 Epic readiness rules Field Mapping', () => {
     beforeEach(() => {
       component.fieldMappingConfig = [
         {
           fieldName: 'jiraFieldsSelectionKPI312',
-          fieldLabel: 'Epic readiness dimensions',
+          fieldLabel: 'Epic readiness rules',
           fieldType: 'chips',
           fieldCategory: 'fields',
           section: 'Custom Fields Mapping',
@@ -1677,7 +1677,7 @@ describe('FieldMappingFormComponent', () => {
     });
 
     it('should return correct label for kpi312', () => {
-      expect(component.fieldMappingLabel).toBe('Epic readiness dimensions');
+      expect(component.fieldMappingLabel).toBe('Epic readiness rules');
     });
 
     it('should create dynamic fields with text inputs for kpi312', () => {
@@ -1814,7 +1814,7 @@ describe('FieldMappingFormComponent', () => {
       component.fieldMappingConfig = [
         {
           fieldName: 'jiraFieldsSelectionKPI312',
-          fieldLabel: 'Epic readiness dimensions',
+          fieldLabel: 'Epic readiness rules',
           fieldType: 'chips',
           fieldCategory: 'fields',
           section: 'Custom Fields Mapping',
@@ -1940,7 +1940,7 @@ describe('FieldMappingFormComponent', () => {
       expect(triggerField.originalValue[0].fieldName).toBeFalsy();
     });
 
-    it('should handle multiple epic readiness dimensions for kpi312', () => {
+    it('should handle multiple Epic readiness rules for kpi312', () => {
       const saveSpy = spyOn(component, 'saveFieldMapping');
       component.ngOnInit();
 
@@ -2003,7 +2003,7 @@ describe('FieldMappingFormComponent', () => {
       component.fieldMappingConfig = [
         {
           fieldName: 'jiraFieldsSelectionKPI312',
-          fieldLabel: 'Epic readiness dimensions',
+          fieldLabel: 'Epic readiness rules',
           fieldType: 'chips',
           section: undefined,
         },
@@ -2031,7 +2031,7 @@ describe('FieldMappingFormComponent', () => {
       component.fieldMappingConfig = [
         {
           fieldName: 'jiraFieldsSelectionKPI312',
-          fieldLabel: 'Epic readiness dimensions',
+          fieldLabel: 'Epic readiness rules',
           fieldType: 'chips',
           section: undefined,
         },

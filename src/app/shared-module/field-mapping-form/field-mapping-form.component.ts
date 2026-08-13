@@ -70,15 +70,35 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
   nestedFieldANDParent = {};
   @Input() nodeId = '';
 
-  private readonly kpiTriggerFieldLabelMap: Record<string, string> = {
-    kpi202: 'Workfow groups',
-    kpi206: 'Workfow groups',
-    kpi311: 'Fields to write prompts',
-    kpi312: 'Epic readiness dimensions',
+  // Map KPI IDs to their trigger field names (fieldName pattern)
+  // This is backend-controlled and won't break if labels change
+  private readonly kpiTriggerFieldNameMap: Record<string, string> = {
+    kpi202: 'jiraWorkflowGroupsKPI202',
+    kpi206: 'jiraWorkflowGroupsKPI206',
+    kpi311: 'jiraFieldsSelectionKPI311',
+    kpi312: 'jiraFieldsSelectionKPI312',
   };
 
+  /**
+   * Get the trigger field for the current KPI.
+   * Uses fieldName (backend-controlled) instead of fieldLabel (UI text).
+   * This prevents breaking when backend changes field labels.
+   */
+  get triggerField(): any {
+    const triggerFieldName = this.kpiTriggerFieldNameMap[this.kpiId];
+    if (!triggerFieldName) return null;
+
+    return this.fieldMappingConfig?.find(
+      (field) => field.fieldName === triggerFieldName,
+    );
+  }
+
+  /**
+   * Get the field label for the trigger field (dynamic from backend).
+   * Falls back to empty string if trigger field not found.
+   */
   get fieldMappingLabel(): string {
-    return this.kpiTriggerFieldLabelMap[this.kpiId] || '';
+    return this.triggerField?.fieldLabel || '';
   }
 
   readonly workFlowStatusMappingSection: string = 'WorkFlow Status Mapping';
@@ -142,15 +162,13 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
       this.kpiId === 'kpi311' ||
       this.kpiId === 'kpi312'
     ) {
-      const triggerField = this.fieldMappingConfig.find(
-        (field) => field.fieldLabel === this.fieldMappingLabel,
-      );
-      if (triggerField) {
-        const initialVal = this.form.get(triggerField.fieldName)?.value;
+      const kpiTriggerField = this.triggerField;
+      if (kpiTriggerField) {
+        const initialVal = this.form.get(kpiTriggerField.fieldName)?.value;
         this.updateDynamicWorkflowFields(initialVal);
         this.form
-          .get(triggerField.fieldName)
-          .valueChanges.subscribe((selectedGroups) => {
+          .get(kpiTriggerField.fieldName)
+          ?.valueChanges.subscribe((selectedGroups) => {
             this.updateDynamicWorkflowFields(selectedGroups);
           });
       }
