@@ -6282,7 +6282,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   /** Returns true when every sprint in the kpi311 trend data has evaluation failed — no valid data at all. */
   isKpi311AllSprintsFailed(): boolean {
     const kpiIdx = this.ifKpiExist('kpi311');
-    if (kpiIdx === -1) return false;
+    if (kpiIdx === -1) {
+      return false;
+    }
     const kpiData = this.allKpiArray[kpiIdx];
     if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList))
       return false;
