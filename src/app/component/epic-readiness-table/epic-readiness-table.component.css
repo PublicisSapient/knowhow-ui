@@ -130,6 +130,8 @@
 ::ng-deep .epic-readiness-table-container .p-datatable {
   table-layout: fixed;
   min-width: 1270px; /* Sum of all column widths */
+  max-height: 500px; /* Adjust as needed */
+  overflow-y: auto;
 }
 
 ::ng-deep
