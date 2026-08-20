@@ -275,6 +275,30 @@ describe('FieldMappingFieldComponent', () => {
       component.value = 'string value';
       expect(component.displayValue).toBe('string value');
     });
+
+    it('should return comma-separated string for kpi312 with array value', () => {
+      component.kpiId = 'kpi312';
+      component.value = [
+        'Business clarity',
+        'Scope definition',
+        'Risk readiness',
+      ];
+      expect(component.displayValue).toBe(
+        'Business clarity, Scope definition, Risk readiness',
+      );
+    });
+
+    it('should return empty string for kpi312 with empty array', () => {
+      component.kpiId = 'kpi312';
+      component.value = [];
+      expect(component.displayValue).toBe('');
+    });
+
+    it('should return string value for kpi312 with non-array value', () => {
+      component.kpiId = 'kpi312';
+      component.value = 'string value';
+      expect(component.displayValue).toBe('string value');
+    });
   });
 
   it('should format value for condtional input v2', () => {

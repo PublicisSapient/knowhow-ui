@@ -151,6 +151,7 @@
                             : kpiChartData[kpi?.kpiId]
                         "
                         [kpi312ExcelData]="selectedTab === 'slingshot' ? this.kpi312ExcelData : []"
+                        [kpi312MaturityBlockData]="selectedTab === 'slingshot' ? this.kpi312MaturityBlockData : []"
                         [colors]="colorObj"
                         [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
@@ -274,7 +275,8 @@
                                     <app-epic-readiness-table
                                       *ngIf="kpi.kpiId === 'kpi312'"
                                       [kpiChartData]="this.kpi312ExcelData"
-                                      [trendBoxColorObj]="trendBoxColorObj">
+                                      [trendBoxColorObj]="trendBoxColorObj"
+                                      [maturityBlockData]="this.kpi312MaturityBlockData">
                                     </app-epic-readiness-table>
 
                                     <!-- Default table for other KPIs -->
@@ -1479,7 +1481,7 @@
                         <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
-                        <h4 class="p-text-center">No data Available.5</h4>
+                        <h4 class="p-text-center">No data Available.</h4>
                       </div>
                     </div>
                   </ng-template>
@@ -1512,7 +1514,7 @@
                         <img alt="no-data" src="assets/img/NoDataFound.svg" />
                       </div>
                       <div class="p-w-100">
-                        <h4 class="p-text-center">No Data Available.6</h4>
+                        <h4 class="p-text-center">No Data Available.</h4>
                       </div>
                     </div>
                   </ng-template>

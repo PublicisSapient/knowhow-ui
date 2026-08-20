@@ -14,6 +14,7 @@ import {
 export class EpicReadinessTableComponent implements OnInit, OnChanges {
   @Input() kpiChartData: any; // Can contain either trendValuelist or excelData
   @Input() trendBoxColorObj: any;
+  @Input() maturityBlockData: any; // New input for maturity block data
 
   tableData: any[] = [];
   columnHeaders: any[] = [];
