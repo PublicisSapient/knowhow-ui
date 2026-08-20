@@ -1101,21 +1101,43 @@ describe('FieldMappingFormComponent', () => {
   describe('fieldMappingLabel getter', () => {
     it('should return correct label for kpi202', () => {
       component.kpiId = 'kpi202';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Workfow groups');
     });
 
     it('should return correct label for kpi206', () => {
       component.kpiId = 'kpi206';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI206',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Workfow groups');
     });
 
     it('should return correct label for kpi311', () => {
       component.kpiId = 'kpi311';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Fields to write prompts');
     });
 
     it('should return empty string for unknown kpiId', () => {
       component.kpiId = 'kpi999';
+      component.fieldMappingConfig = [];
       expect(component.fieldMappingLabel).toBe('');
     });
   });
@@ -1560,21 +1582,43 @@ describe('FieldMappingFormComponent', () => {
   describe('fieldMappingLabel getter', () => {
     it('should return correct label for kpi202', () => {
       component.kpiId = 'kpi202';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Workfow groups');
     });
 
     it('should return correct label for kpi206', () => {
       component.kpiId = 'kpi206';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraWorkflowGroupsKPI206',
+          fieldLabel: 'Workfow groups',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Workfow groups');
     });
 
     it('should return correct label for kpi311', () => {
       component.kpiId = 'kpi311';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+        },
+      ];
       expect(component.fieldMappingLabel).toBe('Fields to write prompts');
     });
 
     it('should return empty string for unknown kpiId', () => {
       component.kpiId = 'kpi999';
+      component.fieldMappingConfig = [];
       expect(component.fieldMappingLabel).toBe('');
     });
   });
@@ -1658,6 +1702,439 @@ describe('FieldMappingFormComponent', () => {
 
       expect(() => component.recordScrollPosition()).not.toThrow();
       expect(component.bodyScrollPosition).toBe(currentScroll);
+    });
+  });
+
+  describe('kpi312 Epic readiness rules Field Mapping', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          fieldLabel: 'Epic readiness rules',
+          fieldType: 'chips',
+          fieldCategory: 'fields',
+          section: 'Custom Fields Mapping',
+        },
+      ];
+      component.formData = [];
+      component.kpiId = 'kpi312';
+    });
+
+    it('should return correct label for kpi312', () => {
+      expect(component.fieldMappingLabel).toBe('Epic readiness rules');
+    });
+
+    it('should create dynamic fields with text inputs for kpi312', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Story Point', 'Priority'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'Custom Fields Mapping';
+      expect(component.formConfig[targetSection]).toBeDefined();
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f: any) => f.isDynamic,
+      );
+      expect(dynamicFields.length).toBe(2);
+      expect(dynamicFields[0].fieldLabel).toBe('Story Point');
+      expect(dynamicFields[0].fieldType).toBe('text');
+      expect(dynamicFields[1].fieldLabel).toBe('Priority');
+      expect(dynamicFields[1].fieldType).toBe('text');
+    });
+
+    it('should create fieldNameControlName for kpi312 dynamic fields', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Story Point'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'Custom Fields Mapping';
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f: any) => f.isDynamic,
+      );
+      expect(dynamicFields[0].fieldNameControlName).toBe(
+        'jiraFieldNameForStoryPoint',
+      );
+    });
+
+    it('should create weightageControlName for kpi312 dynamic fields', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Priority'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const targetSection = 'Custom Fields Mapping';
+      const dynamicFields = component.formConfig[targetSection].filter(
+        (f: any) => f.isDynamic,
+      );
+      expect(dynamicFields[0].weightageControlName).toBe(
+        'jiraWeightageForPriority',
+      );
+    });
+
+    it('should add weightage form controls with min validator for kpi312', () => {
+      component.ngOnInit();
+
+      const selectedGroups = ['Story Point'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      const weightageControl = component.form.get('jiraWeightageForStoryPoint');
+      expect(weightageControl).toBeDefined();
+
+      // Test min validator
+      weightageControl.setValue(5);
+      expect(weightageControl.valid).toBeFalse();
+
+      weightageControl.setValue(10);
+      expect(weightageControl.valid).toBeTrue();
+    });
+
+    it('should restore previous values for kpi312 dynamic fields', () => {
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          originalValue: [
+            {
+              label: 'Story Point',
+              fieldName: 'customfield_20803',
+              weightage: 40,
+              prompt: 'Enter story point description',
+            },
+            {
+              label: 'Priority',
+              fieldName: 'customfield_30901',
+              weightage: 60,
+              prompt: 'Enter priority level',
+            },
+          ],
+        },
+      ];
+      component.ngOnInit();
+
+      const selectedGroups = ['Story Point', 'Priority'];
+      component.updateDynamicWorkflowFields(selectedGroups);
+
+      // Check Story Point values
+      expect(component.form.get('jiraStatusForStoryPoint').value).toBe(
+        'Enter story point description',
+      );
+      expect(component.form.get('jiraFieldNameForStoryPoint').value).toBe(
+        'customfield_20803',
+      );
+      expect(component.form.get('jiraWeightageForStoryPoint').value).toBe(40);
+
+      // Check Priority values
+      expect(component.form.get('jiraStatusForPriority').value).toBe(
+        'Enter priority level',
+      );
+      expect(component.form.get('jiraFieldNameForPriority').value).toBe(
+        'customfield_30901',
+      );
+      expect(component.form.get('jiraWeightageForPriority').value).toBe(60);
+    });
+
+    it('should use Custom Fields Mapping section for kpi312 when section is provided', () => {
+      component.generateFieldMappingConfiguration();
+
+      expect(component.formConfig['Custom Fields Mapping']).toBeDefined();
+      expect(
+        component.fieldMappingSectionList.includes('Custom Fields Mapping'),
+      ).toBeTruthy();
+    });
+
+    it('should use jiraFieldsSelectionKPI312 as section when undefined', () => {
+      component.fieldMappingConfig[0].section = undefined;
+      component.generateFieldMappingConfiguration();
+
+      expect(component.formConfig['jiraFieldsSelectionKPI312']).toBeDefined();
+      expect(
+        component.fieldMappingSectionList.includes('jiraFieldsSelectionKPI312'),
+      ).toBeTruthy();
+    });
+  });
+
+  describe('Save with kpi312 Dynamic Fields', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          fieldLabel: 'Epic readiness rules',
+          fieldType: 'chips',
+          fieldCategory: 'fields',
+          section: 'Custom Fields Mapping',
+        },
+      ];
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          originalValue: [],
+        },
+      ];
+      component.kpiId = 'kpi312';
+      component.selectedToolConfig = [{ id: '123', toolName: 'JIRA' }];
+      component.metaDataTemplateCode = '9';
+    });
+
+    it('should save kpi312 dynamic fields with correct payload structure', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      // Setup dynamic fields
+      component.updateDynamicWorkflowFields([
+        'Business clarity',
+        'Scope definition',
+      ]);
+      component.form
+        .get('jiraStatusForBusinessclarity')
+        .setValue('Describe business clarity');
+      component.form
+        .get('jiraFieldNameForBusinessclarity')
+        .setValue('customfield_10001');
+      component.form.get('jiraWeightageForBusinessclarity').setValue(30);
+      component.form
+        .get('jiraStatusForScopedefinition')
+        .setValue('Define scope clearly');
+      component.form
+        .get('jiraFieldNameForScopedefinition')
+        .setValue('customfield_10002');
+      component.form.get('jiraWeightageForScopedefinition').setValue(25);
+
+      component.save();
+
+      expect(saveSpy).toHaveBeenCalled();
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f: any) => f.fieldName === 'jiraFieldsSelectionKPI312',
+      );
+
+      expect(triggerField).toBeDefined();
+      expect(triggerField.originalValue).toEqual([
+        {
+          label: 'Business clarity',
+          fieldName: 'customfield_10001',
+          weightage: 30,
+          prompt: 'Describe business clarity',
+        },
+        {
+          label: 'Scope definition',
+          fieldName: 'customfield_10002',
+          weightage: 25,
+          prompt: 'Define scope clearly',
+        },
+      ]);
+    });
+
+    it('should handle null weightage for kpi312', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Risk readiness']);
+      component.form.get('jiraStatusForRiskreadiness').setValue('Assess risks');
+      component.form
+        .get('jiraFieldNameForRiskreadiness')
+        .setValue('customfield_50001');
+      component.form.get('jiraWeightageForRiskreadiness').setValue(null);
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f: any) => f.fieldName === 'jiraFieldsSelectionKPI312',
+      );
+
+      expect(triggerField.originalValue[0].weightage).toBeNull();
+    });
+
+    it('should not include individual dynamic field entries in finalList for kpi312', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Dependency readiness']);
+      component.form
+        .get('jiraStatusForDependencyreadiness')
+        .setValue('Check dependencies');
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const dynamicFieldEntry = savedData.find(
+        (f: any) => f.fieldName === 'jiraStatusForDependencyreadiness',
+      );
+
+      expect(dynamicFieldEntry).toBeUndefined();
+    });
+
+    it('should handle empty prompt with optional fieldName and weightage for kpi312', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      component.updateDynamicWorkflowFields(['Solution readiness']);
+      component.form.get('jiraStatusForSolutionreadiness').setValue('');
+      component.form.get('jiraFieldNameForSolutionreadiness').setValue('');
+      component.form.get('jiraWeightageForSolutionreadiness').setValue('');
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f: any) => f.fieldName === 'jiraFieldsSelectionKPI312',
+      );
+
+      expect(triggerField.originalValue[0].prompt).toBe('');
+      expect(triggerField.originalValue[0].fieldName).toBeFalsy();
+    });
+
+    it('should handle multiple Epic readiness rules for kpi312', () => {
+      const saveSpy = spyOn(component, 'saveFieldMapping');
+      component.ngOnInit();
+
+      const dimensions = [
+        'Business clarity',
+        'Scope definition',
+        'Solution readiness',
+        'Dependency readiness',
+        'Risk readiness',
+      ];
+      component.updateDynamicWorkflowFields(dimensions);
+
+      dimensions.forEach((dim, index) => {
+        const cleanDim = dim.replace(/\s+/g, '');
+        component.form
+          .get(`jiraStatusFor${cleanDim}`)
+          .setValue(`Prompt for ${dim}`);
+        component.form
+          .get(`jiraFieldNameFor${cleanDim}`)
+          .setValue(`customfield_${1000 + index}`);
+        component.form
+          .get(`jiraWeightageFor${cleanDim}`)
+          .setValue((index + 1) * 10);
+      });
+
+      component.save();
+
+      const savedData = saveSpy.calls.argsFor(0)[0];
+      const triggerField = savedData.find(
+        (f: any) => f.fieldName === 'jiraFieldsSelectionKPI312',
+      );
+
+      expect(triggerField.originalValue.length).toBe(5);
+      expect(triggerField.originalValue[0].label).toBe('Business clarity');
+      expect(triggerField.originalValue[4].label).toBe('Risk readiness');
+    });
+  });
+
+  describe('kpi312 vs kpi311 comparison', () => {
+    it('should behave identically to kpi311 for dynamic field creation', () => {
+      // Test kpi311
+      component.kpiId = 'kpi311';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI311',
+          fieldLabel: 'Fields to write prompts',
+          fieldType: 'chips',
+          section: undefined,
+        },
+      ];
+      component.formData = [];
+      component.ngOnInit();
+      component.updateDynamicWorkflowFields(['Field1']);
+      const kpi311DynamicFields = component.getDynamicFields(
+        'jiraFieldsSelectionKPI311',
+      );
+
+      // Test kpi312
+      component.kpiId = 'kpi312';
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          fieldLabel: 'Epic readiness rules',
+          fieldType: 'chips',
+          section: undefined,
+        },
+      ];
+      component.formData = [];
+      component.ngOnInit();
+      component.updateDynamicWorkflowFields(['Field1']);
+      const kpi312DynamicFields = component.getDynamicFields(
+        'jiraFieldsSelectionKPI312',
+      );
+
+      // Compare structure
+      expect(kpi311DynamicFields.length).toBe(kpi312DynamicFields.length);
+      expect(kpi311DynamicFields[0].fieldType).toBe(
+        kpi312DynamicFields[0].fieldType,
+      );
+      expect(kpi311DynamicFields[0].isDynamic).toBe(
+        kpi312DynamicFields[0].isDynamic,
+      );
+    });
+  });
+
+  describe('kpi312 edge cases', () => {
+    beforeEach(() => {
+      component.fieldMappingConfig = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          fieldLabel: 'Epic readiness rules',
+          fieldType: 'chips',
+          section: undefined,
+        },
+      ];
+      component.formData = [];
+      component.kpiId = 'kpi312';
+    });
+
+    it('should handle dimension names with special characters', () => {
+      component.ngOnInit();
+      const specialDimensions = ['Risk/Issue Readiness', 'Scope & Definition'];
+      component.updateDynamicWorkflowFields(specialDimensions);
+
+      const targetSection = 'jiraFieldsSelectionKPI312';
+      const dynamicFields = component.getDynamicFields(targetSection);
+      expect(dynamicFields.length).toBe(2);
+    });
+
+    it('should remove dynamic fields when all dimensions are deselected', () => {
+      component.ngOnInit();
+      component.updateDynamicWorkflowFields(['Dimension1', 'Dimension2']);
+      let dynamicFields = component.getDynamicFields(
+        'jiraFieldsSelectionKPI312',
+      );
+      expect(dynamicFields.length).toBe(2);
+
+      component.updateDynamicWorkflowFields([]);
+      dynamicFields = component.getDynamicFields('jiraFieldsSelectionKPI312');
+      expect(dynamicFields.length).toBe(0);
+    });
+
+    it('should maintain form control values when dimensions are reselected', () => {
+      component.formData = [
+        {
+          fieldName: 'jiraFieldsSelectionKPI312',
+          originalValue: [
+            {
+              label: 'Business clarity',
+              fieldName: 'customfield_10001',
+              weightage: 50,
+              prompt: 'Initial prompt',
+            },
+          ],
+        },
+      ];
+      component.ngOnInit();
+
+      // Select the dimension again
+      component.updateDynamicWorkflowFields(['Business clarity']);
+
+      expect(component.form.get('jiraStatusForBusinessclarity').value).toBe(
+        'Initial prompt',
+      );
+      expect(component.form.get('jiraFieldNameForBusinessclarity').value).toBe(
+        'customfield_10001',
+      );
+      expect(component.form.get('jiraWeightageForBusinessclarity').value).toBe(
+        50,
+      );
     });
   });
 });
