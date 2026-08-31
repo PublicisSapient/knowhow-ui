@@ -73,8 +73,8 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
   // Map KPI IDs to their trigger field names (fieldName pattern)
   // This is backend-controlled and won't break if labels change
   private readonly kpiTriggerFieldNameMap: Record<string, string> = {
-    kpi202: 'jiraWorkflowGroupsKPI202',
-    kpi206: 'jiraWorkflowGroupsKPI206',
+    kpi202: 'jiraIssueStatusGroupByCategoryKPI202',
+    kpi206: 'jiraIssueStatusGroupByCategoryKPI206',
     kpi311: 'jiraFieldsSelectionKPI311',
     kpi312: 'jiraFieldsSelectionKPI312',
   };
