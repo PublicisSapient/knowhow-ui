@@ -852,7 +852,7 @@ describe('FieldMappingFormComponent', () => {
     beforeEach(() => {
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
           fieldCategory: 'workflow',
@@ -880,7 +880,8 @@ describe('FieldMappingFormComponent', () => {
 
     it('should update dynamic workflow fields for kpi206', () => {
       component.kpiId = 'kpi206';
-      component.fieldMappingConfig[0].fieldName = 'jiraWorkflowGroupsKPI206';
+      component.fieldMappingConfig[0].fieldName =
+        'jiraIssueStatusGroupByCategoryKPI206';
       component.ngOnInit();
 
       const selectedGroups = ['To Do', 'In Review'];
@@ -943,7 +944,7 @@ describe('FieldMappingFormComponent', () => {
     it('should handle array trigger value in generateFromControlBasedOnFieldType', () => {
       component.formData = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           originalValue: [
             { label: 'In Progress', statuses: ['Implementing'] },
             { label: 'Done', statuses: ['Closed'] },
@@ -952,14 +953,16 @@ describe('FieldMappingFormComponent', () => {
       ];
       component.ngOnInit();
 
-      const control = component.form.get('jiraWorkflowGroupsKPI202');
+      const control = component.form.get(
+        'jiraIssueStatusGroupByCategoryKPI202',
+      );
       expect(control.value).toEqual(['In Progress', 'Done']);
     });
 
     it('should handle object trigger value in generateFromControlBasedOnFieldType', () => {
       component.formData = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           originalValue: {
             'In Progress': ['Implementing'],
             Done: ['Closed'],
@@ -968,7 +971,9 @@ describe('FieldMappingFormComponent', () => {
       ];
       component.ngOnInit();
 
-      const control = component.form.get('jiraWorkflowGroupsKPI202');
+      const control = component.form.get(
+        'jiraIssueStatusGroupByCategoryKPI202',
+      );
       expect(control.value).toEqual(['In Progress', 'Done']);
     });
 
@@ -986,7 +991,7 @@ describe('FieldMappingFormComponent', () => {
     beforeEach(() => {
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
           fieldCategory: 'workflow',
@@ -995,7 +1000,7 @@ describe('FieldMappingFormComponent', () => {
       ];
       component.formData = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           originalValue: [],
         },
       ];
@@ -1018,7 +1023,7 @@ describe('FieldMappingFormComponent', () => {
       expect(saveSpy).toHaveBeenCalled();
       const savedData = saveSpy.calls.argsFor(0)[0];
       const triggerField = savedData.find(
-        (f) => f.fieldName === 'jiraWorkflowGroupsKPI202',
+        (f) => f.fieldName === 'jiraIssueStatusGroupByCategoryKPI202',
       );
       expect(triggerField).toBeDefined();
       expect(triggerField.originalValue).toEqual([
@@ -1103,7 +1108,7 @@ describe('FieldMappingFormComponent', () => {
       component.kpiId = 'kpi202';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
         },
@@ -1115,7 +1120,7 @@ describe('FieldMappingFormComponent', () => {
       component.kpiId = 'kpi206';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI206',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI206',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
         },
@@ -1584,7 +1589,7 @@ describe('FieldMappingFormComponent', () => {
       component.kpiId = 'kpi202';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI202',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI202',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
         },
@@ -1596,7 +1601,7 @@ describe('FieldMappingFormComponent', () => {
       component.kpiId = 'kpi206';
       component.fieldMappingConfig = [
         {
-          fieldName: 'jiraWorkflowGroupsKPI206',
+          fieldName: 'jiraIssueStatusGroupByCategoryKPI206',
           fieldLabel: 'Workfow groups',
           fieldType: 'chips',
         },
