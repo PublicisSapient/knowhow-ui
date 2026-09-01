@@ -165,7 +165,10 @@ export class StackedGroupBarChartComponent
         return;
       }
     } else if (this.kpiId === 'kpi224') {
-      if (!this.defectsBreachedGatingCriteria || this.defectsBreachedGatingCriteria.length === 0) {
+      if (
+        !this.defectsBreachedGatingCriteria ||
+        this.defectsBreachedGatingCriteria.length === 0
+      ) {
         console.warn(
           'KPI 224: No defectsBreachedGatingCriteria data available, skipping chart creation',
         );
@@ -229,7 +232,9 @@ export class StackedGroupBarChartComponent
     } else if (this.kpiId === 'kpi224') {
       this.yAxisLabel = 'Count';
       // Dynamically extract issue types from drillDown data
-      severityKeys = this.extractIssueTypesFromData(this.defectsBreachedGatingCriteria);
+      severityKeys = this.extractIssueTypesFromData(
+        this.defectsBreachedGatingCriteria,
+      );
 
       this.defectsBreachedGatingCriteria?.forEach((project: any) => {
         project.value.forEach((sprint: any, index: number) => {
@@ -340,7 +345,9 @@ export class StackedGroupBarChartComponent
     if (this.kpiId === 'kpi195') {
       projects = [...new Set(this.defectsBreachedSLAs?.map((d) => d.data))];
     } else if (this.kpiId === 'kpi224') {
-      projects = [...new Set(this.defectsBreachedGatingCriteria?.map((d) => d.data))];
+      projects = [
+        ...new Set(this.defectsBreachedGatingCriteria?.map((d) => d.data)),
+      ];
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
@@ -573,9 +580,14 @@ export class StackedGroupBarChartComponent
         projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
     } else if (this.kpiId === 'kpi224') {
-      this.defectsBreachedGatingCriteria.forEach((project: any, index: number) => {
-        projectColors.set(project.data, safeColors[index % safeColors.length]);
-      });
+      this.defectsBreachedGatingCriteria.forEach(
+        (project: any, index: number) => {
+          projectColors.set(
+            project.data,
+            safeColors[index % safeColors.length],
+          );
+        },
+      );
     } else if (
       this.kpiId === 'kpi196' ||
       this.kpiId === 'kpi197' ||
@@ -624,11 +636,13 @@ export class StackedGroupBarChartComponent
               ? severityKeys.indexOf(severityKey)
               : stackKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
-            return this.generateShade(
-              baseColor,
-              severityIndex,
-              this.kpiId === 'kpi195' || this.kpiId === 'kpi224' ? severityKeys.length : stackKeys.length,
-            );
+          return this.generateShade(
+            baseColor,
+            severityIndex,
+            this.kpiId === 'kpi195' || this.kpiId === 'kpi224'
+              ? severityKeys.length
+              : stackKeys.length,
+          );
         })
         .on('mouseover', (event, d: any) => {
           const [mouseX, mouseY] = d3.pointer(event, window);
@@ -806,7 +820,11 @@ export class StackedGroupBarChartComponent
     if (hierachy === 'project') {
       this.renderSprintsLegend(
         this.flattenData(
-          this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.kpiId === 'kpi224' ? this.defectsBreachedGatingCriteria : this.data,
+          this.kpiId === 'kpi195'
+            ? this.defectsBreachedSLAs
+            : this.kpiId === 'kpi224'
+            ? this.defectsBreachedGatingCriteria
+            : this.data,
         ),
         this.xCaption,
       );
