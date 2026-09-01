@@ -6200,6 +6200,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
    */
+
   getKpi311DrillDownData(): any[] | null {
     if (this.kpi311SelectedView !== 'Details' || !this.kpi311SelectedSprint) {
       return null;

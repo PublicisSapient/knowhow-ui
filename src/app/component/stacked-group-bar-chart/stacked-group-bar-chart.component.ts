@@ -65,7 +65,6 @@ export class StackedGroupBarChartComponent
   private activeSeverityKeys = [];
   private isInitialized = false;
   yAxisLabel: string = '';
-
   private readonly svg: any;
   private readonly width: number = 0;
   private readonly allSeverityKeys = ['s1', 's2', 's3', 's4'];
