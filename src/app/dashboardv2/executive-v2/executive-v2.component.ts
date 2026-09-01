@@ -170,6 +170,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   nonUniqueNames: boolean;
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
+  defectsBreachedGatingCriteria;
+  defectsBreachedGatingCriteriaAllValues;
   kpi202WorkflowOrder: string[] = [];
   dataTypeDropdownOptions = [
     { name: 'Aggregated', code: 'AGT' },
@@ -2397,6 +2399,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
+    }
+
+    if (kpiId === 'kpi224') {
+      this.defectsBreachedGatingCriteriaAllValues = this.allKpiArray[idx]?.trendValueList
+        ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
+        : {};
+      this.defectsBreachedGatingCriteria = this.kpiChartData[kpiId];
     }
     if (
       Array.isArray(this.kpiChartData[kpiId]) &&
