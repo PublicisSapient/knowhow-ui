@@ -170,6 +170,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   nonUniqueNames: boolean;
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
+  defectsBreachedGatingCriteria;
+  defectsBreachedGatingCriteriaAllValues;
   kpi202WorkflowOrder: string[] = [];
   dataTypeDropdownOptions = [
     { name: 'Aggregated', code: 'AGT' },
@@ -2397,6 +2399,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
+    }
+
+    if (kpiId === 'kpi224') {
+      this.defectsBreachedGatingCriteriaAllValues = this.allKpiArray[idx]
+        ?.trendValueList
+        ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
+        : {};
+      this.defectsBreachedGatingCriteria = this.kpiChartData[kpiId];
     }
     if (
       Array.isArray(this.kpiChartData[kpiId]) &&
@@ -6191,6 +6201,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
    */
+
   getKpi311DrillDownData(): any[] | null {
     if (this.kpi311SelectedView !== 'Details' || !this.kpi311SelectedSprint) {
       return null;

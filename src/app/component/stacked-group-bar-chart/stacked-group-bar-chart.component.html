@@ -16,22 +16,22 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<div id="container-stacked-group" *ngIf="hasFilter && kpiId !== 'kpi202'">
-    <p-multiSelect 
-      [options]="filter" 
-      optionLabel="option" 
+<div id="container-stacked-group" *ngIf="hasFilter && kpiId !== 'kpi202' && kpiId !== 'kpi224'">
+    <p-multiSelect
+      [options]="filter"
+      optionLabel="option"
       optionValue="value"
-      [showHeader]="false" 
+      [showHeader]="false"
       selectedItemsLabel="{0} items selected"
-      [maxSelectedLabels]="3" 
-      [style]="{'height': '32px', 'margin-left': '5px'}" 
+      [maxSelectedLabels]="3"
+      [style]="{'height': '32px', 'margin-left': '5px'}"
       placeholder="Filter Severities"
       [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
       (onChange)="handleChange($event)"
       [defaultLabel]="'All Severities'"
-      [showClear]="true"        
+      [showClear]="true"
       [(ngModel)]="activeSeverityKeys"
-      (onClear)="clearFilters()"  
+      (onClear)="clearFilters()"
       >
     </p-multiSelect>
   </div>
