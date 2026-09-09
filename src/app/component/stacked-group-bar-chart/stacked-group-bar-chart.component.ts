@@ -241,7 +241,8 @@ export class StackedGroupBarChartComponent
           if (sprint == null) {
             return;
           }
-          const sprintKey = `${index + 1}`;
+          const sprintKey =
+            sprint?.sSprintName || sprint?.subFilter || `${index + 1}`;
           if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
 
           const issueTypeData: any = {
@@ -383,16 +384,19 @@ export class StackedGroupBarChartComponent
       '#4A235A',
     ];
 
-    // For KPI202, ignore this.color since the parent passes Project colors,
-    // but KPI202 needs distinct colors for its Stacks.
+    // For KPI202 and KPI224, ignore this.color (parent passes project colors)
+    // and use the fixed ordinal palette so each stack key gets a distinct color.
     const safeColors =
-      this.kpiId !== 'kpi202' && this.color?.length
+      this.kpiId !== 'kpi202' && this.kpiId !== 'kpi224' && this.color?.length
         ? this.color
         : defaultColors;
 
     let legendHeight = 0;
-    // Add Color Legend specifically for KPI202
-    if (this.kpiId === 'kpi202' && stackKeys?.length) {
+    // Add Color Legend for KPI202 and KPI224 (ordinal color per stack key)
+    if (
+      (this.kpiId === 'kpi202' || this.kpiId === 'kpi224') &&
+      stackKeys?.length
+    ) {
       const colorLegend = d3
         .select(containerNode)
         .append('div')
@@ -579,15 +583,6 @@ export class StackedGroupBarChartComponent
       this.defectsBreachedSLAs.forEach((project: any, index: number) => {
         projectColors.set(project.data, safeColors[index % safeColors.length]);
       });
-    } else if (this.kpiId === 'kpi224') {
-      this.defectsBreachedGatingCriteria.forEach(
-        (project: any, index: number) => {
-          projectColors.set(
-            project.data,
-            safeColors[index % safeColors.length],
-          );
-        },
-      );
     } else if (
       this.kpiId === 'kpi196' ||
       this.kpiId === 'kpi197' ||
@@ -627,21 +622,19 @@ export class StackedGroupBarChartComponent
         .attr('fill', (d: any, i: number, nodes: any[]) => {
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
-          if (this.kpiId === 'kpi202') {
-            const stackIndex = stackKeys.indexOf(severityKey);
+          if (this.kpiId === 'kpi202' || this.kpiId === 'kpi224') {
+            const stackIndex = severityKeys.indexOf(severityKey);
             return safeColors[stackIndex % safeColors.length];
           }
           const severityIndex =
-            this.kpiId === 'kpi195' || this.kpiId === 'kpi224'
+            this.kpiId === 'kpi195'
               ? severityKeys.indexOf(severityKey)
               : stackKeys.indexOf(severityKey);
           const baseColor = projectColors.get(projectName) || '#888';
           return this.generateShade(
             baseColor,
             severityIndex,
-            this.kpiId === 'kpi195' || this.kpiId === 'kpi224'
-              ? severityKeys.length
-              : stackKeys.length,
+            this.kpiId === 'kpi195' ? severityKeys.length : stackKeys.length,
           );
         })
         .on('mouseover', (event, d: any) => {
@@ -674,6 +667,9 @@ export class StackedGroupBarChartComponent
                         (dv: any) => dv.issueType === severityKey,
                       )?.count || 0
                     }</div>
+                ${Object.entries(originalData.hoverValue)
+                  .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+                  .join('')}
               `
                   : this.kpiId === 'kpi202'
                   ? `
@@ -776,7 +772,11 @@ export class StackedGroupBarChartComponent
       });
     this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
     // -- Fallback, incase this.xAxisLabel is also empty/undefined
-    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+    this.xCaption = this.xCaption
+      ? this.xCaption
+      : this.kpiId === 'kpi224'
+      ? ''
+      : 'Sprints';
 
     // Append X-axis label as an HTML div below the chart wrapper so it's always centered and visible
     d3.select(containerNode)
@@ -817,14 +817,12 @@ export class StackedGroupBarChartComponent
     // --- Legend ---
     const hierachy = JSON.parse(localStorage.getItem('selectedTrend'))[0]
       ?.labelName;
-    if (hierachy === 'project') {
+    // kpi224 uses fixed age-bucket labels on the x-axis directly;
+    // the issue-type legend is already rendered above, so skip the sprint legend.
+    if (hierachy === 'project' && this.kpiId !== 'kpi224') {
       this.renderSprintsLegend(
         this.flattenData(
-          this.kpiId === 'kpi195'
-            ? this.defectsBreachedSLAs
-            : this.kpiId === 'kpi224'
-            ? this.defectsBreachedGatingCriteria
-            : this.data,
+          this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
         ),
         this.xCaption,
       );
@@ -1084,8 +1082,12 @@ export class StackedGroupBarChartComponent
       const project = this.defectsBreachedGatingCriteriaAllValues?.find(
         (p: any) => p.data === projectName,
       );
-      if (project?.value && project.value.length > sprintNumber) {
-        return project.value[sprintNumber];
+      if (project?.value) {
+        return (
+          project.value.find(
+            (v: any) => v.sSprintName === sprintName || v.date === sprintName,
+          ) || null
+        );
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
