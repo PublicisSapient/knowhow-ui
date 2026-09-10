@@ -1,0 +1,85 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Quality Dashboard Configuration
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Step 1: Start the Application
+
+   npm start
+
+   Wait for: "Compiled successfully"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Step 2: Open Quality Dashboard
+
+   URL: http://localhost:4300/#/dashboard/Quality
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Step 3: Configure SonarQube Connection (First Time Only)
+
+   A configuration dialog will appear. Enter:
+
+   🔹 SonarQube Server URL:
+      https://tools.publicis.sapient.com/sonar
+
+   🔹 Project Key:
+      ENGINEERING.KPIDASHBOARD.UI
+
+   🔹 Authentication Token (Optional):
+      (Your SonarQube token - same as SONAR_TOKEN env variable)
+      
+      To get your token:
+      - Login to: https://tools.publicis.sapient.com/sonar
+      - Go to: My Account → Security → Generate Tokens
+      - Name: knowhow-quality-dashboard
+      - Copy and paste the token
+
+   Click "Save"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Step 4: Explore the Dashboard!
+
+   You should now see:
+   
+   ✓ Summary cards with total components, health score, bugs, etc.
+   ✓ Health distribution chart
+   ✓ Component cards with detailed metrics
+   ✓ Quality Gate status
+
+   Try:
+   - Filter by health status (Excellent, Good, Fair, Poor, Critical)
+   - Search for specific components
+   - Switch between Grid/List/Tree views
+   - Export data to CSV
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Quick Reference
+
+   View in SonarQube UI:
+   https://tools.publicis.sapient.com/sonar/dashboard?id=ENGINEERING.KPIDASHBOARD.UI
+
+   Generate CLI report:
+   npm run sonar:report
+
+   Check health threshold:
+   npm run sonar:check
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 Troubleshooting
+
+   If you see "Failed to load quality data":
+   
+   1. Verify server URL is correct (base URL only, no /dashboard)
+   2. Check if token is valid
+   3. Ensure SonarQube analysis completed successfully
+   4. Check browser console for errors (F12)
+   
+   For more help, see:
+   - SONARQUBE_TROUBLESHOOTING.md
+   - QUALITY_DASHBOARD_SETUP.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

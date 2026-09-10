@@ -14,6 +14,7 @@ import { AccessGuard } from '../services/access.guard';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
+import { QualityDashboardComponent } from '../dashboard/quality-dashboard/quality-dashboard.component';
 import { AuthGuard } from './auth.guard';
 import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
@@ -115,6 +116,11 @@ export class AppInitializerService {
         {
           path: 'Analysis',
           component: AnalysisContainerComponent,
+        },
+        {
+          path: 'QualitySonarDashboard',
+          component: QualityDashboardComponent,
+          pathMatch: 'full',
         },
         {
           path: ':boardName',

@@ -1,0 +1,430 @@
+<!--
+ Copyright 2014 CapitalOne, LLC.
+ Further development Copyright 2022 Sapient Corporation.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="quality-dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-left">
+      <h1>
+        <i class="pi pi-shield" style="color: #2196f3"></i>
+        SonarQube Quality Dashboard
+      </h1>
+      <p class="project-info">
+        Project: <strong>{{ sonarConfig.projectKey }}</strong>
+      </p>
+    </div>
+
+    <!-- Branch Selector (Center) -->
+    <div class="branch-selector" *ngIf="branches.length > 0">
+      <label>
+        <i class="pi pi-code-branch" style="color: #4caf50"></i>
+        Branch:
+      </label>
+      <p-dropdown
+        [options]="branches"
+        [(ngModel)]="selectedBranch"
+        optionLabel="name"
+        optionValue="name"
+        (onChange)="onBranchChange($event.value)"
+        [loading]="loadingBranches"
+        placeholder="Select Branch"
+        [style]="{'min-width': '200px'}"
+      >
+        <ng-template let-branch pTemplate="item">
+          {{ branch.name }}
+          <span *ngIf="branch.isMain" class="main-badge">(main)</span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <!-- Actions (Right) -->
+    <div class="header-actions">
+      <button
+        pButton
+        icon="pi pi-refresh"
+        label="Refresh"
+        (click)="refreshData()"
+        [disabled]="isLoading"
+        class="p-button-outlined"
+      ></button>
+      <button
+        pButton
+        icon="pi pi-download"
+        label="Export CSV"
+        (click)="exportToCSV()"
+        [disabled]="isLoading || !projectMetrics"
+        class="p-button-outlined"
+      ></button>
+      <button
+        pButton
+        icon="pi pi-cog"
+        label="Settings"
+        (click)="openConfigDialog()"
+        class="p-button-outlined"
+      ></button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Loading quality metrics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-container">
+    <p-message severity="error" [text]="errorMessage"></p-message>
+    <button
+      pButton
+      label="Configure SonarQube"
+      (click)="openConfigDialog()"
+      class="p-button-danger"
+    ></button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !errorMessage && projectMetrics" class="dashboard-content">
+    <!-- Quality Gate & Overall Health -->
+    <div class="summary-section">
+      <!-- Quality Gate Card -->
+      <div class="summary-card quality-gate-card">
+        <div class="card-header">
+          <i class="pi pi-check-circle"></i>
+          <h3>Quality Gate</h3>
+        </div>
+        <div class="card-body">
+          <div
+            class="quality-gate-status"
+            [ngClass]="{
+              'status-passed': qualityGateStatus?.status === 'OK',
+              'status-failed': qualityGateStatus?.status === 'ERROR',
+              'status-warning': qualityGateStatus?.status === 'WARN'
+            }"
+          >
+            <i
+              class="pi"
+              [ngClass]="{
+                'pi-check': qualityGateStatus?.status === 'OK',
+                'pi-times': qualityGateStatus?.status === 'ERROR',
+                'pi-exclamation-triangle': qualityGateStatus?.status === 'WARN'
+              }"
+            ></i>
+            <span class="status-text">
+              {{ qualityGateStatus?.status || 'N/A' }}
+            </span>
+          </div>
+          <div class="status-conditions" *ngIf="qualityGateStatus?.conditions?.length">
+            <p-accordion>
+              <p-accordionTab header="View Conditions ({{ qualityGateStatus.conditions.length }})">
+                <div class="condition-list">
+                  <div
+                    *ngFor="let condition of qualityGateStatus.conditions"
+                    class="condition-item"
+                    [ngClass]="{
+                      'condition-ok': condition.status === 'OK',
+                      'condition-error': condition.status === 'ERROR'
+                    }"
+                  >
+                    <i
+                      class="pi"
+                      [ngClass]="{
+                        'pi-check': condition.status === 'OK',
+                        'pi-times': condition.status === 'ERROR'
+                      }"
+                    ></i>
+                    <span>{{ metricLabels[condition.metricKey] || condition.metricKey }}:</span>
+                    <strong>{{ condition.actualValue }}</strong>
+                    <span class="comparator">{{ condition.comparator }}</span>
+                    <span class="threshold">{{ condition.errorThreshold }}</span>
+                  </div>
+                </div>
+              </p-accordionTab>
+            </p-accordion>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Health Card -->
+      <div class="summary-card overall-health-card" *ngIf="overallHealth">
+        <div class="card-header">
+          <i class="pi pi-heart"></i>
+          <h3>Overall Health</h3>
+        </div>
+        <div class="card-body">
+          <div class="health-score-display">
+            <div
+              class="health-circle"
+              [style.border-color]="overallHealth.color"
+            >
+              <span class="score" [style.color]="overallHealth.color">
+                {{ overallHealth.score }}
+              </span>
+              <span class="score-label">/ 100</span>
+            </div>
+            <div class="health-status">
+              <span
+                class="status-badge"
+                [ngClass]="getHealthStatusClass(overallHealth.status)"
+                [style.background-color]="overallHealth.color"
+              >
+                {{ overallHealth.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <!-- Bugs -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('bugs', summaryStats.bugs)">
+        <div class="metric-icon bugs-icon">
+          <i class="pi pi-bug"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Bugs</h4>
+          <p class="metric-value">{{ summaryStats.bugs }}</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('bugs', summaryStats.bugs)">
+            {{ summaryStats.bugs === 0 ? 'None' : summaryStats.bugs < 10 ? 'Low' : 'High' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Vulnerabilities -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('vulnerabilities', summaryStats.vulnerabilities)">
+        <div class="metric-icon vulnerabilities-icon">
+          <i class="pi pi-shield"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Vulnerabilities</h4>
+          <p class="metric-value">{{ summaryStats.vulnerabilities }}</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('vulnerabilities', summaryStats.vulnerabilities)">
+            {{ summaryStats.vulnerabilities === 0 ? 'None' : 'Critical' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Security Hotspots -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('vulnerabilities', summaryStats.securityHotspots)">
+        <div class="metric-icon hotspots-icon">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Security Hotspots</h4>
+          <p class="metric-value">{{ summaryStats.securityHotspots }}</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('vulnerabilities', summaryStats.securityHotspots)">
+            {{ summaryStats.securityHotspots === 0 ? 'None' : 'Review' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Code Smells -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('codeSmells', summaryStats.codeSmells)">
+        <div class="metric-icon code-smells-icon">
+          <i class="pi pi-file-edit"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Code Smells</h4>
+          <p class="metric-value">{{ summaryStats.codeSmells }}</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('codeSmells', summaryStats.codeSmells)">
+            {{ summaryStats.codeSmells < 50 ? 'Low' : summaryStats.codeSmells < 200 ? 'Medium' : 'High' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Coverage -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('coverage', summaryStats.coverage)">
+        <div class="metric-icon coverage-icon">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Test Coverage</h4>
+          <p class="metric-value">{{ summaryStats.coverage.toFixed(1) }}%</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('coverage', summaryStats.coverage)">
+            {{ summaryStats.coverage >= 80 ? 'Good' : summaryStats.coverage >= 60 ? 'Fair' : 'Poor' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Duplication -->
+      <div class="metric-card" [ngClass]="'severity-' + getMetricSeverity('duplication', summaryStats.duplication)">
+        <div class="metric-icon duplication-icon">
+          <i class="pi pi-clone"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Duplication</h4>
+          <p class="metric-value">{{ summaryStats.duplication.toFixed(1) }}%</p>
+          <span class="metric-severity" [ngClass]="getMetricSeverity('duplication', summaryStats.duplication)">
+            {{ summaryStats.duplication < 3 ? 'Low' : summaryStats.duplication < 5 ? 'Medium' : 'High' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Technical Debt -->
+      <div class="metric-card">
+        <div class="metric-icon debt-icon">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Technical Debt</h4>
+          <p class="metric-value">{{ formatTechnicalDebt(summaryStats.technicalDebt) }}</p>
+          <span class="metric-label">Effort to fix</span>
+        </div>
+      </div>
+
+      <!-- Lines of Code -->
+      <div class="metric-card">
+        <div class="metric-icon loc-icon">
+          <i class="pi pi-code"></i>
+        </div>
+        <div class="metric-content">
+          <h4>Lines of Code</h4>
+          <p class="metric-value">{{ formatNumber(summaryStats.linesOfCode) }}</p>
+          <span class="metric-label">Total codebase</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Metrics (Optional) -->
+    <div class="detailed-metrics-section">
+      <button
+        pButton
+        [label]="showDetailedMetrics ? 'Hide Detailed Metrics' : 'Show Detailed Metrics'"
+        [icon]="showDetailedMetrics ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+        (click)="showDetailedMetrics = !showDetailedMetrics"
+        class="p-button-text"
+      ></button>
+
+      <div *ngIf="showDetailedMetrics" class="detailed-metrics-content">
+        <p-table
+          [value]="projectMetrics.measures"
+          [paginator]="true"
+          [rows]="20"
+          [globalFilterFields]="['metric']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="metric">
+                Metric <p-sortIcon field="metric"></p-sortIcon>
+              </th>
+              <th>Description</th>
+              <th pSortableColumn="value">
+                Value <p-sortIcon field="value"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-measure>
+            <tr>
+              <td><code>{{ measure.metric }}</code></td>
+              <td>{{ metricLabels[measure.metric] || measure.metric }}</td>
+              <td><strong>{{ measure.value }}</strong></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="dashboard-footer">
+      <p>
+        <i class="pi pi-info-circle"></i>
+        Data retrieved from SonarQube Server:
+        <a [href]="sonarConfig.serverUrl + '/dashboard?id=' + sonarConfig.projectKey" target="_blank">
+          {{ sonarConfig.serverUrl }}
+        </a>
+      </p>
+      <p class="branch-info" *ngIf="selectedBranch">
+        <i class="pi pi-code-branch"></i>
+        Viewing branch: <strong>{{ selectedBranch }}</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Dialog -->
+<p-dialog
+  [(visible)]="showConfigDialog"
+  header="SonarQube Configuration"
+  [modal]="true"
+  [style]="{width: '50vw'}"
+  [closable]="true"
+>
+  <div class="config-form">
+    <div class="p-field">
+      <label for="serverUrl">SonarQube Server URL *</label>
+      <input
+        pInputText
+        id="serverUrl"
+        [(ngModel)]="sonarConfig.serverUrl"
+        placeholder="https://tools.publicis.sapient.com/sonar"
+        class="p-inputtext-lg"
+        style="width: 100%"
+      />
+      <small>Example: https://tools.publicis.sapient.com/sonar</small>
+    </div>
+
+    <div class="p-field">
+      <label for="projectKey">Project Key *</label>
+      <input
+        pInputText
+        id="projectKey"
+        [(ngModel)]="sonarConfig.projectKey"
+        placeholder="ENGINEERING.KPIDASHBOARD.UI"
+        class="p-inputtext-lg"
+        style="width: 100%"
+      />
+      <small>Your SonarQube project identifier</small>
+    </div>
+
+    <div class="p-field">
+      <label for="token">Authentication Token (Optional)</label>
+      <input
+        pInputText
+        id="token"
+        type="password"
+        [(ngModel)]="sonarConfig.token"
+        placeholder="Enter your SonarQube token"
+        class="p-inputtext-lg"
+        style="width: 100%"
+      />
+      <small>Required for private projects. Leave empty for public projects.</small>
+    </div>
+
+    <p-message
+      severity="info"
+      text="Configuration is saved in browser localStorage. For production, use a backend proxy."
+    ></p-message>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      icon="pi pi-times"
+      (click)="closeConfigDialog()"
+      class="p-button-text"
+    ></button>
+    <button
+      pButton
+      label="Save & Load Data"
+      icon="pi pi-check"
+      (click)="saveConfig(sonarConfig)"
+      [disabled]="!sonarConfig.serverUrl || !sonarConfig.projectKey"
+    ></button>
+  </ng-template>
+</p-dialog>

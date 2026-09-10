@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Dashboard Configuration Helper</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .current-config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 5px;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Quality Dashboard Setup</h1>
+        <p class="subtitle">Configure your SonarQube connection</p>
+
+        <div id="currentConfig" class="current-config" style="display: none;">
+            <strong>Current Configuration:</strong>
+            <pre id="configDisplay"></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Note:</strong> This will save the configuration to your browser's localStorage.
+            The Quality Dashboard will use this configuration to connect to SonarQube.
+        </div>
+
+        <form id="configForm">
+            <div class="form-group">
+                <label for="serverUrl">SonarQube Server URL *</label>
+                <input
+                    type="text"
+                    id="serverUrl"
+                    name="serverUrl"
+                    value="https://tools.publicis.sapient.com/sonar"
+                    required
+                    placeholder="https://tools.publicis.sapient.com/sonar"
+                />
+                <div class="help-text">⚠️ Use base URL only (no /dashboard or query params)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="projectKey">Project Key *</label>
+                <input
+                    type="text"
+                    id="projectKey"
+                    name="projectKey"
+                    value="ENGINEERING.KPIDASHBOARD.UI"
+                    required
+                    placeholder="ENGINEERING.KPIDASHBOARD.UI"
+                />
+                <div class="help-text">Must match your SonarQube project key</div>
+            </div>
+
+            <div class="form-group">
+                <label for="token">Authentication Token (Optional)</label>
+                <input
+                    type="password"
+                    id="token"
+                    name="token"
+                    placeholder="Enter your SonarQube token (optional)"
+                />
+                <div class="help-text">
+                    Get token from:
+                    <a href="https://tools.publicis.sapient.com/sonar" target="_blank">
+                        SonarQube → My Account → Security → Generate Tokens
+                    </a>
+                </div>
+            </div>
+
+            <button type="submit">💾 Save Configuration</button>
+            <button type="button" class="btn-secondary" onclick="showCurrentConfig()">👁️ Show Current Config</button>
+            <button type="button" class="btn-secondary" onclick="clearConfig()">🗑️ Clear Configuration</button>
+        </form>
+
+        <div id="successBox" class="success-box">
+            <strong>✅ Success!</strong> Configuration saved successfully.
+            <br><br>
+            <strong>Next steps:</strong>
+            <ol style="margin: 10px 0; padding-left: 20px;">
+                <li>Open the Quality Dashboard:
+                    <a href="http://localhost:4300/#/dashboard/QualitySonarDashboard" target="_blank">
+                        http://localhost:4300/#/dashboard/QualitySonarDashboard
+                    </a>
+                </li>
+                <li>Refresh the page (F5)</li>
+                <li>Data should load automatically!</li>
+            </ol>
+        </div>
+
+        <div id="errorBox" class="error-box">
+            <strong>❌ Error:</strong> <span id="errorMessage"></span>
+        </div>
+    </div>
+
+    <script>
+        // Check and display current config on load
+        window.addEventListener('load', function() {
+            const currentConfig = localStorage.getItem('sonarQubeConfig');
+            if (currentConfig) {
+                try {
+                    const config = JSON.parse(currentConfig);
+                    document.getElementById('serverUrl').value = config.serverUrl || '';
+                    document.getElementById('projectKey').value = config.projectKey || '';
+                    // Don't pre-fill token for security
+                } catch (e) {
+                    console.error('Error parsing config:', e);
+                }
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            const projectKey = document.getElementById('projectKey').value.trim();
+            const token = document.getElementById('token').value.trim();
+
+            // Validation
+            if (!serverUrl || !projectKey) {
+                showError('Server URL and Project Key are required!');
+                return;
+            }
+
+            // Check for common URL mistakes
+            if (serverUrl.includes('/dashboard') || serverUrl.includes('?')) {
+                showError('Server URL should be base URL only (e.g., https://tools.publicis.sapient.com/sonar)');
+                return;
+            }
+
+            if (!serverUrl.startsWith('http://') && !serverUrl.startsWith('https://')) {
+                showError('Server URL must start with http:// or https://');
+                return;
+            }
+
+            // Create config object
+            const config = {
+                serverUrl: serverUrl,
+                projectKey: projectKey
+            };
+
+            // Add token if provided
+            if (token) {
+                config.token = token;
+            }
+
+            try {
+                // Save to localStorage
+                localStorage.setItem('sonarQubeConfig', JSON.stringify(config));
+
+                // Show success message
+                showSuccess();
+
+                // Clear token field for security
+                document.getElementById('token').value = '';
+            } catch (error) {
+                showError('Failed to save configuration: ' + error.message);
+            }
+        });
+
+        function showCurrentConfig() {
+            const config = localStorage.getItem('sonarQubeConfig');
+            const currentConfigDiv = document.getElementById('currentConfig');
+            const configDisplay = document.getElementById('configDisplay');
+
+            if (config) {
+                try {
+                    const parsed = JSON.parse(config);
+                    // Mask token for security
+                    if (parsed.token) {
+                        parsed.token = '********' + parsed.token.slice(-4);
+                    }
+                    configDisplay.textContent = JSON.stringify(parsed, null, 2);
+                    currentConfigDiv.style.display = 'block';
+                } catch (e) {
+                    configDisplay.textContent = 'Invalid configuration: ' + config;
+                    currentConfigDiv.style.display = 'block';
+                }
+            } else {
+                configDisplay.textContent = 'No configuration found';
+                currentConfigDiv.style.display = 'block';
+            }
+        }
+
+        function clearConfig() {
+            if (confirm('Are you sure you want to clear the configuration?')) {
+                localStorage.removeItem('sonarQubeConfig');
+                document.getElementById('serverUrl').value = 'https://tools.publicis.sapient.com/sonar';
+                document.getElementById('projectKey').value = 'ENGINEERING.KPIDASHBOARD.UI';
+                document.getElementById('token').value = '';
+                document.getElementById('currentConfig').style.display = 'none';
+                alert('Configuration cleared!');
+            }
+        }
+
+        function showSuccess() {
+            const successBox = document.getElementById('successBox');
+            const errorBox = document.getElementById('errorBox');
+            successBox.style.display = 'block';
+            errorBox.style.display = 'none';
+
+            // Scroll to success message
+            successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showError(message) {
+            const successBox = document.getElementById('successBox');
+            const errorBox = document.getElementById('errorBox');
+            const errorMessage = document.getElementById('errorMessage');
+
+            errorMessage.textContent = message;
+            errorBox.style.display = 'block';
+            successBox.style.display = 'none';
+
+            // Scroll to error message
+            errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
