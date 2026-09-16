@@ -15,12 +15,16 @@
  limitations under the License.
 -->
 
-<div class="quality-dashboard-container">
+<!-- Skip Links for Keyboard Navigation -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#metrics-grid" class="skip-link">Skip to metrics</a>
+
+<div class="quality-dashboard-container" role="main">
   <!-- Header -->
-  <div class="dashboard-header">
+  <header class="dashboard-header" role="banner">
     <div class="header-left">
       <h1>
-        <i class="pi pi-shield" style="color: #2196f3"></i>
+        <i class="pi pi-shield" style="color: #2196f3" aria-hidden="true"></i>
         SonarQube Quality Dashboard
       </h1>
       <p class="project-info">
@@ -52,7 +56,7 @@
     </div>
 
     <!-- Actions (Right) -->
-    <div class="header-actions">
+    <nav class="header-actions" aria-label="Dashboard actions">
       <button
         pButton
         icon="pi pi-refresh"
@@ -76,8 +80,8 @@
         (click)="openConfigDialog()"
         class="p-button-outlined"
       ></button>
-    </div>
-  </div>
+    </nav>
+  </header>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
