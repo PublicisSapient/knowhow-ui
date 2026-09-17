@@ -6274,17 +6274,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * were produced.
    */
   isKpi311SprintFailed(): boolean {
-    if (!this.kpi311SelectedSprint) return false;
+    if (!this.kpi311SelectedSprint) {
+      return false;
+    }
     const kpiIdx = this.ifKpiExist('kpi311');
-    if (kpiIdx === -1) return false;
+    if (kpiIdx === -1) {
+      return false;
+    }
     const kpiData = this.allKpiArray[kpiIdx];
-    if (!kpiData?.trendValueList) return false;
+    if (!kpiData?.trendValueList) {
+      return false;
+    }
     for (const trendItem of kpiData.trendValueList) {
       if (trendItem.value && Array.isArray(trendItem.value)) {
         const item = trendItem.value.find(
           (i: any) => i.sSprintName === this.kpi311SelectedSprint,
         );
-        if (item) return item.hoverValue?.['Evaluation Status'] === 'Failed';
+        if (item) {
+          return item.hoverValue?.['Evaluation Status'] === 'Failed';
+        }
       }
     }
     return false;
@@ -6297,8 +6305,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return false;
     }
     const kpiData = this.allKpiArray[kpiIdx];
-    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList))
+    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList)) {
       return false;
+    }
     const allItems: any[] = [];
     for (const trendItem of kpiData.trendValueList) {
       if (trendItem.value && Array.isArray(trendItem.value)) {

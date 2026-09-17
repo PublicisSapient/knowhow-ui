@@ -40,7 +40,7 @@ export class SonarQubeService {
     projectKey: 'ENGINEERING.KPIDASHBOARD.UI',
   };
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
     this.loadConfigFromEnvironment();
   }
 
@@ -317,10 +317,18 @@ export class SonarQubeService {
   private getHealthStatus(
     score: number,
   ): 'excellent' | 'good' | 'fair' | 'poor' | 'critical' {
-    if (score >= 90) return 'excellent';
-    if (score >= 75) return 'good';
-    if (score >= 60) return 'fair';
-    if (score >= 40) return 'poor';
+    if (score >= 90) {
+      return 'excellent';
+    }
+    if (score >= 75) {
+      return 'good';
+    }
+    if (score >= 60) {
+      return 'fair';
+    }
+    if (score >= 40) {
+      return 'poor';
+    }
     return 'critical';
   }
 

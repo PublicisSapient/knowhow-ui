@@ -37,7 +37,7 @@ import {
   ],
 })
 export class QualityDashboardComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   // Configuration
   showConfigDialog = false;
@@ -80,7 +80,7 @@ export class QualityDashboardComponent implements OnInit, OnDestroy {
   healthDistribution: { status: string; count: number; color: string }[] = [];
   metricLabels = METRIC_LABELS;
 
-  constructor(private sonarQubeService: SonarQubeService) {
+  constructor(private readonly sonarQubeService: SonarQubeService) {
     this.sonarConfig = this.sonarQubeService.getConfig();
   }
 
@@ -214,7 +214,9 @@ export class QualityDashboardComponent implements OnInit, OnDestroy {
   // Utility methods for formatting
   formatTechnicalDebt(minutes: string): string {
     const mins = parseInt(minutes, 10);
-    if (isNaN(mins)) return '0d';
+    if (isNaN(mins)) {
+      return '0d';
+    }
 
     const days = Math.floor(mins / (8 * 60));
     const hours = Math.floor((mins % (8 * 60)) / 60);
@@ -301,7 +303,9 @@ export class QualityDashboardComponent implements OnInit, OnDestroy {
   }
 
   exportToCSV(): void {
-    if (!this.projectMetrics) return;
+    if (!this.projectMetrics) {
+      return;
+    }
 
     const projectName = this.sonarConfig.projectKey;
     const branch = this.selectedBranch || 'default';
