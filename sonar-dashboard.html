@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SonarQube Report Dashboard – Tree view of code quality metrics for ENGINEERING.KPIDASHBOARD.UI" />
+  <title>SonarQube Dashboard · ENGINEERING.KPIDASHBOARD.UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────── */
+    :root {
+      --bg:         #0d0f17;
+      --surface:    #141722;
+      --surface2:   #1c2033;
+      --surface3:   #232840;
+      --border:     rgba(99,115,199,0.18);
+      --accent:     #6366f1;
+      --accent2:    #818cf8;
+      --accent-glow:rgba(99,102,241,0.25);
+      --text:       #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim:   #64748b;
+      --ok:         #22c55e;
+      --ok-bg:      rgba(34,197,94,0.12);
+      --warn:       #f59e0b;
+      --warn-bg:    rgba(245,158,11,0.12);
+      --err:        #ef4444;
+      --err-bg:     rgba(239,68,68,0.12);
+      --info:       #38bdf8;
+      --info-bg:    rgba(56,189,248,0.12);
+      --purple:     #a78bfa;
+      --purple-bg:  rgba(167,139,250,0.12);
+      --radius:     12px;
+      --radius-sm:  8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 900px 500px at 20% 10%, rgba(99,102,241,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 600px 400px at 80% 80%, rgba(167,139,250,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; gap: 16px;
+    }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .sonar-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .brand-info h1 {
+      font-size: 18px; font-weight: 700;
+      background: linear-gradient(90deg, #e2e8f0, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-info .sub { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    /* Config Panel */
+    .config-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px; margin: 28px 0 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 16px; align-items: end;
+    }
+    .config-panel.hidden { display: none; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .field-group input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      padding: 10px 14px; font-size: 14px; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    .field-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .field-group input[type="password"] { font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all .2s; border: none; white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      color: #fff; box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+    .toggle-config-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text-muted);
+      padding: 8px 14px; font-size: 12px; font-family: inherit;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all .2s;
+    }
+    .toggle-config-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      margin-top: 20px; font-size: 13px; color: var(--text-muted);
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0; }
+    .status-dot.loading { background: var(--warn); animation: pulse 1s ease-in-out infinite; }
+    .status-dot.ok { background: var(--ok); }
+    .status-dot.error { background: var(--err); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* Meta Strip */
+    .meta-strip {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 20px; flex-wrap: wrap;
+    }
+    .meta-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 999px;
+      font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    }
+    .meta-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+    .meta-badge .dot.branch { background: var(--accent2); }
+
+    /* Section Title */
+    .section-title {
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .metrics-section { margin-top: 28px; }
+
+    /* Metric Cards */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px 16px; display: flex; flex-direction: column; gap: 8px;
+      position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .metric-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(99,102,241,0.04));
+      pointer-events: none;
+    }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-color: var(--accent); }
+    .metric-card.ok  { border-color: rgba(34,197,94,0.3); }
+    .metric-card.warn { border-color: rgba(245,158,11,0.3); }
+    .metric-card.err  { border-color: rgba(239,68,68,0.3); }
+    .metric-card.info { border-color: rgba(56,189,248,0.3); }
+    .metric-label { font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+    .metric-value { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .metric-value.ok   { color: var(--ok); }
+    .metric-value.warn { color: var(--warn); }
+    .metric-value.err  { color: var(--err); }
+    .metric-value.info { color: var(--info); }
+    .metric-icon { font-size: 20px; margin-bottom: 4px; }
+    .metric-sub { font-size: 11px; color: var(--text-dim); }
+    .rating-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 6px;
+      font-weight: 800; font-size: 13px; font-family: 'JetBrains Mono', monospace;
+    }
+    .rating-A { background: rgba(34,197,94,0.2); color: var(--ok); }
+    .rating-B { background: rgba(132,204,22,0.2); color: #84cc16; }
+    .rating-C { background: rgba(245,158,11,0.2); color: var(--warn); }
+    .rating-D { background: rgba(249,115,22,0.2); color: #f97316; }
+    .rating-E { background: rgba(239,68,68,0.2);  color: var(--err); }
+
+    /* Quality Gate */
+    .quality-gate {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 24px; margin-top: 0;
+    }
+    .qg-status { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+    .qg-passed { color: var(--ok); }
+    .qg-failed { color: var(--err); }
+    .qg-warning { color: var(--warn); }
+    .qg-label { font-size: 12px; color: var(--text-dim); }
+
+    /* Issues */
+    .issues-breakdown { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0; }
+    .issue-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+      font-size: 12px;
+    }
+    .issue-pill .count { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+
+    /* Tree */
+    .tree-section { margin-top: 28px; }
+    .tree-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tree-search {
+      flex: 1; min-width: 200px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); padding: 8px 14px 8px 36px;
+      font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: 12px center;
+    }
+    .tree-search:focus { border-color: var(--accent); }
+    .tree-container {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+    }
+    .tree-header {
+      display: grid;
+      grid-template-columns: 1fr 80px 70px 70px 100px 70px;
+      padding: 10px 16px;
+      background: var(--surface3); border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .07em;
+      position: sticky; top: 0; z-index: 2;
+    }
+    .tree-header span:not(:first-child) { text-align: center; }
+    .tree-body { font-size: 13px; }
+    .tree-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 70px 70px 100px 70px;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(99,115,199,0.07);
+      align-items: center; min-height: 40px;
+      transition: background .15s;
+    }
+    .tree-row:hover { background: var(--surface2); }
+    .tree-row.directory { cursor: pointer; }
+    .tree-row.directory:hover { background: rgba(99,102,241,0.06); }
+    .tree-row.filtered-hidden { display: none !important; }
+
+    .tree-cell-name { display: flex; align-items: center; gap: 6px; overflow: hidden; padding: 8px 0; }
+    .tree-toggle { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .tree-toggle svg { transition: transform .2s; }
+    .tree-toggle.open svg { transform: rotate(90deg); }
+    .tree-icon { font-size: 14px; flex-shrink: 0; }
+    .tree-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 13px; }
+    .tree-name.dir { color: var(--accent2); font-weight: 500; }
+
+    .tree-cell-metric { text-align: center; font-size: 12px; font-family: 'JetBrains Mono', monospace; padding: 4px 0; }
+    .chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 32px; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .chip-0    { color: var(--text-dim); }
+    .chip-ok   { background: var(--ok-bg);     color: var(--ok); }
+    .chip-warn { background: var(--warn-bg);   color: var(--warn); }
+    .chip-err  { background: var(--err-bg);    color: var(--err); }
+    .chip-info { background: var(--info-bg);   color: var(--info); }
+
+    .coverage-bar { height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; margin-top: 3px; }
+    .coverage-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+    .coverage-fill.high { background: var(--ok); }
+    .coverage-fill.mid  { background: var(--warn); }
+    .coverage-fill.low  { background: var(--err); }
+
+    /* Skeleton */
+    .skeleton { background: var(--surface2); border-radius: 4px; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .skeleton-row { height: 40px; margin-bottom: 1px; }
+    .skeleton-metric { height: 90px; border-radius: var(--radius); }
+
+    /* Alert */
+    .alert {
+      padding: 14px 18px; border-radius: var(--radius-sm);
+      font-size: 13px; display: flex; align-items: flex-start; gap: 10px; margin-top: 16px;
+    }
+    .alert-err  { background: var(--err-bg);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+    .alert-warn { background: var(--warn-bg); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+    .alert-info { background: var(--info-bg); border: 1px solid rgba(56,189,248,0.3); color: #7dd3fc; }
+    .alert code { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 3px; }
+
+
+    /* Empty state */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 24px; gap: 12px; color: var(--text-muted); text-align: center;
+    }
+    .empty-state .icon { font-size: 48px; opacity: .4; }
+    .empty-state p { font-size: 14px; max-width: 400px; line-height: 1.7; }
+    .empty-state small { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 24px; font-size: 12px; color: var(--text-dim);
+      border-top: 1px solid var(--border); margin-top: 40px;
+    }
+    .footer a { color: var(--accent2); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    code { font-family: 'JetBrains Mono', monospace; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .config-panel { grid-template-columns: 1fr 1fr; }
+      .config-panel .btn-primary { grid-column: 1 / -1; }
+      .tree-header, .tree-row { grid-template-columns: 1fr 70px 70px 80px; }
+      .tree-header span:nth-child(3), .tree-row > div:nth-child(3),
+      .tree-header span:nth-child(4), .tree-row > div:nth-child(4),
+      .tree-header span:nth-child(6), .tree-row > div:nth-child(6) { display: none; }
+    }
+    @media (max-width: 600px) {
+      .config-panel { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .tree-header, .tree-row { grid-template-columns: 1fr 70px 80px; }
+      .tree-header span:nth-child(2), .tree-row > div:nth-child(2) { display: none; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="sonar-icon">🔍</div>
+      <div class="brand-info">
+        <h1>SonarQube Dashboard</h1>
+        <span class="sub">tools.publicis.sapient.com/sonar · ENGINEERING.KPIDASHBOARD.UI</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="toggle-config-btn" id="toggleConfigBtn" onclick="toggleConfig()">⚙️ Configure</button>
+      <button class="btn btn-primary" id="refreshBtn" onclick="loadReport()" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- Config Panel -->
+  <div class="config-panel" id="configPanel">
+    <div class="field-group">
+      <label for="tokenInput">🔑 SonarQube Token</label>
+      <input type="password" id="tokenInput" placeholder="squ_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" oninput="onConfigChange()" />
+    </div>
+    <div class="field-group">
+      <label for="branchInput">🌿 Branch</label>
+      <input type="text" id="branchInput" placeholder="develop / qa-master / master / feature/…" value="feature/DTS-54421_Slingshot-Dashboard_PB" oninput="onConfigChange()" />
+    </div>
+    <button class="btn btn-primary" id="mainLoadBtn" onclick="saveAndLoad()" disabled>▶ Load</button>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar" id="statusBar" style="display:none">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Ready</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--text-dim)" id="statusTime"></span>
+  </div>
+
+  <!-- Meta Strip -->
+  <div class="meta-strip" id="metaStrip" style="display:none">
+    <span class="meta-badge"><span class="dot branch"></span><span id="metaBranch">–</span></span>
+    <span class="meta-badge"><span class="dot"></span>Analyzed: <span id="metaDate">–</span></span>
+    <span class="meta-badge">Project: <b id="metaProject">–</b></span>
+    <a href="https://tools.publicis.sapient.com/sonar/dashboard?id=ENGINEERING.KPIDASHBOARD.UI" target="_blank" rel="noopener"
+       style="text-decoration:none" class="meta-badge">↗ Open in SonarQube</a>
+  </div>
+
+  <!-- Alert area -->
+  <div id="alertArea"></div>
+
+  <!-- Quality Gate -->
+  <div id="qgSection" style="display:none">
+    <div class="metrics-section">
+      <div class="section-title">Quality Gate</div>
+      <div class="quality-gate" id="qualityGate">
+        <div class="qg-status" id="qgStatus">–</div>
+        <div>
+          <div class="qg-label">Quality Gate Status</div>
+          <div id="qgConditions" style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div id="metricsSection" style="display:none">
+    <div class="metrics-section">
+      <div class="section-title">Project Metrics</div>
+      <div class="metrics-grid" id="metricsGrid"></div>
+    </div>
+  </div>
+
+  <!-- Issues breakdown -->
+  <div id="issuesSection" style="display:none">
+    <div class="metrics-section">
+      <div class="section-title">Issues Breakdown</div>
+      <div class="issues-breakdown" id="issuesBreakdown"></div>
+    </div>
+  </div>
+
+  <!-- Tree View -->
+  <div id="treeSection" class="tree-section">
+    <div class="section-title">Code Tree</div>
+    <div class="tree-controls">
+      <input type="text" class="tree-search" id="treeSearch" placeholder="Filter files and folders…" oninput="filterTree(this.value)" />
+      <button class="btn btn-ghost" onclick="expandAll()">Expand All</button>
+      <button class="btn btn-ghost" onclick="collapseAll()">Collapse All</button>
+      <span id="treeStats" style="font-size:12px;color:var(--text-dim)"></span>
+    </div>
+    <div class="tree-container">
+      <div class="tree-header">
+        <span>Name</span>
+        <span title="Lines of Code">LOC</span>
+        <span title="Bugs">Bugs</span>
+        <span title="Vulnerabilities">Vuln.</span>
+        <span title="Test Coverage">Coverage</span>
+        <span title="Code Smells">Smells</span>
+      </div>
+      <div class="tree-body" id="treeBody">
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <p>Enter your <strong>SonarQube token</strong> and select a <strong>branch</strong> above, then click <strong>▶ Load</strong> to fetch the report.</p>
+          <small>Project: ENGINEERING.KPIDASHBOARD.UI</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    SonarQube Dashboard · Built for <code>ENGINEERING.KPIDASHBOARD.UI</code> ·
+    <a href="https://tools.publicis.sapient.com/sonar" target="_blank" rel="noopener">tools.publicis.sapient.com/sonar ↗</a>
+  </footer>
+</div>
+
+<script>
+/* ═══════ CONFIG ═══════ */
+const PROJECT_KEY = 'ENGINEERING.KPIDASHBOARD.UI';
+// If served via our local proxy (node sonar-proxy.cjs), use /proxy/* so the
+// Node server forwards the request to SonarQube and adds CORS headers.
+// When opened directly as file:// the proxy path won't work either — the
+// banner below tells the user to start the proxy instead.
+const IS_PROXY = window.location.protocol === 'http:' && window.location.hostname === 'localhost';
+const SONAR_BASE = IS_PROXY
+  ? `http://localhost:${window.location.port}/proxy/sonar`   // → node proxy → sonar
+  : 'https://tools.publicis.sapient.com/sonar';              // direct (needs CORS)
+
+/* ═══════ STATE ═══════ */
+let TOKEN  = '';
+let BRANCH = '';
+let TREE_DATA = [];
+let configVisible = true;
+let loadStart = 0;
+
+/* ═══════ INIT ═══════ */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = loadStorage();
+  if (saved.token) { document.getElementById('tokenInput').value = saved.token; TOKEN = saved.token; }
+  if (saved.branch) document.getElementById('branchInput').value = saved.branch;
+  onConfigChange();
+
+  // Show CORS warning when opened as file:// (not via proxy)
+  if (window.location.protocol === 'file:') {
+    showAlert('warn',
+      `<strong>⚠️ CORS Blocked:</strong> Browsers block API calls from <code>file://</code> pages. ` +
+      `Run the local proxy server instead:<br><br>` +
+      `<code style="display:block;background:rgba(0,0,0,.3);padding:8px 12px;border-radius:6px;margin-top:6px;font-size:12px">` +
+      `node sonar-proxy.cjs</code><br>` +
+      `Then open&nbsp; <a href="http://localhost:7474/sonar-dashboard.html" style="color:var(--accent2)" target="_blank">` +
+      `http://localhost:7474/sonar-dashboard.html</a>`);
+  }
+});
+
+function loadStorage() {
+  try { return JSON.parse(localStorage.getItem('sonarDashCfg') || '{}'); } catch { return {}; }
+}
+function saveStorage() {
+  try { localStorage.setItem('sonarDashCfg', JSON.stringify({ token: TOKEN, branch: BRANCH })); } catch {}
+}
+function onConfigChange() {
+  const ok = document.getElementById('tokenInput').value.trim().length > 0 &&
+             document.getElementById('branchInput').value.trim().length > 0;
+  document.getElementById('mainLoadBtn').disabled = !ok;
+  document.getElementById('refreshBtn').disabled  = !ok;
+}
+function toggleConfig() {
+  configVisible = !configVisible;
+  document.getElementById('configPanel').classList.toggle('hidden', !configVisible);
+}
+function saveAndLoad() {
+  TOKEN  = document.getElementById('tokenInput').value.trim();
+  BRANCH = document.getElementById('branchInput').value.trim();
+  if (!TOKEN || !BRANCH) return;
+  saveStorage();
+  toggleConfig();
+  doLoad();
+}
+function loadReport() {
+  TOKEN  = document.getElementById('tokenInput').value.trim() || TOKEN;
+  BRANCH = document.getElementById('branchInput').value.trim() || BRANCH;
+  if (!TOKEN) { configVisible = false; toggleConfig(); return; }
+  doLoad();
+}
+
+/* ═══════ API ═══════ */
+function authHeader() { return 'Basic ' + btoa(TOKEN + ':'); }
+function bp() { return BRANCH ? `&branch=${encodeURIComponent(BRANCH)}` : ''; }
+
+async function sonar(path) {
+  const r = await fetch(SONAR_BASE + path, {
+    headers: {
+      // When going through the proxy the Node server forwards the Authorization
+      // header upstream. When calling directly the browser sends it as-is.
+      'Authorization': authHeader(),
+      'Accept': 'application/json',
+    }
+  });
+  if (!r.ok) {
+    const txt = await r.text().catch(() => '');
+    // Try to parse SonarQube error JSON
+    try { const j = JSON.parse(txt); throw new Error(j.errors?.map(e=>e.msg).join(', ') || `HTTP ${r.status}`); }
+    catch(e2) { if(e2.message.startsWith('HTTP') || e2.message !== 'Unexpected token') throw e2; }
+    throw new Error(`HTTP ${r.status}`);
+  }
+  return r.json();
+}
+
+/* ═══════ LOAD ═══════ */
+async function doLoad() {
+  clearAlert(); showSkeletons(); loadStart = Date.now();
+  setStatus('loading', `Fetching data for branch "${BRANCH}"…`);
+
+  try {
+    // Measures + QG in parallel — both support branch param
+    const [measuresData, qgData] = await Promise.all([
+      sonar(`/api/measures/component?component=${PROJECT_KEY}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,security_hotspots,sqale_index,reliability_rating,security_rating,sqale_rating,alert_status,lines,functions,classes,comment_lines_density${bp()}`),
+      sonar(`/api/qualitygates/project_status?projectKey=${PROJECT_KEY}${bp()}`).catch(()=>null),
+    ]);
+
+    // Issues summary (uses corrected hotspot endpoint)
+    const issueData = await fetchIssues();
+
+    // Component tree — may fall back to default branch if 403
+    const { components, treeFallback } = await fetchAllComponents();
+
+    // Per-file metrics
+    const fileMetrics = await fetchFileMeasures(components.filter(c => c.qualifier !== 'DIR').map(c=>c.key));
+
+    // Render
+    renderMeta(measuresData);
+    renderQG(qgData);
+    renderMetrics(measuresData);
+    renderIssues(issueData);
+    renderTree(buildTree(components, fileMetrics));
+
+    if (treeFallback) {
+      showAlert('warn',
+        `⚠️ Branch <code>${esc(BRANCH)}</code> has no component tree in SonarQube ` +
+        `(it may not have been analyzed yet, or requires Developer Edition). ` +
+        `Showing the <strong>default branch</strong> file tree instead. ` +
+        `Metrics cards above reflect the selected branch.`);
+    }
+
+    const elapsed = ((Date.now() - loadStart) / 1000).toFixed(1);
+    setStatus('ok', `Loaded ${TREE_DATA.length} components in ${elapsed}s`);
+    document.getElementById('statusTime').textContent = new Date().toLocaleTimeString();
+
+  } catch (err) {
+    setStatus('error', `Error: ${err.message}`);
+    let hint = '';
+    if (err.message.includes('401') || err.message.toLowerCase().includes('unauthorized')) {
+      hint = ' — Invalid or expired token. Generate one at SonarQube → My Account → Security → Tokens.';
+    } else if (err.message.includes('404') || err.message.toLowerCase().includes('not found')) {
+      hint = ` — Branch “${BRANCH}” may not exist or has no analysis yet.`;
+    } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      hint = ' — Network error. Make sure the proxy is running: <code>node sonar-proxy.cjs</code>';
+    }
+    showAlert('err', `<strong>Failed to load SonarQube data:</strong> ${err.message}${hint}`);
+    showErrorTree();
+  }
+}
+
+async function fetchAllComponents() {
+  // Try with branch first; fall back to default branch on 403
+  // (403 = branch not analyzed / Community Edition restriction)
+  async function fetchPage(page, branchSuffix) {
+    return sonar(`/api/components/tree?component=${PROJECT_KEY}&qualifiers=DIR,FIL,UTS&p=${page}&ps=500&s=qualifier,name${branchSuffix}`);
+  }
+
+  const all = [];
+  let treeFallback = false;
+  let branchSuffix = bp();
+  let page = 1;
+
+  while (true) {
+    let data;
+    try {
+      data = await fetchPage(page, branchSuffix);
+    } catch (err) {
+      // 403 on feature branch → retry without branch (default branch)
+      if ((err.message.includes('403') || err.message.includes('Forbidden')) && branchSuffix) {
+        console.warn('[sonar-dashboard] components/tree 403 on branch, falling back to default branch');
+        branchSuffix = '';
+        treeFallback = true;
+        data = await fetchPage(page, branchSuffix);
+      } else {
+        throw err;
+      }
+    }
+    all.push(...(data.components || []));
+    if (all.length >= (data.paging?.total || 0) || !(data.components?.length)) break;
+    page++;
+  }
+
+  return { components: all, treeFallback };
+}
+
+async function fetchFileMeasures(keys) {
+  if (!keys.length) return {};
+  const BATCH = 50;
+  const metrics = 'ncloc,bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density';
+  const result = {};
+  for (let i = 0; i < keys.length; i += BATCH) {
+    try {
+      const data = await sonar(`/api/measures/search?projectKeys=${PROJECT_KEY}&metricKeys=${metrics}&componentKeys=${keys.slice(i,i+BATCH).join(',')}${bp()}`);
+      (data.measures || []).forEach(m => {
+        if (!result[m.component]) result[m.component] = {};
+        result[m.component][m.metric] = m.value;
+      });
+    } catch { /* best effort */ }
+  }
+  return result;
+}
+
+async function fetchIssues() {
+  // NOTE: SECURITY_HOTSPOT is NOT a valid type for /api/issues/search.
+  // Hotspots use a dedicated endpoint: /api/hotspots/search
+  const issueTypes = ['BUG','VULNERABILITY','CODE_SMELL'];
+  const result = {};
+
+  await Promise.all(issueTypes.map(async t => {
+    try {
+      const d = await sonar(`/api/issues/search?componentKeys=${PROJECT_KEY}&types=${t}&resolved=false&ps=1${bp()}`);
+      result[t] = d.paging?.total ?? 0;
+    } catch { result[t] = '?'; }
+  }));
+
+  // Security hotspots via the dedicated hotspots API
+  try {
+    const d = await sonar(`/api/hotspots/search?projectKey=${PROJECT_KEY}&status=TO_REVIEW&ps=1${bp()}`);
+    result['SECURITY_HOTSPOT'] = d.paging?.total ?? 0;
+  } catch {
+    // Fallback: read from measures (already fetched) — set placeholder, renderIssues will pick up from metrics card
+    result['SECURITY_HOTSPOT'] = null;
+  }
+
+  // Severity breakdown (only for standard issues, hotspots don’t have severities)
+  try {
+    const d = await sonar(`/api/issues/search?componentKeys=${PROJECT_KEY}&resolved=false&ps=1&facets=severities${bp()}`);
+    result.severities = (d.facets||[]).find(f=>f.property==='severities')?.values || [];
+  } catch { result.severities = []; }
+
+  return result;
+}
+
+/* ═══════ TREE BUILD ═══════ */
+function buildTree(components, fileMeasures) {
+  const depth = path => path ? path.split('/').length - 1 : 0;
+  const parentOf = path => { if(!path) return null; const p=path.split('/'); return p.length>1?p.slice(0,-1).join('/'):null; };
+
+  // Aggregate dir metrics from files
+  const dirMetrics = {};
+  components.filter(c=>c.qualifier!=='DIR').forEach(f => {
+    const m = fileMeasures[f.key] || {};
+    const parts = (f.path||'').split('/');
+    for (let i=1; i<parts.length; i++) {
+      const dp = parts.slice(0,i).join('/');
+      if (!dirMetrics[dp]) dirMetrics[dp] = {ncloc:0,bugs:0,vulnerabilities:0,code_smells:0,covN:0,covD:0};
+      dirMetrics[dp].ncloc += +m.ncloc||0;
+      dirMetrics[dp].bugs  += +m.bugs||0;
+      dirMetrics[dp].vulnerabilities += +m.vulnerabilities||0;
+      dirMetrics[dp].code_smells += +m.code_smells||0;
+      if (m.coverage!=null) { const loc=+m.ncloc||1; dirMetrics[dp].covN+=parseFloat(m.coverage)*loc; dirMetrics[dp].covD+=loc; }
+    }
+  });
+
+  const dirs  = components.filter(c=>c.qualifier==='DIR').sort((a,b)=>(a.path||'').localeCompare(b.path||''));
+  const files = components.filter(c=>c.qualifier!=='DIR').sort((a,b)=>(a.path||'').localeCompare(b.path||''));
+
+  const nodes = [];
+  dirs.forEach(d => {
+    const p = d.path||''; const dm = dirMetrics[p]||{};
+    nodes.push({ key:d.key, name:d.name||(p.split('/').pop()||p), path:p, qualifier:'DIR',
+      depth:depth(p), parentPath:parentOf(p), open:true,
+      metrics:{ ncloc:dm.ncloc||0, bugs:dm.bugs||0, vulnerabilities:dm.vulnerabilities||0,
+                code_smells:dm.code_smells||0, coverage:dm.covD>0?(dm.covN/dm.covD).toFixed(1):null } });
+  });
+  files.forEach(f => {
+    const m = fileMeasures[f.key]||{};
+    nodes.push({ key:f.key, name:f.name||((f.path||'').split('/').pop()), path:f.path||'', qualifier:f.qualifier,
+      depth:depth(f.path), parentPath:parentOf(f.path), open:true,
+      metrics:{ ncloc:+m.ncloc||0, bugs:+m.bugs||0, vulnerabilities:+m.vulnerabilities||0,
+                code_smells:+m.code_smells||0, coverage:m.coverage!=null?parseFloat(m.coverage).toFixed(1):null } });
+  });
+  return nodes;
+}
+
+/* ═══════ RENDER ═══════ */
+function getMeasure(data, key) {
+  return data?.component?.measures?.find(m=>m.metric===key)?.value ?? null;
+}
+function ratingLetter(v) { return {1:'A',2:'B',3:'C',4:'D',5:'E'}[Math.round(+v)] || v || '–'; }
+
+function renderMeta(data) {
+  document.getElementById('metaStrip').style.display = 'flex';
+  document.getElementById('metaBranch').textContent  = BRANCH || '(main)';
+  document.getElementById('metaProject').textContent = data.component?.name || PROJECT_KEY;
+  const d = data.component?.analysisDate;
+  document.getElementById('metaDate').textContent = d ? new Date(d).toLocaleString() : '–';
+}
+
+function renderQG(data) {
+  if (!data?.projectStatus) return;
+  document.getElementById('qgSection').style.display = 'block';
+  const ps = data.projectStatus;
+  const icon = {OK:'✅',ERROR:'❌',WARN:'⚠️'}[ps.status]||'–';
+  const cls  = {OK:'qg-passed',ERROR:'qg-failed',WARN:'qg-warning'}[ps.status]||'';
+  document.getElementById('qgStatus').innerHTML = `<span class="${cls}">${icon} ${ps.status}</span>`;
+  const failed = (ps.conditions||[]).filter(c=>c.status!=='OK');
+  document.getElementById('qgConditions').innerHTML = failed.length
+    ? failed.map(c=>`⚠ <code style="font-size:11px">${c.metricKey}</code>: ${c.actualValue} (threshold: ${c.errorThreshold||c.warningThreshold})`).join('<br>')
+    : ps.status==='OK' ? 'All conditions passed ✓' : '';
+}
+
+function renderMetrics(data) {
+  document.getElementById('metricsSection').style.display = 'block';
+  const g  = k => getMeasure(data, k);
+  const bugs= +g('bugs')||0, vulns= +g('vulnerabilities')||0, smells= +g('code_smells')||0;
+  const cov = g('coverage'), dupl = g('duplicated_lines_density'), hot = +g('security_hotspots')||0;
+  const rR = ratingLetter(g('reliability_rating')), rS = ratingLetter(g('security_rating')), rM = ratingLetter(g('sqale_rating'));
+
+  const cards = [
+    { icon:'📄', label:'Lines of Code', val:fmt(g('ncloc')||0), cls:'info', vc:'info' },
+    { icon:'🐛', label:'Bugs',           val:bugs, cls:bugs>0?'err':'ok', vc:bugs>0?'err':'ok',
+      sub:`Reliability <span class="rating-badge rating-${rR}">${rR}</span>` },
+    { icon:'🔓', label:'Vulnerabilities',val:vulns, cls:vulns>0?'err':'ok', vc:vulns>0?'err':'ok',
+      sub:`Security <span class="rating-badge rating-${rS}">${rS}</span>` },
+    { icon:'💨', label:'Code Smells',    val:fmt(smells), cls:smells>100?'warn':'ok', vc:smells>100?'warn':'ok',
+      sub:`Maintainability <span class="rating-badge rating-${rM}">${rM}</span>` },
+    { icon:'🛡️', label:'Coverage',       val:cov!=null?`${(+cov).toFixed(1)}%`:'–',
+      cls:cov==null?'':cov>=80?'ok':cov>=50?'warn':'err',
+      vc: cov==null?'info':cov>=80?'ok':cov>=50?'warn':'err' },
+    { icon:'📋', label:'Duplication',    val:dupl!=null?`${(+dupl).toFixed(1)}%`:'–',
+      cls:dupl==null?'':dupl<=3?'ok':dupl<=10?'warn':'err',
+      vc: dupl==null?'info':dupl<=3?'ok':dupl<=10?'warn':'err' },
+    { icon:'🔥', label:'Hotspots',       val:hot, cls:hot>0?'warn':'ok', vc:hot>0?'warn':'ok' },
+  ];
+  document.getElementById('metricsGrid').innerHTML = cards.map(c=>`
+    <div class="metric-card ${c.cls}">
+      <div class="metric-icon">${c.icon}</div>
+      <div class="metric-label">${c.label}</div>
+      <div class="metric-value ${c.vc}">${c.val}</div>
+      ${c.sub?`<div class="metric-sub">${c.sub}</div>`:''}
+    </div>`).join('');
+}
+
+function renderIssues(s) {
+  document.getElementById('issuesSection').style.display = 'block';
+  const types = [
+    {t:'BUG',icon:'🐛',label:'Bugs',color:'var(--err)'},
+    {t:'VULNERABILITY',icon:'🔓',label:'Vulns',color:'#f97316'},
+    {t:'CODE_SMELL',icon:'💨',label:'Smells',color:'var(--warn)'},
+    {t:'SECURITY_HOTSPOT',icon:'🔥',label:'Hotspots',color:'var(--purple)'},
+  ];
+  const sevIcons = {BLOCKER:'🚨',CRITICAL:'⛔',MAJOR:'⚠️',MINOR:'💬',INFO:'ℹ️'};
+  const sevColors = {BLOCKER:'var(--err)',CRITICAL:'#f97316',MAJOR:'var(--warn)',MINOR:'var(--info)',INFO:'var(--text-dim)'};
+  document.getElementById('issuesBreakdown').innerHTML =
+    types.map(c=>`<div class="issue-pill"><span>${c.icon}</span><span class="count" style="color:${c.color}">${s[c.t]??'–'}</span><span style="color:var(--text-muted);font-size:11px">${c.label}</span></div>`).join('') +
+    (s.severities||[]).filter(v=>v.count>0).map(v=>`<div class="issue-pill"><span>${sevIcons[v.val]||'•'}</span><span class="count" style="color:${sevColors[v.val]||'var(--text)'}">${v.count}</span><span style="color:var(--text-muted);font-size:11px">${v.val}</span></div>`).join('');
+}
+
+function renderTree(nodes) {
+  TREE_DATA = nodes;
+  document.getElementById('treeStats').textContent = `${nodes.filter(n=>n.qualifier!=='DIR').length} files · ${nodes.filter(n=>n.qualifier==='DIR').length} dirs`;
+  rebuildTreeDOM();
+}
+
+function rebuildTreeDOM() {
+  const body = document.getElementById('treeBody');
+  if (!TREE_DATA.length) {
+    body.innerHTML = `<div class="empty-state"><div class="icon">📁</div><p>No components found for branch <code>${esc(BRANCH)}</code>.</p></div>`;
+    return;
+  }
+  body.innerHTML = TREE_DATA.map((n,i) => rowHTML(n,i)).join('');
+}
+
+function rowHTML(n, i) {
+  const isDir = n.qualifier === 'DIR';
+  const indent = n.depth * 20;
+  const hasKids = isDir && TREE_DATA.some(x => x.parentPath === n.path);
+  const visible  = isVisible(n);
+  const m = n.metrics;
+
+  return `<div class="tree-row ${isDir?'directory':''} ${visible?'':'filtered-hidden'}"
+    data-idx="${i}" data-path="${esc(n.path)}" data-qualifier="${n.qualifier}"
+    onclick="${isDir?`toggleDir(${i})`:'void 0'}" title="${esc(n.path)}">
+    <div class="tree-cell-name">
+      <div style="width:${indent}px;flex-shrink:0"></div>
+      <div class="tree-toggle ${hasKids?(n.open?'open':''):''}" style="visibility:${hasKids?'visible':'hidden'}">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="${n.open?'var(--accent2)':'var(--text-dim)'}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <span class="tree-icon">${isDir?'📁':fileIcon(n.name,n.qualifier)}</span>
+      <span class="tree-name ${isDir?'dir':''}">${esc(n.name)}</span>
+    </div>
+    <div class="tree-cell-metric">${chipLOC(m.ncloc)}</div>
+    <div class="tree-cell-metric">${chipNum(m.bugs,'err')}</div>
+    <div class="tree-cell-metric">${chipNum(m.vulnerabilities,'err')}</div>
+    <div class="tree-cell-metric">${chipCov(m.coverage)}</div>
+    <div class="tree-cell-metric">${chipNum(m.code_smells,'warn',10)}</div>
+  </div>`;
+}
+
+function isVisible(n) {
+  if (n.depth === 0) return true;
+  let cur = n;
+  while (cur.parentPath != null) {
+    const par = TREE_DATA.find(x => x.qualifier==='DIR' && x.path===cur.parentPath);
+    if (!par) return true;
+    if (!par.open) return false;
+    cur = par;
+  }
+  return true;
+}
+
+function toggleDir(i) {
+  const n = TREE_DATA[i];
+  if (!n) return;
+  n.open = !n.open;
+  rebuildTreeDOM();
+}
+
+function expandAll()  { TREE_DATA.forEach(n=>{ if(n.qualifier==='DIR') n.open=true;  }); rebuildTreeDOM(); }
+function collapseAll(){ TREE_DATA.forEach(n=>{ if(n.qualifier==='DIR') n.open=false; }); rebuildTreeDOM(); }
+
+function filterTree(q) {
+  const query = q.toLowerCase().trim();
+  document.querySelectorAll('.tree-row').forEach(row => {
+    if (!query) { row.classList.remove('filtered-hidden'); return; }
+    const path = (row.dataset.path||'').toLowerCase();
+    row.classList.toggle('filtered-hidden', !path.includes(query));
+  });
+}
+
+/* ═══════ CHIPS ═══════ */
+function chipLOC(v) {
+  if (!v) return `<span class="chip chip-0">–</span>`;
+  return `<span class="chip chip-info">${fmt(v)}</span>`;
+}
+function chipNum(v, badCls, threshold=0) {
+  if (!v) return `<span class="chip chip-0">0</span>`;
+  return `<span class="chip chip-${v>threshold?badCls:'ok'}">${v}</span>`;
+}
+function chipCov(v) {
+  if (v==null) return `<span class="chip chip-0">–</span>`;
+  const p = parseFloat(v);
+  const c = p>=80?'ok':p>=50?'warn':'err';
+  return `<div><span class="chip chip-${c}">${p.toFixed(1)}%</span><div class="coverage-bar" style="max-width:56px;margin:2px auto 0"><div class="coverage-fill ${p>=80?'high':p>=50?'mid':'low'}" style="width:${Math.min(p,100)}%"></div></div></div>`;
+}
+
+/* ═══════ UTILS ═══════ */
+function fmt(n) {
+  const num = +n; if(isNaN(num)) return String(n||'–');
+  if(num>=1e6) return (num/1e6).toFixed(1)+'M';
+  if(num>=1e3) return (num/1e3).toFixed(1)+'K';
+  return String(num);
+}
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fileIcon(name, qualifier) {
+  if (qualifier==='UTS') return '🧪';
+  const ext = (name||'').split('.').pop();
+  return {ts:'🔷',tsx:'⚛️',js:'🟡',jsx:'⚛️',html:'🌐',css:'🎨',scss:'🎨',less:'🎨',
+          json:'📋',md:'📝',spec:'🧪',test:'🧪',svg:'🖼️',png:'🖼️',sh:'🐚',yml:'⚙️',yaml:'⚙️',env:'⚙️'}[ext]||'📄';
+}
+
+/* ═══════ UI HELPERS ═══════ */
+function setStatus(type, msg) {
+  const bar = document.getElementById('statusBar');
+  bar.style.display = 'flex';
+  document.getElementById('statusDot').className = 'status-dot '+(type==='loading'?'loading':type==='ok'?'ok':'error');
+  document.getElementById('statusText').textContent = msg;
+}
+
+function showSkeletons() {
+  document.getElementById('metricsSection').style.display = 'block';
+  document.getElementById('metricsGrid').innerHTML = Array(7).fill(0).map(()=>`<div class="skeleton skeleton-metric"></div>`).join('');
+  document.getElementById('treeBody').innerHTML = Array(10).fill(0).map(()=>`<div class="skeleton skeleton-row"></div>`).join('');
+}
+function showErrorTree() {
+  document.getElementById('treeBody').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Could not load components. See the error above.</p></div>`;
+  document.getElementById('metricsGrid').innerHTML = '';
+}
+function showAlert(type, html) { document.getElementById('alertArea').innerHTML = `<div class="alert alert-${type}">${html}</div>`; }
+function clearAlert() { document.getElementById('alertArea').innerHTML = ''; }
+</script>
+</body>
+</html>
