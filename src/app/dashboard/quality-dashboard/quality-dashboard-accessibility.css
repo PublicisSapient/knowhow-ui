@@ -198,7 +198,7 @@ th:focus {
 }
 
 /* ===== Enhanced Loading State ===== */
-.loading-container[aria-busy="true"] {
+.loading-container[aria-busy='true'] {
   opacity: 0.9;
 }
 
@@ -209,14 +209,14 @@ th:focus {
 }
 
 /* ===== Error State Accessibility ===== */
-.error-container[role="alert"] {
+.error-container[role='alert'] {
   border-left: 4px solid #dc2626;
   padding-left: 16px;
 }
 
 /* ===== ARIA Live Region Styling ===== */
-[aria-live="polite"],
-[aria-live="assertive"] {
+[aria-live='polite'],
+[aria-live='assertive'] {
   position: relative;
 }
 
@@ -246,11 +246,11 @@ th:focus {
 
 /* ===== Semantic Structure Enhancements ===== */
 
-main[role="main"] {
+main[role='main'] {
   min-height: 80vh;
 }
 
-header[role="banner"] {
+header[role='banner'] {
   position: relative;
 }
 
@@ -261,11 +261,11 @@ nav[aria-label] {
 
 /* ===== Improved Link Accessibility ===== */
 
-a[target="_blank"]::after {
+a[target='_blank']::after {
   content: '' !important; /* Remove default icon */
 }
 
-a[target="_blank"] .sr-only {
+a[target='_blank'] .sr-only {
   /* Ensure screen reader text is announced */
   position: absolute;
 }
@@ -276,8 +276,8 @@ table {
   border-collapse: collapse;
 }
 
-th[scope="col"],
-th[scope="row"] {
+th[scope='col'],
+th[scope='row'] {
   font-weight: 600;
   text-align: left;
 }
@@ -297,7 +297,7 @@ th[scope="row"] {
   position: relative;
 }
 
-[role="tooltip"] {
+[role='tooltip'] {
   position: absolute;
   z-index: 1000;
   background: #1e293b;
@@ -310,18 +310,18 @@ th[scope="row"] {
 
 /* ===== Form Field Error States ===== */
 
-input[aria-invalid="true"],
-select[aria-invalid="true"] {
+input[aria-invalid='true'],
+select[aria-invalid='true'] {
   border-color: #dc2626 !important;
   border-width: 2px !important;
 }
 
-input[aria-invalid="true"]:focus,
-select[aria-invalid="true"]:focus {
+input[aria-invalid='true']:focus,
+select[aria-invalid='true']:focus {
   outline-color: #dc2626 !important;
 }
 
-[role="alert"].field-error {
+[role='alert'].field-error {
   color: #dc2626;
   font-size: 14px;
   margin-top: 4px;
@@ -396,7 +396,7 @@ select[aria-invalid="true"]:focus {
 /* ===== Accessibility Debug Mode (Development Only) ===== */
 
 /* Add to body: <body class="a11y-debug"> */
-.a11y-debug [aria-label]:not([aria-label=""]):hover::after {
+.a11y-debug [aria-label]:not([aria-label='']):hover::after {
   content: 'ARIA: ' attr(aria-label);
   position: absolute;
   background: #1e293b;

@@ -33,7 +33,7 @@ import {
   templateUrl: './quality-dashboard.component.html',
   styleUrls: [
     './quality-dashboard.component.css',
-    './quality-dashboard-accessibility.css'
+    './quality-dashboard-accessibility.css',
   ],
 })
 export class QualityDashboardComponent implements OnInit, OnDestroy {

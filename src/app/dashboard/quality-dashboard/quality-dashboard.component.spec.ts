@@ -24,7 +24,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QualityDashboardComponent } from './quality-dashboard.component';
 import { SonarQubeService } from '../../services/sonarqube.service';
-import { SonarMetricsResponse, QualityGateStatus, BranchInfo } from '../../model/sonarqube.model';
+import {
+  SonarMetricsResponse,
+  QualityGateStatus,
+  BranchInfo,
+} from '../../model/sonarqube.model';
 
 // PrimeNG Modules
 import { DialogModule } from 'primeng/dialog';
@@ -76,8 +80,18 @@ describe('QualityDashboardComponent', () => {
 
   const mockBranches: BranchInfo[] = [
     { name: 'master', isMain: true, type: 'LONG', analysisDate: '2026-09-16' },
-    { name: 'develop', isMain: false, type: 'LONG', analysisDate: '2026-09-16' },
-    { name: 'feature/test', isMain: false, type: 'SHORT', analysisDate: '2026-09-15' },
+    {
+      name: 'develop',
+      isMain: false,
+      type: 'LONG',
+      analysisDate: '2026-09-16',
+    },
+    {
+      name: 'feature/test',
+      isMain: false,
+      type: 'SHORT',
+      analysisDate: '2026-09-15',
+    },
   ];
 
   beforeEach(async () => {
@@ -124,7 +138,9 @@ describe('QualityDashboardComponent', () => {
       projectKey: 'ENGINEERING.KPIDASHBOARD.UI',
     });
     sonarQubeService.getProjectMetrics.and.returnValue(of(mockProjectMetrics));
-    sonarQubeService.getQualityGateStatus.and.returnValue(of(mockQualityGateStatus));
+    sonarQubeService.getQualityGateStatus.and.returnValue(
+      of(mockQualityGateStatus),
+    );
     sonarQubeService.getProjectBranches.and.returnValue(of(mockBranches));
     sonarQubeService.getCurrentBranch.and.returnValue('master');
 
@@ -275,7 +291,10 @@ describe('QualityDashboardComponent', () => {
       href: '',
       download: '',
     } as any);
-    const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
+    const createObjectURLSpy = spyOn(
+      window.URL,
+      'createObjectURL',
+    ).and.returnValue('blob:url');
 
     component.sonarConfig = {
       serverUrl: 'https://tools.publicis.sapient.com/sonar',
@@ -304,21 +323,21 @@ describe('QualityDashboardComponent', () => {
 
   it('should handle error when loading dashboard data', () => {
     sonarQubeService.getProjectMetrics.and.returnValue(
-      throwError(() => new Error('API Error'))
+      throwError(() => new Error('API Error')),
     );
 
     component.ngOnInit();
     fixture.detectChanges();
 
     expect(component.errorMessage).toBe(
-      'Failed to load quality data. Please check your SonarQube configuration.'
+      'Failed to load quality data. Please check your SonarQube configuration.',
     );
     expect(component.isLoading).toBe(false);
   });
 
   it('should handle branch loading errors gracefully', () => {
     sonarQubeService.getProjectBranches.and.returnValue(
-      throwError(() => new Error('Branch API Error'))
+      throwError(() => new Error('Branch API Error')),
     );
 
     component.ngOnInit();
@@ -333,7 +352,9 @@ describe('QualityDashboardComponent', () => {
 
     component.refreshData();
 
-    expect(sonarQubeService.getProjectMetrics.calls.count()).toBe(initialCallCount + 1);
+    expect(sonarQubeService.getProjectMetrics.calls.count()).toBe(
+      initialCallCount + 1,
+    );
   });
 
   it('should open and close config dialog', () => {
@@ -361,7 +382,9 @@ describe('QualityDashboardComponent', () => {
   });
 
   it('should get correct health status class', () => {
-    expect(component.getHealthStatusClass('Excellent')).toBe('health-excellent');
+    expect(component.getHealthStatusClass('Excellent')).toBe(
+      'health-excellent',
+    );
     expect(component.getHealthStatusClass('Good')).toBe('health-good');
     expect(component.getHealthStatusClass('Fair')).toBe('health-fair');
     expect(component.getHealthStatusClass('Poor')).toBe('health-poor');
