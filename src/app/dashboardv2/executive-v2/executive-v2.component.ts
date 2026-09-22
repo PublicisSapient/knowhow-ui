@@ -170,6 +170,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   nonUniqueNames: boolean;
   defectsBreachedSLAs;
   defectsBreachedSLAsAllValues;
+  defectsBreachedGatingCriteria;
+  defectsBreachedGatingCriteriaAllValues;
   kpi202WorkflowOrder: string[] = [];
   dataTypeDropdownOptions = [
     { name: 'Aggregated', code: 'AGT' },
@@ -2397,6 +2399,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
         : {};
       this.defectsBreachedSLAs = this.kpiChartData[kpiId];
+    }
+
+    if (kpiId === 'kpi224') {
+      this.defectsBreachedGatingCriteriaAllValues = this.allKpiArray[idx]
+        ?.trendValueList
+        ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList))
+        : {};
+      this.defectsBreachedGatingCriteria = this.kpiChartData[kpiId];
     }
     if (
       Array.isArray(this.kpiChartData[kpiId]) &&
@@ -6191,6 +6201,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * Transforms the drillDown object into an array of metric cards with labels, values, and percentages.
    * Calculates percentage relative to the 'value' property (total issues).
    */
+
   getKpi311DrillDownData(): any[] | null {
     if (this.kpi311SelectedView !== 'Details' || !this.kpi311SelectedSprint) {
       return null;
@@ -6263,17 +6274,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * were produced.
    */
   isKpi311SprintFailed(): boolean {
-    if (!this.kpi311SelectedSprint) return false;
+    if (!this.kpi311SelectedSprint) {
+      return false;
+    }
     const kpiIdx = this.ifKpiExist('kpi311');
-    if (kpiIdx === -1) return false;
+    if (kpiIdx === -1) {
+      return false;
+    }
     const kpiData = this.allKpiArray[kpiIdx];
-    if (!kpiData?.trendValueList) return false;
+    if (!kpiData?.trendValueList) {
+      return false;
+    }
     for (const trendItem of kpiData.trendValueList) {
       if (trendItem.value && Array.isArray(trendItem.value)) {
         const item = trendItem.value.find(
           (i: any) => i.sSprintName === this.kpi311SelectedSprint,
         );
-        if (item) return item.hoverValue?.['Evaluation Status'] === 'Failed';
+        if (item) {
+          return item.hoverValue?.['Evaluation Status'] === 'Failed';
+        }
       }
     }
     return false;
@@ -6286,8 +6305,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return false;
     }
     const kpiData = this.allKpiArray[kpiIdx];
-    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList))
+    if (!kpiData?.trendValueList || !Array.isArray(kpiData.trendValueList)) {
       return false;
+    }
     const allItems: any[] = [];
     for (const trendItem of kpiData.trendValueList) {
       if (trendItem.value && Array.isArray(trendItem.value)) {

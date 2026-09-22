@@ -141,6 +141,10 @@ import { PanelModule } from 'primeng/panel';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SharelinkService } from './services/share-link.service';
+import { TooltipModule } from 'primeng/tooltip';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TreeModule } from 'primeng/tree';
+import { MessageModule } from 'primeng/message';
 import { PebCalculatorComponent } from './dashboard/peb-calculator/peb-calculator.component';
 import { HomeComponent } from './dashboard/home/home.component';
 import { HomeRecommCardComponent } from './component/home-recomm-card/home-recomm-card.component';
@@ -153,6 +157,7 @@ import { ListBlockComponent } from './dashboard/list-block/list-block.component'
 import { TopTilesComponent } from './dashboard/top-tiles/top-tiles.component';
 import { ChatbotComponent } from './dashboard/chatbot/chatbot.component';
 import { EpicReadinessTableComponent } from './component/epic-readiness-table/epic-readiness-table.component';
+import { QualityDashboardComponent } from './dashboard/quality-dashboard/quality-dashboard.component';
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
@@ -209,6 +214,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     HomeComponent,
     DynamicCurrencyPipe,
     EpicReadinessTableComponent,
+    QualityDashboardComponent,
   ],
   imports: [
     SharedModuleModule,
@@ -255,6 +261,10 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     SidebarModule,
     InputNumberModule,
     MessagesModule,
+    TooltipModule,
+    ProgressSpinnerModule,
+    TreeModule,
+    MessageModule,
     PrimaryFilterComponent,
     ParentFilterComponent,
     FilterNewComponent,
