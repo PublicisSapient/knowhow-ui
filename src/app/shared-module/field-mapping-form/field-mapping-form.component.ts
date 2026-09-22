@@ -86,7 +86,9 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
    */
   get triggerField(): any {
     const triggerFieldName = this.kpiTriggerFieldNameMap[this.kpiId];
-    if (!triggerFieldName) return null;
+    if (!triggerFieldName) {
+      return null;
+    }
 
     return this.fieldMappingConfig?.find(
       (field) => field.fieldName === triggerFieldName,
@@ -856,7 +858,9 @@ export class FieldMappingFormComponent implements OnInit, OnChanges {
                 label: config.fieldLabel,
                 prompt: this.form.value[config.fieldName] || '',
               };
-              if (fn) entry.fieldName = fn;
+              if (fn) {
+                entry.fieldName = fn;
+              }
               if (w !== null && w !== '' && w !== undefined) {
                 entry.weightage = Number(w);
               } else if (w === null) {

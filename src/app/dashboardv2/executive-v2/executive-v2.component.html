@@ -150,8 +150,16 @@
                               : {}
                             : kpiChartData[kpi?.kpiId]
                         "
-                        [kpi312ExcelData]="selectedTab === 'slingshot' ? this.kpi312ExcelData : []"
-                        [kpi312MaturityBlockData]="selectedTab === 'slingshot' ? this.kpi312MaturityBlockData : []"
+                        [kpi312ExcelData]="
+                          selectedTab === 'slingshot'
+                            ? this.kpi312ExcelData
+                            : []
+                        "
+                        [kpi312MaturityBlockData]="
+                          selectedTab === 'slingshot'
+                            ? this.kpi312MaturityBlockData
+                            : []
+                        "
                         [colors]="colorObj"
                         [showCommentIcon]="showCommentIcon"
                         [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
@@ -214,7 +222,9 @@
                           kpi?.kpiId === 'kpi311' ? kpi311SelectedView : null
                         "
                         [kpi311AllSprintsFailed]="
-                          kpi?.kpiId === 'kpi311' ? isKpi311AllSprintsFailed() : false
+                          kpi?.kpiId === 'kpi311'
+                            ? isKpi311AllSprintsFailed()
+                            : false
                         "
                         (fullWidthToggled)="
                           onKpiFullWidthToggle($event, kpi.kpiId)
@@ -276,7 +286,9 @@
                                       *ngIf="kpi.kpiId === 'kpi312'"
                                       [kpiChartData]="this.kpi312ExcelData"
                                       [trendBoxColorObj]="trendBoxColorObj"
-                                      [maturityBlockData]="this.kpi312MaturityBlockData">
+                                      [maturityBlockData]="
+                                        this.kpi312MaturityBlockData
+                                      ">
                                     </app-epic-readiness-table>
 
                                     <!-- Default table for other KPIs -->
@@ -318,18 +330,24 @@
                                             )
                                           " />
                                       </div>
-                                      }
-                                      @if (kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed()) {
+                                      } @if (kpi.kpiId === 'kpi311' &&
+                                      isKpi311AllSprintsFailed()) {
                                       <div class="min-ht">
-                                        <div class="p-w-100 p-d-flex p-justify-center">
-                                          <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                        <div
+                                          class="p-w-100 p-d-flex p-justify-center">
+                                          <img
+                                            alt="no-data"
+                                            src="assets/img/NoDataFound.svg" />
                                         </div>
                                         <div class="p-w-100">
-                                          <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                          <h4 class="p-text-center">
+                                            KPI Analysis failed. Contact your
+                                            administrator.
+                                          </h4>
                                         </div>
                                       </div>
-                                      }
-                                      @if (kpi.kpiId === 'kpi311' && !isKpi311AllSprintsFailed()) {
+                                      } @if (kpi.kpiId === 'kpi311' &&
+                                      !isKpi311AllSprintsFailed()) {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
@@ -348,9 +366,10 @@
                                           placeholder="Select Sprint"
                                           [style]="{ width: '200px' }" />
                                       </div>
-                                      }
-                                      }
-                                      @if ((kpi.kpiId !== 'kpi311' || kpi311SelectedView === 'Overall') && !(kpi.kpiId === 'kpi311' && isKpi311AllSprintsFailed())) {
+                                      } } @if ((kpi.kpiId !== 'kpi311' ||
+                                      kpi311SelectedView === 'Overall') &&
+                                      !(kpi.kpiId === 'kpi311' &&
+                                      isKpi311AllSprintsFailed())) {
                                       <div class="multiline-chart">
                                         <app-multiline-v2
                                           [thresholdValue]="
@@ -390,49 +409,134 @@
                                           ">
                                         </app-multiline-v2>
                                       </div>
-                                      }
-                                      @if (kpi.kpiId === 'kpi311' && kpi311SelectedView === 'Details') {
+                                      } @if (kpi.kpiId === 'kpi311' &&
+                                      kpi311SelectedView === 'Details') {
                                       <div class="kpi311-details-view p-py-3">
                                         @if (isKpi311SprintFailed()) {
                                         <div class="min-ht">
-                                          <div class="p-w-100 p-d-flex p-justify-center">
-                                            <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                                          <div
+                                            class="p-w-100 p-d-flex p-justify-center">
+                                            <img
+                                              alt="no-data"
+                                              src="assets/img/NoDataFound.svg" />
                                           </div>
                                           <div class="p-w-100">
-                                            <h4 class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+                                            <h4 class="p-text-center">
+                                              KPI Analysis failed. Contact your
+                                              administrator.
+                                            </h4>
                                           </div>
                                         </div>
                                         } @else {
                                         <!-- New Data blocks go here -->
-                                        <div class="metrics-grid column-3 p-py-3 p-mb-3">
-                                          <div *ngFor="let block of getKpi311DataBlocks()" class="data-block p-p-3" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                            <div class="block-header" style="font-size: 0.875rem; color: #6c757d; margin-bottom: 8px;">{{ block.header }}</div>
-                                            <div class="block-value" style="font-size: 2rem; font-weight: 600; color: #2c3e50;">
+                                        <div
+                                          class="metrics-grid column-3 p-py-3 p-mb-3">
+                                          <div
+                                            *ngFor="
+                                              let block of getKpi311DataBlocks()
+                                            "
+                                            class="data-block p-p-3"
+                                            style="
+                                              background: #fff;
+                                              border-radius: 8px;
+                                              box-shadow: 0 2px 8px
+                                                rgba(0, 0, 0, 0.1);
+                                            ">
+                                            <div
+                                              class="block-header"
+                                              style="
+                                                font-size: 0.875rem;
+                                                color: #6c757d;
+                                                margin-bottom: 8px;
+                                              ">
+                                              {{ block.header }}
+                                            </div>
+                                            <div
+                                              class="block-value"
+                                              style="
+                                                font-size: 2rem;
+                                                font-weight: 600;
+                                                color: #2c3e50;
+                                              ">
                                               {{ block.value }}{{ block.unit }}
                                             </div>
-                                            <div class="block-info" style="font-size: 0.875rem; margin-top: 8px; display: none;" [innerHTML]="block.info"></div>
+                                            <div
+                                              class="block-info"
+                                              style="
+                                                font-size: 0.875rem;
+                                                margin-top: 8px;
+                                                display: none;
+                                              "
+                                              [innerHTML]="block.info"></div>
                                           </div>
                                         </div>
                                         <!-- /end -->
 
                                         @if (getKpi311DrillDownData()) {
                                         <div class="drilldown-visualization">
-                                          <div class="criteria-compliance-header">Criteria Compliance</div>
-                                          <p-table [value]="getKpi311DrillDownData()" styleClass="p-datatable-gridlines">
+                                          <div
+                                            class="criteria-compliance-header">
+                                            Criteria Compliance
+                                          </div>
+                                          <p-table
+                                            [value]="getKpi311DrillDownData()"
+                                            styleClass="p-datatable-gridlines">
                                             <ng-template pTemplate="header">
                                               <tr>
-                                                <th style="width: 50%;">Metric Name</th>
-                                                <th style="width: 15%; text-align: center;">Percentage</th>
-                                                <th style="width: 35%;">Progress</th>
+                                                <th style="width: 50%">
+                                                  Metric Name
+                                                </th>
+                                                <th
+                                                  style="
+                                                    width: 15%;
+                                                    text-align: center;
+                                                  ">
+                                                  Percentage
+                                                </th>
+                                                <th style="width: 35%">
+                                                  Progress
+                                                </th>
                                               </tr>
                                             </ng-template>
-                                            <ng-template pTemplate="body" let-metric>
+                                            <ng-template
+                                              pTemplate="body"
+                                              let-metric>
                                               <tr>
-                                                <td style="color: #495057; width: 50%;">{{ metric.label }}</td>
-                                                <td style="text-align: center; font-size: 0.875rem; color: #6c757d; width: 15%;">{{ metric.value }}%</td>
-                                                <td style="width: 35%;">
-                                                  <div class="progress-bar-container" style="height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
-                                                    <div class="progress-bar-fill" [style.width.%]="metric.value" [style.background]="getMetricColor(metric.value)"></div>
+                                                <td
+                                                  style="
+                                                    color: #495057;
+                                                    width: 50%;
+                                                  ">
+                                                  {{ metric.label }}
+                                                </td>
+                                                <td
+                                                  style="
+                                                    text-align: center;
+                                                    font-size: 0.875rem;
+                                                    color: #6c757d;
+                                                    width: 15%;
+                                                  ">
+                                                  {{ metric.value }}%
+                                                </td>
+                                                <td style="width: 35%">
+                                                  <div
+                                                    class="progress-bar-container"
+                                                    style="
+                                                      height: 8px;
+                                                      background: #e9ecef;
+                                                      border-radius: 4px;
+                                                      overflow: hidden;
+                                                    ">
+                                                    <div
+                                                      class="progress-bar-fill"
+                                                      [style.width.%]="
+                                                        metric.value
+                                                      "
+                                                      [style.background]="
+                                                        getMetricColor(
+                                                          metric.value
+                                                        )
+                                                      "></div>
                                                   </div>
                                                 </td>
                                               </tr>
@@ -440,11 +544,25 @@
                                           </p-table>
                                         </div>
                                         } @else {
-                                        <div class="empty-container p-p-4" style="border: 1px dashed #ccc; border-radius: 8px; min-height: 200px; background-color: #f8f9fa;">
-                                          <p class="p-text-center" style="color: #6c757d; padding-top: 80px;">No drillDown data available for the selected sprint</p>
+                                        <div
+                                          class="empty-container p-p-4"
+                                          style="
+                                            border: 1px dashed #ccc;
+                                            border-radius: 8px;
+                                            min-height: 200px;
+                                            background-color: #f8f9fa;
+                                          ">
+                                          <p
+                                            class="p-text-center"
+                                            style="
+                                              color: #6c757d;
+                                              padding-top: 80px;
+                                            ">
+                                            No drillDown data available for the
+                                            selected sprint
+                                          </p>
                                         </div>
-                                        }
-                                        }
+                                        } }
                                       </div>
                                       }
                                     </ng-container>
@@ -725,7 +843,9 @@
                                         [color]="chartColorList"
                                         [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype"
-                                        [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                        [filter]="
+                                          kpiSelectedFilterObj[kpi?.kpiId]
+                                        "
                                         [isAggregationStacks]="
                                           kpi?.kpiDetail
                                             ?.isAggregationStacks === false
@@ -1060,16 +1180,22 @@
                                       [defectsBreachedSLAsAllValues]="
                                         defectsBreachedSLAsAllValues
                                       "
+                                      [defectsBreachedGatingCriteria]="
+                                        defectsBreachedGatingCriteria
+                                      "
+                                      [defectsBreachedGatingCriteriaAllValues]="
+                                        defectsBreachedGatingCriteriaAllValues
+                                      "
                                       [data]="kpiChartData[kpi?.kpiId]"
                                       [kpiId]="kpi?.kpiId"
                                       [thresholdValue]="
                                         kpiThresholdObj[kpi?.kpiId]
                                       "
                                       [xCaption]="
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ] &&
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ][0]
                                           ? this.filterApplyData.selectedMap[
@@ -1117,16 +1243,22 @@
                                       [defectsBreachedSLAsAllValues]="
                                         defectsBreachedSLAsAllValues
                                       "
+                                      [defectsBreachedGatingCriteria]="
+                                        defectsBreachedGatingCriteria
+                                      "
+                                      [defectsBreachedGatingCriteriaAllValues]="
+                                        defectsBreachedGatingCriteriaAllValues
+                                      "
                                       [data]="kpiChartData[kpi?.kpiId]"
                                       [kpiId]="kpi?.kpiId"
                                       [thresholdValue]="
                                         kpiThresholdObj[kpi?.kpiId]
                                       "
                                       [xCaption]="
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ] &&
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ][0]
                                           ? this.filterApplyData.selectedMap[

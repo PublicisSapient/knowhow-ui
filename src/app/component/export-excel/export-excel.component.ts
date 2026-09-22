@@ -545,6 +545,9 @@ export class ExportExcelComponent implements OnInit {
     } else if (hasCol('days/weeks')) {
       this.forzenColumns = ['days/weeks'];
       return this.makeDaysWeeksColumnOnFirstOrder(columns);
+    } else if (hasCol('aging bucket')) {
+      this.forzenColumns = ['aging bucket'];
+      return this.makeAgingBucketColumnOnFirstOrder(columns);
     } else {
       this.forzenColumns = ['issue id'];
       return this.makeIssueIDOnFirstOrder(columns);
@@ -614,6 +617,25 @@ export class ExportExcelComponent implements OnInit {
       .map((col, index) => ({ ...col, order: index + 1 }));
 
     return [daysWeeksColumn, ...remainingColumns];
+  }
+
+  makeAgingBucketColumnOnFirstOrder(columns) {
+    const agingBucketColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === 'aging bucket',
+    );
+
+    if (!agingBucketColumn) {
+      return columns;
+    }
+
+    agingBucketColumn.order = 0;
+
+    const remainingColumns = columns
+      .filter((col) => col !== agingBucketColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+
+    return [agingBucketColumn, ...remainingColumns];
   }
 
   sortableColumn(columnName, tableDataSet) {

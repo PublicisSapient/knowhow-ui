@@ -42,6 +42,8 @@ export class StackedGroupBarChartComponent
 {
   @Input() defectsBreachedSLAs: any;
   @Input() defectsBreachedSLAsAllValues: any;
+  @Input() defectsBreachedGatingCriteria: any;
+  @Input() defectsBreachedGatingCriteriaAllValues: any;
   @Input() color: string[] = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
   @Input() data;
   @Input() kpiId;
@@ -62,8 +64,7 @@ export class StackedGroupBarChartComponent
   private filteredData: any;
   private activeSeverityKeys = [];
   private isInitialized = false;
-  private yAxisLabel;
-
+  yAxisLabel: string = '';
   private readonly svg: any;
   private readonly width: number = 0;
   private readonly allSeverityKeys = ['s1', 's2', 's3', 's4'];
@@ -163,6 +164,16 @@ export class StackedGroupBarChartComponent
         );
         return;
       }
+    } else if (this.kpiId === 'kpi224') {
+      if (
+        !this.defectsBreachedGatingCriteria ||
+        this.defectsBreachedGatingCriteria.length === 0
+      ) {
+        console.warn(
+          'KPI 224: No defectsBreachedGatingCriteria data available, skipping chart creation',
+        );
+        return;
+      }
     } else if (
       this.kpiId === 'kpi196' ||
       this.kpiId === 'kpi197' ||
@@ -216,6 +227,43 @@ export class StackedGroupBarChartComponent
           chartYRange = Math.max(chartYRange, severityTotal);
 
           sprintGroups[sprintKey].push(severityData);
+        });
+      });
+    } else if (this.kpiId === 'kpi224') {
+      this.yAxisLabel = 'Count';
+      // Dynamically extract issue types from drillDown data
+      severityKeys = this.extractIssueTypesFromData(
+        this.defectsBreachedGatingCriteria,
+      );
+
+      this.defectsBreachedGatingCriteria?.forEach((project: any) => {
+        project.value.forEach((sprint: any, index: number) => {
+          if (sprint == null) {
+            return;
+          }
+          const sprintKey =
+            sprint?.sSprintName || sprint?.subFilter || `${index + 1}`;
+          if (!sprintGroups[sprintKey]) sprintGroups[sprintKey] = [];
+
+          const issueTypeData: any = {
+            project: project.data,
+            rate: project.data,
+            value: 0,
+            ...severityKeys.reduce((acc, issueType) => {
+              const found = sprint?.drillDown?.find(
+                (d: any) => d.issueType === issueType,
+              );
+              acc[issueType] = found ? found.count : 0;
+              return acc;
+            }, {}),
+          };
+          const issueTypeTotal = severityKeys.reduce(
+            (total, key) => total + (issueTypeData[key] || 0),
+            0,
+          );
+          chartYRange = Math.max(chartYRange, issueTypeTotal);
+
+          sprintGroups[sprintKey].push(issueTypeData);
         });
       });
     } else if (this.kpiId === 'kpi196' || this.kpiId === 'kpi197') {
@@ -297,6 +345,10 @@ export class StackedGroupBarChartComponent
     let projects;
     if (this.kpiId === 'kpi195') {
       projects = [...new Set(this.defectsBreachedSLAs?.map((d) => d.data))];
+    } else if (this.kpiId === 'kpi224') {
+      projects = [
+        ...new Set(this.defectsBreachedGatingCriteria?.map((d) => d.data)),
+      ];
     } else {
       projects = [...new Set(this.data?.map((d) => d.data))];
     }
@@ -311,7 +363,7 @@ export class StackedGroupBarChartComponent
 
     // Define Stack Keys early so we can build the legend
     const stackKeys =
-      this.kpiId === 'kpi195'
+      this.kpiId === 'kpi195' || this.kpiId === 'kpi224'
         ? severityKeys
         : this.kpiId === 'kpi202'
         ? (this as any)._kpi202Keys || this.testExecutionKeys
@@ -332,16 +384,19 @@ export class StackedGroupBarChartComponent
       '#4A235A',
     ];
 
-    // For KPI202, ignore this.color since the parent passes Project colors,
-    // but KPI202 needs distinct colors for its Stacks.
+    // For KPI202 and KPI224, ignore this.color (parent passes project colors)
+    // and use the fixed ordinal palette so each stack key gets a distinct color.
     const safeColors =
-      this.kpiId !== 'kpi202' && this.color?.length
+      this.kpiId !== 'kpi202' && this.kpiId !== 'kpi224' && this.color?.length
         ? this.color
         : defaultColors;
 
     let legendHeight = 0;
-    // Add Color Legend specifically for KPI202
-    if (this.kpiId === 'kpi202' && stackKeys?.length) {
+    // Add Color Legend for KPI202 and KPI224 (ordinal color per stack key)
+    if (
+      (this.kpiId === 'kpi202' || this.kpiId === 'kpi224') &&
+      stackKeys?.length
+    ) {
       const colorLegend = d3
         .select(containerNode)
         .append('div')
@@ -540,7 +595,7 @@ export class StackedGroupBarChartComponent
 
     sprints.forEach((sprint) => {
       const stackKeys =
-        this.kpiId === 'kpi195'
+        this.kpiId === 'kpi195' || this.kpiId === 'kpi224'
           ? severityKeys
           : this.kpiId === 'kpi202'
           ? (this as any)._kpi202Keys || this.testExecutionKeys
@@ -567,8 +622,8 @@ export class StackedGroupBarChartComponent
         .attr('fill', (d: any, i: number, nodes: any[]) => {
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
-          if (this.kpiId === 'kpi202') {
-            const stackIndex = stackKeys.indexOf(severityKey);
+          if (this.kpiId === 'kpi202' || this.kpiId === 'kpi224') {
+            const stackIndex = severityKeys.indexOf(severityKey);
             return safeColors[stackIndex % safeColors.length];
           }
           const severityIndex =
@@ -604,6 +659,17 @@ export class StackedGroupBarChartComponent
                 <div><strong>${severityKey.toUpperCase()} Breached:</strong> ${
                       originalData.hoverValue.breachedPercentage
                     }%</div>
+              `
+                  : this.kpiId === 'kpi224'
+                  ? `
+                <div><strong>${severityKey} Count:</strong> ${
+                      originalData?.drillDown?.find(
+                        (dv: any) => dv.issueType === severityKey,
+                      )?.count || 0
+                    }</div>
+                ${Object.entries(originalData.hoverValue)
+                  .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+                  .join('')}
               `
                   : this.kpiId === 'kpi202'
                   ? `
@@ -706,7 +772,11 @@ export class StackedGroupBarChartComponent
       });
     this.xCaption = this.xCaption ? this.xCaption : this.xAxisLabel;
     // -- Fallback, incase this.xAxisLabel is also empty/undefined
-    this.xCaption = this.xCaption ? this.xCaption : 'Sprints';
+    this.xCaption = this.xCaption
+      ? this.xCaption
+      : this.kpiId === 'kpi224'
+      ? ''
+      : 'Sprints';
 
     // Append X-axis label as an HTML div below the chart wrapper so it's always centered and visible
     d3.select(containerNode)
@@ -747,7 +817,9 @@ export class StackedGroupBarChartComponent
     // --- Legend ---
     const hierachy = JSON.parse(localStorage.getItem('selectedTrend'))[0]
       ?.labelName;
-    if (hierachy === 'project') {
+    // kpi224 uses fixed age-bucket labels on the x-axis directly;
+    // the issue-type legend is already rendered above, so skip the sprint legend.
+    if (hierachy === 'project' && this.kpiId !== 'kpi224') {
       this.renderSprintsLegend(
         this.flattenData(
           this.kpiId === 'kpi195' ? this.defectsBreachedSLAs : this.data,
@@ -957,6 +1029,36 @@ export class StackedGroupBarChartComponent
     return this.helper.getFormatedDateBasedOnType(date, xCaption);
   }
 
+  /**
+   * Dynamically extracts unique issue types from the drillDown property of the data
+   * @param data - The KPI data array containing projects with sprint values
+   * @returns Array of unique issue type strings found in drillDown arrays
+   */
+  private extractIssueTypesFromData(data: any[]): string[] {
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    const issueTypesSet = new Set<string>();
+
+    data.forEach((project: any) => {
+      if (project?.value && Array.isArray(project.value)) {
+        project.value.forEach((sprint: any) => {
+          if (sprint?.drillDown && Array.isArray(sprint.drillDown)) {
+            sprint.drillDown.forEach((item: any) => {
+              if (item?.issueType) {
+                issueTypesSet.add(item.issueType);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    // Convert Set to Array and sort for consistent ordering
+    return Array.from(issueTypesSet).sort();
+  }
+
   private findOriginalData(
     projectName: string,
     sprintName: string,
@@ -975,6 +1077,17 @@ export class StackedGroupBarChartComponent
         );
 
         return projectSprintData.value[sprintNumber] || null;
+      }
+    } else if (this.kpiId === 'kpi224') {
+      const project = this.defectsBreachedGatingCriteriaAllValues?.find(
+        (p: any) => p.data === projectName,
+      );
+      if (project?.value) {
+        return (
+          project.value.find(
+            (v: any) => v.sSprintName === sprintName || v.date === sprintName,
+          ) || null
+        );
       }
     } else {
       const projectData = this.data.find((p: any) => p.data === projectName);
@@ -1028,46 +1141,86 @@ export class StackedGroupBarChartComponent
       return;
     }
 
-    // Default: kpi195 logic
-    if (!this.defectsBreachedSLAs) {
-      console.warn('No KPI data available');
-      return;
-    }
-
-    const sprintGroups: { [key: string]: any[] } = {};
-
-    const severitiesToUse =
-      this.activeSeverityKeys && this.activeSeverityKeys.length
-        ? this.activeSeverityKeys
-        : this.allSeverityKeys;
-
-    this.defectsBreachedSLAs.forEach((project: any) => {
-      if (project.value && Array.isArray(project.value)) {
-        project.value.forEach((sprint: any, index: number) => {
-          const sprintKey = `${index + 1}`;
-          if (!sprintGroups[sprintKey]) {
-            sprintGroups[sprintKey] = [];
-          }
-
-          const severityData: any = { project: project.data || 'Unknown' };
-
-          severitiesToUse.forEach((severity) => {
-            if (sprint.drillDown && Array.isArray(sprint.drillDown)) {
-              const found = sprint.drillDown.find(
-                (d: any) => d.severity === severity,
-              );
-              severityData[severity] = found ? found.breachedPercentage : 0;
-            } else {
-              severityData[severity] = 0;
-            }
-          });
-
-          sprintGroups[sprintKey].push(severityData);
-        });
+    // Default: kpi195 or kpi224 logic
+    if (this.kpiId === 'kpi195') {
+      const dataSource = this.defectsBreachedSLAs;
+      if (!dataSource) {
+        console.warn('No KPI data available');
+        return;
       }
-    });
 
-    this.filteredData = sprintGroups;
+      const sprintGroups: { [key: string]: any[] } = {};
+
+      const severitiesToUse =
+        this.activeSeverityKeys && this.activeSeverityKeys.length
+          ? this.activeSeverityKeys
+          : this.allSeverityKeys;
+
+      dataSource.forEach((project: any) => {
+        if (project.value && Array.isArray(project.value)) {
+          project.value.forEach((sprint: any, index: number) => {
+            const sprintKey = `${index + 1}`;
+            if (!sprintGroups[sprintKey]) {
+              sprintGroups[sprintKey] = [];
+            }
+
+            const severityData: any = { project: project.data || 'Unknown' };
+
+            severitiesToUse.forEach((severity) => {
+              if (sprint.drillDown && Array.isArray(sprint.drillDown)) {
+                const found = sprint.drillDown.find(
+                  (d: any) => d.severity === severity,
+                );
+                severityData[severity] = found ? found.breachedPercentage : 0;
+              } else {
+                severityData[severity] = 0;
+              }
+            });
+
+            sprintGroups[sprintKey].push(severityData);
+          });
+        }
+      });
+
+      this.filteredData = sprintGroups;
+    } else if (this.kpiId === 'kpi224') {
+      const dataSource = this.defectsBreachedGatingCriteria;
+      if (!dataSource) {
+        console.warn('No KPI data available');
+        return;
+      }
+
+      const sprintGroups: { [key: string]: any[] } = {};
+      const issueTypesToUse = this.extractIssueTypesFromData(dataSource);
+
+      dataSource.forEach((project: any) => {
+        if (project.value && Array.isArray(project.value)) {
+          project.value.forEach((sprint: any, index: number) => {
+            const sprintKey = `${index + 1}`;
+            if (!sprintGroups[sprintKey]) {
+              sprintGroups[sprintKey] = [];
+            }
+
+            const issueTypeData: any = { project: project.data || 'Unknown' };
+
+            issueTypesToUse.forEach((issueType: string) => {
+              if (sprint.drillDown && Array.isArray(sprint.drillDown)) {
+                const found = sprint.drillDown.find(
+                  (d: any) => d.issueType === issueType,
+                );
+                issueTypeData[issueType] = found ? found.count : 0;
+              } else {
+                issueTypeData[issueType] = 0;
+              }
+            });
+
+            sprintGroups[sprintKey].push(issueTypeData);
+          });
+        }
+      });
+
+      this.filteredData = sprintGroups;
+    }
 
     if (this.isInitialized) {
       this.createChart();
