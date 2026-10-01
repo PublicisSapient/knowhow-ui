@@ -743,4 +743,110 @@ export class ExportExcelComponent implements OnInit {
       return matchDefectId[matchLength - 1];
     }
   }
+
+  /**
+   * Custom sort function to handle numerical sorting for values with units (e.g., "33 Days", "2.5 Hours")
+   * and other special cases like dates, weeks, and regular strings.
+   *
+   * @param event - PrimeNG sort event containing field, order, and data
+   */
+  customSort(event: any): void {
+    const field = event.field;
+    const order = event.order; // 1 for ascending, -1 for descending
+    const data = event.data;
+
+    data.sort((row1: any, row2: any) => {
+      let value1 = row1[field];
+      let value2 = row2[field];
+
+      // Handle hyperlink objects - extract text for comparison
+      if (this.typeOf(value1) && value1?.hasOwnProperty('text')) {
+        value1 = value1.text;
+      }
+      if (this.typeOf(value2) && value2?.hasOwnProperty('text')) {
+        value2 = value2.text;
+      }
+
+      // Handle arrays - join for comparison
+      if (Array.isArray(value1)) {
+        value1 = value1.map(v => this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v).join(', ');
+      }
+      if (Array.isArray(value2)) {
+        value2 = value2.map(v => this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v).join(', ');
+      }
+
+      // Handle null/undefined/blank values - push to end
+      const isBlank1 = this.blankValues.includes(value1) || value1 === '';
+      const isBlank2 = this.blankValues.includes(value2) || value2 === '';
+
+      if (isBlank1 && isBlank2) return 0;
+      if (isBlank1) return 1; // blanks go to end
+      if (isBlank2) return -1; // blanks go to end
+
+      // Convert to string for pattern matching
+      const str1 = String(value1).trim();
+      const str2 = String(value2).trim();
+
+      // Pattern 1: Check for numeric values with units (e.g., "33 Days", "2.5 Hours", "100 %")
+      // Matches: "123", "12.5", "1,234", "1,234.56" followed by optional unit text
+      const numericWithUnitRegex = /^([0-9,]+\.?[0-9]*)\s*(.*)$/;
+      const match1 = str1.match(numericWithUnitRegex);
+      const match2 = str2.match(numericWithUnitRegex);
+
+      if (match1 && match2) {
+        // Extract numeric values, removing commas for parsing
+        const num1 = parseFloat(match1[1].replace(/,/g, ''));
+        const num2 = parseFloat(match2[1].replace(/,/g, ''));
+        const unit1 = match1[2].trim().toLowerCase();
+        const unit2 = match2[2].trim().toLowerCase();
+
+        // If both are valid numbers with the same unit (or both have no unit), sort numerically
+        if (!isNaN(num1) && !isNaN(num2) && unit1 === unit2) {
+          return (num1 - num2) * order;
+        }
+
+        // If units differ, sort by unit name first, then by number
+        if (!isNaN(num1) && !isNaN(num2) && unit1 !== unit2) {
+          const unitCompare = unit1.localeCompare(unit2);
+          if (unitCompare !== 0) return unitCompare * order;
+          return (num1 - num2) * order;
+        }
+      }
+
+      // Pattern 2: Check for date formats (ISO, slash-separated, hyphen-separated)
+      const date1 = new Date(value1);
+      const date2 = new Date(value2);
+      const isValidDate1 = !isNaN(date1.getTime()) && str1.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
+      const isValidDate2 = !isNaN(date2.getTime()) && str2.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
+
+      if (isValidDate1 && isValidDate2) {
+        return (date1.getTime() - date2.getTime()) * order;
+      }
+
+      // Pattern 3: Check for week/range formats (e.g., "01 Jan to 07 Jan", "Week 1", "2024-W01")
+      const weekRangeRegex = /^(.+?)\s+to\s+(.+)$/i;
+      const weekMatch1 = str1.match(weekRangeRegex);
+      const weekMatch2 = str2.match(weekRangeRegex);
+
+      if (weekMatch1 && weekMatch2) {
+        // Parse the start dates of the ranges
+        const startDate1 = new Date(weekMatch1[1]);
+        const startDate2 = new Date(weekMatch2[1]);
+        if (!isNaN(startDate1.getTime()) && !isNaN(startDate2.getTime())) {
+          return (startDate1.getTime() - startDate2.getTime()) * order;
+        }
+      }
+
+      // Pattern 4: Pure numeric comparison (integers or decimals without units)
+      const pureNum1 = parseFloat(str1.replace(/,/g, ''));
+      const pureNum2 = parseFloat(str2.replace(/,/g, ''));
+
+      if (!isNaN(pureNum1) && !isNaN(pureNum2) && str1 === String(pureNum1) && str2 === String(pureNum2)) {
+        return (pureNum1 - pureNum2) * order;
+      }
+
+      // Default: String comparison (case-insensitive)
+      return str1.localeCompare(str2, undefined, { numeric: true, sensitivity: 'base' }) * order;
+    });
+  }
 }
