@@ -238,6 +238,7 @@ export class ExportExcelComponent implements OnInit {
 
     if (chartType == 'stacked-area') {
       const re = {};
+
       re['excelData'] = rawExcelData;
       re['columns'] = rawColumConfig;
       const allColumns = this.dataTransformForStackedAreaChart(re);
@@ -245,6 +246,7 @@ export class ExportExcelComponent implements OnInit {
     } else {
       this.generateAddRemoveData(Object.keys(rawExcelData[0]));
       const re = {};
+
       re['excelData'] = rawExcelData;
       re['columns'] = rawColumConfig.map((con) => con.columnName);
       this.kpiExcelData = this.excelService.generateExcelModalData(
