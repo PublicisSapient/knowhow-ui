@@ -771,10 +771,18 @@ export class ExportExcelComponent implements OnInit {
 
       // Handle arrays - join for comparison
       if (Array.isArray(value1)) {
-        value1 = value1.map(v => this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v).join(', ');
+        value1 = value1
+          .map((v) =>
+            this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v,
+          )
+          .join(', ');
       }
       if (Array.isArray(value2)) {
-        value2 = value2.map(v => this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v).join(', ');
+        value2 = value2
+          .map((v) =>
+            this.typeOf(v) && v?.hasOwnProperty('text') ? v.text : v,
+          )
+          .join(', ');
       }
 
       // Handle null/undefined/blank values - push to end
@@ -818,8 +826,12 @@ export class ExportExcelComponent implements OnInit {
       // Pattern 2: Check for date formats (ISO, slash-separated, hyphen-separated)
       const date1 = new Date(value1);
       const date2 = new Date(value2);
-      const isValidDate1 = !isNaN(date1.getTime()) && str1.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
-      const isValidDate2 = !isNaN(date2.getTime()) && str2.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
+      const isValidDate1 =
+        !isNaN(date1.getTime()) &&
+        str1.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
+      const isValidDate2 =
+        !isNaN(date2.getTime()) &&
+        str2.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/);
 
       if (isValidDate1 && isValidDate2) {
         return (date1.getTime() - date2.getTime()) * order;
@@ -843,12 +855,22 @@ export class ExportExcelComponent implements OnInit {
       const pureNum1 = parseFloat(str1.replace(/,/g, ''));
       const pureNum2 = parseFloat(str2.replace(/,/g, ''));
 
-      if (!isNaN(pureNum1) && !isNaN(pureNum2) && str1 === String(pureNum1) && str2 === String(pureNum2)) {
+      if (
+        !isNaN(pureNum1) &&
+        !isNaN(pureNum2) &&
+        str1 === String(pureNum1) &&
+        str2 === String(pureNum2)
+      ) {
         return (pureNum1 - pureNum2) * order;
       }
 
       // Default: String comparison (case-insensitive)
-      return str1.localeCompare(str2, undefined, { numeric: true, sensitivity: 'base' }) * order;
+      return (
+        str1.localeCompare(str2, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }) * order
+      );
     });
   }
 }
