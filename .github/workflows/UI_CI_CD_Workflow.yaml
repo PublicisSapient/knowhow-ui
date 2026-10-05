@@ -195,10 +195,82 @@ jobs:
             exit 1
           fi
 
+          # ============================================
+          # 🔒 SECURITY HEADERS VALIDATION
+          # ============================================
+          echo ""
+          echo "🔒 Verifying enterprise security headers..."
+
+          # Fetch headers
+          HEADERS=$(curl -I -s http://localhost:8080)
+          HEADER_CHECK_FAILED=false
+
+          # Check X-Frame-Options (prevent clickjacking)
+          if echo "$HEADERS" | grep -qi "X-Frame-Options: SAMEORIGIN"; then
+            echo "✅ X-Frame-Options header present"
+          else
+            echo "❌ X-Frame-Options header missing or incorrect"
+            HEADER_CHECK_FAILED=true
+          fi
+
+          # Check X-Content-Type-Options (prevent MIME sniffing)
+          if echo "$HEADERS" | grep -qi "X-Content-Type-Options: nosniff"; then
+            echo "✅ X-Content-Type-Options header present"
+          else
+            echo "❌ X-Content-Type-Options header missing or incorrect"
+            HEADER_CHECK_FAILED=true
+          fi
+
+          # Check Referrer-Policy (privacy protection)
+          if echo "$HEADERS" | grep -qi "Referrer-Policy:"; then
+            echo "✅ Referrer-Policy header present"
+          else
+            echo "❌ Referrer-Policy header missing"
+            HEADER_CHECK_FAILED=true
+          fi
+
+          # Check Content-Security-Policy (XSS protection)
+          if echo "$HEADERS" | grep -qi "Content-Security-Policy:"; then
+            echo "✅ Content-Security-Policy header present"
+          else
+            echo "❌ Content-Security-Policy header missing"
+            HEADER_CHECK_FAILED=true
+          fi
+
+          # Check Permissions-Policy (feature control)
+          if echo "$HEADERS" | grep -qi "Permissions-Policy:"; then
+            echo "✅ Permissions-Policy header present"
+          else
+            echo "❌ Permissions-Policy header missing"
+            HEADER_CHECK_FAILED=true
+          fi
+
+          # Check X-XSS-Protection (legacy XSS protection)
+          if echo "$HEADERS" | grep -qi "X-XSS-Protection:"; then
+            echo "✅ X-XSS-Protection header present"
+          else
+            echo "⚠️  X-XSS-Protection header missing (legacy, not critical)"
+          fi
+
+          # Fail if any critical headers are missing
+          if [ "$HEADER_CHECK_FAILED" = true ]; then
+            echo ""
+            echo "❌ Security header validation failed!"
+            echo "Full headers received:"
+            echo "$HEADERS"
+            docker logs $CONTAINER_ID
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All required security headers are present!"
+
           # Cleanup
           docker stop $CONTAINER_ID
           docker rm $CONTAINER_ID
-          echo "✅ Smoke test completed successfully - container and Nginx are working!"
+          echo "✅ Smoke test completed successfully - container, Nginx, and security headers are working!"
 
       - name: Checkout Helm charts from Bitbucket
         run: |
