@@ -559,8 +559,10 @@ export class MultilineV2Component implements OnChanges {
         .domain([0, maxYValue])
         .range([height - margin, 0]);
 
+      // Render tooltips for single project OR for slingshot board (even with multiple projects)
+      // Exclude release and iteration boards as they have different tooltip requirements
       if (
-        selectedProjectCount === 1 &&
+        (selectedProjectCount === 1 || board === 'slingshot') &&
         board !== 'release' &&
         board !== 'iteration'
       ) {
@@ -585,18 +587,22 @@ export class MultilineV2Component implements OnChanges {
           .attr('class', (d) => {
             let cssClass = 'tooltip2';
             const value = Math.round(d.value * 100) / 100;
+            // Apply threshold-based coloring:
+            // - Values BELOW threshold → RED background (indicating poor performance)
+            // - Values ABOVE/EQUAL threshold → WHITE background (indicating good performance)
             if (
               thresholdValue &&
               thresholdValue !== 0 &&
               value < this.thresholdValue
             ) {
-              cssClass +=
-                this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
+              // Value is below threshold - apply RED background
+              cssClass += ' red-bg';
+            } else if (thresholdValue && thresholdValue !== 0) {
+              // Value meets or exceeds threshold - apply WHITE background
+              cssClass += ' white-bg';
             } else {
-              cssClass +=
-                this.upperThresholdBG === 'red' && thresholdValue
-                  ? ' red-bg'
-                  : ' white-bg';
+              // No threshold configured - default to white background
+              cssClass += ' white-bg';
             }
             return cssClass;
           })
