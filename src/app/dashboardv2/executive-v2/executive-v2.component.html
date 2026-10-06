@@ -305,7 +305,28 @@
 
                                   <ng-container *ngSwitchCase="'line'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
-                                      @if (kpi.kpiId === 'kpi204') {
+                                      @if (timeFilterKpis.includes(kpi.kpiId) &&
+                                      kpiTimeFilterOptions[kpi.kpiId]?.length > 1) {
+                                      <div
+                                        class="p-d-flex p-jc-start kpi-select-button-container">
+                                        <p-dropdown
+                                          [options]="
+                                            kpiTimeFilterOptions[kpi.kpiId]
+                                          "
+                                          [ngModel]="
+                                            kpiTimeFilterSelected[kpi.kpiId]
+                                          "
+                                          optionLabel="name"
+                                          (onChange)="
+                                            onSelectKpiTimeFilter(
+                                              kpi.kpiId,
+                                              $event.value
+                                            )
+                                          "
+                                          placeholder="Select Time Filter"
+                                          [style]="{ width: '200px' }" />
+                                      </div>
+                                      } @if (kpi.kpiId === 'kpi204') {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-selectButton
@@ -384,6 +405,11 @@
                                                     ifKpiExist('kpi204')
                                                   ]?.labelXAxis
                                                 : ''
+                                              : timeFilterKpis.includes(kpi.kpiId)
+                                              ? getKpiTimeFilterXCaption(
+                                                  kpi.kpiId,
+                                                  kpi?.kpiDetail?.xaxisLabel
+                                                )
                                               : this.filterApplyData
                                                   .selectedMap['date'] &&
                                                 this.filterApplyData

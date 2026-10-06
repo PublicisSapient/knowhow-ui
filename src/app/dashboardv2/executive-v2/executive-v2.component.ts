@@ -224,6 +224,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   filterByTimeOptions: any[] = [];
   selectedFilterByTimeOption: any = null;
 
+  // Line-chart KPIs whose backend returns one group per time granularity
+  // ({ filter: 'Sprint' | 'Weekly', value: [...] }) and need a Sprint/Weekly dropdown.
+  readonly timeFilterKpis: string[] = ['kpi225', 'kpi228'];
+  kpiTimeFilterOptions: { [kpiId: string]: any[] } = {};
+  kpiTimeFilterSelected: { [kpiId: string]: any } = {};
+
   // KPI205 data type filter (By Count / By Story Points)
   kpi205DataTypeOptions: any[] = [
     { name: 'By Count', code: 'COUNT' },
@@ -315,6 +321,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpi205YAxisLabel = 'Count';
     this.filterByTimeOptions = [];
     this.selectedFilterByTimeOption = null;
+    this.kpiTimeFilterOptions = {};
+    this.kpiTimeFilterSelected = {};
 
     // Reset kpi211 stacked chart data
     this.kpi211StackedChartData = [];
@@ -880,6 +888,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpi205YAxisLabel = 'Count';
       this.filterByTimeOptions = [];
       this.selectedFilterByTimeOption = null;
+      this.kpiTimeFilterOptions = {};
+      this.kpiTimeFilterSelected = {};
 
       // Reset kpi211 stacked chart data
       this.kpi211StackedChartData = [];
@@ -2288,6 +2298,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       this.computeKpi205LineChartData();
+    }
+
+    // kpi225 / kpi228: Sprint / Weekly dropdown. Show the group picked in the dropdown
+    // (default: first group, i.e. Sprint) instead of the generic 'Overall' lookup.
+    if (this.timeFilterKpis.includes(kpiId) && trendValueList?.length) {
+      this.kpiTimeFilterOptions[kpiId] = trendValueList.map((item) => ({
+        name: item.filter,
+        value: item.filter,
+      }));
+      const savedValue = this.kpiTimeFilterSelected[kpiId]?.value;
+      this.kpiTimeFilterSelected[kpiId] =
+        this.kpiTimeFilterOptions[kpiId].find(
+          (opt) => opt.value === savedValue,
+        ) || this.kpiTimeFilterOptions[kpiId][0];
+
+      const selectedGroup = trendValueList.find(
+        (item) => item.filter === this.kpiTimeFilterSelected[kpiId].value,
+      );
+      if (selectedGroup?.value && Array.isArray(selectedGroup.value)) {
+        this.kpiChartData[kpiId] = selectedGroup.value;
+      }
     }
 
     // kpi206-specific: Populate dropdown options and set default filter
@@ -6790,6 +6821,38 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         (valueItem) => valueItem.sSprintName !== 'Forecast',
       ), // Exclude forecast points from the Average line chart
     }));
+  }
+
+  onSelectKpiTimeFilter(kpiId: string, selectedOption) {
+    const idx = this.ifKpiExist(kpiId);
+    if (!selectedOption || idx === -1) {
+      return;
+    }
+    this.kpiTimeFilterSelected[kpiId] = selectedOption;
+
+    const selectedGroup = this.allKpiArray[idx]?.trendValueList?.find(
+      (item) => item.filter === selectedOption.value,
+    );
+    this.kpiChartData[kpiId] =
+      selectedGroup?.value && Array.isArray(selectedGroup.value)
+        ? selectedGroup.value
+        : [];
+
+    if (this.kpiChartData[kpiId].some((d: any) => d?.forecasts)) {
+      this.applyForecastData(this.kpiChartData[kpiId]);
+    }
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
+      this.kpiChartData[kpiId] = this.generateColorObj(
+        kpiId,
+        this.kpiChartData[kpiId],
+      );
+    }
+    this.createTrendsData(kpiId);
+  }
+
+  getKpiTimeFilterXCaption(kpiId: string, defaultCaption: string): string {
+    const selected = this.kpiTimeFilterSelected[kpiId]?.value;
+    return selected === 'Weekly' ? 'Weeks' : defaultCaption;
   }
 
   onSelectFilterTimeOption(selectedOption) {
