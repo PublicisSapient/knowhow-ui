@@ -623,7 +623,7 @@ export class StackedGroupBarChartComponent
           const projectName = d.data.project;
           const severityKey = nodes[i].parentNode.__data__.key;
           if (this.kpiId === 'kpi202' || this.kpiId === 'kpi224') {
-            const stackIndex = severityKeys.indexOf(severityKey);
+            const stackIndex = stackKeys.indexOf(severityKey);
             return safeColors[stackIndex % safeColors.length];
           }
           const severityIndex =
