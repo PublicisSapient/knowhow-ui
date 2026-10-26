@@ -267,10 +267,70 @@ jobs:
           echo ""
           echo "✅ All required security headers are present!"
 
-          # Cleanup
-          docker stop $CONTAINER_ID
-          docker rm $CONTAINER_ID
+          # Save container ID for Lighthouse step
+          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
           echo "✅ Smoke test completed successfully - container, Nginx, and security headers are working!"
+          echo "📦 Container kept running for Lighthouse audit..."
+
+      # ============================================
+      # 💡 LIGHTHOUSE CI - PERFORMANCE & ACCESSIBILITY AUDIT
+      # ============================================
+      - name: Lighthouse CI - Performance & Accessibility Audit
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:8080
+          configPath: './lighthouserc.json'
+          budgetPath: './lighthouse-budget.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        continue-on-error: true
+        id: lighthouse
+
+      # ============================================
+      # 📦 CLEANUP DOCKER CONTAINER
+      # ============================================
+      - name: Cleanup Docker Container
+        if: always()
+        run: |
+          if [ ! -z "$CONTAINER_ID" ]; then
+            echo "🧹 Cleaning up Docker container..."
+            docker stop $CONTAINER_ID || true
+            docker rm $CONTAINER_ID || true
+            echo "✅ Container cleanup completed"
+          fi
+
+      # ============================================
+      # 📊 LIGHTHOUSE RESULTS SUMMARY
+      # ============================================
+      - name: Lighthouse Results Summary
+        if: always()
+        run: |
+          echo ""
+          echo "============================================"
+          echo "💡 Lighthouse Audit Summary"
+          echo "============================================"
+          echo ""
+
+          if [ -f ".lighthouseci/manifest.json" ]; then
+            echo "✅ Lighthouse audit completed successfully"
+            echo ""
+            echo "📊 View detailed reports:"
+            echo "   - Check job artifacts for HTML reports"
+            echo "   - Review Lighthouse CI dashboard (if configured)"
+            echo ""
+
+            # Show assertion results if available
+            if [ -f ".lighthouseci/assertion-results.json" ]; then
+              echo "📝 Assertion Results:"
+              cat .lighthouseci/assertion-results.json | jq -r '.[] | "  \(.level | ascii_upcase): \(.auditId) - \(.name)"' || echo "   (Results available in artifacts)"
+            fi
+          else
+            echo "⚠️  Lighthouse audit did not complete"
+            echo "   Check previous steps for errors"
+          fi
+          echo ""
+          echo "============================================"
 
       - name: Checkout Helm charts from Bitbucket
         run: |
