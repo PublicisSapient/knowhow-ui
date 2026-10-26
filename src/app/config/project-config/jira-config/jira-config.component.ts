@@ -3589,6 +3589,9 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getTimeAgo(timestamp: number): string {
+    if (!timestamp) {
+      return '';
+    }
     const now = Date.now();
     const diffMs = now - timestamp;
 
