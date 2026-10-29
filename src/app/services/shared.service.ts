@@ -627,14 +627,7 @@ export class SharedService {
     const cookies = document.cookie.split(';');
     // set past expiry to all cookies
     for (const cookie of cookies) {
-      const cookieName = cookie.split('=')[0].trim();
-      // Only proceed if we have a valid cookie name
-      if (cookieName) {
-        // Set cookie with proper security attributes and expiration
-        document.cookie = `${cookieName}=; expires=${new Date(
-          0,
-        ).toUTCString()}; path=/; SameSite=Strict`;
-      }
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
 
