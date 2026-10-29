@@ -631,7 +631,9 @@ export class SharedService {
       // Only proceed if we have a valid cookie name
       if (cookieName) {
         // Set cookie with proper security attributes and expiration
-        document.cookie = `${cookieName}=; expires=${new Date(0).toUTCString()}; path=/; SameSite=Strict`;
+        document.cookie = `${cookieName}=; expires=${new Date(
+          0,
+        ).toUTCString()}; path=/; SameSite=Strict`;
       }
     }
   }

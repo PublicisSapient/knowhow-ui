@@ -21,7 +21,10 @@ export class IsoDateFormatPipe implements PipeTransform {
       const ddMmmYyyy = /^\d{1,2}-[a-zA-Z]{3}-\d{4}$/i;
       const yyyyMmDd = /^\d{4}-\d{2}-\d{2}$/;
       const trimmedValue = value.trim();
-      matches = ddMmYyyy.test(trimmedValue) || ddMmmYyyy.test(trimmedValue) || yyyyMmDd.test(trimmedValue);
+      matches =
+        ddMmYyyy.test(trimmedValue) ||
+        ddMmmYyyy.test(trimmedValue) ||
+        yyyyMmDd.test(trimmedValue);
     }
     if (value instanceof Date) {
       date = value;
