@@ -46,128 +46,162 @@ export class HttpService {
   public unauthorisedAccess = false;
   public createdProjectName = '';
   /*use to change the base url according to the environment variable */
-  private baseUrl = environment.baseUrl; // Servers Env
-  private filterDataUrl = this.baseUrl + '/api/filterdata';
-  private getDataUrl = this.baseUrl + '/api/'; // URL to web api
-  private masterDataUrl = this.baseUrl + '/api/masterData';
-  private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
-  private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
+  private readonly baseUrl = environment.baseUrl; // Servers Env
+  private readonly filterDataUrl = this.baseUrl + '/api/filterdata';
+  private readonly getDataUrl = this.baseUrl + '/api/'; // URL to web api
+  private readonly masterDataUrl = this.baseUrl + '/api/masterData';
+  private readonly downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
+  private readonly downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
-  private centralUserLogoutUrl = this.baseUrl + '/api/centralUserlogout';
-  private configDetailsUrl = this.baseUrl + '/api/configDetails';
-  private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
-  private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
-  private configUrl = this.baseUrl + '/api/project';
-  private getDefaultDataUrl = this.baseUrl + '/api/globalconfigurations/dojo';
-  private getCustomApiPropertiesUrl = this.baseUrl + '/api/project/customapi';
-  private saveConfigurl = this.baseUrl + '/api/project/usercache/cacheproject';
-  private uploadUrl = this.baseUrl + '/api/file/upload';
-  private uploadedImageUrl = this.baseUrl + '/api/file/logo';
-  private deleteImageUrl = this.baseUrl + '/api/file/delete';
-  private registrationUrl = this.baseUrl + '/api/registerUser';
-  private standardloginUrl = this.baseUrl + '/api/login';
-  private ldapLoginUrl = this.baseUrl + '/api/ldap';
-  private crowdSsoLoginLoginUrl = this.baseUrl + '/api/login/crowdsso';
-  private getMatchVersionsUrl = this.baseUrl + '/api/getversionmetadata';
-  private enggMaturityChildByParentUrl =
+  private readonly centralUserLogoutUrl =
+    this.baseUrl + '/api/centralUserlogout';
+  private readonly configDetailsUrl = this.baseUrl + '/api/configDetails';
+  private readonly enginneringMaturityUrl =
+    this.baseUrl + '/api/v1/enggMaturity';
+  private readonly enginneringMaturityTableUrl =
+    this.baseUrl + '/api/emm/tableview';
+  private readonly configUrl = this.baseUrl + '/api/project';
+  private readonly getDefaultDataUrl =
+    this.baseUrl + '/api/globalconfigurations/dojo';
+  private readonly getCustomApiPropertiesUrl =
+    this.baseUrl + '/api/project/customapi';
+  private readonly saveConfigurl =
+    this.baseUrl + '/api/project/usercache/cacheproject';
+  private readonly uploadUrl = this.baseUrl + '/api/file/upload';
+  private readonly uploadedImageUrl = this.baseUrl + '/api/file/logo';
+  private readonly deleteImageUrl = this.baseUrl + '/api/file/delete';
+  private readonly registrationUrl = this.baseUrl + '/api/registerUser';
+  private readonly standardloginUrl = this.baseUrl + '/api/login';
+  private readonly ldapLoginUrl = this.baseUrl + '/api/ldap';
+  private readonly crowdSsoLoginLoginUrl = this.baseUrl + '/api/login/crowdsso';
+  private readonly getMatchVersionsUrl =
+    this.baseUrl + '/api/getversionmetadata';
+  private readonly enggMaturityChildByParentUrl =
     this.baseUrl + '/api/account/project/all';
-  private enggMaturitykpiScoreMasterUrl =
+  private readonly enggMaturitykpiScoreMasterUrl =
     this.baseUrl + '/api/account/project/score-card/all';
-  private enggMaturityKpiScoreUrl =
+  private readonly enggMaturityKpiScoreUrl =
     this.baseUrl + '/api/account/project/score-card/kpi-score';
-  private enggMaturitySavekpisUrl =
+  private readonly enggMaturitySavekpisUrl =
     this.baseUrl + '/api/account/project/score-card/kpi-score/save';
-  private enggMaturityAllKpisUrl = this.baseUrl + '/api/kpi/all';
-  private forgotPasswordEmailUrl = this.baseUrl + '/api/forgotPassword';
-  private resetPasswordUrl = this.baseUrl + '/api/resetPassword';
-  private getRolesUrl = this.baseUrl + '/api/roles';
-  private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
-  private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
+  private readonly enggMaturityAllKpisUrl = this.baseUrl + '/api/kpi/all';
+  private readonly forgotPasswordEmailUrl =
+    this.baseUrl + '/api/forgotPassword';
+  private readonly resetPasswordUrl = this.baseUrl + '/api/resetPassword';
+  private readonly getRolesUrl = this.baseUrl + '/api/roles';
+  private readonly raiseAccessRequestsUrl =
+    this.baseUrl + '/api/accessrequests';
+  private readonly getAccessRequestsUrl =
+    this.baseUrl + '/api/accessrequests/status';
   private getAccessRequestNotificationsUrl =
     this.baseUrl + '/api/accessrequests/Pending/notification';
-  private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
-  private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
-  private getScenariosUrl = this.baseUrl + '/api/scenario';
-  private getCapacityUrl = this.baseUrl + '/api/capacity';
-  private getTestExecutionUrl = this.baseUrl + '/api/testexecution';
-  private updateKanbanScenariosUrl = this.baseUrl + '/api/kanbanscenario';
-  private getProcessorDataUrl = this.baseUrl + '/api/processor';
-  private fetchScmInfoUrl = this.baseUrl + '/api/processor/fetch/scm';
-  private scmConfigConnectionUrl = this.baseUrl + '/api/scm/config/connection';
-  private getServerRoleUrl =
+  private readonly updateRequestsUrl = this.baseUrl + '/api/accessrequests';
+  private readonly getUserAccessRequestsUrl =
+    this.baseUrl + '/api/accessrequests/user';
+  private readonly getScenariosUrl = this.baseUrl + '/api/scenario';
+  private readonly getCapacityUrl = this.baseUrl + '/api/capacity';
+  private readonly getTestExecutionUrl = this.baseUrl + '/api/testexecution';
+  private readonly updateKanbanScenariosUrl =
+    this.baseUrl + '/api/kanbanscenario';
+  private readonly getProcessorDataUrl = this.baseUrl + '/api/processor';
+  private readonly fetchScmInfoUrl = this.baseUrl + '/api/processor/fetch/scm';
+  private readonly scmConfigConnectionUrl =
+    this.baseUrl + '/api/scm/config/connection';
+  private readonly getServerRoleUrl =
     this.baseUrl + '/api/globalconfigurations/dojo/centralConfig';
-  private runProcessorUrl = this.baseUrl + '/api/processor/trigger';
+  private readonly runProcessorUrl = this.baseUrl + '/api/processor/trigger';
   private changePasswordUrl = this.baseUrl + '/api/changePassword';
-  private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
-  private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
-  private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = this.baseUrl + '/api/userinfo/updateUserRole';
+  private readonly getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
+  private readonly deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
+  private readonly getAllUsersUrl = this.baseUrl + '/api/userinfo';
+  private readonly updateAccessUrl =
+    this.baseUrl + '/api/userinfo/updateUserRole';
   private deleteAccessUrl = this.baseUrl + '/api/userinfo/deleteUser';
-  private notificationPreferencesUrl =
+  private readonly notificationPreferencesUrl =
     this.baseUrl + '/api/userinfo/notificationPreferences';
-  private getKPIConfigMetadataUrl =
+  private readonly getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
-  private basicConfigUrl = this.baseUrl + '/api/basicconfigs';
-  private connectionUrl = this.baseUrl + '/api/connections';
-  private fieldMappingsUrl = this.baseUrl + '/api/tools';
-  private getKPIFieldMappingRelationshipsUrl =
+  private readonly basicConfigUrl = this.baseUrl + '/api/basicconfigs';
+  private readonly connectionUrl = this.baseUrl + '/api/connections';
+  private readonly fieldMappingsUrl = this.baseUrl + '/api/tools';
+  private readonly getKPIFieldMappingRelationshipsUrl =
     this.baseUrl + '/api/kpiFieldMapping';
-  private getAllBoardsUrl = this.baseUrl + '/api/jira/board';
-  private getHierarchyLevelsUrl = this.baseUrl + '/api/hierarchylevels';
+  private readonly getAllBoardsUrl = this.baseUrl + '/api/jira/board';
+  private readonly getHierarchyLevelsUrl =
+    this.baseUrl + '/api/hierarchylevels';
 
   /** Download EMM Excel Sheet Url */
-  private getEmmExcelUrl = this.baseUrl + '/api/emm/download';
-  private getEmmHistoryUrl = this.baseUrl + '/api/emm-history';
-  private getEmmStatsUrl = this.baseUrl + '/api/emm-upload/monthly-stats';
-  private getPreCalculatedConfigUrl =
+  private readonly getEmmExcelUrl = this.baseUrl + '/api/emm/download';
+  private readonly getEmmHistoryUrl = this.baseUrl + '/api/emm-history';
+  private readonly getEmmStatsUrl =
+    this.baseUrl + '/api/emm-upload/monthly-stats';
+  private readonly getPreCalculatedConfigUrl =
     this.baseUrl + '/api/pre-calculated-config';
-  private getADConfigUrl = this.baseUrl + '/api/activedirectory';
-  private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
-  private updateSuggestionsUrl = this.baseUrl + '/api/suggestions/account/';
-  private getEmm360Url = this.baseUrl + '/api/emm-feed/download';
+  private readonly getADConfigUrl = this.baseUrl + '/api/activedirectory';
+  private readonly getSuggestionsUrl =
+    this.baseUrl + '/api/suggestions/project';
+  private readonly updateSuggestionsUrl =
+    this.baseUrl + '/api/suggestions/account/';
+  private readonly getEmm360Url = this.baseUrl + '/api/emm-feed/download';
 
-  private landingInfoUrl =
+  private readonly landingInfoUrl =
     'https://setup-speedy.tools.publicis.sapient.com/landingpage/staticcontent';
-  private feedbackCategoryUrl = this.baseUrl + '/api/feedback/categories';
-  private submitFeedbackUrl = this.baseUrl + '/api/feedback/submitfeedback';
-  private overallSummaryUrl =
+  private readonly feedbackCategoryUrl =
+    this.baseUrl + '/api/feedback/categories';
+  private readonly submitFeedbackUrl =
+    this.baseUrl + '/api/feedback/submitfeedback';
+  private readonly overallSummaryUrl =
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
-  private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
-  private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private saveShowHideKpiUrl =
+  private readonly usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
+  private readonly autoApproveUrl = this.baseUrl + '/api/autoapprove';
+  private readonly saveShowHideKpiUrl =
     this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
-  private sonarVersionURL = this.baseUrl + '/api/sonar/version';
-  private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
-  private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
-  private processorTraceLogsUrl = this.baseUrl + '/api/processor/tracelog';
-  private zephyrCloudUrl = this.baseUrl + '/api/testconnection/zephyrcloudurl';
-  private bambooPlanUrl = this.baseUrl + '/api/bamboo/plans';
-  private bambooBranchUrl = this.baseUrl + '/api/bamboo/branches';
-  private bambooDeploymentProjectsUrl = this.baseUrl + '/api/bamboo/deploy';
-  private jenkinsJobNameUrl = this.baseUrl + '/api/jenkins/jobName';
-  private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
-  private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
-  private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
-  private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
-  private authDetailsUrl = this.baseUrl + '/api/authdetails';
-  private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
-  private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
-  private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
-  private deleteCommentUrl = this.baseUrl + '/api/comments/deleteCommentById';
-  private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
-  private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
-  private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
-  private getAssingeeEmailsUrl =
+  private readonly sonarVersionURL = this.baseUrl + '/api/sonar/version';
+  private readonly projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
+  private readonly branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
+  private readonly processorTraceLogsUrl =
+    this.baseUrl + '/api/processor/tracelog';
+  private readonly zephyrCloudUrl =
+    this.baseUrl + '/api/testconnection/zephyrcloudurl';
+  private readonly bambooPlanUrl = this.baseUrl + '/api/bamboo/plans';
+  private readonly bambooBranchUrl = this.baseUrl + '/api/bamboo/branches';
+  private readonly bambooDeploymentProjectsUrl =
+    this.baseUrl + '/api/bamboo/deploy';
+  private readonly jenkinsJobNameUrl = this.baseUrl + '/api/jenkins/jobName';
+  private readonly azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
+  private readonly azureReleasePipelineUrl =
+    this.baseUrl + '/api/azure/release';
+  private readonly allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+  private readonly getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
+  private readonly authDetailsUrl = this.baseUrl + '/api/authdetails';
+  private readonly generateTokenUrl =
+    this.baseUrl + '/api/exposeAPI/generateToken';
+  private readonly getCommentUrl =
+    this.baseUrl + '/api/comments/getCommentsByKpiId';
+  private readonly submitCommentUrl =
+    this.baseUrl + '/api/comments/submitComments';
+  private readonly deleteCommentUrl =
+    this.baseUrl + '/api/comments/deleteCommentById';
+  private readonly getCommentCountUrl =
+    this.baseUrl + '/api/comments/getCommentCount';
+  private readonly getJiraProjectAssigneUrl =
+    this.baseUrl + '/api/jira/assignees';
+  private readonly getAssigneeRolesUrl =
+    this.baseUrl + '/api/capacity/assignee/roles';
+  private readonly getAssingeeEmailsUrl =
     this.baseUrl + '/api/repotool/assignees/email/';
-  private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
-  private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
-  private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
-  private jiraTemplateUrl = this.baseUrl + '/api/templates';
-  private jiraConfigurationUrl = this.baseUrl + '/api/configuration';
-  private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
-  private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
+  private readonly saveAssigneeForProjectUrl =
+    this.baseUrl + '/api/capacity/assignee';
+  private readonly uploadCert = this.baseUrl + '/api/file/uploadCertificate';
+  private readonly commentsSummaryUrl =
+    this.baseUrl + '/api/comments/commentsSummary';
+  private readonly jiraTemplateUrl = this.baseUrl + '/api/templates';
+  private readonly jiraConfigurationUrl = this.baseUrl + '/api/configuration';
+  private readonly currentUserDetailsURL =
+    this.baseUrl + '/api/userinfo/userData';
+  private readonly getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
   private postKpiColumnsConfigUrl =
     this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
   private gitActionWorkflowNameUrl =
