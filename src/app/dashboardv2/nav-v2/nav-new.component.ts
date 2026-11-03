@@ -30,6 +30,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   homeTabFlag = new BehaviorSubject(false);
   pebFlag = new BehaviorSubject(false);
+  private isSettingBoardsInternally = false;
 
   private projectListSubject = new Subject<any[]>();
 
@@ -64,6 +65,26 @@ export class NavNewComponent implements OnInit, OnDestroy {
     //     }
     //   }
     // }
+
+    // Subscribe to globalDashConfigData to ensure tabs are updated when board config changes
+    // Only update if the change is from external source (not from this component's setBoards)
+    this.subscriptions.push(
+      this.sharedService.globalDashConfigData.subscribe((data) => {
+        if (
+          data &&
+          Object.keys(data).length > 0 &&
+          !this.isSettingBoardsInternally
+        ) {
+          this.setBoards({
+            success: true,
+            data: {
+              userBoardConfigDTO: data,
+              configDetails: data.configDetails,
+            },
+          });
+        }
+      }),
+    );
 
     this.sharedService.onTabSwitch.subscribe((data) => {
       this.selectedTab = data.selectedBoard;
@@ -127,6 +148,22 @@ export class NavNewComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe();
+
+    // Initialize board config on component load to ensure tabs appear
+    // Check if dashboard config already exists in shared service
+    const existingDashConfig = this.sharedService.getDashConfigData();
+    if (existingDashConfig && Object.keys(existingDashConfig).length > 0) {
+      this.setBoards({
+        success: true,
+        data: {
+          userBoardConfigDTO: existingDashConfig,
+          configDetails: existingDashConfig.configDetails,
+        },
+      });
+    } else {
+      // If no existing config, trigger initial load
+      this.getBoardConfig([]);
+    }
   }
 
   // unsubscribing all Kpi Request
@@ -171,6 +208,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   setBoards(response) {
     if (response.success === true) {
+      this.isSettingBoardsInternally = true;
       const data = response.data.userBoardConfigDTO;
       // console.log(
       //   '🔍 INITIAL data from API:',
@@ -302,6 +340,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
           // console.log('data sent to shared service:', data);
           this.sharedService.setDashConfigData(data);
         }
+        // Reset the flag after setDashConfigData completes
+        setTimeout(() => {
+          this.isSettingBoardsInternally = false;
+        }, 0);
 
         if (this.dashConfigData[this.selectedType]?.length) {
           const pebBoardSlug = 'potential-economic-benefits';
@@ -322,10 +364,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
             ...this.dashConfigData['others'],
           ]
             .filter((board) => {
-              // console.log('Checking board:', board.kpis);
+              // console.log('Checking board:', board.boardSlug, 'kpis:', board.kpis);
+              // Ensure board has KPIs and at least one is shown
               return (
-                board.kpis.some((kpi) => kpi.shown === true) &&
-                board.kpis.length > 0
+                board.kpis &&
+                board.kpis.length > 0 &&
+                board.kpis.some((kpi) => kpi.shown === true)
               );
             })
             .map((obj) => {
@@ -362,9 +406,23 @@ export class NavNewComponent implements OnInit, OnDestroy {
           //   return true;
           // });
 
-          this.activeItem = this.items?.filter(
-            (x) => x['slug'] == this.selectedTab?.toLowerCase(),
-          )[0];
+          // console.log('✅ Items array after filtering:', this.items?.map(i => i.slug));
+          // console.log('Current selectedTab:', this.selectedTab);
+
+          // Set active item based on selected tab
+          if (this.items && this.items.length > 0) {
+            this.activeItem = this.items.filter(
+              (x) => x['slug'] == this.selectedTab?.toLowerCase(),
+            )[0];
+
+            // If no active item found (e.g., on first load), default to first available tab
+            if (!this.activeItem && this.items.length > 0) {
+              this.activeItem = this.items[0];
+              this.selectedTab = this.activeItem.slug;
+              // console.log('⚠️ No matching tab found, defaulting to:', this.activeItem.slug);
+            }
+            // console.log('Active item set to:', this.activeItem?.slug);
+          }
         }
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
