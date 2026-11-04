@@ -258,10 +258,13 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
             }
           },
           error: (error) => {
-            console.error('Error summarising sprint goals:', error);
+            console.error(
+              'Error summarising sprint goals:',
+              error.error.message,
+            );
             this.summarisedSprintGoalsMap[
               projectName
-            ] = `Failed to summarize: ${error.message}`;
+            ] = `Failed to summarize: ${error.error.message}.`;
           },
         });
       }
