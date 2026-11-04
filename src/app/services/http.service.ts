@@ -1328,7 +1328,14 @@ export class HttpService {
   }
 
   summariseSprintGoalsCall(req) {
-    return this.http.post<Object>(this.summariseSprintGoalsUrl, req);
+    // Set httpErrorHandler to 'local' to prevent global error page redirect
+    // This allows component to handle errors with toast messages for all status codes (400, 500, etc.)
+    const headers = new HttpHeaders({
+      httpErrorHandler: 'local',
+    });
+    return this.http.post<Object>(this.summariseSprintGoalsUrl, req, {
+      headers,
+    });
   }
 
   addLLIDUser(llid) {
