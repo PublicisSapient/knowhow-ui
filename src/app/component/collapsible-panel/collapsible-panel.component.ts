@@ -12,6 +12,7 @@ import {
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MetricsService } from 'src/app/services/metrics.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-collapsible-panel',
@@ -59,6 +60,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     public httpService: HttpService,
     private metricsService: MetricsService,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -245,6 +247,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
         this.summarisedSprintGoalsMap[projectName] = {
           summary: existingSummary,
         };
+        // Set to true for cached data
+        this.isSummaryAvailableMap[projectName] = true;
       } else {
         // --- post call with the above request body --- //
         this.httpService.summariseSprintGoalsCall(requestBody).subscribe({
@@ -256,23 +260,29 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
                 [requestBody.sprintGoals.join('||')]: res?.summary,
               });
             }
+            // Set to true only on successful API response
+            this.isSummaryAvailableMap[projectName] = true;
           },
           error: (error) => {
-            console.error(
-              'Error summarising sprint goals:',
-              error.error.message,
-            );
-            this.summarisedSprintGoalsMap[
-              projectName
-            ] = `Failed to summarize: ${error.error.message}.`;
+            console.error('Error summarising sprint goals:', error);
+            // Show toast message instead of redirecting to error page
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'There is some problem, please try again later.',
+              life: 5000,
+            });
+            // Clear the loading state for this project
+            this.isSummaryAvailableMap[projectName] = false;
           },
         });
       }
     } else {
       console.log('payload is empty');
       this.noSummarizeData = true;
+      // Set to true to indicate summary check is complete (even though no data to summarize)
+      this.isSummaryAvailableMap[projectName] = true;
     }
-    this.isSummaryAvailableMap[projectName] = true; // or keep as false based on your UX needs
     this.defaultMessage = false;
   }
 
