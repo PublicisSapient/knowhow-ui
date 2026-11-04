@@ -30,7 +30,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
   homeTabFlag = new BehaviorSubject(false);
   pebFlag = new BehaviorSubject(false);
-  private isSettingBoardsInternally = false;
 
   private projectListSubject = new Subject<any[]>();
 
@@ -67,21 +66,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
     // }
 
     // Subscribe to globalDashConfigData to ensure tabs are updated when board config changes
-    // Only update if the change is from external source (not from this component's setBoards)
+    // Only update if the data has actually changed to prevent infinite loops
     this.subscriptions.push(
       this.sharedService.globalDashConfigData.subscribe((data) => {
-        if (
-          data &&
-          Object.keys(data).length > 0 &&
-          !this.isSettingBoardsInternally
-        ) {
-          this.setBoards({
-            success: true,
-            data: {
-              userBoardConfigDTO: data,
-              configDetails: data.configDetails,
-            },
-          });
+        if (data && Object.keys(data).length > 0) {
+          // Only call setBoards if the data is different from current dashConfigData
+          if (!this.helperService.deepEqual(this.dashConfigData, data)) {
+            // Pass false to skip updating shared service (data already came from there)
+            this.setBoards(
+              {
+                success: true,
+                data: {
+                  userBoardConfigDTO: data,
+                  configDetails: data.configDetails,
+                },
+              },
+              false,
+            );
+          }
         }
       }),
     );
@@ -137,7 +139,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
           }),
         ),
         tap((response) => {
-          this.setBoards(response);
+          // Pass true to update shared service with new data
+          this.setBoards(response, true);
         }),
         catchError((error) => {
           this.messageService.add({
@@ -153,13 +156,17 @@ export class NavNewComponent implements OnInit, OnDestroy {
     // Check if dashboard config already exists in shared service
     const existingDashConfig = this.sharedService.getDashConfigData();
     if (existingDashConfig && Object.keys(existingDashConfig).length > 0) {
-      this.setBoards({
-        success: true,
-        data: {
-          userBoardConfigDTO: existingDashConfig,
-          configDetails: existingDashConfig.configDetails,
+      // Pass false since data already in shared service
+      this.setBoards(
+        {
+          success: true,
+          data: {
+            userBoardConfigDTO: existingDashConfig,
+            configDetails: existingDashConfig.configDetails,
+          },
         },
-      });
+        false,
+      );
     } else {
       // If no existing config, trigger initial load
       this.getBoardConfig([]);
@@ -206,9 +213,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
     //   .subscribe();
   }
 
-  setBoards(response) {
+  setBoards(response, shouldUpdateSharedService = true) {
     if (response.success === true) {
-      this.isSettingBoardsInternally = true;
       const data = response.data.userBoardConfigDTO;
       // console.log(
       //   '🔍 INITIAL data from API:',
@@ -337,13 +343,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
         // );
         if (!this.helperService.deepEqual(this.dashConfigData, data)) {
           this.dashConfigData = data;
-          // console.log('data sent to shared service:', data);
-          this.sharedService.setDashConfigData(data);
+          // Only update shared service if requested (to prevent circular updates)
+          if (shouldUpdateSharedService) {
+            // console.log('data sent to shared service:', data);
+            this.sharedService.setDashConfigData(data);
+          }
         }
-        // Reset the flag after setDashConfigData completes
-        setTimeout(() => {
-          this.isSettingBoardsInternally = false;
-        }, 0);
 
         if (this.dashConfigData[this.selectedType]?.length) {
           const pebBoardSlug = 'potential-economic-benefits';
@@ -431,7 +436,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
               'completeHierarchyData',
               JSON.stringify(res.data),
             );
-            this.setBoards(response);
+            // Pass the shouldUpdateSharedService parameter through
+            this.setBoards(response, shouldUpdateSharedService);
           }
         });
       }

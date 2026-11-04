@@ -330,7 +330,7 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: ['proj1'],
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        expect(component.setBoards).toHaveBeenCalledWith(responseMock, true);
         done();
       }, 100);
     });
@@ -765,7 +765,7 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: projectList,
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        expect(component.setBoards).toHaveBeenCalledWith(responseMock, true);
         done();
       }, 100);
     });
@@ -944,13 +944,16 @@ describe('NavNewComponent', () => {
         sharedService.globalDashConfigData.emit(mockDashConfig);
 
         setTimeout(() => {
-          expect(component.setBoards).toHaveBeenCalledWith({
-            success: true,
-            data: {
-              userBoardConfigDTO: mockDashConfig,
-              configDetails: mockDashConfig.configDetails,
+          expect(component.setBoards).toHaveBeenCalledWith(
+            {
+              success: true,
+              data: {
+                userBoardConfigDTO: mockDashConfig,
+                configDetails: mockDashConfig.configDetails,
+              },
             },
-          });
+            false,
+          );
           done();
         }, 100);
       });
@@ -1015,13 +1018,16 @@ describe('NavNewComponent', () => {
         component.ngOnInit();
 
         expect(sharedService.getDashConfigData).toHaveBeenCalled();
-        expect(component.setBoards).toHaveBeenCalledWith({
-          success: true,
-          data: {
-            userBoardConfigDTO: existingConfig,
-            configDetails: existingConfig.configDetails,
+        expect(component.setBoards).toHaveBeenCalledWith(
+          {
+            success: true,
+            data: {
+              userBoardConfigDTO: existingConfig,
+              configDetails: existingConfig.configDetails,
+            },
           },
-        });
+          false,
+        );
       });
 
       it('should trigger getBoardConfig if no existing dashboard config on ngOnInit', () => {
@@ -1523,6 +1529,85 @@ describe('NavNewComponent', () => {
         expect(component.items.length).toBe(1);
         expect(component.items[0].slug).toBe('slingshot');
         done();
+      }, 100);
+    });
+
+    it('should show Slingshot tab when changing projects on Iteration board', (done) => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.selectedTab = 'iteration';
+      component.homeTabFlag.next(true);
+      component.pebFlag.next(true);
+
+      // Initial config without Slingshot
+      const initialConfig = {
+        scrum: [
+          {
+            boardName: 'Iteration',
+            boardSlug: 'iteration',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      // New config with Slingshot (simulating project change)
+      const newConfigWithSlingshot = {
+        scrum: [
+          {
+            boardName: 'Iteration',
+            boardSlug: 'iteration',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+          {
+            boardName: 'Slingshot',
+            boardSlug: 'slingshot',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [
+              { kpiId: 'kpi5', shown: true },
+              { kpiId: 'kpi6', shown: true },
+            ],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(initialConfig);
+      helperService.deepEqual.and.returnValue(false);
+
+      component.ngOnInit();
+
+      setTimeout(() => {
+        // Initially only Iteration tab
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(1);
+        expect(component.items[0].slug).toBe('iteration');
+
+        // Simulate project change by emitting new config via globalDashConfigData
+        sharedService.globalDashConfigData.emit(newConfigWithSlingshot);
+
+        setTimeout(() => {
+          // After project change, both tabs should be visible
+          expect(component.items).toBeDefined();
+          expect(component.items.length).toBe(2);
+          const slugs = component.items.map((item: any) => item.slug);
+          expect(slugs).toContain('iteration');
+          expect(slugs).toContain('slingshot');
+          done();
+        }, 100);
       }, 100);
     });
   });
