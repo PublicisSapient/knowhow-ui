@@ -109,22 +109,28 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     const subscription = this.projectListSubject
       .pipe(
+        // The error handling lives inside switchMap so that one failed request
+        // does not complete the stream; otherwise the tabs stop updating on
+        // every later project change.
         switchMap((projectList) =>
-          this.httpService.getShowHideOnDashboardNewUI({
-            basicProjectConfigIds:
-              projectList?.length && projectList[0] ? projectList : [],
-          }),
+          this.httpService
+            .getShowHideOnDashboardNewUI({
+              basicProjectConfigIds:
+                projectList?.length && projectList[0] ? projectList : [],
+            })
+            .pipe(
+              tap((response) => {
+                this.setBoards(response);
+              }),
+              catchError((error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: error.message,
+                });
+                return of();
+              }),
+            ),
         ),
-        tap((response) => {
-          this.setBoards(response);
-        }),
-        catchError((error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: error.message,
-          });
-          return of();
-        }),
       )
       .subscribe();
   }

@@ -705,13 +705,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               this.primaryFilterConfig = {};
               this.processBoardData(data);
               this.blockUI = false;
-              if (event) {
-                this.prepareKPICalls(event);
+              try {
+                if (event) {
+                  this.prepareKPICalls(event);
+                }
+              } finally {
+                // The selected project is only updated above, after this
+                // request returns. Announce the change again now so the nav
+                // reloads its tabs (e.g. Slingshot) for the new project and
+                // does not act on the previously selected one.
+                this.service.primaryFilterChangeSubject.next(true);
               }
             }
           }),
           catchError((error) => {
             this.blockUI = false;
+            // Forget the failed project list so selecting the same projects
+            // again retries the request instead of being skipped as "loaded".
+            this.projectList = [];
             this.messageService.add({
               severity: 'error',
               summary: error.message,
@@ -760,11 +771,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             board.filters.parentFilter &&
             board.filters.parentFilter.labelName !== 'Organization Level'
           ) {
-            board.filters.parentFilter.labelName = levelDetails.filter(
-              (level) =>
-                level.hierarchyLevelId ===
-                board.filters.parentFilter.labelName.toLowerCase(),
-            )[0].hierarchyLevelName;
+            board.filters.parentFilter.labelName =
+              levelDetails.filter(
+                (level) =>
+                  level.hierarchyLevelId ===
+                  board.filters.parentFilter.labelName.toLowerCase(),
+              )[0]?.hierarchyLevelName ?? board.filters.parentFilter.labelName;
           }
           if (board.filters.parentFilter?.emittedLevel) {
             if (
@@ -807,23 +819,27 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               (level) =>
                 level.hierarchyLevelId.toLowerCase() ===
                 board.filters.primaryFilter.defaultLevel.labelName.toLowerCase(),
-            )[0].hierarchyLevelName;
+            )[0]?.hierarchyLevelName ??
+            board.filters.primaryFilter.defaultLevel.labelName;
           if (
             board.filters.parentFilter &&
             board.filters.parentFilter.labelName !== 'Organization Level'
           ) {
-            board.filters.parentFilter.labelName = levelDetails.filter(
-              (level) =>
-                level.hierarchyLevelId.toLowerCase() ===
-                board.filters.parentFilter.labelName.toLowerCase(),
-            )[0].hierarchyLevelName;
+            board.filters.parentFilter.labelName =
+              levelDetails.filter(
+                (level) =>
+                  level.hierarchyLevelId.toLowerCase() ===
+                  board.filters.parentFilter.labelName.toLowerCase(),
+              )[0]?.hierarchyLevelName ?? board.filters.parentFilter.labelName;
           }
           if (board.filters.parentFilter?.emittedLevel) {
-            board.filters.parentFilter.emittedLevel = levelDetails.filter(
-              (level) =>
-                level.hierarchyLevelId.toLowerCase() ===
-                board.filters.parentFilter.emittedLevel.toLowerCase(),
-            )[0].hierarchyLevelName;
+            board.filters.parentFilter.emittedLevel =
+              levelDetails.filter(
+                (level) =>
+                  level.hierarchyLevelId.toLowerCase() ===
+                  board.filters.parentFilter.emittedLevel.toLowerCase(),
+              )[0]?.hierarchyLevelName ??
+              board.filters.parentFilter.emittedLevel;
           }
         }
       });
@@ -1146,6 +1162,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.colorObj = {};
       this.additionalData = false;
       this.previousFilterEvent = [];
+
+      // A project without sprints/releases emits an empty event, so nothing
+      // below would load its board config. The nav then keeps showing the tabs
+      // of the previously selected project (e.g. the Slingshot tab never comes
+      // back). Load the config for the project that is now selected.
+      const selectedProjects =
+        typeof this.selectedLevel === 'object' && this.selectedLevel !== null
+          ? this.selectedLevel['fullNodeDetails']
+          : null;
+      if (
+        !event?.length &&
+        selectedProjects?.length &&
+        selectedProjects[0]?.basicProjectConfigId
+      ) {
+        this.service.setSelectedTrends(selectedProjects);
+        this.getBoardConfig(
+          selectedProjects.map((project) => project.basicProjectConfigId),
+        );
+      }
     }
 
     if (
