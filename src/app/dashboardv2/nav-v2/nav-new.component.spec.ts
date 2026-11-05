@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { NavNewComponent } from './nav-new.component';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -560,15 +565,16 @@ describe('NavNewComponent', () => {
         expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
       });
 
-      it('should call getBoardConfig with selected trends', () => {
+      it('should call getBoardConfig with selected trends', fakeAsync(() => {
         const trends = [{ basicProjectConfigId: '123' }];
         spyOn(sharedService, 'getSelectedTrends').and.returnValue(trends);
         spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
         component.ngOnInit();
+        tick(); // Wait for setTimeout to execute
 
         expect(component['getBoardConfig']).toHaveBeenCalledWith(['123']);
-      });
+      }));
 
       // it('should subscribe to onTabSwitch and update selectedTab', () => {
       //   const tabSwitchData = { selectedBoard: 'newTab' };
@@ -585,14 +591,15 @@ describe('NavNewComponent', () => {
 
     describe('Edge cases', () => {
       describe('Edge cases', () => {
-        it('should handle empty selected trends gracefully', () => {
+        it('should handle empty selected trends gracefully', fakeAsync(() => {
           spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
           spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
           component.ngOnInit();
+          tick(); // Wait for setTimeout to execute
 
           expect(component['getBoardConfig']).toHaveBeenCalledWith([]);
-        });
+        }));
 
         it('should handle null selectedType and default to scrum', () => {
           spyOn(sharedService, 'getSelectedType').and.returnValue(null);
