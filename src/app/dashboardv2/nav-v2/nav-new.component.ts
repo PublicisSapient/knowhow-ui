@@ -323,6 +323,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           //   ...this.dashConfigData[this.selectedType],
           //   ...this.dashConfigData['others'],
           // ]);
+          const previousSlugs = (this.items || []).map((item) => item['slug']);
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
@@ -371,6 +372,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];
+
+          // The open tab (e.g. Slingshot) was available for the previous
+          // project but not for the newly selected one. Move to Home in one
+          // step so the tab bar, the URL and the page content stay in sync,
+          // instead of leaving a page open whose tab no longer exists.
+          const openedSlug = this.selectedTab?.toLowerCase();
+          if (
+            !this.activeItem &&
+            openedSlug &&
+            previousSlugs.includes(openedSlug)
+          ) {
+            this.items.find((item) => item['slug'] === 'home')?.command?.();
+          }
         }
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
