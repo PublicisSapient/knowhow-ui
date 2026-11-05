@@ -22,8 +22,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
-  previousSelectedTrend: any;
-  previousSelectedType: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   @Input() kpiSearchQuery!: string;
@@ -101,29 +99,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
     });
 
     this.sharedService.primaryFilterChangeSubject.subscribe((x) => {
-      if (
-        this.sharedService.getSelectedTrends() &&
-        this.sharedService.getSelectedTrends()[0]
-      ) {
+      // Always call getBoardConfig on filter change to ensure fresh board data
+      // This prevents showing stale board configs from previously selected projects
+      // Use setTimeout to ensure getSelectedTrends() returns updated data
+      // (race condition: primaryFilterChangeSubject.next() fires BEFORE setSelectedTrends())
+      setTimeout(() => {
         if (
-          !this.helperService.deepEqual(
-            this.previousSelectedTrend,
-            this.sharedService.getSelectedTrends()[0],
-          ) ||
-          this.previousSelectedType !== this.selectedType
+          this.sharedService.getSelectedTrends() &&
+          this.sharedService.getSelectedTrends().length > 0
         ) {
-          this.previousSelectedTrend =
-            this.sharedService.getSelectedTrends()[0];
-          this.previousSelectedType = this.selectedType;
           this.getBoardConfig([
             ...this.sharedService
               .getSelectedTrends()
               .map((proj) => proj['basicProjectConfigId']),
           ]);
+        } else {
+          this.getBoardConfig([]);
         }
-      } else {
-        this.getBoardConfig([]);
-      }
+      }, 0);
     });
 
     this.sharedService.onScrumKanbanSwitch.subscribe((type) => {
@@ -341,13 +334,18 @@ export class NavNewComponent implements OnInit, OnDestroy {
         //   '🔍 BEFORE deepEqual check:',
         //   JSON.parse(JSON.stringify(data)),
         // );
-        if (!this.helperService.deepEqual(this.dashConfigData, data)) {
-          this.dashConfigData = data;
-          // Only update shared service if requested (to prevent circular updates)
-          if (shouldUpdateSharedService) {
-            // console.log('data sent to shared service:', data);
-            this.sharedService.setDashConfigData(data);
-          }
+
+        // Always update dashConfigData to ensure UI reflects latest data
+        const dataChanged = !this.helperService.deepEqual(
+          this.dashConfigData,
+          data,
+        );
+        this.dashConfigData = data;
+
+        // Only update shared service if data changed AND requested (to prevent circular updates)
+        if (dataChanged && shouldUpdateSharedService) {
+          // console.log('data sent to shared service:', data);
+          this.sharedService.setDashConfigData(data);
         }
 
         if (this.dashConfigData[this.selectedType]?.length) {
