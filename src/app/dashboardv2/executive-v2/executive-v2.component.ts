@@ -349,9 +349,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.selectedTab.toLowerCase().split('-').join(' '),
       )[0]?.kpis;
     }
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(
-      (item) => item.shown,
-    );
+    this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
+  }
+
+  /**
+   * The KPIs the user can see, in the order they are displayed. The Iteration
+   * board is always ordered by default order. This used to happen only when the
+   * KPI requests were sent, so a later rebuild of the list put the widgets back
+   * in the board config order, giving a different layout depending on the route
+   * taken to the page.
+   */
+  getShownKpisInDisplayOrder() {
+    const shownKpis = this.configGlobalData?.filter((item) => item.shown);
+    if (this.selectedTab === 'iteration' && shownKpis) {
+      return [...shownKpis].sort(
+        (a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder,
+      );
+    }
+    return shownKpis;
   }
 
   processKpiConfigData() {
@@ -361,9 +376,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(
-      (item) => item.shown,
-    );
+    this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
     const visibleKpis = this.configGlobalData?.filter((item) => item.isEnabled);
     this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
     if (
@@ -858,9 +871,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(
-        (item) => item.shown,
-      );
+      this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
 
       this.mockUpdatedConfigGlobalData = mockConfigGlobalData;
 
