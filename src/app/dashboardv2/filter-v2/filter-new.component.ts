@@ -1122,6 +1122,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.previousSelectedTab !== this.selectedTab ||
         this.previousSelectedType !== this.selectedType)
     ) {
+      // Switching tab delivers the same selection to this method several times
+      // before the first KPI request is sent. The tab/type were only remembered
+      // when the request was sent, so every repeat passed the check above and
+      // reloaded all widgets again (the page redrew several times). Remember
+      // them now so the repeats are ignored.
+      this.previousSelectedTab = this.selectedTab;
+      this.previousSelectedType = this.selectedType;
       const previousEventParentNode = ['sprint', 'release'].includes(
         this.previousFilterEvent[0]?.labelName?.toLowerCase(),
       )

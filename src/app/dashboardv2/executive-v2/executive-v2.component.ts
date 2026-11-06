@@ -350,6 +350,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       )[0]?.kpis;
     }
     this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
+    // Register the sub-tabs together with the KPI list. Until they exist,
+    // checkKPIPresence shows the KPIs of every sub-tab, so the Daily Standup
+    // board was displayed for a moment before the Iteration Review tab applied.
+    if (this.configGlobalData?.length) {
+      this.setUpTabs();
+    }
   }
 
   /**
