@@ -369,7 +369,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const shownKpis = this.configGlobalData?.filter((item) => item.shown);
     if (this.selectedTab === 'iteration' && shownKpis) {
       return [...shownKpis].sort(
-        (a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder,
+        (a, b) =>
+          (a.kpiDetail?.defaultOrder ?? 0) - (b.kpiDetail?.defaultOrder ?? 0),
       );
     }
     return shownKpis;
