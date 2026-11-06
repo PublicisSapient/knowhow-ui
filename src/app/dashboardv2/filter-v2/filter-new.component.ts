@@ -721,7 +721,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               this.masterDataCopy['kpiList'] = [];
               this.parentFilterConfig = {};
               this.primaryFilterConfig = {};
+              // processBoardData resets the selected level to a placeholder
+              // string; the parent filter only sends the real level again
+              // after this block has run. The KPI calls are prepared below, so
+              // keep the level the user selected, otherwise they are built for
+              // the wrong level (no sprint) and the board shows no data.
+              const selectedLevelBeforeReload = this.selectedLevel;
               this.processBoardData(data);
+              if (
+                typeof selectedLevelBeforeReload === 'object' &&
+                selectedLevelBeforeReload !== null &&
+                typeof this.selectedLevel === 'string'
+              ) {
+                this.selectedLevel = selectedLevelBeforeReload;
+              }
               this.blockUI = false;
               try {
                 if (event) {
