@@ -43,3 +43,11 @@ testem.log
 .DS_Store
 Thumbs.db
 package-lock.json
+
+# Local environment config: keep out of commits
+*-dev.properties
+*-dev.yml
+*-dev.yaml
+*-local.properties
+*-local.yml
+*-local.yaml

@@ -125,23 +125,28 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     const subscription = this.projectListSubject
       .pipe(
+        // The error handling lives inside switchMap so that one failed request
+        // does not complete the stream; otherwise the tabs stop updating on
+        // every later project change.
         switchMap((projectList) =>
-          this.httpService.getShowHideOnDashboardNewUI({
-            basicProjectConfigIds:
-              projectList?.length && projectList[0] ? projectList : [],
-          }),
+          this.httpService
+            .getShowHideOnDashboardNewUI({
+              basicProjectConfigIds:
+                projectList?.length && projectList[0] ? projectList : [],
+            })
+            .pipe(
+              tap((response) => {
+                this.setBoards(response);
+              }),
+              catchError((error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: error.message,
+                });
+                return of();
+              }),
+            ),
         ),
-        tap((response) => {
-          // Pass true to update shared service with new data
-          this.setBoards(response, true);
-        }),
-        catchError((error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: error.message,
-          });
-          return of();
-        }),
       )
       .subscribe();
 
@@ -362,6 +367,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           //   ...this.dashConfigData[this.selectedType],
           //   ...this.dashConfigData['others'],
           // ]);
+          const previousSlugs = (this.items || []).map((item) => item['slug']);
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
@@ -409,22 +415,21 @@ export class NavNewComponent implements OnInit, OnDestroy {
           //   return true;
           // });
 
-          // console.log('✅ Items array after filtering:', this.items?.map(i => i.slug));
-          // console.log('Current selectedTab:', this.selectedTab);
+          this.activeItem = this.items?.filter(
+            (x) => x['slug'] == this.selectedTab?.toLowerCase(),
+          )[0];
 
-          // Set active item based on selected tab
-          if (this.items && this.items.length > 0) {
-            this.activeItem = this.items.filter(
-              (x) => x['slug'] == this.selectedTab?.toLowerCase(),
-            )[0];
-
-            // If no active item found (e.g., on first load), default to first available tab
-            if (!this.activeItem && this.items.length > 0) {
-              this.activeItem = this.items[0];
-              this.selectedTab = this.activeItem.slug;
-              // console.log('⚠️ No matching tab found, defaulting to:', this.activeItem.slug);
-            }
-            // console.log('Active item set to:', this.activeItem?.slug);
+          // The open tab (e.g. Slingshot) was available for the previous
+          // project but not for the newly selected one. Move to Home in one
+          // step so the tab bar, the URL and the page content stay in sync,
+          // instead of leaving a page open whose tab no longer exists.
+          const openedSlug = this.selectedTab?.toLowerCase();
+          if (
+            !this.activeItem &&
+            openedSlug &&
+            previousSlugs.includes(openedSlug)
+          ) {
+            this.items.find((item) => item['slug'] === 'home')?.command?.();
           }
         }
       } else {
