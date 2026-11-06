@@ -1390,8 +1390,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         filterType = '';
       }
+      // Work on a copy of the node: the event holds the shared filter node
+      // objects, and rewriting the label of a project node to 'Sprint' made the
+      // project look like a sprint in the saved selection, so selecting that
+      // project again found no sprint ("no iterations") until a refresh.
       const eventCopy = [...event];
-      eventCopy[0].labelName = filterType;
+      eventCopy[0] = { ...eventCopy[0], labelName: filterType };
       this.filterApplyData['hieararchy'] = this.findParentLevels(
         eventCopy[0],
         this.filterDataArr[this.selectedType],
