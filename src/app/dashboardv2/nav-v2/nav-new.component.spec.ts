@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { NavNewComponent } from './nav-new.component';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -315,10 +320,11 @@ describe('NavNewComponent', () => {
   describe('getBoardConfig', () => {
     it('should call httpService and handle success response', (done) => {
       const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
-      spyOn(component, 'setBoards');
+      const setBoardsSpy = spyOn(component, 'setBoards');
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         of(responseMock),
       );
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
 
       // ngOnInit sets up the subscription that listens to projectListSubject
       component.ngOnInit();
@@ -330,7 +336,9 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: ['proj1'],
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        // Check that setBoards was called with the response
+        // The second parameter defaults to true if not provided
+        expect(setBoardsSpy).toHaveBeenCalledWith(responseMock);
         done();
       }, 100);
     });
@@ -560,15 +568,16 @@ describe('NavNewComponent', () => {
         expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
       });
 
-      it('should call getBoardConfig with selected trends', () => {
+      it('should call getBoardConfig with selected trends', fakeAsync(() => {
         const trends = [{ basicProjectConfigId: '123' }];
         spyOn(sharedService, 'getSelectedTrends').and.returnValue(trends);
         spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
         component.ngOnInit();
+        tick(); // Wait for setTimeout to execute
 
         expect(component['getBoardConfig']).toHaveBeenCalledWith(['123']);
-      });
+      }));
 
       // it('should subscribe to onTabSwitch and update selectedTab', () => {
       //   const tabSwitchData = { selectedBoard: 'newTab' };
@@ -585,14 +594,15 @@ describe('NavNewComponent', () => {
 
     describe('Edge cases', () => {
       describe('Edge cases', () => {
-        it('should handle empty selected trends gracefully', () => {
+        it('should handle empty selected trends gracefully', fakeAsync(() => {
           spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
           spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
           component.ngOnInit();
+          tick(); // Wait for setTimeout to execute
 
           expect(component['getBoardConfig']).toHaveBeenCalledWith([]);
-        });
+        }));
 
         it('should handle null selectedType and default to scrum', () => {
           spyOn(sharedService, 'getSelectedType').and.returnValue(null);
@@ -755,7 +765,8 @@ describe('NavNewComponent', () => {
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         of(responseMock),
       );
-      spyOn(component, 'setBoards');
+      const setBoardsSpy = spyOn(component, 'setBoards');
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
 
       component.ngOnInit();
 
@@ -765,7 +776,9 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: projectList,
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock);
+        // Check that setBoards was called with the response
+        // The second parameter defaults to true if not provided
+        expect(setBoardsSpy).toHaveBeenCalledWith(responseMock);
         done();
       }, 100);
     });
@@ -906,6 +919,744 @@ describe('NavNewComponent', () => {
       );
       expect(iterationBoard.kpis.length).toBe(1);
       expect(iterationBoard.kpis[0].kpiId).toBe('kpi123');
+    });
+  });
+
+  // ========================================
+  // NEW TEST CASES FOR BUG FIXES
+  // ========================================
+
+  describe('Bug Fix: Nav bar tabs not appearing on first login', () => {
+    describe('globalDashConfigData subscription', () => {
+      it('should subscribe to globalDashConfigData and update tabs when data is emitted', (done) => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        spyOn(component, 'setBoards');
+
+        const mockDashConfig = {
+          scrum: [
+            {
+              boardName: 'Speed',
+              boardSlug: 'speed',
+              filters: {
+                primaryFilter: { defaultLevel: { labelName: 'project' } },
+              },
+              kpis: [{ kpiId: 'kpi1', shown: true }],
+            },
+          ],
+          others: [],
+          configDetails: {},
+        };
+
+        component.ngOnInit();
+
+        // Emit data via globalDashConfigData
+        sharedService.globalDashConfigData.emit(mockDashConfig);
+
+        setTimeout(() => {
+          expect(component.setBoards).toHaveBeenCalledWith(
+            {
+              success: true,
+              data: {
+                userBoardConfigDTO: mockDashConfig,
+                configDetails: mockDashConfig.configDetails,
+              },
+            },
+            false,
+          );
+          done();
+        }, 100);
+      });
+
+      it('should not call setBoards when globalDashConfigData emits empty data', (done) => {
+        spyOn(component, 'setBoards');
+
+        component.ngOnInit();
+
+        // Emit empty data
+        sharedService.globalDashConfigData.emit({});
+
+        setTimeout(() => {
+          expect(component.setBoards).not.toHaveBeenCalled();
+          done();
+        }, 100);
+      });
+
+      it('should not call setBoards when globalDashConfigData emits null', (done) => {
+        spyOn(component, 'setBoards');
+
+        component.ngOnInit();
+
+        // Emit null
+        sharedService.globalDashConfigData.emit(null);
+
+        setTimeout(() => {
+          expect(component.setBoards).not.toHaveBeenCalled();
+          done();
+        }, 100);
+      });
+    });
+
+    describe('Initial dashboard config check', () => {
+      it('should render tabs immediately if dashboard config exists in shared service on ngOnInit', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+
+        const existingConfig = {
+          scrum: [
+            {
+              boardName: 'Iteration',
+              boardSlug: 'iteration',
+              filters: {
+                primaryFilter: { defaultLevel: { labelName: 'project' } },
+              },
+              kpis: [{ kpiId: 'kpi1', shown: true }],
+            },
+          ],
+          others: [],
+          configDetails: {},
+        };
+
+        spyOn(sharedService, 'getDashConfigData').and.returnValue(
+          existingConfig,
+        );
+        spyOn(component, 'setBoards');
+
+        component.ngOnInit();
+
+        expect(sharedService.getDashConfigData).toHaveBeenCalled();
+        expect(component.setBoards).toHaveBeenCalledWith(
+          {
+            success: true,
+            data: {
+              userBoardConfigDTO: existingConfig,
+              configDetails: existingConfig.configDetails,
+            },
+          },
+          false,
+        );
+      });
+
+      it('should trigger getBoardConfig if no existing dashboard config on ngOnInit', () => {
+        spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
+        spyOn(component, 'getBoardConfig');
+
+        component.ngOnInit();
+
+        expect(component.getBoardConfig).toHaveBeenCalledWith([]);
+      });
+
+      it('should trigger getBoardConfig if existing config is empty object', () => {
+        spyOn(sharedService, 'getDashConfigData').and.returnValue({});
+        spyOn(component, 'getBoardConfig');
+
+        component.ngOnInit();
+
+        expect(component.getBoardConfig).toHaveBeenCalledWith([]);
+      });
+    });
+  });
+
+  describe('Bug Fix: Slingshot tab not appearing until tab switch', () => {
+    describe('KPI filtering with null safety', () => {
+      it('should include Slingshot tab when it has valid KPIs with shown: true', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.homeTabFlag.next(true);
+        component.pebFlag.next(true);
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Slingshot',
+                  boardSlug: 'slingshot',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [
+                    { kpiId: 'kpi1', shown: true },
+                    { kpiId: 'kpi2', shown: false },
+                  ],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(1);
+        expect(component.items[0].slug).toBe('slingshot');
+        expect(component.items[0].label).toBe('Slingshot');
+      });
+
+      it('should filter out boards with undefined kpis array', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Invalid Board',
+                  boardSlug: 'invalid-board',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: undefined,
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(0);
+      });
+
+      it('should filter out boards with null kpis array', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Null KPIs Board',
+                  boardSlug: 'null-kpis',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: null,
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(0);
+      });
+
+      it('should filter out boards with empty kpis array', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Empty KPIs Board',
+                  boardSlug: 'empty-kpis',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(0);
+      });
+
+      it('should filter out boards where all KPIs have shown: false', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Hidden Board',
+                  boardSlug: 'hidden-board',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [
+                    { kpiId: 'kpi1', shown: false },
+                    { kpiId: 'kpi2', shown: false },
+                  ],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(0);
+      });
+
+      it('should include multiple tabs including Slingshot when all have at least one shown KPI', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.homeTabFlag.next(true);
+        component.pebFlag.next(true);
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Speed',
+                  boardSlug: 'speed',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi1', shown: true }],
+                },
+                {
+                  boardName: 'Slingshot',
+                  boardSlug: 'slingshot',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [
+                    { kpiId: 'kpi2', shown: true },
+                    { kpiId: 'kpi3', shown: false },
+                  ],
+                },
+              ],
+              others: [
+                {
+                  boardName: 'Iteration',
+                  boardSlug: 'iteration',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi4', shown: true }],
+                },
+              ],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items.length).toBe(3);
+        const slugs = component.items.map((item) => item.slug);
+        expect(slugs).toContain('speed');
+        expect(slugs).toContain('slingshot');
+        expect(slugs).toContain('iteration');
+      });
+    });
+
+    describe('Active item fallback logic', () => {
+      it('should navigate to home tab when selectedTab no longer exists but existed before', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.selectedTab = 'slingshot';
+        component.homeTabFlag.next(true);
+        component.pebFlag.next(true);
+
+        // Set up items array to simulate that 'slingshot' existed before
+        component.items = [
+          {
+            label: 'Slingshot Tab',
+            slug: 'slingshot',
+            command: jasmine.createSpy('command'),
+            disabled: false,
+          },
+        ];
+
+        // Mock helperService.deepEqual to return false (data has changed)
+        helperService.deepEqual.and.returnValue(false);
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Home',
+                  boardSlug: 'home',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi0', shown: true }],
+                },
+                {
+                  boardName: 'Speed',
+                  boardSlug: 'speed',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi1', shown: true }],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        // After calling set Boards, items should have been updated with home and speed
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(2);
+
+        // The home tab's command should have been called automatically by the fallback logic
+
+        // After calling setBoards, items should have been updated with home and speed
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(2);
+
+        // Check that the component navigated to home by verifying router.navigate was called
+        expect(router.navigate).toHaveBeenCalledWith(['/dashboard/home']);
+
+        // After the fallback navigation, selectedTab should be 'home'
+        expect(component.selectedTab).toBe('home');
+      });
+
+      it('should set activeItem correctly when selectedTab matches an item', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.selectedTab = 'slingshot';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Speed',
+                  boardSlug: 'speed',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi1', shown: true }],
+                },
+                {
+                  boardName: 'Slingshot',
+                  boardSlug: 'slingshot',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi2', shown: true }],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.activeItem).toBeDefined();
+        expect(component.activeItem.slug).toBe('slingshot');
+        expect(component.selectedTab).toBe('slingshot');
+      });
+
+      it('should not set activeItem when items array is empty', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.activeItem = null;
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.items).toBeUndefined();
+        expect(component.activeItem).toBeNull();
+      });
+
+      it('should handle case-insensitive tab matching', () => {
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedType = 'scrum';
+        component.selectedTab = 'SLINGSHOT';
+
+        const response = {
+          success: true,
+          data: {
+            userBoardConfigDTO: {
+              scrum: [
+                {
+                  boardName: 'Slingshot',
+                  boardSlug: 'slingshot',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi1', shown: true }],
+                },
+              ],
+              others: [],
+            },
+          },
+        };
+
+        component.setBoards(response);
+
+        expect(component.activeItem).toBeDefined();
+        expect(component.activeItem.slug).toBe('slingshot');
+      });
+    });
+  });
+
+  describe('Integration: First-time login scenario', () => {
+    it('should render all tabs including Slingshot on first login with fresh session', (done) => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.homeTabFlag.next(true);
+      component.pebFlag.next(true);
+
+      const mockBoardConfig = {
+        scrum: [
+          {
+            boardName: 'Home',
+            boardSlug: 'home',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+          {
+            boardName: 'My KnowHOW',
+            boardSlug: 'my-knowhow',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi2', shown: true }],
+          },
+          {
+            boardName: 'Speed',
+            boardSlug: 'speed',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi3', shown: true }],
+          },
+          {
+            boardName: 'Iteration',
+            boardSlug: 'iteration',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi4', shown: true }],
+          },
+          {
+            boardName: 'Slingshot',
+            boardSlug: 'slingshot',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [
+              { kpiId: 'kpi5', shown: true },
+              { kpiId: 'kpi6', shown: true },
+            ],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      const responseMock = {
+        success: true,
+        data: { userBoardConfigDTO: mockBoardConfig },
+      };
+
+      // Mock getDashConfigData to return null (simulating fresh session)
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
+      spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
+        of(responseMock),
+      );
+
+      component.ngOnInit();
+
+      setTimeout(() => {
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(5);
+        const slugs = component.items.map((item) => item.slug);
+        expect(slugs).toContain('home');
+        expect(slugs).toContain('my-knowhow');
+        expect(slugs).toContain('speed');
+        expect(slugs).toContain('iteration');
+        expect(slugs).toContain('slingshot');
+        done();
+      }, 100);
+    });
+
+    it('should handle race condition where filter loads before nav component initializes', (done) => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+
+      const mockDashConfig = {
+        scrum: [
+          {
+            boardName: 'Slingshot',
+            boardSlug: 'slingshot',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      // Simulate dashboard config already in shared service
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(mockDashConfig);
+
+      component.ngOnInit();
+
+      setTimeout(() => {
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(1);
+        expect(component.items[0].slug).toBe('slingshot');
+        done();
+      }, 100);
+    });
+
+    it('should show Slingshot tab when changing projects on Iteration board', (done) => {
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify(mockHierarchyData),
+      );
+      component.selectedType = 'scrum';
+      component.selectedTab = 'iteration';
+      component.homeTabFlag.next(true);
+      component.pebFlag.next(true);
+
+      // Initial config without Slingshot
+      const initialConfig = {
+        scrum: [
+          {
+            boardName: 'Iteration',
+            boardSlug: 'iteration',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      // New config with Slingshot (simulating project change)
+      const newConfigWithSlingshot = {
+        scrum: [
+          {
+            boardName: 'Iteration',
+            boardSlug: 'iteration',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [{ kpiId: 'kpi1', shown: true }],
+          },
+          {
+            boardName: 'Slingshot',
+            boardSlug: 'slingshot',
+            filters: {
+              primaryFilter: { defaultLevel: { labelName: 'project' } },
+            },
+            kpis: [
+              { kpiId: 'kpi5', shown: true },
+              { kpiId: 'kpi6', shown: true },
+            ],
+          },
+        ],
+        others: [],
+        configDetails: {},
+      };
+
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(initialConfig);
+      helperService.deepEqual.and.returnValue(false);
+
+      component.ngOnInit();
+
+      setTimeout(() => {
+        // Initially only Iteration tab
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(1);
+        expect(component.items[0].slug).toBe('iteration');
+
+        // Simulate project change by emitting new config via globalDashConfigData
+        sharedService.globalDashConfigData.emit(newConfigWithSlingshot);
+
+        setTimeout(() => {
+          // After project change, both tabs should be visible
+          expect(component.items).toBeDefined();
+          expect(component.items.length).toBe(2);
+          const slugs = component.items.map((item: any) => item.slug);
+          expect(slugs).toContain('iteration');
+          expect(slugs).toContain('slingshot');
+          done();
+        }, 100);
+      }, 100);
     });
   });
 });
