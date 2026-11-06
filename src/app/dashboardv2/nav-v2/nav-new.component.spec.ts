@@ -320,10 +320,11 @@ describe('NavNewComponent', () => {
   describe('getBoardConfig', () => {
     it('should call httpService and handle success response', (done) => {
       const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
-      spyOn(component, 'setBoards');
+      const setBoardsSpy = spyOn(component, 'setBoards');
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         of(responseMock),
       );
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
 
       // ngOnInit sets up the subscription that listens to projectListSubject
       component.ngOnInit();
@@ -335,7 +336,9 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: ['proj1'],
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock, true);
+        // Check that setBoards was called with the response
+        // The second parameter defaults to true if not provided
+        expect(setBoardsSpy).toHaveBeenCalledWith(responseMock);
         done();
       }, 100);
     });
@@ -762,7 +765,8 @@ describe('NavNewComponent', () => {
       spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
         of(responseMock),
       );
-      spyOn(component, 'setBoards');
+      const setBoardsSpy = spyOn(component, 'setBoards');
+      spyOn(sharedService, 'getDashConfigData').and.returnValue(null);
 
       component.ngOnInit();
 
@@ -772,7 +776,9 @@ describe('NavNewComponent', () => {
         expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
           basicProjectConfigIds: projectList,
         });
-        expect(component.setBoards).toHaveBeenCalledWith(responseMock, true);
+        // Check that setBoards was called with the response
+        // The second parameter defaults to true if not provided
+        expect(setBoardsSpy).toHaveBeenCalledWith(responseMock);
         done();
       }, 100);
     });
@@ -1283,19 +1289,42 @@ describe('NavNewComponent', () => {
     });
 
     describe('Active item fallback logic', () => {
-      it('should set activeItem to first tab when selectedTab does not match any item', () => {
+      it('should navigate to home tab when selectedTab no longer exists but existed before', () => {
         localStorage.setItem(
           'completeHierarchyData',
           JSON.stringify(mockHierarchyData),
         );
         component.selectedType = 'scrum';
-        component.selectedTab = 'non-existent-tab';
+        component.selectedTab = 'slingshot';
+        component.homeTabFlag.next(true);
+        component.pebFlag.next(true);
+
+        // Set up items array to simulate that 'slingshot' existed before
+        component.items = [
+          {
+            label: 'Slingshot Tab',
+            slug: 'slingshot',
+            command: jasmine.createSpy('command'),
+            disabled: false,
+          },
+        ];
+
+        // Mock helperService.deepEqual to return false (data has changed)
+        helperService.deepEqual.and.returnValue(false);
 
         const response = {
           success: true,
           data: {
             userBoardConfigDTO: {
               scrum: [
+                {
+                  boardName: 'Home',
+                  boardSlug: 'home',
+                  filters: {
+                    primaryFilter: { defaultLevel: { labelName: 'project' } },
+                  },
+                  kpis: [{ kpiId: 'kpi0', shown: true }],
+                },
                 {
                   boardName: 'Speed',
                   boardSlug: 'speed',
@@ -1312,9 +1341,21 @@ describe('NavNewComponent', () => {
 
         component.setBoards(response);
 
-        expect(component.activeItem).toBeDefined();
-        expect(component.activeItem.slug).toBe('speed');
-        expect(component.selectedTab).toBe('speed');
+        // After calling set Boards, items should have been updated with home and speed
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(2);
+
+        // The home tab's command should have been called automatically by the fallback logic
+
+        // After calling setBoards, items should have been updated with home and speed
+        expect(component.items).toBeDefined();
+        expect(component.items.length).toBe(2);
+
+        // Check that the component navigated to home by verifying router.navigate was called
+        expect(router.navigate).toHaveBeenCalledWith(['/dashboard/home']);
+
+        // After the fallback navigation, selectedTab should be 'home'
+        expect(component.selectedTab).toBe('home');
       });
 
       it('should set activeItem correctly when selectedTab matches an item', () => {
