@@ -193,9 +193,9 @@
                             ? ifKpiExist('kpi204') >= 0
                               ? allKpiArray[ifKpiExist('kpi204')]?.labelXAxis
                               : ''
-                            : this.filterApplyData?.selectedMap['date'] &&
-                              this.filterApplyData?.selectedMap['date'][0]
-                            ? this.filterApplyData?.selectedMap['date'][0]
+                            : this.filterApplyData?.selectedMap?.['date'] &&
+                              this.filterApplyData?.selectedMap?.['date'][0]
+                            ? this.filterApplyData?.selectedMap?.['date'][0]
                             : kpi?.kpiDetail?.xaxisLabel
                         "
                         [kpiTitle]="kpi?.kpiName"
@@ -240,13 +240,13 @@
                                       <app-groupstackchartv2
                                         [legendType]="'normal'"
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -410,12 +410,9 @@
                                                   kpi.kpiId,
                                                   kpi?.kpiDetail?.xaxisLabel
                                                 )
-                                              : this.filterApplyData
-                                                  .selectedMap['date'] &&
-                                                this.filterApplyData
-                                                  .selectedMap['date'][0]
-                                              ? this.filterApplyData
-                                                  .selectedMap['date'][0]
+                                              : this.filterApplyData?.selectedMap?.['date'] &&
+                                                this.filterApplyData?.selectedMap?.['date'][0]
+                                              ? this.filterApplyData?.selectedMap?.['date'][0]
                                               : kpi?.kpiDetail?.xaxisLabel
                                           "
                                           [yCaption]="
@@ -611,13 +608,13 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -713,13 +710,13 @@
                                         [xCaption]="
                                           kpi.kpiId === 'kpi205'
                                             ? kpi205XCaption
-                                            : this.filterApplyData.selectedMap[
+                                            : this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ] &&
-                                              this.filterApplyData.selectedMap[
+                                              this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -811,13 +808,13 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -849,13 +846,13 @@
                                       <app-groupstackchartv2
                                         [legendType]="'normal'"
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -888,13 +885,13 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -978,13 +975,13 @@
                                           kpi?.kpiDetail?.thresholdValue
                                         "
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -1024,13 +1021,13 @@
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
                                       <app-group-bar-chart
                                         [xCaption]="
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ] &&
-                                          this.filterApplyData.selectedMap[
+                                          this.filterApplyData?.selectedMap?.[
                                             'date'
                                           ][0]
-                                            ? this.filterApplyData.selectedMap[
+                                            ? this.filterApplyData?.selectedMap?.[
                                                 'date'
                                               ][0]
                                             : kpi?.kpiDetail?.xaxisLabel
@@ -1224,7 +1221,7 @@
                                         this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ][0]
-                                          ? this.filterApplyData.selectedMap[
+                                          ? this.filterApplyData?.selectedMap?.[
                                               'date'
                                             ][0]
                                           : kpi?.kpiDetail?.xaxisLabel
@@ -1287,7 +1284,7 @@
                                         this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ][0]
-                                          ? this.filterApplyData.selectedMap[
+                                          ? this.filterApplyData?.selectedMap?.[
                                               'date'
                                             ][0]
                                           : kpi?.kpiDetail?.xaxisLabel
@@ -1305,13 +1302,13 @@
                                       [unit]="kpi?.kpiDetail?.kpiUnit"
                                       [data]="kpiChartData[kpi?.kpiId]"
                                       [xCaption]="
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ] &&
-                                        this.filterApplyData.selectedMap[
+                                        this.filterApplyData?.selectedMap?.[
                                           'date'
                                         ][0]
-                                          ? this.filterApplyData.selectedMap[
+                                          ? this.filterApplyData?.selectedMap?.[
                                               'date'
                                             ][0]
                                           : kpi?.kpiDetail?.xaxisLabel

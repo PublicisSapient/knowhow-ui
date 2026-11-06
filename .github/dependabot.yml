@@ -1,0 +1,173 @@
+# ============================================
+# 🤖 Dependabot Configuration
+# ============================================
+# Automatically checks for dependency updates and security vulnerabilities
+# Creates pull requests for outdated packages
+#
+# Documentation: https://docs.github.com/en/code-security/dependabot
+# ============================================
+
+version: 2
+
+updates:
+  # ============================================
+  # NPM Dependencies (package.json)
+  # ============================================
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    
+    # Limit open PRs to avoid overwhelming the team
+    open-pull-requests-limit: 5
+    
+    # Group related dependencies together
+    groups:
+      # Angular core packages
+      angular:
+        patterns:
+          - "@angular/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Angular development dependencies
+      angular-dev:
+        patterns:
+          - "@angular-devkit/*"
+          - "@angular-eslint/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # PrimeNG UI framework
+      primeng:
+        patterns:
+          - "primeng"
+          - "primeicons"
+          - "primeflex"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # TypeScript and linting
+      typescript:
+        patterns:
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "eslint*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Testing frameworks
+      testing:
+        patterns:
+          - "jasmine*"
+          - "karma*"
+          - "@types/jasmine*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Build tools
+      build-tools:
+        patterns:
+          - "webpack*"
+          - "@angular/cli"
+          - "@angular/compiler-cli"
+        update-types:
+          - "patch"
+    
+    # Pull request settings
+    pull-request-branch-name:
+      separator: "/"
+    
+    # Commit message prefix
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    
+    # Assignees and reviewers
+    assignees:
+      - "prabasak"  # Replace with your GitHub username
+    
+    # Labels for categorization
+    labels:
+      - "dependencies"
+      - "automated"
+      - "dependabot"
+    
+    # Ignore specific dependencies (if needed)
+    ignore:
+      # Ignore major version updates for Angular (manual upgrade required)
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      
+      # Ignore specific packages if they cause issues
+      # - dependency-name: "package-name"
+      #   versions: ["1.x", "2.x"]
+    
+    # Version strategy
+    versioning-strategy: "increase"
+    
+    # Enable security updates
+    insecure-external-code-execution: "deny"
+    
+    # Rebase strategy
+    rebase-strategy: "auto"
+    
+    # Target branch
+    target-branch: "develop"
+
+  # ============================================
+  # GitHub Actions Workflows
+  # ============================================
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    
+    open-pull-requests-limit: 3
+    
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    
+    labels:
+      - "ci/cd"
+      - "dependencies"
+      - "automated"
+    
+    target-branch: "develop"
+
+  # ============================================
+  # Docker (if Dockerfile has FROM statements)
+  # ============================================
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    
+    open-pull-requests-limit: 2
+    
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+    
+    labels:
+      - "docker"
+      - "dependencies"
+      - "automated"
+    
+    target-branch: "develop"

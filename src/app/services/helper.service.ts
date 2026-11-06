@@ -56,12 +56,12 @@ export class HelperService {
   public passMaturityToFilter;
 
   constructor(
-    private httpService: HttpService,
-    private excelService: ExcelService,
-    private sharedService: SharedService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private utcToLocalUserPipe: UtcToLocalUserPipe,
+    private readonly httpService: HttpService,
+    private readonly excelService: ExcelService,
+    private readonly sharedService: SharedService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly utcToLocalUserPipe: UtcToLocalUserPipe,
   ) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -115,9 +115,9 @@ export class HelperService {
     selectedTab,
   ) {
     const kpiRequestObject = <any>{};
-    const visibleKpis = masterData
-      ?.filter((obj) => obj.isEnabled && obj.shown)
-      .map((x) => x.kpiId);
+    // const visibleKpis = masterData
+    //   ?.filter((obj) => obj.isEnabled && obj.shown)
+    //   .map((x) => x.kpiId);
     kpiRequestObject.kpiList = <any>[];
     for (let i = 0; i < masterData?.length; i++) {
       const obj = { ...masterData[i]?.kpiDetail };
