@@ -461,7 +461,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.setSelectAll();
 
       this.cdr.detectChanges();
-      this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
+      const newParentFilterConfig = {
+        ...this.selectedBoard.filters.parentFilter,
+      };
+      const parentFilterConfigChanged = !this.helperService.deepEqual(
+        newParentFilterConfig,
+        this.parentFilterConfig,
+      );
+      this.parentFilterConfig = newParentFilterConfig;
       if (
         !this.parentFilterConfig ||
         !Object.keys(this.parentFilterConfig).length
@@ -471,7 +478,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           ...this.selectedBoard.filters.primaryFilter,
         };
       } else {
-        this.selectedLevel = 'Project';
+        // A tab switch runs this method several times. The parent filter only
+        // emits its selected level when its config changes, so once it has
+        // emitted a level (an object) keep it; resetting it to the plain
+        // 'Project' string here leaves the board with no selected project
+        // (shown as "no iterations") until the page is refreshed.
+        if (
+          parentFilterConfigChanged ||
+          typeof this.selectedLevel !== 'object' ||
+          this.selectedLevel === null
+        ) {
+          this.selectedLevel = 'Project';
+        }
         this.primaryFilterConfig = {
           ...this.selectedBoard.filters.primaryFilter,
         };
