@@ -461,7 +461,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.setSelectAll();
 
       this.cdr.detectChanges();
-      this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
+      const newParentFilterConfig = {
+        ...this.selectedBoard.filters.parentFilter,
+      };
+      const parentFilterConfigChanged = !this.helperService.deepEqual(
+        newParentFilterConfig,
+        this.parentFilterConfig,
+      );
+      this.parentFilterConfig = newParentFilterConfig;
       if (
         !this.parentFilterConfig ||
         !Object.keys(this.parentFilterConfig).length
@@ -471,7 +478,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           ...this.selectedBoard.filters.primaryFilter,
         };
       } else {
-        this.selectedLevel = 'Project';
+        // A tab switch runs this method several times. The parent filter only
+        // emits its selected level when its config changes, so once it has
+        // emitted a level (an object) keep it; resetting it to the plain
+        // 'Project' string here leaves the board with no selected project
+        // (shown as "no iterations") until the page is refreshed.
+        if (
+          parentFilterConfigChanged ||
+          typeof this.selectedLevel !== 'object' ||
+          this.selectedLevel === null
+        ) {
+          this.selectedLevel = 'Project';
+        }
         this.primaryFilterConfig = {
           ...this.selectedBoard.filters.primaryFilter,
         };
@@ -703,7 +721,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               this.masterDataCopy['kpiList'] = [];
               this.parentFilterConfig = {};
               this.primaryFilterConfig = {};
+              // processBoardData resets the selected level to a placeholder
+              // string; the parent filter only sends the real level again
+              // after this block has run. The KPI calls are prepared below, so
+              // keep the level the user selected, otherwise they are built for
+              // the wrong level (no sprint) and the board shows no data.
+              const selectedLevelBeforeReload = this.selectedLevel;
               this.processBoardData(data);
+              if (
+                typeof selectedLevelBeforeReload === 'object' &&
+                selectedLevelBeforeReload !== null &&
+                typeof this.selectedLevel === 'string'
+              ) {
+                this.selectedLevel = selectedLevelBeforeReload;
+              }
               this.blockUI = false;
               try {
                 if (event) {
@@ -1091,6 +1122,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.previousSelectedTab !== this.selectedTab ||
         this.previousSelectedType !== this.selectedType)
     ) {
+      // Switching tab delivers the same selection to this method several times
+      // before the first KPI request is sent. The tab/type were only remembered
+      // when the request was sent, so every repeat passed the check above and
+      // reloaded all widgets again (the page redrew several times). Remember
+      // them now so the repeats are ignored.
+      this.previousSelectedTab = this.selectedTab;
+      this.previousSelectedType = this.selectedType;
       const previousEventParentNode = ['sprint', 'release'].includes(
         this.previousFilterEvent[0]?.labelName?.toLowerCase(),
       )
@@ -1359,8 +1397,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         filterType = '';
       }
+      // Work on a copy of the node: the event holds the shared filter node
+      // objects, and rewriting the label of a project node to 'Sprint' made the
+      // project look like a sprint in the saved selection, so selecting that
+      // project again found no sprint ("no iterations") until a refresh.
       const eventCopy = [...event];
-      eventCopy[0].labelName = filterType;
+      eventCopy[0] = { ...eventCopy[0], labelName: filterType };
       this.filterApplyData['hieararchy'] = this.findParentLevels(
         eventCopy[0],
         this.filterDataArr[this.selectedType],

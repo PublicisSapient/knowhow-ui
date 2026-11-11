@@ -349,9 +349,31 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.selectedTab.toLowerCase().split('-').join(' '),
       )[0]?.kpis;
     }
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(
-      (item) => item.shown,
-    );
+    this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
+    // Register the sub-tabs together with the KPI list. Until they exist,
+    // checkKPIPresence shows the KPIs of every sub-tab, so the Daily Standup
+    // board was displayed for a moment before the Iteration Review tab applied.
+    if (this.configGlobalData?.length) {
+      this.setUpTabs();
+    }
+  }
+
+  /**
+   * The KPIs the user can see, in the order they are displayed. The Iteration
+   * board is always ordered by default order. This used to happen only when the
+   * KPI requests were sent, so a later rebuild of the list put the widgets back
+   * in the board config order, giving a different layout depending on the route
+   * taken to the page.
+   */
+  getShownKpisInDisplayOrder() {
+    const shownKpis = this.configGlobalData?.filter((item) => item.shown);
+    if (this.selectedTab === 'iteration' && shownKpis) {
+      return [...shownKpis].sort(
+        (a, b) =>
+          (a.kpiDetail?.defaultOrder ?? 0) - (b.kpiDetail?.defaultOrder ?? 0),
+      );
+    }
+    return shownKpis;
   }
 
   processKpiConfigData() {
@@ -361,9 +383,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(
-      (item) => item.shown,
-    );
+    this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
     const visibleKpis = this.configGlobalData?.filter((item) => item.isEnabled);
     this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
     if (
@@ -858,9 +878,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(
-        (item) => item.shown,
-      );
+      this.updatedConfigGlobalData = this.getShownKpisInDisplayOrder();
 
       this.mockUpdatedConfigGlobalData = mockConfigGlobalData;
 
