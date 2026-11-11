@@ -22,8 +22,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
-  previousSelectedTrend: any;
-  previousSelectedType: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   @Input() kpiSearchQuery!: string;
@@ -65,6 +63,29 @@ export class NavNewComponent implements OnInit, OnDestroy {
     //   }
     // }
 
+    // Subscribe to globalDashConfigData to ensure tabs are updated when board config changes
+    // Only update if the data has actually changed to prevent infinite loops
+    this.subscriptions.push(
+      this.sharedService.globalDashConfigData.subscribe((data) => {
+        if (data && Object.keys(data).length > 0) {
+          // Only call setBoards if the data is different from current dashConfigData
+          if (!this.helperService.deepEqual(this.dashConfigData, data)) {
+            // Pass false to skip updating shared service (data already came from there)
+            this.setBoards(
+              {
+                success: true,
+                data: {
+                  userBoardConfigDTO: data,
+                  configDetails: data.configDetails,
+                },
+              },
+              false,
+            );
+          }
+        }
+      }),
+    );
+
     this.sharedService.onTabSwitch.subscribe((data) => {
       this.selectedTab = data.selectedBoard;
       // console.log(
@@ -78,29 +99,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
     });
 
     this.sharedService.primaryFilterChangeSubject.subscribe((x) => {
-      if (
-        this.sharedService.getSelectedTrends() &&
-        this.sharedService.getSelectedTrends()[0]
-      ) {
+      // Always call getBoardConfig on filter change to ensure fresh board data
+      // This prevents showing stale board configs from previously selected projects
+      // Use setTimeout to ensure getSelectedTrends() returns updated data
+      // (race condition: primaryFilterChangeSubject.next() fires BEFORE setSelectedTrends())
+      setTimeout(() => {
         if (
-          !this.helperService.deepEqual(
-            this.previousSelectedTrend,
-            this.sharedService.getSelectedTrends()[0],
-          ) ||
-          this.previousSelectedType !== this.selectedType
+          this.sharedService.getSelectedTrends() &&
+          this.sharedService.getSelectedTrends().length > 0
         ) {
-          this.previousSelectedTrend =
-            this.sharedService.getSelectedTrends()[0];
-          this.previousSelectedType = this.selectedType;
           this.getBoardConfig([
             ...this.sharedService
               .getSelectedTrends()
               .map((proj) => proj['basicProjectConfigId']),
           ]);
+        } else {
+          this.getBoardConfig([]);
         }
-      } else {
-        this.getBoardConfig([]);
-      }
+      }, 0);
     });
 
     this.sharedService.onScrumKanbanSwitch.subscribe((type) => {
@@ -109,24 +125,50 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     const subscription = this.projectListSubject
       .pipe(
+        // The error handling lives inside switchMap so that one failed request
+        // does not complete the stream; otherwise the tabs stop updating on
+        // every later project change.
         switchMap((projectList) =>
-          this.httpService.getShowHideOnDashboardNewUI({
-            basicProjectConfigIds:
-              projectList?.length && projectList[0] ? projectList : [],
-          }),
+          this.httpService
+            .getShowHideOnDashboardNewUI({
+              basicProjectConfigIds:
+                projectList?.length && projectList[0] ? projectList : [],
+            })
+            .pipe(
+              tap((response) => {
+                this.setBoards(response);
+              }),
+              catchError((error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: error.message,
+                });
+                return of();
+              }),
+            ),
         ),
-        tap((response) => {
-          this.setBoards(response);
-        }),
-        catchError((error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: error.message,
-          });
-          return of();
-        }),
       )
       .subscribe();
+
+    // Initialize board config on component load to ensure tabs appear
+    // Check if dashboard config already exists in shared service
+    const existingDashConfig = this.sharedService.getDashConfigData();
+    if (existingDashConfig && Object.keys(existingDashConfig).length > 0) {
+      // Pass false since data already in shared service
+      this.setBoards(
+        {
+          success: true,
+          data: {
+            userBoardConfigDTO: existingDashConfig,
+            configDetails: existingDashConfig.configDetails,
+          },
+        },
+        false,
+      );
+    } else {
+      // If no existing config, trigger initial load
+      this.getBoardConfig([]);
+    }
   }
 
   // unsubscribing all Kpi Request
@@ -169,7 +211,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     //   .subscribe();
   }
 
-  setBoards(response) {
+  setBoards(response, shouldUpdateSharedService = true) {
     if (response.success === true) {
       const data = response.data.userBoardConfigDTO;
       // console.log(
@@ -297,8 +339,16 @@ export class NavNewComponent implements OnInit, OnDestroy {
         //   '🔍 BEFORE deepEqual check:',
         //   JSON.parse(JSON.stringify(data)),
         // );
-        if (!this.helperService.deepEqual(this.dashConfigData, data)) {
-          this.dashConfigData = data;
+
+        // Always update dashConfigData to ensure UI reflects latest data
+        const dataChanged = !this.helperService.deepEqual(
+          this.dashConfigData,
+          data,
+        );
+        this.dashConfigData = data;
+
+        // Only update shared service if data changed AND requested (to prevent circular updates)
+        if (dataChanged && shouldUpdateSharedService) {
           // console.log('data sent to shared service:', data);
           this.sharedService.setDashConfigData(data);
         }
@@ -317,15 +367,18 @@ export class NavNewComponent implements OnInit, OnDestroy {
           //   ...this.dashConfigData[this.selectedType],
           //   ...this.dashConfigData['others'],
           // ]);
+          const previousSlugs = (this.items || []).map((item) => item['slug']);
           this.items = [
             ...this.dashConfigData[this.selectedType],
             ...this.dashConfigData['others'],
           ]
             .filter((board) => {
-              // console.log('Checking board:', board.kpis);
+              // console.log('Checking board:', board.boardSlug, 'kpis:', board.kpis);
+              // Ensure board has KPIs and at least one is shown
               return (
-                board.kpis.some((kpi) => kpi.shown === true) &&
-                board.kpis.length > 0
+                board.kpis &&
+                board.kpis.length > 0 &&
+                board.kpis.some((kpi) => kpi.shown === true)
               );
             })
             .map((obj) => {
@@ -365,6 +418,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.activeItem = this.items?.filter(
             (x) => x['slug'] == this.selectedTab?.toLowerCase(),
           )[0];
+
+          // The open tab (e.g. Slingshot) was available for the previous
+          // project but not for the newly selected one. Move to Home in one
+          // step so the tab bar, the URL and the page content stay in sync,
+          // instead of leaving a page open whose tab no longer exists.
+          const openedSlug = this.selectedTab?.toLowerCase();
+          if (
+            !this.activeItem &&
+            openedSlug &&
+            previousSlugs.includes(openedSlug)
+          ) {
+            this.items.find((item) => item['slug'] === 'home')?.command?.();
+          }
         }
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
@@ -373,7 +439,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
               'completeHierarchyData',
               JSON.stringify(res.data),
             );
-            this.setBoards(response);
+            // Pass the shouldUpdateSharedService parameter through
+            this.setBoards(response, shouldUpdateSharedService);
           }
         });
       }

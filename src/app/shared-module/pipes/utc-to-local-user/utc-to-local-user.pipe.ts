@@ -15,8 +15,11 @@ export class UtcToLocalUserPipe implements PipeTransform {
       return '-';
     }
 
-    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}/;
-    if (!regex.test(utcDate)) {
+    // Safe regex with bounded quantifiers to prevent ReDoS
+    // Validates ISO 8601 datetime format: YYYY-MM-DDTHH (minimum pattern)
+    // Uses only fixed-length quantifiers {4}, {2} - no variable length or nested patterns
+    const iso8601Pattern = /^\d{4}-\d{2}-\d{2}T\d{2}/;
+    if (!iso8601Pattern.test(utcDate)) {
       return utcDate;
     }
 

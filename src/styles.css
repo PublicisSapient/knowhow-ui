@@ -1561,7 +1561,7 @@ a:hover {
 }
 
 .p-datatable > .p-datatable-wrapper {
-  overflow: initial;
+  overflow: auto;
 }
 .icon-circle {
   position: absolute;

@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { InjectionToken, NO_ERRORS_SCHEMA } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { MetricsService } from 'src/app/services/metrics.service';
 
 export const APP_CONFIG = new InjectionToken('app.config');
 
@@ -535,8 +537,15 @@ describe('CollapsiblePanelComponent', () => {
   let fixture: ComponentFixture<CollapsiblePanelComponent>;
   let sharedService: SharedService;
   let httpService: HttpService;
+  let messageService: any;
   const httpServiceMock = {
     summariseSprintGoalsCall: jasmine.createSpy('summariseSprintGoalsCall'),
+  };
+  const messageServiceMock = {
+    add: jasmine.createSpy('add'),
+  };
+  const metricsServiceMock = {
+    trackAiInsightsOpen: jasmine.createSpy('trackAiInsightsOpen'),
   };
 
   const mockData = [
@@ -577,6 +586,8 @@ describe('CollapsiblePanelComponent', () => {
           useValue: { params: new Subject(), queryParams: new Subject() },
         },
         { provide: APP_CONFIG, useValue: {} },
+        { provide: MessageService, useValue: messageServiceMock },
+        { provide: MetricsService, useValue: metricsServiceMock },
       ], // ✅ Provide real service
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -587,6 +598,7 @@ describe('CollapsiblePanelComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService); // ✅ Use real service
     httpService = TestBed.inject(HttpService);
+    messageService = TestBed.inject(MessageService);
 
     // --- Initialize component properties
     component.accordionData = mockData;
@@ -614,6 +626,7 @@ describe('CollapsiblePanelComponent', () => {
     spyOn(sharedService, 'getSprintGoalSUmmerizeData').and.returnValue(null);
     spyOn(sharedService, 'setSprintGoalSUmmerizeData');
     httpServiceMock.summariseSprintGoalsCall.calls.reset();
+    messageServiceMock.add.calls.reset();
 
     // ✅ Set localStorage (simulate real hierarchy data)
     localStorage.setItem(
@@ -865,9 +878,21 @@ describe('CollapsiblePanelComponent', () => {
       component.summariseUsingAI(testData);
 
       // Assert
-      expect(component.isSummaryAvailableMap['Project A']).toBe(true);
-      expect(component.summarisedSprintGoalsMap['Project A']).toBe(
-        'Failed to summarize: API Error',
+      // After error, isSummaryAvailableMap should be set to false (cleared)
+      expect(component.isSummaryAvailableMap['Project A']).toBe(false);
+      // Should not set error message in map anymore
+      expect(component.summarisedSprintGoalsMap['Project A']).toBeUndefined();
+      // Should show toast message instead
+      expect(messageService.add).toHaveBeenCalledWith({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'There is some problem, please try again later.',
+        life: 5000,
+      });
+      // Should log error to console
+      expect(console.error).toHaveBeenCalledWith(
+        'Error summarising sprint goals:',
+        errorResponse,
       );
     });
 
