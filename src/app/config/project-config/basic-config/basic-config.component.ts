@@ -75,14 +75,14 @@ export class BasicConfigComponent implements OnInit {
   selectedHierarchyItemToUpdate: any;
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private sharedService: SharedService,
-    private http: HttpService,
-    private messenger: MessageService,
-    private getAuthorizationService: GetAuthorizationService,
-    private analytics: AnalyticsService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly sharedService: SharedService,
+    private readonly http: HttpService,
+    private readonly messenger: MessageService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly analytics: AnalyticsService,
     public router: Router,
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
   ) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },

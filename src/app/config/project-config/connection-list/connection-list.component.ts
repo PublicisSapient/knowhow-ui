@@ -836,16 +836,16 @@ export class ConnectionListComponent implements OnInit {
   activeIndex: number | null = null;
 
   constructor(
-    private httpService: HttpService,
-    private formBuilder: UntypedFormBuilder,
-    private confirmationService: ConfirmationService,
-    private testConnectionService: TestConnectionService,
-    private authorization: GetAuthorizationService,
-    private sharedService: SharedService,
-    private helper: HelperService,
-    private route: ActivatedRoute,
+    private readonly httpService: HttpService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly confirmationService: ConfirmationService,
+    private readonly testConnectionService: TestConnectionService,
+    private readonly authorization: GetAuthorizationService,
+    private readonly sharedService: SharedService,
+    private readonly helper: HelperService,
+    private readonly route: ActivatedRoute,
     public router: Router,
-    private featureFlagService: FeatureFlagsService,
+    private readonly featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {

@@ -53,12 +53,12 @@ export class MyprofileComponent implements OnInit {
   ssoLogin: boolean;
   loginType = '';
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private getAuthorizationService: GetAuthorizationService,
-    private http: HttpService,
-    private profile: ProfileComponent,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly http: HttpService,
+    private readonly profile: ProfileComponent,
     public sharedService: SharedService,
-    private messageService: MessageService,
+    private readonly messageService: MessageService,
   ) {}
 
   /**

@@ -37,10 +37,10 @@ export class ViewRequestsComponent implements OnInit {
   roleList: any;
   dataLoading = <any>[];
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private sharedService: SharedService,
-    private authService: GetAuthorizationService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly sharedService: SharedService,
+    private readonly authService: GetAuthorizationService,
   ) {}
 
   ngOnInit() {

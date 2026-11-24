@@ -33,7 +33,7 @@ export class ConfigSettingsComponent implements OnInit {
   selectedToolName: string = null;
   selectedProject: any;
   constructor(
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     public router: Router,
     public httpService: HttpService,
     public sharedService: SharedService,

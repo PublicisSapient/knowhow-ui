@@ -37,9 +37,9 @@ export class ProfileComponent implements OnInit {
   menuItems: MenuItem[] = [];
 
   constructor(
-    private getAuthorizationService: GetAuthorizationService,
+    private readonly getAuthorizationService: GetAuthorizationService,
     public router: Router,
-    private sharedService: SharedService,
+    private readonly sharedService: SharedService,
   ) {}
 
   ngOnInit() {

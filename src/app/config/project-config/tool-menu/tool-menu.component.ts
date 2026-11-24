@@ -57,9 +57,9 @@ export class ToolMenuComponent implements OnInit {
   constructor(
     public router: Router,
     public sharedService: SharedService,
-    private httpService: HttpService,
+    private readonly httpService: HttpService,
     public getAuthorizationService: GetAuthorizationService,
-    private analytics: AnalyticsService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   /**

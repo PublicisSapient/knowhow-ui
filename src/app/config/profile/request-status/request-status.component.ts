@@ -38,10 +38,10 @@ export class RequestStatusComponent implements OnInit, OnDestroy {
   userName: string;
   subscriptions = [];
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private sharedService: SharedService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly sharedService: SharedService,
   ) {}
 
   ngOnInit() {

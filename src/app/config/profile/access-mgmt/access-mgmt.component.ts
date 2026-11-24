@@ -80,10 +80,10 @@ export class AccessMgmtComponent implements OnInit {
 
   constructor(
     private readonly service: SharedService,
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private authService: GetAuthorizationService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly authService: GetAuthorizationService,
   ) {}
 
   ngOnInit() {

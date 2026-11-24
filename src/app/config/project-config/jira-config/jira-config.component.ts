@@ -141,14 +141,14 @@ export class JiraConfigComponent implements OnInit {
     'ArgoCD',
   ];
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
     public http: HttpService,
-    private sharedService: SharedService,
-    private messenger: MessageService,
-    private getAuthorizationService: GetAuthorizationService,
-    private confirmationService: ConfirmationService,
+    private readonly sharedService: SharedService,
+    private readonly messenger: MessageService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
