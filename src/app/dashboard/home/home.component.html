@@ -250,17 +250,16 @@
                       <tr>
                         <td *ngFor="let childCol of row.children?.columns">
                           <ng-container [ngSwitch]="childCol.field">
-                            @if(childCol.field.toLowerCase().includes('name') ||
-                            childCol.field.toLowerCase() === 'completion'){
+                            @if (childCol.field.toLowerCase().includes('name') ||
+                            childCol.field.toLowerCase() === 'completion') {
                             <span>{{ childRow[childCol.field] }}</span>
-                            }@else
-                            if(childCol.field.toLowerCase().includes('productivity')){
-                            @if(productivityExpandRowDataLoader){
+                            } @else if (childCol.field.toLowerCase().includes('productivity')) {
+                            @if (productivityExpandRowDataLoader) {
                             <p-skeleton width="60px" height="2rem" />
                             } @else {
                             <span>{{ childRow[childCol.field] }}</span>
-                            } }@else if(childCol.field.toLowerCase() ===
-                            'health'){
+                            }
+                            } @else if (childCol.field.toLowerCase() === 'health') {
                             <div
                               class="p-p-2 styled-cell"
                               [ngClass]="getMClass(childRow[childCol.field])">
