@@ -50,19 +50,50 @@
             aria-label="Return to Dashboard"></button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{
-      active: router.url.indexOf('Analysis') === -1 && router.url.indexOf('Report') === -1,
-      disablePointer: router.url.indexOf('Analysis') === -1 && router.url.indexOf('Report') === -1
-    }" (click)="navigateToDashboard(true)" label="DASHBOARD" tabindex="0" role="tab"
-          aria-selected="{{ router.url.indexOf('Report') === -1 }}">Dashboard</button>
+          <button
+            [ngClass]="{
+              active:
+                router.url.indexOf('Analysis') === -1 &&
+                router.url.indexOf('Report') === -1,
+              disablePointer:
+                router.url.indexOf('Analysis') === -1 &&
+                router.url.indexOf('Report') === -1
+            }"
+            (click)="navigateToDashboard(true)"
+            label="DASHBOARD"
+            tabindex="0"
+            role="tab"
+            aria-selected="{{ router.url.indexOf('Report') === -1 }}">
+            Dashboard
+          </button>
         </div>
         <div class="tab-button" *ngIf="isAnalsisFlag | async">
-          <button [ngClass]="{active: router.url.indexOf('Analysis') !== -1,disablePointer:router.url.indexOf('Analysis') !== -1  }" (click)="goToAnalysis()" label="ANALYSIS"
-          tabindex="0" role="tab" aria-selected="{{ router.url.indexOf('Analysis') !== -1 }}">Analysis</button>
+          <button
+            [ngClass]="{
+              active: router.url.indexOf('Analysis') !== -1,
+              disablePointer: router.url.indexOf('Analysis') !== -1
+            }"
+            (click)="goToAnalysis()"
+            label="ANALYSIS"
+            tabindex="0"
+            role="tab"
+            aria-selected="{{ router.url.indexOf('Analysis') !== -1 }}">
+            Analysis
+          </button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{active: router.url.indexOf('Report') !== -1,disablePointer:router.url.indexOf('Report') !== -1  }" (click)="goToReports()" label="REPORTS" tabindex="0" role="tab"
-          aria-selected="{{ router.url.indexOf('Report') !== -1 }}">Reports</button>
+          <button
+            [ngClass]="{
+              active: router.url.indexOf('Report') !== -1,
+              disablePointer: router.url.indexOf('Report') !== -1
+            }"
+            (click)="goToReports()"
+            label="REPORTS"
+            tabindex="0"
+            role="tab"
+            aria-selected="{{ router.url.indexOf('Report') !== -1 }}">
+            Reports
+          </button>
         </div>
       </div>
     </div>
@@ -78,27 +109,28 @@
         aria-label="Open Notifications"
         (keydown.enter)="notification.toggle($event)"
         (click)="notification.toggle($event)">
-       
-          <i class="far fa-bell cursor-pointer font-large"></i>
+        <i class="far fa-bell cursor-pointer font-large"></i>
         <span
           *ngIf="notificationCount > 0"
           class="count noti-count"
           aria-label="Number of unread notifications"
           >{{ notificationCount }}</span
         >
-    </button>
+      </button>
       <p-menu
         #notification
         [popup]="true"
         [model]="notificationList"
         class="custom-menu"></p-menu>
-        <button class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button" role="button" 
-        tabindex="0" aria-label="Open Settings" (click)="handleSettingsClick()"
-        *ngIf="
-            !router.url.split('/').includes('Config') && !isGuest
-          ">
-          <i class="fas fa-cog font-large"></i>
-        </button>
+      <button
+        class="p-p-2 p-mr-3 position-relative cursor-pointer ico-button"
+        role="button"
+        tabindex="0"
+        aria-label="Open Settings"
+        (click)="handleSettingsClick()"
+        *ngIf="!router.url.split('/').includes('Config') && !isGuest">
+        <i class="fas fa-cog font-large"></i>
+      </button>
       <div
         class="back-btn-wraper"
         *ngIf="
@@ -145,14 +177,23 @@
           </div>
         </div>
       </div>
-      <p-menu #usermenu [popup]="true" [model]="userMenuItems" class="custom-menu" [style]="{ width: '210px' }">
+      <p-menu
+        #usermenu
+        [popup]="true"
+        [model]="userMenuItems"
+        class="custom-menu"
+        [style]="{ width: '210px' }">
         <ng-template pTemplate="item" let-item>
           <div role="menuitem" tabindex="0" class="p-d-flex p-justify-between">
             <div class="p-d-flex p-align-center">
-              <i [class]="item.icon + ' ' + item.iconColorClass" aria-hidden="true"></i>
+              <i
+                [class]="item.icon + ' ' + item.iconColorClass"
+                aria-hidden="true"></i>
               <div class="p-ml-3">
                 <span> {{ item.label }}</span>
-                <p class="font-xs text-grey p-mt-1 p-mb-0">{{ item.subheading }}</p>
+                <p class="font-xs text-grey p-mt-1 p-mb-0">
+                  {{ item.subheading }}
+                </p>
               </div>
             </div>
             <!-- <i *ngIf="item.externalLink" class="fa-solid fa-arrow-up-right-from-square"></i> -->

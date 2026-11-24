@@ -193,18 +193,18 @@
       </div>
       <div class="kpi-options">
         @if(selectedTab?.toLowerCase() === 'slingshot') {
-          <div
-            class="kpi-expand-icon"
-            (click)="expandToFullWidth($event)"
-            role="button"
-            tabindex="0"
-            aria-label="Expand KPI to Full Width"
-            (keydown.enter)="expandToFullWidth($event)">
-            <i
-              class="pi pi-arrows-h"
-              style="font-size: 20px"
-              aria-hidden="true"></i>
-          </div>
+        <div
+          class="kpi-expand-icon"
+          (click)="expandToFullWidth($event)"
+          role="button"
+          tabindex="0"
+          aria-label="Expand KPI to Full Width"
+          (keydown.enter)="expandToFullWidth($event)">
+          <i
+            class="pi pi-arrows-h"
+            style="font-size: 20px"
+            aria-hidden="true"></i>
+        </div>
         }
         <div
           #kpiMenuContainer
@@ -243,9 +243,9 @@
         hidden:
           selectedTab?.toLowerCase() === 'developer' ||
           loader ||
-            immediateLoader ||
-            (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
-              iSAdditionalFilterSelected),
+          immediateLoader ||
+          (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
+            iSAdditionalFilterSelected),
         'table-layout-fix':
           kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'table'
       }"
@@ -530,8 +530,8 @@
           immediateLoader ||
           (!checkIfDataPresent(kpiDataStatusCode) && !partialData) ||
           iSAdditionalFilterSelected ||
-            (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
-              iSAdditionalFilterSelected) ||
+          (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
+            iSAdditionalFilterSelected) ||
           kpiData?.kpiId === 'kpi182' ||
           kpiData?.kpiId === 'kpi162' ||
           kpiData?.kpiId === 'kpi201' ||
@@ -585,9 +585,7 @@
       </div> -->
 
       <app-trend-indicator-v2
-        *ngIf="
-          checkIfDataPresent(kpiDataStatusCode)
-        "
+        *ngIf="checkIfDataPresent(kpiDataStatusCode)"
         [trendData]="trendData"
         [colorObj]="trendBoxColorObj">
       </app-trend-indicator-v2>
@@ -605,8 +603,8 @@
           immediateLoader ||
           (!checkIfDataPresent(kpiDataStatusCode) && !partialData) ||
           iSAdditionalFilterSelected ||
-            (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
-              iSAdditionalFilterSelected)
+          (!kpiData?.kpiDetail?.isAdditionalFilterSupport &&
+            iSAdditionalFilterSelected)
       }">
       <app-kpi-ai-recommendation-target
         *ngIf="checkIfDataPresent(kpiDataStatusCode)"

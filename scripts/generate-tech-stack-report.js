@@ -2,10 +2,10 @@
 
 /**
  * Tech Stack Report Generator
- * 
+ *
  * This script automatically generates a comprehensive tech stack report
  * by reading package.json and updating the documentation.
- * 
+ *
  * Features:
  * - Extracts major framework versions (Angular, PrimeNG, etc.)
  * - Detects version drift between documentation and reality
@@ -61,24 +61,24 @@ class TechStackReporter {
       angular: {
         core: this.extractMajorVersion(deps['@angular/core']),
         cli: this.extractMajorVersion(devDeps['@angular/cli']),
-        material: this.extractMajorVersion(deps['@angular/material'])
+        material: this.extractMajorVersion(deps['@angular/material']),
       },
       ui: {
         primeng: this.extractMajorVersion(deps['primeng']),
         primeicons: this.extractMajorVersion(deps['primeicons']),
-        primeflex: this.extractMajorVersion(deps['primeflex'])
+        primeflex: this.extractMajorVersion(deps['primeflex']),
       },
       charts: {
         chartjs: this.extractMajorVersion(deps['chart.js']),
         d3: this.extractMajorVersion(deps['d3']),
-        fullcalendar: this.extractMajorVersion(deps['@fullcalendar/core'])
+        fullcalendar: this.extractMajorVersion(deps['@fullcalendar/core']),
       },
       utilities: {
         rxjs: this.extractMajorVersion(deps['rxjs']),
         typescript: this.extractMajorVersion(devDeps['typescript']),
         exceljs: this.extractMajorVersion(deps['exceljs']),
-        jspdf: this.extractMajorVersion(deps['jspdf'])
-      }
+        jspdf: this.extractMajorVersion(deps['jspdf']),
+      },
     };
   }
 
@@ -111,7 +111,9 @@ class TechStackReporter {
 | PrimeNG | ${keyDeps.ui.primeng} |
 | PrimeIcons | ${keyDeps.ui.primeicons} |
 | PrimeFlex | ${keyDeps.ui.primeflex} |
-| FontAwesome | ${this.extractMajorVersion(this.packageJson.dependencies['@fortawesome/fontawesome-free'])} |
+| FontAwesome | ${this.extractMajorVersion(
+      this.packageJson.dependencies['@fortawesome/fontawesome-free'],
+    )} |
 
 ## Data Visualization
 
@@ -127,17 +129,29 @@ class TechStackReporter {
 |---------|---------|
 | ExcelJS | ${keyDeps.utilities.exceljs} |
 | jsPDF | ${keyDeps.utilities.jspdf} |
-| html2canvas | ${this.extractMajorVersion(this.packageJson.dependencies['html2canvas'])} |
-| Marked (Markdown) | ${this.extractMajorVersion(this.packageJson.dependencies['marked'])} |
+| html2canvas | ${this.extractMajorVersion(
+      this.packageJson.dependencies['html2canvas'],
+    )} |
+| Marked (Markdown) | ${this.extractMajorVersion(
+      this.packageJson.dependencies['marked'],
+    )} |
 
 ## Development Tools
 
 | Tool | Version |
 |------|---------|
-| ESLint | ${this.extractMajorVersion(this.packageJson.devDependencies['eslint'])} |
-| Prettier | ${this.extractMajorVersion(this.packageJson.devDependencies['prettier'])} |
-| Karma | ${this.extractMajorVersion(this.packageJson.devDependencies['karma'])} |
-| Jasmine | ${this.extractMajorVersion(this.packageJson.devDependencies['jasmine-core'])} |
+| ESLint | ${this.extractMajorVersion(
+      this.packageJson.devDependencies['eslint'],
+    )} |
+| Prettier | ${this.extractMajorVersion(
+      this.packageJson.devDependencies['prettier'],
+    )} |
+| Karma | ${this.extractMajorVersion(
+      this.packageJson.devDependencies['karma'],
+    )} |
+| Jasmine | ${this.extractMajorVersion(
+      this.packageJson.devDependencies['jasmine-core'],
+    )} |
 
 ## Security
 
@@ -174,7 +188,7 @@ class TechStackReporter {
     try {
       let readme = fs.readFileSync(this.readmePath, 'utf8');
       const angularVersion = this.extractMajorVersion(
-        this.packageJson.dependencies['@angular/core']
+        this.packageJson.dependencies['@angular/core'],
       );
 
       // Find and replace outdated Angular version
@@ -185,7 +199,9 @@ class TechStackReporter {
         const oldVersion = match[0];
         readme = readme.replace(oldPattern, `Angular ${angularVersion}`);
         fs.writeFileSync(this.readmePath, readme, 'utf8');
-        console.log(`✅ Updated README.md: ${oldVersion} → Angular ${angularVersion}`);
+        console.log(
+          `✅ Updated README.md: ${oldVersion} → Angular ${angularVersion}`,
+        );
         return true;
       } else {
         console.log('ℹ️  No Angular version found in README.md to update');
@@ -211,14 +227,18 @@ class TechStackReporter {
 
     // Check Angular version consistency
     if (angularCore !== angularCli) {
-      console.warn(`⚠️  DRIFT DETECTED: Angular Core (${angularCore}) vs CLI (${angularCli})`);
+      console.warn(
+        `⚠️  DRIFT DETECTED: Angular Core (${angularCore}) vs CLI (${angularCli})`,
+      );
       driftDetected = true;
     }
 
     // Check if major versions are outdated (simple heuristic)
     const angularMajor = parseInt(angularCore.split('.')[0]);
     if (angularMajor < 17) {
-      console.warn(`⚠️  Angular ${angularCore} detected. Consider upgrading to latest LTS.`);
+      console.warn(
+        `⚠️  Angular ${angularCore} detected. Consider upgrading to latest LTS.`,
+      );
       driftDetected = true;
     }
 
@@ -262,7 +282,7 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   const options = {
     updateReadme: !args.includes('--no-readme-update'),
-    checkDrift: !args.includes('--no-drift-check')
+    checkDrift: !args.includes('--no-drift-check'),
   };
 
   const reporter = new TechStackReporter();

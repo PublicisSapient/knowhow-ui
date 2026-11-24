@@ -3,7 +3,9 @@
   <div class="info-boxes">
     <div class="info-box" *ngFor="let box of infoBoxes">
       <div class="label">{{ box.label }}</div>
-      <div class="value" [ngStyle]="{'color': box.color}" [ngClass]="box.color">{{ box.value }}</div>
+      <div class="value" [ngStyle]="{ color: box.color }" [ngClass]="box.color">
+        {{ box.value }}
+      </div>
     </div>
   </div>
 
@@ -49,7 +51,7 @@
             <div class="step-desc" [innerHTML]="step.description"></div>
           </div>
         </div>
-        <hr>
+        <hr />
       </div>
     </div>
   </div>

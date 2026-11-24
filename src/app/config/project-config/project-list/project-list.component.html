@@ -100,26 +100,36 @@
       </tr>
     </ng-template>
 
-      <ng-template pTemplate="body" let-project let-columns="columns">
-        <tr role="row" tabindex="0">
-          <td *ngFor="let col of columns" role="cell" tabindex="0">
-            <span *ngIf="col.id === 'status'" [ngClass]="{'status-active': project[col.id] === 'Active', 'status-paused': project[col.id] === 'Paused'}">
-              {{project[col.id]}}
-            </span>
-            <span *ngIf="col.id !== 'status'">
-              {{project[col.id]}}
-            </span>
-          </td>
-          <td class="p-0 p-text-right" role="cell">
-            <div class="p-d-flex p-jc-end">
-              <div *ngIf="isAdminOrSuperAdmin">
-                <p-button (click)="toggleMenu($event,project)" icon="pi pi-cog" styleClass="p-button-text" aria-label="Open Project Actions Menu" tabindex="0"></p-button>
-                <p-menu #kpimenu [model]="dynamicButtons" [popup]="true"></p-menu>
-              </div>
+    <ng-template pTemplate="body" let-project let-columns="columns">
+      <tr role="row" tabindex="0">
+        <td *ngFor="let col of columns" role="cell" tabindex="0">
+          <span
+            *ngIf="col.id === 'status'"
+            [ngClass]="{
+              'status-active': project[col.id] === 'Active',
+              'status-paused': project[col.id] === 'Paused'
+            }">
+            {{ project[col.id] }}
+          </span>
+          <span *ngIf="col.id !== 'status'">
+            {{ project[col.id] }}
+          </span>
+        </td>
+        <td class="p-0 p-text-right" role="cell">
+          <div class="p-d-flex p-jc-end">
+            <div *ngIf="isAdminOrSuperAdmin">
+              <p-button
+                (click)="toggleMenu($event, project)"
+                icon="pi pi-cog"
+                styleClass="p-button-text"
+                aria-label="Open Project Actions Menu"
+                tabindex="0"></p-button>
+              <p-menu #kpimenu [model]="dynamicButtons" [popup]="true"></p-menu>
             </div>
-          </td>
-        </tr>
-      </ng-template>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
 
     <ng-template pTemplate="emptymessage" let-columns>
       <tr>

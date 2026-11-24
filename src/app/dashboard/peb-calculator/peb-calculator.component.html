@@ -1,88 +1,141 @@
-<div class="dashboard-container" style="position: relative; min-height: 100vh;">
+<div class="dashboard-container" style="position: relative; min-height: 100vh">
   <!-- Loading overlay for entire PEB component -->
   @if(isLoadingPebData) {
-    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
-      <div style="text-align: center;">
-        <i class="pi pi-spin pi-spinner" style="font-size: 4rem; color: #0b4bc8;"></i>
-      </div>
+  <div
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    ">
+    <div style="text-align: center">
+      <i
+        class="pi pi-spin pi-spinner"
+        style="font-size: 4rem; color: #0b4bc8"></i>
     </div>
-  }
-  @if(!isLoadingPebData) {
+  </div>
+  } @if(!isLoadingPebData) {
   <div class="p-d-flex p-p-2 p-jc-between">
     <div class="p-col-3 p-mb-2">
-        <app-top-tiles [item]="{
+      <app-top-tiles
+        [item]="{
           cssClassName: 'speed',
           category: 'Speed',
-          value: (categoryVariations?.speed ? categoryVariations?.speed + '%' : 'N/A'),
+          value: categoryVariations?.speed
+            ? categoryVariations?.speed + '%'
+            : 'N/A',
           icon: 'fas fa-bolt',
           average: '',
           valueColor: '#15ba40',
-          iconType : 'fa'
+          iconType: 'fa'
         }"></app-top-tiles>
-      </div>
-      <div class="p-col-3 p-mb-2">
-        <app-top-tiles [item]="{
+    </div>
+    <div class="p-col-3 p-mb-2">
+      <app-top-tiles
+        [item]="{
           cssClassName: 'users',
           category: 'Efficiency',
-          value: (categoryVariations?.efficiency ? categoryVariations?.efficiency + '%' : 'N/A'),
+          value: categoryVariations?.efficiency
+            ? categoryVariations?.efficiency + '%'
+            : 'N/A',
           icon: 'fas fa-chart-line',
           average: '',
           valueColor: '#0b4bc8',
-          iconType : 'fa'
+          iconType: 'fa'
         }"></app-top-tiles>
-      </div>
-      <div class="p-col-3 p-mb-2">
-        <app-top-tiles [item]="{
+    </div>
+    <div class="p-col-3 p-mb-2">
+      <app-top-tiles
+        [item]="{
           cssClassName: 'users',
           category: 'Quality',
-          value: (categoryVariations?.quality ? categoryVariations?.quality + '%' : 'N/A'),
+          value: categoryVariations?.quality
+            ? categoryVariations?.quality + '%'
+            : 'N/A',
           icon: 'fas fa-shield-alt',
           average: '',
           valueColor: '#9810fa',
-          iconType : 'fa'
+          iconType: 'fa'
         }"></app-top-tiles>
-      </div>
-      <div class="p-col-3 p-mb-2">
-        <app-top-tiles [item]="{
+    </div>
+    <div class="p-col-3 p-mb-2">
+      <app-top-tiles
+        [item]="{
           cssClassName: 'productivity',
           category: 'Productivity',
-          value:  (categoryVariations?.productivity ? categoryVariations?.productivity + '%' : 'N/A'),
+          value: categoryVariations?.productivity
+            ? categoryVariations?.productivity + '%'
+            : 'N/A',
           icon: 'fas fa-bullseye',
           average: '',
           valueColor: '#ff5c5d',
-          iconType : 'fa'
+          iconType: 'fa'
         }"></app-top-tiles>
-      </div>
+    </div>
   </div>
   <div class="p-d-flex p-flex-wrap">
     <div class="p-col-4">
       <p-card class="p-mb-3 peb-calculator-card">
         <div class="p-px-4 calculator-header">
           <i class="fas fa-calculator text-blue"></i>
-          <span class="calculator-header-label p-ml-2">Potential Economic Benefits Calculator</span>
+          <span class="calculator-header-label p-ml-2"
+            >Potential Economic Benefits Calculator</span
+          >
         </div>
-        <form [formGroup]="pebForm" class="peb-form" (ngSubmit)="calculatePEB()">
+        <form
+          [formGroup]="pebForm"
+          class="peb-form"
+          (ngSubmit)="calculatePEB()">
           <div class="p-d-flex p-flex-wrap">
             <div class="p-col-4 grid-flex-wrap-100">
               <div class="p-col-12 p-d-flex p-align-center">
                 <label for="devCount">Average Team Size</label>
-                <img class="info-icon" alt="info" src="assets/img/Info.svg" aria-hidden="true"
-                    pTooltip="You can edit the no. of developers" tooltipPosition="top">
+                <img
+                  class="info-icon"
+                  alt="info"
+                  src="assets/img/Info.svg"
+                  aria-hidden="true"
+                  pTooltip="You can edit the no. of developers"
+                  tooltipPosition="top" />
               </div>
               <div class="p-col-12">
-                <p-inputNumber class="input-field-calc" formControlName="devCountControl" inputId="devCount"
-                  [min]="1" [useGrouping]="false" ngDefaultControl></p-inputNumber>
+                <p-inputNumber
+                  class="input-field-calc"
+                  formControlName="devCountControl"
+                  inputId="devCount"
+                  [min]="1"
+                  [useGrouping]="false"
+                  ngDefaultControl></p-inputNumber>
               </div>
             </div>
             <div class="p-col-4 grid-flex-wrap-100">
               <div class="p-col-12 p-d-flex p-align-center">
                 <label for="devCost">Avg. Cost per Team Member </label>
-                <img class="info-icon" alt="info" src="assets/img/Info.svg" aria-hidden="true"
-                    pTooltip="You can edit the avg cost per developer" tooltipPosition="top">
+                <img
+                  class="info-icon"
+                  alt="info"
+                  src="assets/img/Info.svg"
+                  aria-hidden="true"
+                  pTooltip="You can edit the avg cost per developer"
+                  tooltipPosition="top" />
               </div>
               <div class="p-col-12">
-                <p-inputNumber class="input-field-calc" formControlName="devCostControl" inputId="devCost"
-                  mode="currency" [currency]="userCurrency" [locale]="userLocale" [min]="1" ngDefaultControl></p-inputNumber>
+                <p-inputNumber
+                  class="input-field-calc"
+                  formControlName="devCostControl"
+                  inputId="devCost"
+                  mode="currency"
+                  [currency]="userCurrency"
+                  [locale]="userLocale"
+                  [min]="1"
+                  ngDefaultControl></p-inputNumber>
               </div>
             </div>
           </div>
@@ -91,17 +144,31 @@
               <label for="duration">Time Duration</label>
             </div>
             <div class="p-col-12">
-              <p-dropdown id="duration" class="input-field-calc" [options]="durationOptions"
-                formControlName="durationControl" placeholder="Time Duration" ngDefaultControl></p-dropdown>
+              <p-dropdown
+                id="duration"
+                class="input-field-calc"
+                [options]="durationOptions"
+                formControlName="durationControl"
+                placeholder="Time Duration"
+                ngDefaultControl></p-dropdown>
             </div>
           </div>
 
           <div class="p-col-12 p-d-flex p-flex-wrap p-p-0">
             <div class="p-col-6">
-              <button pButton type="submit" label="Calculate PEB" class="calc-btn"></button>
+              <button
+                pButton
+                type="submit"
+                label="Calculate PEB"
+                class="calc-btn"></button>
             </div>
             <div class="p-col-6">
-              <button pButton type="button" label="Reset" (click)="resetForm()" class="calc-btn p-button-secondary"></button>
+              <button
+                pButton
+                type="button"
+                label="Reset"
+                (click)="resetForm()"
+                class="calc-btn p-button-secondary"></button>
             </div>
           </div>
         </form>
@@ -125,104 +192,191 @@
           <small class="tag beta">BETA</small>
         </div>
         @if(showLoader) {
-          <div class="p-d-flex p-justify-center p-align-center" style="min-height: 300px;">
-            <i class="pi pi-spin pi-spinner" style="font-size: 3rem; color: #0b4bc8;"></i>
-          </div>
+        <div
+          class="p-d-flex p-justify-center p-align-center"
+          style="min-height: 300px">
+          <i
+            class="pi pi-spin pi-spinner"
+            style="font-size: 3rem; color: #0b4bc8"></i>
+        </div>
         } @else {
-          <div>
-            <div class="p-d-flex p-flex-wrap">
-              <div class="p-col-6 p-mb-2 p-p-2">
-                <div class="p-text-center border border-round">
-                  <h5 class="heading">Total Savings</h5>
-                  <p class="text-blue font-bold text-2xl p-mt-0"> {{ annualPEB | dynamicCurrency}}</p>
-
-                </div>
-              </div>
-              <div class="p-col-6 p-mb-2 p-p-2">
-                <div class="p-text-center border border-round">
-                  <h5 class="heading">Active {{items[0].levelName}}s</h5>
-                  <p class="text-purple font-bold text-2xl p-mt-0">{{ items.length }}</p>
-                </div>
+        <div>
+          <div class="p-d-flex p-flex-wrap">
+            <div class="p-col-6 p-mb-2 p-p-2">
+              <div class="p-text-center border border-round">
+                <h5 class="heading">Total Savings</h5>
+                <p class="text-blue font-bold text-2xl p-mt-0">
+                  {{ annualPEB | dynamicCurrency }}
+                </p>
               </div>
             </div>
-            <div style="overflow: auto;">
-              <p-table [value]="items" [tableStyle]="{ 'min-width': '50rem','min-height' : '180px' }" [scrollable]="true" scrollHeight="400px" 
-                *ngIf="items.length">
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th></th>
-                    <th style="width: 30%;" class="p-text-left" [pSortableColumn]="'organizationEntityName'">
-                      <div class="table-head">
-                        <span>{{ items[0]?.levelName }}</span>
-                        <div class="p-d-flex p-ml-2">
-                          <p-columnFilter field="organizationEntityName" matchMode="in" [showMenu]="false" [showMatchModes]="false"
-                            [showOperator]="false" [showAddButton]="false" [showClearButton]="false"
-                            [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
-                              <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
-                                (onPanelShow)="onFilterClick('organizationEntityName')" (onPanelHide)="onFilterBlur('organizationEntityName')"
-                                [options]="tableColumnData['organizationEntityName']" placeholder="Select Entity"
-                                (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
-                                [ngModel]="tableColumnForm['organizationEntityName']" styleClass="column-filter"
-                                (keydown.space)="$event.stopPropagation()">
-                                <ng-template pTemplate="selectedItems">
-                                  <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
-                                </ng-template>
-                              </p-multiSelect>
-                            </ng-template>
-                          </p-columnFilter>
-                          <p-sortIcon field="organizationEntityName" aria-label="Sort by entity name"></p-sortIcon>
-                        </div>
-                      </div>
-                    </th>
-                    <th style="width: 30%;" class="p-text-right" [pSortableColumn]="'categoryScores.overall'">
-                      <div class="table-head">
-                        <span>Projected Cost Savings ({{1 | dynamicCurrency:'symbol'}})</span>
-                        <div class="p-d-flex p-ml-2">
-                          <p-columnFilter field="categoryScores.overall" matchMode="in" [showMenu]="false" [showMatchModes]="false"
-                            [showOperator]="false" [showAddButton]="false" [showClearButton]="false"
-                            [showApplyButton]="false" [style]="{ 'margin-top': '2px' }">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
-                              <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
-                                (onPanelShow)="onFilterClick('categoryScores.overall')" (onPanelHide)="onFilterBlur('categoryScores.overall')"
-                                [options]="tableColumnData['categoryScores.overall']" placeholder="Select Savings"
-                                (onChange)="filter($event.value)" [optionValue]="'value'" [optionLabel]="'name'"
-                                [ngModel]="tableColumnForm['categoryScores.overall']" styleClass="column-filter"
-                                (keydown.space)="$event.stopPropagation()">
-                                <ng-template pTemplate="selectedItems">
-                                  <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
-                                </ng-template>
-                              </p-multiSelect>
-                            </ng-template>
-                          </p-columnFilter>
-                          <p-sortIcon field="categoryScores.overall" aria-label="Sort by cost savings"></p-sortIcon>
-                        </div>
-                      </div>
-                    </th>
-                    <th></th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-item>
-                  <tr>
-                    <td></td>
-                    <td style="width: 30%;" class="p-text-left">{{ item?.organizationEntityName }}</td>
-                    <td style="width: 30%;" class="p-text-right">{{ item.categoryScores.overall | dynamicCurrency:'value'}}</td>
-                    <td></td>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="4" class="p-text-center">
-                      <div class="p-d-flex p-flex-column p-align-center p-py-4">
-                        <img alt="no-data" src="assets/img/NoDataFound.svg" />
-                        <h4>No Data Available.</h4>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
+            <div class="p-col-6 p-mb-2 p-p-2">
+              <div class="p-text-center border border-round">
+                <h5 class="heading">Active {{ items[0].levelName }}s</h5>
+                <p class="text-purple font-bold text-2xl p-mt-0">
+                  {{ items.length }}
+                </p>
+              </div>
             </div>
           </div>
+          <div style="overflow: auto">
+            <p-table
+              [value]="items"
+              [tableStyle]="{ 'min-width': '50rem', 'min-height': '180px' }"
+              [scrollable]="true"
+              scrollHeight="400px"
+              *ngIf="items.length">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th></th>
+                  <th
+                    style="width: 30%"
+                    class="p-text-left"
+                    [pSortableColumn]="'organizationEntityName'">
+                    <div class="table-head">
+                      <span>{{ items[0]?.levelName }}</span>
+                      <div class="p-d-flex p-ml-2">
+                        <p-columnFilter
+                          field="organizationEntityName"
+                          matchMode="in"
+                          [showMenu]="false"
+                          [showMatchModes]="false"
+                          [showOperator]="false"
+                          [showAddButton]="false"
+                          [showClearButton]="false"
+                          [showApplyButton]="false"
+                          [style]="{ 'margin-top': '2px' }">
+                          <ng-template
+                            pTemplate="filter"
+                            let-value
+                            let-filter="filterCallback"
+                            #filter>
+                            <p-multiSelect
+                              resetFilterOnHide="true"
+                              autofocusFilter="true"
+                              (onPanelShow)="
+                                onFilterClick('organizationEntityName')
+                              "
+                              (onPanelHide)="
+                                onFilterBlur('organizationEntityName')
+                              "
+                              [options]="
+                                tableColumnData['organizationEntityName']
+                              "
+                              placeholder="Select Entity"
+                              (onChange)="filter($event.value)"
+                              [optionValue]="'value'"
+                              [optionLabel]="'name'"
+                              [ngModel]="
+                                tableColumnForm['organizationEntityName']
+                              "
+                              styleClass="column-filter"
+                              (keydown.space)="$event.stopPropagation()">
+                              <ng-template pTemplate="selectedItems">
+                                <i
+                                  class="pi pi-filter-icon pi-filter"
+                                  style="font-size: 0.8rem"></i>
+                              </ng-template>
+                            </p-multiSelect>
+                          </ng-template>
+                        </p-columnFilter>
+                        <p-sortIcon
+                          field="organizationEntityName"
+                          aria-label="Sort by entity name"></p-sortIcon>
+                      </div>
+                    </div>
+                  </th>
+                  <th
+                    style="width: 30%"
+                    class="p-text-right"
+                    [pSortableColumn]="'categoryScores.overall'">
+                    <div class="table-head">
+                      <span
+                        >Projected Cost Savings ({{
+                          1 | dynamicCurrency : 'symbol'
+                        }})</span
+                      >
+                      <div class="p-d-flex p-ml-2">
+                        <p-columnFilter
+                          field="categoryScores.overall"
+                          matchMode="in"
+                          [showMenu]="false"
+                          [showMatchModes]="false"
+                          [showOperator]="false"
+                          [showAddButton]="false"
+                          [showClearButton]="false"
+                          [showApplyButton]="false"
+                          [style]="{ 'margin-top': '2px' }">
+                          <ng-template
+                            pTemplate="filter"
+                            let-value
+                            let-filter="filterCallback"
+                            #filter>
+                            <p-multiSelect
+                              resetFilterOnHide="true"
+                              autofocusFilter="true"
+                              (onPanelShow)="
+                                onFilterClick('categoryScores.overall')
+                              "
+                              (onPanelHide)="
+                                onFilterBlur('categoryScores.overall')
+                              "
+                              [options]="
+                                tableColumnData['categoryScores.overall']
+                              "
+                              placeholder="Select Savings"
+                              (onChange)="filter($event.value)"
+                              [optionValue]="'value'"
+                              [optionLabel]="'name'"
+                              [ngModel]="
+                                tableColumnForm['categoryScores.overall']
+                              "
+                              styleClass="column-filter"
+                              (keydown.space)="$event.stopPropagation()">
+                              <ng-template pTemplate="selectedItems">
+                                <i
+                                  class="pi pi-filter-icon pi-filter"
+                                  style="font-size: 0.8rem"></i>
+                              </ng-template>
+                            </p-multiSelect>
+                          </ng-template>
+                        </p-columnFilter>
+                        <p-sortIcon
+                          field="categoryScores.overall"
+                          aria-label="Sort by cost savings"></p-sortIcon>
+                      </div>
+                    </div>
+                  </th>
+                  <th></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td></td>
+                  <td style="width: 30%" class="p-text-left">
+                    {{ item?.organizationEntityName }}
+                  </td>
+                  <td style="width: 30%" class="p-text-right">
+                    {{
+                      item.categoryScores.overall | dynamicCurrency : 'value'
+                    }}
+                  </td>
+                  <td></td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4" class="p-text-center">
+                    <div class="p-d-flex p-flex-column p-align-center p-py-4">
+                      <img alt="no-data" src="assets/img/NoDataFound.svg" />
+                      <h4>No Data Available.</h4>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
         }
       </p-card>
     </div>
@@ -266,8 +420,6 @@
     </div>
   </p-card> -->
 
-
-
   <!-- THIS SECTION IS COMMENTED FOR FUTURE IMPLEMENTATION -->
   <!-- <p-card class="colored-card-block">
       <div class="ai-section-title">Additional Cost Savings from AI Adoption <i class="pi pi-sparkles"></i></div>
@@ -296,15 +448,21 @@
     <p-card class="p-mb-3 peb-calculator-card">
       <div class="p-px-4 calculator-header">
         <i class="far fa-chart-bar text-blue"></i>
-        <span class="calculator-header-label p-ml-2">Performance Tracking Over Time</span>
+        <span class="calculator-header-label p-ml-2"
+          >Performance Tracking Over Time</span
+        >
       </div>
 
       <div class="p-d-flex">
         <div class="p-col-6">
           <div class="p-2">
             <h4>Core Performance Metrics</h4>
-            <ng-container *ngIf="performanceChartData?.length else noDataAccess">
-              <app-cumulative-line-chart [data]="performanceChartData" [filters]="[]" [xCaption]="xAxisLabel"
+            <ng-container
+              *ngIf="performanceChartData?.length; else noDataAccess">
+              <app-cumulative-line-chart
+                [data]="performanceChartData"
+                [filters]="[]"
+                [xCaption]="xAxisLabel"
                 [yCaption]="'Performance'">
               </app-cumulative-line-chart>
             </ng-container>
@@ -313,17 +471,20 @@
         <div class="p-col-6">
           <div class="p-2">
             <h4>Cost Savings Trend</h4>
-            <ng-container *ngIf="costSavingsChartData?.length else noDataAccess">
-              <app-cumulative-line-chart [data]="costSavingsChartData" [filters]="[]" [xCaption]="xAxisLabel"
+            <ng-container
+              *ngIf="costSavingsChartData?.length; else noDataAccess">
+              <app-cumulative-line-chart
+                [data]="costSavingsChartData"
+                [filters]="[]"
+                [xCaption]="xAxisLabel"
                 [yCaption]="'Cost Savings'">
               </app-cumulative-line-chart>
             </ng-container>
-
           </div>
         </div>
         <ng-template #noDataAccess>
           <div class="min-ht">
-            <div class="p-w-100  p-d-flex p-justify-center">
+            <div class="p-w-100 p-d-flex p-justify-center">
               <img alt="no-data" src="assets/img/NoDataFound.svg" />
             </div>
             <div class="p-w-100">

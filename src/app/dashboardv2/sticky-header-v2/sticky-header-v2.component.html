@@ -3,7 +3,8 @@
     <span class="text-container p-d-inline-block p-mr-2">{{ field.key }}:</span>
     <span class="p-text-bold p-d-inline-block p-mr-3">{{ field.value }}</span>
   </ng-container>
-  @if(service?.getSelectedTab() !== 'home' && service?.getSelectedTab() !== 'potential-economic-benefits'){
+  @if(service?.getSelectedTab() !== 'home' && service?.getSelectedTab() !==
+  'potential-economic-benefits'){
   <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
     <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
       <li
@@ -30,8 +31,13 @@
       </li>
     </ul>
   </div>
- } @else {
-  <span class="text-container p-d-inline-block p-mr-2">Selected Organization:</span>
-  <span class="p-text-bold p-d-inline-block p-mr-3">{{getOrganasationName(colorObj?.[objectKeys(colorObj)]?.labelName)}}</span>
- }
+  } @else {
+  <span class="text-container p-d-inline-block p-mr-2"
+    >Selected Organization:</span
+  >
+  <span
+    class="p-text-bold p-d-inline-block p-mr-3"
+    >{{getOrganasationName(colorObj?.[objectKeys(colorObj)]?.labelName)}}</span
+  >
+  }
 </div>

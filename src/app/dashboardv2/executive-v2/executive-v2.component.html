@@ -306,7 +306,8 @@
                                   <ng-container *ngSwitchCase="'line'">
                                     <ng-container *ngIf="checkIfZeroData(kpi)">
                                       @if (timeFilterKpis.includes(kpi.kpiId) &&
-                                      kpiTimeFilterOptions[kpi.kpiId]?.length > 1) {
+                                      kpiTimeFilterOptions[kpi.kpiId]?.length >
+                                      1) {
                                       <div
                                         class="p-d-flex p-jc-start kpi-select-button-container">
                                         <p-dropdown
