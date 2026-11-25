@@ -51,7 +51,7 @@ export class FieldMappingComponent implements OnInit {
   kpiId: string;
   metaDataTemplateCode: string;
 
-  private setting = {
+  private readonly setting = {
     element: {
       dynamicDownload: null as HTMLElement,
     },
@@ -59,13 +59,13 @@ export class FieldMappingComponent implements OnInit {
   selectedProject: any;
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private router: Router,
-    private sharedService: SharedService,
-    private http: HttpService,
-    private messenger: MessageService,
-    private getAuthorizationService: GetAuthorizationService,
-    private confirmationService: ConfirmationService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly router: Router,
+    private readonly sharedService: SharedService,
+    private readonly http: HttpService,
+    private readonly messenger: MessageService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {

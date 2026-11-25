@@ -4,35 +4,58 @@
   role="status"></p-toast>
 
 <div class="filter-container p-pt-4">
-  <div class="p-d-flex p-jc-center p-ai-center ">
-    <app-generic-filter [config]="projectFilterConfig" [selectedFilters]="selectedProjects" [data]="filterData"
+  <div class="p-d-flex p-jc-center p-ai-center">
+    <app-generic-filter
+      [config]="projectFilterConfig"
+      [selectedFilters]="selectedProjects"
+      [data]="filterData"
       (selectionChange)="handleFilterSelect($event)"></app-generic-filter>
-    <app-generic-filter [config]="sprintFilterConfig" [data]="filterData"
-      (selectionChange)="handleFilterSelect($event)" [selectedFilters]="selectedSprint"></app-generic-filter>
+    <app-generic-filter
+      [config]="sprintFilterConfig"
+      [data]="filterData"
+      (selectionChange)="handleFilterSelect($event)"
+      [selectedFilters]="selectedSprint"></app-generic-filter>
   </div>
   <div class="selected-project-container p-pt-3 p-ml-6">
     <div class="p-d-flex">
-    <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
+      <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
         @for(item of selectedProjects;track item){
-          <li class="selectedfilter cursor-pointer p-mr-3" role="listitem">
-            <div class="selected-node">
-              <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
-                <span class="p-l-1"> {{ item?.nodeDisplayName?.length<= 20 ?item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
-                   tabindex="0" (click)="removeProject(item)">&times;</span>
-                </span>
-              </div>
+        <li class="selectedfilter cursor-pointer p-mr-3" role="listitem">
+          <div class="selected-node">
+            <div
+              class="selected-node-label p-pl-0"
+              [title]="item?.nodeDisplayName"
+              tabindex="0"
+              [attr.aria-label]="item?.nodeDisplayName">
+              <span class="p-l-1">
+                {{
+                  item?.nodeDisplayName?.length <= 20
+                    ? item?.nodeDisplayName
+                    : item?.nodeDisplayName?.slice(0, 20) + '...'
+                }}
+                <span
+                  class="remove-node"
+                  tabindex="0"
+                  (click)="removeProject(item)"
+                  >&times;</span
+                >
+              </span>
             </div>
-          </li>
+          </div>
+        </li>
         }
-    </ul>
+      </ul>
     </div>
   </div>
 </div>
 
 <div class="p-d-flex p-jc-center p-ai-center p-mt-3">
- <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 95%;">
+  <div
+    class="p-card p-p-0 kpi-card-container-wrapper p-mb-6"
+    style="width: 95%">
     <div class="p-card-content p-p-0">
-      <app-kpi-card-v2 #kpiCard
+      <app-kpi-card-v2
+        #kpiCard
         [kpiData]="metricsKpiSettings"
         [kpiTitle]="metricsTitle"
         [loader]="false"
@@ -54,19 +77,21 @@
   </div>
 </div>
 
-
 <div class="p-d-flex p-jc-center p-ai-center">
-  <div class="p-card p-p-0 kpi-card-container-wrapper p-mb-6" style="width: 95%;">
+  <div
+    class="p-card p-p-0 kpi-card-container-wrapper p-mb-6"
+    style="width: 95%">
     <div class="p-card-content p-p-0">
-      <app-kpi-card-v2 #kpiCard
-                       [kpiData]="aiUsageKpiSettings"
-                       [kpiTitle]="aiUsageTitle"
-                       [loader]="false"
-                       [selectedTab]="selectedTab"
-                       [immediateLoader]="false"
-                       [customTooltip]="aiUsageTooltip"
-                       [selectedBoard]="'analysis'"
-                       (reloadKPITab)="handleKPIReload($event)">
+      <app-kpi-card-v2
+        #kpiCard
+        [kpiData]="aiUsageKpiSettings"
+        [kpiTitle]="aiUsageTitle"
+        [loader]="false"
+        [selectedTab]="selectedTab"
+        [immediateLoader]="false"
+        [customTooltip]="aiUsageTooltip"
+        [selectedBoard]="'analysis'"
+        (reloadKPITab)="handleKPIReload($event)">
         <app-dynamic-kpi-table
           kpiTable
           [tableData]="aiUsageTableData"

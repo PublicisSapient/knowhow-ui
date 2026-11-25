@@ -19,16 +19,14 @@
 <p-toast
   [style]="{ marginTop: '80px' }"
   aria-live="polite"
-  role="alert"
-></p-toast>
+  role="alert"></p-toast>
 <div class="p-grid p-m-0" role="main">
   <div class="p-col-12">
     <div class="main">
       <div
         class="content server-role"
         *ngIf="selectedView === 'server_role'"
-        aria-labelledby="server-role-heading"
-      >
+        aria-labelledby="server-role-heading">
         <label class="p-text-bold">Server Role:</label>
         <div class="p-grid" aria-live="polite">
           <label id="server-role-description"
@@ -39,8 +37,7 @@
         <div
           class="p-mt-4"
           *ngIf="!isConsumer && showPrecalculatedConfigSection"
-          aria-labelledby="precalculated-heading"
-        >
+          aria-labelledby="precalculated-heading">
           <label id="precalculated-heading" class="p-text-bold"
             >Pre Calculated:</label
           >
@@ -55,8 +52,7 @@
       </div>
       <div
         class="content select-scenario"
-        *ngIf="selectedView === 'processor_state'"
-      >
+        *ngIf="selectedView === 'processor_state'">
         <p-table
           [value]="toolConfigsDetails"
           [paginator]="false"
@@ -66,8 +62,7 @@
           loadingIcon="loading-img"
           [autoLayout]="true"
           aria-describedby="processors-table-description"
-          tabindex="0"
-        >
+          tabindex="0">
           <ng-template pTemplate="caption">
             <div class="table-header" id="processors-table-description">
               Processors
@@ -89,18 +84,18 @@
                     placeholder="Select a Project"
                     (onChange)="updateProjectSelection($event)"
                     aria-label="Select Project"
-                    role="listbox"
-                  >
+                    role="listbox">
                     <ng-template pTemplate="selectedItem">
                       <div
                         class="userProject-item userProject-item-value"
-                        *ngIf="selectedProject"
-                      >
+                        *ngIf="selectedProject">
                         <div>{{ selectedProject.name }}</div>
                       </div>
                     </ng-template>
                     <ng-template let-userProject pTemplate="item">
-                      <div class="userProject-item" [ngClass]="{ 'inactive-projects': userProject.onHold }">
+                      <div
+                        class="userProject-item"
+                        [ngClass]="{ 'inactive-projects': userProject.onHold }">
                         <div>{{ userProject.name }}</div>
                       </div>
                     </ng-template>
@@ -132,8 +127,7 @@
             pTemplate="body"
             let-processor
             let-expanded="expanded"
-            aria-describedby="processors-table-description"
-          >
+            aria-describedby="processors-table-description">
             <tr>
               <td class="custom-table-cell" tabindex="0">
                 {{
@@ -171,8 +165,7 @@
                       ?.executionOngoing === true
                   "
                   [style]="{ height: '6px' }"
-                  aria-label="Loading Jira data"
-                ></p-progressBar>
+                  aria-label="Loading Jira data"></p-progressBar>
               </td>
               <td class="custom-table-cell" tabindex="0">
                 <div class="p-d-flex p-align-center">
@@ -185,8 +178,7 @@
                           processor.toolName === 'Rally')) ||
                       processor.toolName !== 'Jira' ||
                       processor.toolName !== 'Rally'
-                    "
-                  >
+                    ">
                     <div
                       *ngIf="
                         showProcessorLastState(processor.toolName) !== 'NA'
@@ -207,8 +199,7 @@
                         showProcessorLastState(processor.toolName)
                       }}"
                       role="status"
-                      tabindex="0"
-                    >
+                      tabindex="0">
                       {{ showProcessorLastState(processor.toolName) }}
                     </div>
                   </div>
@@ -217,8 +208,7 @@
                     *ngIf="
                       processor.toolName === 'Jira' ||
                       processor.toolName === 'Rally'
-                    "
-                  >
+                    ">
                     <i
                       class="pi pi-info-circle"
                       [ngClass]="{
@@ -247,28 +237,24 @@
                         processor.toolName
                       }} progress details"
                       role="button"
-                      tabindex="0"
-                    ></i>
+                      tabindex="0"></i>
                   </div>
                   <div
                     class="p-ml-2"
                     *ngIf="
                       isSCMToolProcessor(processor.toolName) &&
                       showProcessorLastState(processor.toolName) === 'Warning'
-                    "
-                  >
+                    ">
                     <i
                       class="pi pi-info-circle"
                       (click)="rOp.toggle($event)"
                       style="font-size: 1.2rem"
-                      (keydown.enter)="rOp.toggle($event)"
-                    ></i>
+                      (keydown.enter)="rOp.toggle($event)"></i>
                     <p-overlayPanel
                       #rOp
                       [showCloseIcon]="false"
                       aria-label="Repository scanning rate limit warning"
-                      role="tooltip"
-                    >
+                      role="tooltip">
                       Reached the API rate limit. Repo scanning will
                       automatically resume after
                       {{ getSCMToolTimeDetails(processor.toolName) }}
@@ -277,8 +263,7 @@
                 </div>
               </td>
               <td
-                class="custom-table-cell p-d-flex p-align-center column-width"
-              >
+                class="custom-table-cell p-d-flex p-align-center column-width">
                 <div>
                   <div *ngIf="processor.toolName === 'Azure'" class="p-mb-2">
                     <p-inputSwitch
@@ -290,8 +275,7 @@
                       (onChange)="
                         azureRefreshActiveSprintReportToggleChange(processor)
                       "
-                      aria-label="Refresh Azure Sprint Snapshot"
-                    >
+                      aria-label="Refresh Azure Sprint Snapshot">
                     </p-inputSwitch>
                     <label> Refresh Snapshot </label>
                     <img
@@ -304,8 +288,7 @@
                       (click)="azureOP.toggle($event)"
                       src="assets/img/RequiresSyncIcon.svg"
                       alt="Azure Snapshot History"
-                      aria-label="View Azure Snapshot History"
-                    />
+                      aria-label="View Azure Snapshot History" />
                   </div>
                   <div style="display: flex">
                     <button
@@ -331,8 +314,9 @@
                       class="p-button-sm p-button-success p-button-raised"
                       (click)="runProcessor(processor.toolName)"
                       aria-label="Run processor for {{ processor.toolName }}"
-                      (keydown.enter)="runProcessor(processor.toolName)"
-                    ></button>
+                      (keydown.enter)="
+                        runProcessor(processor.toolName)
+                      "></button>
                     <div
                       class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer"
                       [ngClass]="{
@@ -350,8 +334,7 @@
                       (keydown.enter)="deleteProcessorData(processor)"
                       role="button"
                       tabindex="0"
-                      aria-label="Delete processor data"
-                    >
+                      aria-label="Delete processor data">
                       <i class="far fa-trash-alt" aria-hidden="true"></i>
                     </div>
                   </div>
@@ -373,13 +356,11 @@
           class="p-button-success p-button-raised p-button p-component p-mt-5"
           (click)="backToProjectList()"
           aria-label="Back to Project List"
-          (keydown.enter)="backToProjectList()"
-        >
+          (keydown.enter)="backToProjectList()">
           <i
             class="pi pi-angle-double-left"
             style="font-size: 2rem"
-            aria-hidden="true"
-          ></i>
+            aria-hidden="true"></i>
           Back to Project List
         </button>
       </div>
@@ -395,16 +376,14 @@
       pButton
       label="Yes"
       aria-label="Confirm action"
-      (keydown.enter)="cd.accept()"
-    ></button>
+      (keydown.enter)="cd.accept()"></button>
     <button
       type="button"
       (click)="cd.reject()"
       pButton
       label="No"
       aria-label="Cancel action"
-      (keydown.enter)="cd.reject()"
-    ></button>
+      (keydown.enter)="cd.reject()"></button>
   </p-footer>
 </p-confirmDialog>
 
@@ -412,8 +391,7 @@
   #op
   [showCloseIcon]="false"
   aria-label="Jira Trace Log Panel"
-  role="dialog"
->
+  role="dialog">
   <div class="progress-dialog-body" aria-live="polite">
     <section
       *ngIf="
@@ -423,8 +401,7 @@
             !findTraceLogForTool('Rally')?.errorMessage);
         else logError
       "
-      aria-labelledby="progress-stats-heading"
-    >
+      aria-labelledby="progress-stats-heading">
       <h3 id="progress-stats-heading">Progress Stats:</h3>
       <p-table
         [value]="
@@ -434,8 +411,7 @@
         [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true"
         scrollHeight="200px"
-        aria-label="Progress Status Table"
-      >
+        aria-label="Progress Status Table">
         <ng-template pTemplate="header">
           <tr>
             <th scope="col">Step Name</th>
@@ -458,9 +434,11 @@
         <img
           src="assets/img/icon-failure.svg"
           alt="Failure Icon"
-          class="p-mr-1"
-        />
-        {{ findTraceLogForTool('Jira')?.errorMessage ||  findTraceLogForTool('Rally')?.errorMessage }}
+          class="p-mr-1" />
+        {{
+          findTraceLogForTool('Jira')?.errorMessage ||
+            findTraceLogForTool('Rally')?.errorMessage
+        }}
       </h3>
     </ng-template>
 
@@ -469,8 +447,7 @@
         findTraceLogForTool('Jira')?.errorDetailList?.length > 0 ||
         findTraceLogForTool('Rally')?.errorDetailList?.length > 0
       "
-      aria-labelledby="error-details-heading"
-    >
+      aria-labelledby="error-details-heading">
       <h3 id="error-details-heading">Errors:</h3>
       <p-table
         [value]="
@@ -480,8 +457,7 @@
         [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true"
         scrollHeight="200px"
-        aria-label="Error Details Table"
-      >
+        aria-label="Error Details Table">
         <ng-template pTemplate="header">
           <tr>
             <th scope="col">URL</th>
@@ -506,15 +482,13 @@
         findTraceLogForTool('Jira')?.additionalInfo?.length > 0 ||
         findTraceLogForTool('Rally')?.additionalInfo?.length > 0
       "
-      aria-labelledby="incorrect-tagging-heading"
-    >
+      aria-labelledby="incorrect-tagging-heading">
       <h3 id="incorrect-tagging-heading">
         <img
           height="25"
           style="display: inline; vertical-align: middle"
           alt="Warning Icon"
-          src="assets/img/Warning.svg"
-        />
+          src="assets/img/Warning.svg" />
         Incorrect Sprint Tagging (Please correct the sprint tagging for the
         issues listed below.)
       </h3>
@@ -523,8 +497,7 @@
         [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true"
         scrollHeight="200px"
-        aria-label="Incorrect Sprint Tagging Table"
-      >
+        aria-label="Incorrect Sprint Tagging Table">
         <ng-template pTemplate="header">
           <tr>
             <th scope="col">Sprint Name</th>
@@ -543,15 +516,13 @@
     <ul
       class="p-pr-1 p-pl-0 list-style-none"
       *ngIf="dataMismatchObj['Jira'] || dataMismatchObj['Rally']"
-      aria-labelledby="data-mismatch-heading"
-    >
+      aria-labelledby="data-mismatch-heading">
       <li id="data-mismatch-heading" class="sr-only">Data mismatch messages</li>
       <li class="tooltip-item p-d-flex p-pt-2" role="listitem">
         <div class="icon-container">
           <i
             class="fas fa-exclamation-triangle text-yellow icon-list"
-            aria-hidden="true"
-          ></i>
+            aria-hidden="true"></i>
         </div>
         <div>
           There are some Jira issues that no longer satisfy your Scrum board's
@@ -576,15 +547,13 @@
   #azureOP
   [showCloseIcon]="false"
   aria-label="Azure Sprint Log Panel"
-  role="dialog"
->
+  role="dialog">
   <p-table
     [value]="findTraceLogForTool('Azure')?.sprintRefreshLog"
     [tableStyle]="{ 'min-width': '40rem' }"
     [scrollable]="true"
     scrollHeight="200px"
-    aria-label="Azure Sprint Refresh Table"
-  >
+    aria-label="Azure Sprint Refresh Table">
     <ng-template pTemplate="header">
       <tr>
         <th scope="col">Sprint Name</th>

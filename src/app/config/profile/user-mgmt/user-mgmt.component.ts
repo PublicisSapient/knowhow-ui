@@ -37,11 +37,11 @@ export class UserMgmtComponent implements OnInit {
   error = '';
   success = '';
   constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private httpService: HttpService,
-    private messageService: MessageService,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
   ) {}
 
   ngOnInit() {

@@ -19,8 +19,7 @@
         (keydown.enter)="showTooltip(true)"
         aria-label="Show KPI Information"
         aria-describedby="kpiInfoTooltip"
-        (focus)="showTooltip(true); showWarning(false)"
-      >
+        (focus)="showTooltip(true); showWarning(false)">
         <img
           alt="info"
           class=""
@@ -49,8 +48,7 @@
       tabindex="0"
       aria-label="Show KPI Warning Information"
       (focus)="showTooltip(false); showWarning(true)"
-      (blur)="showWarning(false)"
-    >
+      (blur)="showWarning(false)">
       (keydown.enter)="showWarning(true)">
       <img
         height="25px"
@@ -72,7 +70,14 @@
         aria-describedby="kpiWarningTooltip"></app-tooltip-v2>
     </span>
   </div>
-  <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Show KPI Menu" (keydown.enter)="toggleMenu($event)" (focus)="showWarning(false); showTooltip(false)">
+  <div
+    class="kpi-menu-container"
+    (click)="toggleMenu($event)"
+    role="button"
+    tabindex="0"
+    aria-label="Show KPI Menu"
+    (keydown.enter)="toggleMenu($event)"
+    (focus)="showWarning(false); showTooltip(false)">
     <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
   </div>
   <p-menu

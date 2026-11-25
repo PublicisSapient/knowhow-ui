@@ -6,13 +6,11 @@
     <div
       class="bubble-legend__item"
       *ngFor="let band of prSizeLegend"
-      aria-label="{{ band.label }}"
-    >
+      aria-label="{{ band.label }}">
       <span
         class="bubble-legend__dot"
         [style.backgroundColor]="band.color"
-        aria-hidden="true"
-      ></span>
+        aria-hidden="true"></span>
       <span class="bubble-legend__label">{{ band.label }}</span>
     </div>
   </div>

@@ -34,7 +34,7 @@ export class ProjectConfigComponent implements OnInit {
   items: MenuItem[];
 
   constructor(
-    private getAuthorizationService: GetAuthorizationService,
+    private readonly getAuthorizationService: GetAuthorizationService,
     public router: Router,
   ) {}
   ngOnInit() {

@@ -46,10 +46,10 @@ export class RaiseAccessRequestComponent implements OnInit {
   raiseRequestResponse = {};
   roleSelected = false;
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private router: Router,
-    private sharedService: SharedService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
+    private readonly router: Router,
+    private readonly sharedService: SharedService,
   ) {}
 
   ngOnInit() {

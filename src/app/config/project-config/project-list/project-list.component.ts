@@ -76,13 +76,13 @@ export class ProjectListComponent implements OnInit {
   @ViewChild('renameProjectRef') renameProjectRef: Dialog;
 
   constructor(
-    private http: HttpService,
-    private sharedService: SharedService,
-    private messenger: MessageService,
-    private router: Router,
-    private confirmationService: ConfirmationService,
-    private getAuthorizationService: GetAuthorizationService,
-    private helper: HelperService,
+    private readonly http: HttpService,
+    private readonly sharedService: SharedService,
+    private readonly messenger: MessageService,
+    private readonly router: Router,
+    private readonly confirmationService: ConfirmationService,
+    private readonly getAuthorizationService: GetAuthorizationService,
+    private readonly helper: HelperService,
   ) {}
 
   ngOnInit(): void {

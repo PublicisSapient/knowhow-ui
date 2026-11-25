@@ -18,8 +18,8 @@ export class AutoApprovalComponent implements OnInit {
   autoApprovalForm: UntypedFormGroup;
   autoApprovedId = '';
   constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
+    private readonly httpService: HttpService,
+    private readonly messageService: MessageService,
   ) {}
 
   ngOnInit(): void {

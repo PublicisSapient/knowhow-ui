@@ -19,7 +19,9 @@ console.log(`\n${BLUE}🔍 Checking pre-commit setup...${RESET}\n`);
 // Check if .git directory exists
 const gitDir = path.join(__dirname, '..', '.git');
 if (!fs.existsSync(gitDir)) {
-  console.log(`${YELLOW}ℹ️  Not a git repository. Skipping pre-commit check.${RESET}\n`);
+  console.log(
+    `${YELLOW}ℹ️  Not a git repository. Skipping pre-commit check.${RESET}\n`,
+  );
   process.exit(0);
 }
 
@@ -47,4 +49,6 @@ if (!fs.existsSync(precommitHook)) {
 
 console.log(`${GREEN}✅ Pre-commit setup complete!${RESET}`);
 console.log(`${GREEN}✅ Automated dependency tracking is active${RESET}\n`);
-console.log(`When you update ${BLUE}package.json${RESET}, documentation will auto-update! ✨\n`);
+console.log(
+  `When you update ${BLUE}package.json${RESET}, documentation will auto-update! ✨\n`,
+);

@@ -64,9 +64,9 @@ export class ProjectSettingsComponent implements OnInit {
   constructor(
     public sharedService: SharedService,
     public router: Router,
-    private confirmationService: ConfirmationService,
+    private readonly confirmationService: ConfirmationService,
     public httpService: HttpService,
-    private messageService: MessageService,
+    private readonly messageService: MessageService,
     public getAuthorizationService: GetAuthorizationService,
   ) {}
 
