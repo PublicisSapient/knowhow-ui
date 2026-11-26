@@ -52,11 +52,11 @@ export class ChatbotComponent implements AfterViewChecked {
     issueDescription: '',
   };
 
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @ViewChild('scrollContainer') private readonly scrollContainer!: ElementRef;
 
   getCurrentSelectedProject;
   selectedProject: any;
-  private hasInitialized = false;
+  private readonly hasInitialized = false;
 
   constructor(
     private readonly chatService: ChatService,

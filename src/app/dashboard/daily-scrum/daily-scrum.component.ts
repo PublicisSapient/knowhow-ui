@@ -66,7 +66,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   @Output() closeModal = new EventEmitter<any>();
   @Input() loader;
 
-  constructor(private service: SharedService) {}
+  constructor(private readonly service: SharedService) {}
 
   ngOnInit(): void {
     this.filterData?.forEach((filter) => {

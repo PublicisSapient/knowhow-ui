@@ -36,7 +36,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   source = null;
 
   constructor(
-    private service: SharedService,
+    private readonly service: SharedService,
     public router: Router,
     public http: HttpService,
   ) {}

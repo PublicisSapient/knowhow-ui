@@ -9,7 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
 export class IssueCardComponent implements OnChanges {
   @Input() issueData;
   isOverViewSelected = true;
-  constructor(private service: SharedService) {
+  constructor(private readonly service: SharedService) {
     this.service.currentData.subscribe((data) => {
       this.isOverViewSelected = true;
       this.issueData = data;

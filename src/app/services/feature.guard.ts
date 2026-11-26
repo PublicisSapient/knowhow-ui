@@ -16,8 +16,8 @@ import { FeatureFlagsService } from './feature-toggle.service';
 })
 export class FeatureGuard implements CanLoad, CanActivateChild {
   constructor(
-    private featureFlagsService: FeatureFlagsService,
-    private router: Router,
+    private readonly featureFlagsService: FeatureFlagsService,
+    private readonly router: Router,
   ) {}
 
   async canLoad(

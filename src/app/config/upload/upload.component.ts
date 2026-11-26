@@ -170,14 +170,14 @@ export class UploadComponent implements OnInit {
   ];
 
   constructor(
-    private http_service: HttpService,
-    private messageService: MessageService,
-    private getAuth: GetAuthService,
-    private sharedService: SharedService,
-    private sanitizer: DomSanitizer,
-    private getAuthorisation: GetAuthorizationService,
-    private cdr: ChangeDetectorRef,
-    private helperService: HelperService,
+    private readonly http_service: HttpService,
+    private readonly messageService: MessageService,
+    private readonly getAuth: GetAuthService,
+    private readonly sharedService: SharedService,
+    private readonly sanitizer: DomSanitizer,
+    private readonly getAuthorisation: GetAuthorizationService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly helperService: HelperService,
   ) {}
 
   ngOnInit() {

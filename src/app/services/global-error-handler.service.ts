@@ -23,7 +23,7 @@ import { AnalyticsService } from './analytics.service';
   providedIn: 'root',
 })
 export class GlobalErrorHandler implements ErrorHandler {
-  constructor(private injector: Injector) {}
+  constructor(private readonly injector: Injector) {}
 
   handleError(error: any): void {
     // Log to console first

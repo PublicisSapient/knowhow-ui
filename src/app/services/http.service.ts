@@ -202,58 +202,64 @@ export class HttpService {
   private readonly currentUserDetailsURL =
     this.baseUrl + '/api/userinfo/userData';
   private readonly getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
-  private postKpiColumnsConfigUrl =
+  private readonly postKpiColumnsConfigUrl =
     this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
-  private gitActionWorkflowNameUrl =
+  private readonly gitActionWorkflowNameUrl =
     this.baseUrl + '/api/githubAction/workflowName';
-  private saveHappinessIndexForSprintUrl =
+  private readonly saveHappinessIndexForSprintUrl =
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
-  private activeIterationUrl = this.baseUrl + '/api/processor/fetchSprint';
-  private activeIterationfetchStatusUrl =
+  private readonly activeIterationUrl =
+    this.baseUrl + '/api/processor/fetchSprint';
+  private readonly activeIterationfetchStatusUrl =
     this.baseUrl + '/api/activeIteration/fetchStatus';
-  private fetchUserDetailsUrl = this.baseUrl + '/api/fetchUserDetails';
-  private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
-  private getShowHideKpiNewUIUrl =
+  private readonly fetchUserDetailsUrl = this.baseUrl + '/api/fetchUserDetails';
+  private readonly getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private readonly getShowHideKpiNewUIUrl =
     this.baseUrl + '/api/user-board-config/getBoardConfig';
-  private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
-  private urlShortener = this.baseUrl + '/api/stringShortener/shorten';
-  private urlRestore = this.baseUrl + '/api/stringShortener/longString';
-  private createReportUrl = this.baseUrl + '/api/reports';
-  private fetchReportsUrl = this.baseUrl + '/api/reports?createdBy=';
+  private readonly recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
+  private readonly urlShortener = this.baseUrl + '/api/stringShortener/shorten';
+  private readonly urlRestore =
+    this.baseUrl + '/api/stringShortener/longString';
+  private readonly createReportUrl = this.baseUrl + '/api/reports';
+  private readonly fetchReportsUrl = this.baseUrl + '/api/reports?createdBy=';
 
   currentUserDetails = null;
-  private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
+  private readonly saveMetaDataStepURL =
+    this.baseUrl + '/api/processor/metadata/step/';
 
-  private organizationHierarchy = this.baseUrl + '/api/hierarchy';
-  private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
-  private summariseSprintGoalsUrl =
+  private readonly organizationHierarchy = this.baseUrl + '/api/hierarchy';
+  private readonly updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
+  private readonly summariseSprintGoalsUrl =
     this.baseUrl + '/api/ai/sprint-goals/summary';
-  private llidUrl = this.baseUrl + '/api/usermanagement/save';
-  private aiKpiSearchUrl = this.baseUrl + '/api/ai/kpisearch';
-  private shareViaEmailUrl: string =
+  private readonly llidUrl = this.baseUrl + '/api/usermanagement/save';
+  private readonly aiKpiSearchUrl = this.baseUrl + '/api/ai/kpisearch';
+  private readonly shareViaEmailUrl: string =
     this.baseUrl +
     '/api/notifications/email?templateKey=recommendation-email&notificationSubjectKey=recommendation-email'; // TODO: Add proper api endpoint here
-  private executivePageURL = this.baseUrl + '/api/v1/kpi-maturity';
+  private readonly executivePageURL = this.baseUrl + '/api/v1/kpi-maturity';
 
-  private pebCalculateUrl = this.baseUrl + '/api/productivity/calculate';
-  private analyticsMetricsTableDataURL =
+  private readonly pebCalculateUrl =
+    this.baseUrl + '/api/productivity/calculate';
+  private readonly analyticsMetricsTableDataURL =
     this.baseUrl + '/api/analysis/analytics/sprint/query';
-  private AIAnalyticsDataURL =
+  private readonly AIAnalyticsDataURL =
     this.baseUrl + '/api/analysis/analytics/ai-usage/query';
-  private homeNBAURL = this.baseUrl + '/api/v1/recommendations';
-  private pebProductivityUrl = this.baseUrl + '/api/v1/peb/productivity';
-  private kpiAITargetRecommData = this.baseUrl;
-  private getAiUsagaStats = this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
-  private performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
-  private appConfigurationUrl = `${this.baseUrl}/api/config`;
+  private readonly homeNBAURL = this.baseUrl + '/api/v1/recommendations';
+  private readonly pebProductivityUrl =
+    this.baseUrl + '/api/v1/peb/productivity';
+  private readonly kpiAITargetRecommData = this.baseUrl;
+  private readonly getAiUsagaStats =
+    this.baseUrl + '/api/v1/ai-usage/stats?levelName=';
+  private readonly performanceSummaryURL = `${this.baseUrl}/api/team/performance/summary`;
+  private readonly appConfigurationUrl = `${this.baseUrl}/api/config`;
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
-    @Inject(APP_CONFIG) private config: IAppConfig,
-    private sharedService: SharedService,
+    private readonly router: Router,
+    private readonly http: HttpClient,
+    @Inject(APP_CONFIG) private readonly config: IAppConfig,
+    private readonly sharedService: SharedService,
   ) {}
 
   setCurrentUserDetails(details) {

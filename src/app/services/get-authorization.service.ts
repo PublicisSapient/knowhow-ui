@@ -22,7 +22,7 @@ import { SharedService } from './shared.service';
   providedIn: 'root',
 })
 export class GetAuthorizationService {
-  constructor(private sharedService: SharedService) {}
+  constructor(private readonly sharedService: SharedService) {}
 
   checkIfSuperUser() {
     if (

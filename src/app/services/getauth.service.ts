@@ -24,7 +24,7 @@ export class GetAuthService {
   stopListening: Function;
   private authenthicate;
 
-  constructor(private sharedService: SharedService) {}
+  constructor(private readonly sharedService: SharedService) {}
 
   checkAuth() {
     const user_name = this.getToken();

@@ -55,10 +55,10 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   constructor(
     public cdRef: ChangeDetectorRef,
     public router: Router,
-    private service: SharedService,
-    private getAuth: GetAuthService,
-    private httpService: HttpService,
-    private renderer: Renderer2,
+    private readonly service: SharedService,
+    private readonly getAuth: GetAuthService,
+    private readonly httpService: HttpService,
+    private readonly renderer: Renderer2,
   ) {
     this.sideNavStyle = { toggled: this.isApply };
     this.renderer.listen('document', 'click', (e: Event) => {

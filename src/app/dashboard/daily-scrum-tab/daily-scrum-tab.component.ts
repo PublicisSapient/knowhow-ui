@@ -44,7 +44,7 @@ export class DailyScrumTabComponent implements OnInit {
   filters = {};
   @Output() reloadKPITab = new EventEmitter<any>();
   @Output() backToIteration = new EventEmitter<any>();
-  constructor(private sharedService: SharedService) {}
+  constructor(private readonly sharedService: SharedService) {}
 
   ngOnInit(): void {
     this.sharedService.setVisibleSideBar(false);

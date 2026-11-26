@@ -10,8 +10,8 @@ export class FeatureFlagsService {
   config = null;
 
   constructor(
-    private roleService: GetAuthorizationService,
-    private http: HttpService,
+    private readonly roleService: GetAuthorizationService,
+    private readonly http: HttpService,
   ) {}
 
   loadConfig() {
