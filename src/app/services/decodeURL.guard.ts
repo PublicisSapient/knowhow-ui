@@ -11,7 +11,7 @@ import {
   providedIn: 'root',
 })
 export class DecodeUrlGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,

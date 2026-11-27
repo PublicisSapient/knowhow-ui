@@ -8,7 +8,10 @@ import {
 import { SharedService } from './shared.service';
 @Injectable()
 export class GuestGuard implements CanActivate {
-  constructor(private sharedService: SharedService, private router: Router) {}
+  constructor(
+    private readonly sharedService: SharedService,
+    private readonly router: Router,
+  ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (!this.sharedService.getCurrentUserDetails('authorities')) {

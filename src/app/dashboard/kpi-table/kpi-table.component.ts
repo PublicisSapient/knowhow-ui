@@ -20,7 +20,7 @@ export class KpiTableComponent implements OnInit {
   nodeColors: object = {};
   loader = false;
 
-  constructor(private service: SharedService) {}
+  constructor(private readonly service: SharedService) {}
 
   ngOnInit(): void {
     this.assignColorToNodes();

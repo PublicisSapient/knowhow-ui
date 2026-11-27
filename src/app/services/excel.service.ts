@@ -25,7 +25,7 @@ import { HelperService } from './helper.service';
   providedIn: 'root',
 })
 export class ExcelService {
-  constructor(private injector: Injector) {}
+  constructor(private readonly injector: Injector) {}
 
   /**
    * KPI IDs whose {text, hyperlink} cell values represent plain-text labels + values

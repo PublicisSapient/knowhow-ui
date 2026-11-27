@@ -56,7 +56,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
   getCurrentSelectedProject;
   selectedProject: any;
-  private hasInitialized = false;
+  private readonly hasInitialized = false;
 
   constructor(
     private readonly chatService: ChatService,

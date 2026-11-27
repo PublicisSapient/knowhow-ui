@@ -69,12 +69,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   hasBaseUrl = false;
 
   constructor(
-    private service: SharedService,
-    private httpService: HttpService,
-    private helperService: HelperService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private location: Location,
+    private readonly service: SharedService,
+    private readonly httpService: HttpService,
+    private readonly helperService: HelperService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly location: Location,
     private readonly messageService: MessageService,
     private readonly featureFlagService: FeatureFlagsService,
   ) {}

@@ -51,7 +51,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   @Output() reloadKPITab = new EventEmitter<any>();
   filteredIssueDataList: any[];
 
-  constructor(private sharedService: SharedService) {}
+  constructor(private readonly sharedService: SharedService) {}
 
   ngOnInit(): void {
     this.sharedService.currentData.subscribe((data) => {
