@@ -52,7 +52,7 @@ export class ChatbotComponent implements AfterViewChecked {
     issueDescription: '',
   };
 
-  @ViewChild('scrollContainer') private readonly scrollContainer!: ElementRef;
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   getCurrentSelectedProject;
   selectedProject: any;
