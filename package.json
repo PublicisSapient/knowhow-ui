@@ -98,7 +98,7 @@
     "codelyzer": "^6.0.2",
     "concurrently": "^9.1.2",
     "core-js": "^3.25.5",
-    "eslint": "^8.0.0",
+    "eslint": "^10.14.0",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "^50.6.17",
     "eslint-plugin-prefer-arrow": "latest",
