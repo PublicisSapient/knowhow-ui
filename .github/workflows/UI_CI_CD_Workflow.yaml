@@ -74,7 +74,7 @@ jobs:
 
       # 1. Checkout GitHub repo
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Cache node modules
         uses: actions/cache@v4
