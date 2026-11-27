@@ -97,7 +97,7 @@
     "@typescript-eslint/parser": "^6.0.0",
     "codelyzer": "^6.0.2",
     "concurrently": "^9.1.2",
-    "core-js": "^3.25.5",
+    "core-js": "^3.51.0",
     "eslint": "^8.0.0",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "^50.6.17",
